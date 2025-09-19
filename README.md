@@ -112,13 +112,19 @@ class Acces {
     +hasPermission(permission Role) boolean
 }
 
+class __ {
+  
+}
+
 %% Relationships
 Task "*" --> "1" LightUser : create a task
 Task "*" --> "*" LightUser : assign a task
 
 LightKanban "*" --> "*" LightUser : create a kanban
 LightKanban "*" --> "*" User : visualize a kanban
-LightKanban ||..|| Acces : association
+Acces --> __
+LightUser --> __
+__ --> LightKanban
 
 Kanban "*" --> "1" LightUser : create a kanban
 Kanban "*" --> "*" User : create a kanban
