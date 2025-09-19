@@ -1,126 +1,129 @@
 Init
 # Diagramme de classes du système Kanban avec option "Message" 1 et sans gestion des modifications
-```plantuml
-@startuml
-title Diagramme de classes du système Kanban avec option "Message" 1 et avec gestion des modifications
-
-!define RECTANGLE class
+```mermaid
+---
+title: Diagramme de classes du système Kanban avec option "Message" 1 et avec gestion des modifications
+---
+classDiagram
 
 class Task {
-    - title: str
-    - description: str
-    + getTitle(): str
-    + getDescription(): str
-    + setTitle(title: str): void
-    + setDescription(description: str): void
-    + canBeModifiedBy(user: LightUser): boolean
-    + modifyTask(user: LightUser, newTitle: str, newDescription: str): boolean
+    -string title
+    -string description
+    +getTitle() string
+    +getDescription() string
+    +setTitle(title string) void
+    +setDescription(description string) void
+    +canBeModifiedBy(user LightUser) boolean
+    +modifyTask(user LightUser, newTitle string, newDescription string) boolean
 }
 
 class Message {
-    - id: uuid
-    - content: str
-    - date: date
-    + getId(): uuid
-    + getContent(): str
-    + getDate(): date
+    -uuid id
+    -string content
+    -date date
+    +getId() uuid
+    +getContent() string
+    +getDate() date
 }
 
 class Column {
-    - title: str
-    - color: str
-    + getTitle(): str
-    + getColor(): str
-    + setTitle(title: str): void
-    + setColor(color: str): void
-    + canBeModifiedBy(user: LightUser): boolean
-    + modifyColumn(user: LightUser, newTitle: str, newColor: str): boolean
+    -string title
+    -string color
+    +getTitle() string
+    +getColor() string
+    +setTitle(title string) void
+    +setColor(color string) void
+    +canBeModifiedBy(user LightUser) boolean
+    +modifyColumn(user LightUser, newTitle string, newColor string) boolean
 }
 
 class Chat {
 }
 
 class LightKanban {
-    - title: str
-    - id: str
-    # acces: Acces[]
-    + getTitle(): str
-    + getId(): str
-    + getAcces(): Acces[]
-    + setTitle(title: str): void
-    + setId(id: str): void
-    + setAcces(acces: Acces[]): void
-    + hasModifyPermission(user: LightUser): boolean
-    + getUserRole(user: LightUser): Role
+    -string title
+    -string id
+    #Acces[] acces
+    +getTitle() string
+    +getId() string
+    +getAcces() Acces[]
+    +setTitle(title string) void
+    +setId(id string) void
+    +setAcces(acces Acces[]) void
+    +hasModifyPermission(user LightUser) boolean
+    +getUserRole(user LightUser) Role
 }
 
 class Kanban {
-    - taskColumn: HashMap
-    + getTaskColumn(): HashMap
-    + setTaskColumn(taskColumn: HashMap): void
-    + canBeModifiedBy(user: LightUser): boolean
-    + modifyKanban(user: LightUser, newTitle: str): boolean
-    + addTaskToColumn(user: LightUser, task: Task, column: Column): boolean
-    + moveTask(user: LightUser, task: Task, fromColumn: Column, toColumn: Column): boolean
+    -HashMap taskColumn
+    +getTaskColumn() HashMap
+    +setTaskColumn(taskColumn HashMap) void
+    +canBeModifiedBy(user LightUser) boolean
+    +modifyKanban(user LightUser, newTitle string) boolean
+    +addTaskToColumn(user LightUser, task Task, column Column) boolean
+    +moveTask(user LightUser, task Task, fromColumn Column, toColumn Column) boolean
 }
 
 class SecureUser {
-    - password: str
-    + getPassword(): str
-    + setPassword(password: str): void
+    -string password
+    +getPassword() string
+    +setPassword(password string) void
 }
 
 class User {
-    - firstName: str
-    - lastName: str
-    - birthDate: date
-    + getFirstName(): str
-    + getLastName(): str
-    + getBirthDate(): date
-    + setFirstName(firstName: str): void
-    + setLastName(lastName: str): void
-    + setBirthDate(birthDate: date): void
-    + canModifyProfile(currentUser: LightUser): boolean
-    + modifyProfile(currentUser: LightUser, newFirstName: str, newLastName: str, newBirthDate: date): boolean
+    -string firstName
+    -string lastName
+    -date birthDate
+    +getFirstName() string
+    +getLastName() string
+    +getBirthDate() date
+    +setFirstName(firstName string) void
+    +setLastName(lastName string) void
+    +setBirthDate(birthDate date) void
+    +canModifyProfile(currentUser LightUser) boolean
+    +modifyProfile(currentUser LightUser, newFirstName string, newLastName string, newBirthDate date) boolean
 }
 
 class LightUser {
-    - id: str
-    - username: str
-    + getId(): str
-    + getUsername(): str
-    + setId(id: str): void
-    + setUsername(username: str): void
+    -string id
+    -string username
+    +getId() string
+    +getUsername() string
+    +setId(id string) void
+    +setUsername(username string) void
 }
 
-enum Role {
+class Role {
+    <<enumeration>>
     VIEWER
     MODIFIER
 }
 
 class Acces {
-    - roles: Role
-    - user: LightUser
-    - kanban: LightKanban
-    + getRoles(): Role
-    + setRoles(roles: Role): void
-    + getUser(): LightUser
-    + getKanban(): LightKanban
-    + setUser(user: LightUser): void
-    + setKanban(kanban: LightKanban): void
-    + hasPermission(permission: Role): boolean
+    -Role roles
+    -LightUser user
+    -LightKanban kanban
+    +getRoles() Role
+    +setRoles(roles Role) void
+    +getUser() LightUser
+    +getKanban() LightKanban
+    +setUser(user LightUser) void
+    +setKanban(kanban LightKanban) void
+    +hasPermission(permission Role) boolean
 }
 
-Task "*" --> "1" LightUser: create a task
-Task "*" --> "*" LightUser: assign a task
+%% Relationships
+Task "*" --> "1" LightUser : create a task
+Task "*" --> "*" LightUser : assign a task
 
-LightKanban "*" --> "*" LightUser: create a kanban
-(LightKanban, LightUser) .. Acces
-LightKanban "*" --> "*" User: visualize a kanban
+LightKanban "*" --> "*" LightUser : create a kanban
+LightKanban "*" --> "*" User : visualize a kanban
+LightKanban ||..|| Acces : association
 
-Kanban "*" --> "1" LightUser: create a kanban
-Kanban "*" --> "*" User: create a kanban
+Kanban "*" --> "1" LightUser : create a kanban
+Kanban "*" --> "*" User : create a kanban
 
+%% Inheritance
 Kanban --|> LightKanban
 Chat --|> Kanban
 User --|> LightUser
@@ -129,130 +132,137 @@ Message --|> Chat
 Task --|> Kanban
 Column --|> Kanban
 
-LightUser "1" --> "*" Message: send a message
-LightUser "*" --> "*" Chat: participate to a chat
-@enduml
+%% Message relationships
+LightUser "1" --> "*" Message : send a message
+LightUser "*" --> "*" Chat : participate to a chat
 ```
 
 # Diagramme de classes du système Kanban avec option "Message" 2 et sans gestion des modifications
-```plantuml
-@startuml
-title Diagramme de classes du système Kanban avec option "Message" 2 et avec gestion des modifications
-
-!define RECTANGLE class
+```mermaid
+---
+title: Diagramme de classes du système Kanban avec option "Message" 2 et avec gestion des modifications
+---
+classDiagram
 
 class Task {
-    - title: str
-    - description: str
-    + getTitle(): str
-    + getDescription(): str
-    + setTitle(title: str): void
-    + setDescription(description: str): void
-    + canBeModifiedBy(user: LightUser): boolean
-    + modifyTask(user: LightUser, newTitle: str, newDescription: str): boolean
+    -string title
+    -string description
+    +getTitle() string
+    +getDescription() string
+    +setTitle(title string) void
+    +setDescription(description string) void
+    +canBeModifiedBy(user LightUser) boolean
+    +modifyTask(user LightUser, newTitle string, newDescription string) boolean
 }
 
 class Message {
-    - id: uuid
-    - content: str
-    - date: date
-    + getId(): uuid
-    + getContent(): str
-    + getDate(): date
+    -uuid id
+    -string content
+    -date date
+    +getId() uuid
+    +getContent() string
+    +getDate() date
 }
 
 class Column {
-    - title: str
-    - color: str
-    + getTitle(): str
-    + getColor(): str
-    + setTitle(title: str): void
-    + setColor(color: str): void
-    + canBeModifiedBy(user: LightUser): boolean
-    + modifyColumn(user: LightUser, newTitle: str, newColor: str): boolean
+    -string title
+    -string color
+    +getTitle() string
+    +getColor() string
+    +setTitle(title string) void
+    +setColor(color string) void
+    +canBeModifiedBy(user LightUser) boolean
+    +modifyColumn(user LightUser, newTitle string, newColor string) boolean
 }
 
 class LightKanban {
-    - title: str
-    - id: str
-    # acces: Acces[]
-    + getTitle(): str
-    + getId(): str
-    + getAcces(): Acces[]
-    + setTitle(title: str): void
-    + setId(id: str): void
-    + setAcces(acces: Acces[]): void
-    + hasModifyPermission(user: LightUser): boolean
-    + getUserRole(user: LightUser): Role
+    -string title
+    -string id
+    #Acces[] acces
+    +getTitle() string
+    +getId() string
+    +getAcces() Acces[]
+    +setTitle(title string) void
+    +setId(id string) void
+    +setAcces(acces Acces[]) void
+    +hasModifyPermission(user LightUser) boolean
+    +getUserRole(user LightUser) Role
 }
 
 class Kanban {
-    - taskColumn: HashMap
-    + getTaskColumn(): HashMap
-    + setTaskColumn(taskColumn: HashMap): void
-    + canBeModifiedBy(user: LightUser): boolean
-    + modifyKanban(user: LightUser, newTitle: str): boolean
-    + addTaskToColumn(user: LightUser, task: Task, column: Column): boolean
-    + moveTask(user: LightUser, task: Task, fromColumn: Column, toColumn: Column): boolean
+    -HashMap taskColumn
+    +getTaskColumn() HashMap
+    +setTaskColumn(taskColumn HashMap) void
+    +canBeModifiedBy(user LightUser) boolean
+    +modifyKanban(user LightUser, newTitle string) boolean
+    +addTaskToColumn(user LightUser, task Task, column Column) boolean
+    +moveTask(user LightUser, task Task, fromColumn Column, toColumn Column) boolean
 }
 
 class SecureUser {
-    - password: str
-    + getPassword(): str
-    + setPassword(password: str): void
+    -string password
+    +getPassword() string
+    +setPassword(password string) void
 }
 
 class User {
-    - firstName: str
-    - lastName: str
-    - birthDate: date
-    + getFirstName(): str
-    + getLastName(): str
-    + getBirthDate(): date
-    + setFirstName(firstName: str): void
-    + setLastName(lastName: str): void
-    + setBirthDate(birthDate: date): void
-    + canModifyProfile(currentUser: LightUser): boolean
-    + modifyProfile(currentUser: LightUser, newFirstName: str, newLastName: str, newBirthDate: date): boolean
+    -string firstName
+    -string lastName
+    -date birthDate
+    +getFirstName() string
+    +getLastName() string
+    +getBirthDate() date
+    +setFirstName(firstName string) void
+    +setLastName(lastName string) void
+    +setBirthDate(birthDate date) void
+    +canModifyProfile(currentUser LightUser) boolean
+    +modifyProfile(currentUser LightUser, newFirstName string, newLastName string, newBirthDate date) boolean
 }
 
 class LightUser {
-    - id: str
-    - username: str
-    + getId(): str
-    + getUsername(): str
-    + setId(id: str): void
-    + setUsername(username: str): void
+    -string id
+    -string username
+    +getId() string
+    +getUsername() string
+    +setId(id string) void
+    +setUsername(username string) void
 }
 
-enum Role {
+class Role {
+    <<enumeration>>
     VIEWER
     MODIFIER
 }
 
 class Acces {
-    - roles: Role
-    - user: LightUser
-    - kanban: LightKanban
-    + getRoles(): Role
-    + setRoles(roles: Role): void
-    + getUser(): LightUser
-    + getKanban(): LightKanban
-    + setUser(user: LightUser): void
-    + setKanban(kanban: LightKanban): void
-    + hasPermission(permission: Role): boolean
+    -Role roles
+    -LightUser user
+    -LightKanban kanban
+    +getRoles() Role
+    +setRoles(roles Role) void
+    +getUser() LightUser
+    +getKanban() LightKanban
+    +setUser(user LightUser) void
+    +setKanban(kanban LightKanban) void
+    +hasPermission(permission Role) boolean
 }
 
-Task "*" --> "1" LightUser: create a task
-Task "*" --> "*" LightUser: assign a task
+class __ {
+  
+}
 
-LightKanban "*" --> "*" LightUser: create a kanban
-(LightKanban, LightUser) .. Acces
-LightKanban "*" --> "*" User: visualize a kanban
+%% Relationships
+Task "*" --> "1" LightUser : create a task
+Task "*" --> "*" LightUser : assign a task
+LightKanban "*" --> "*" LightUser : create a kanban
+LightKanban "*" --> "*" User : visualize a kanban
+Kanban "*" --> "1" LightUser : create a kanban
+Kanban "*" --> "*" User : create a kanban
+Acces --> __
+LightUser --> __
+__ --> LightKanban
 
-Kanban "*" --> "1" LightUser: create a kanban
-Kanban "*" --> "*" User: create a kanban
-
+%% Inheritance
 Kanban --|> LightKanban
 User --|> LightUser
 SecureUser --|> User
@@ -260,8 +270,8 @@ Task --|> Kanban
 Column --|> Kanban
 Message --|> Kanban
 
-LightUser "1" --> "*" Message: send a message
-LightUser "1" --> "*" Message: send a message to a user
-LightUser "1" --> "*" Message: receive a message
-@enduml
+%% Message relationships
+LightUser "1" --> "*" Message : send a message
+LightUser "1" --> "*" Message : send a message to a user
+LightUser "1" --> "*" Message : receive a message
 ```
