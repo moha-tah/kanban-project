@@ -8,9 +8,8 @@ note over Creator: Close Kanban visualisation
 
 
 Creator ->> IHM: Close Kanban visualisation (button)
-IHM -> ClientCom: CloseKanban(lightKanban.id)
-ClientCom ->> ServerCom: SendCloseKanbanRequest(lightUser.id, lightKanban.id)
-' ServerCom --> ClientCom: Return closed Communication
+IHM -> ClientCom: SendCloseKanban(lightKanban.id)
+ClientCom ->> ServerCom: ForwardCloseKanban(lightUser.id, lightKanban.id)
 ClientCom --> IHM: Give the execution thread to IHM-Kanban
-note right of IHM: Transfer control back to IHM-Main
+note right of IHM: TODO: Transfer control back to IHM-Main
 @enduml
