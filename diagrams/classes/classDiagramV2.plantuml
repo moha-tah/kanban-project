@@ -1,72 +1,78 @@
-@startuml Class Diagram
-title Diagramme de classes du système Kanban avec option "Message" 2 et gestion des modifications
+@startuml classDiagramV2
+
+title Kanban System Class Diagram
 !define RECTANGLE class
 
 class Task {
+    - id: uuid
     - title: str
     - description: str
     - startDate: date
     - endDate: date
-    + getTitle(): str
-    + getDescription(): str
-    + getStartDate(): date
-    + getEndDate(): date
-    + setTitle(title: str): void
-    + setDescription(description: str): void
-    + setStartDate(startDate: date): void
-    + setEndDate(endDate: date): void
-    + canBeModifiedBy(user: LightUser): boolean
-    + modifyTask(user: LightUser, newTitle: str, newDescription: str): boolean
+    ' + getId(): uuid
+    ' + getTitle(): str
+    ' + getDescription(): str
+    ' + getStartDate(): date
+    ' + getEndDate(): date
+    ' + setTitle(title: str): void
+    ' + setDescription(description: str): void
+    ' + setStartDate(startDate: date): void
+    ' + setEndDate(endDate: date): void
+    ' + canBeModifiedBy(user: LightUser): boolean
+    ' + modifyTask(user: LightUser, newTitle: str, newDescription: str): boolean
 }
 
 class Message {
     - id: uuid
     - content: str
-    - date: date
-    + getId(): uuid
-    + getContent(): str
-    + getDate(): date
+    - date: datetime
+    '+ getId(): uuid
+    '+ getContent(): str
+    '+ getDate(): date
 }
 
 class Column {
+    - id: uuid
     - title: str
     - color: str
     - number: int
-    + getTitle(): str
-    + getColor(): str
-    + getNumber(): int
-    + setTitle(title: str): void
-    + setColor(color: str): void
-    + setNumber(number: int): void
-    + canBeModifiedBy(user: LightUser): boolean
-    + modifyColumn(user: LightUser, newTitle: str, newColor: str): boolean
+    '+ getId(): uuid
+    '+ getTitle(): str
+    '+ getColor(): str
+    '+ getNumber(): int
+    '+ setTitle(title: str): void
+    '+ setId(id: uuid): void
+    '+ setColor(color: str): void
+    '+ setNumber(number: int): void
+    '+ canBeModifiedBy(user: LightUser): boolean
+    '+ modifyColumn(user: LightUser, newTitle: str, newColor: str): boolean
 }
 
 class LightKanban {
     - title: str
     - id: str
-    + getTitle(): str
-    + getId(): str
-    + setTitle(title: str): void
-    + setId(id: str): void
-    + hasModifyPermission(user: LightUser): boolean
-    + getUserRole(user: LightUser): Role
+    '+ getTitle(): str
+    '+ getId(): str
+    '+ setTitle(title: str): void
+    '+ setId(id: str): void
+    '+ hasModifyPermission(user: LightUser): boolean
+    '+ getUserRole(user: LightUser): Role
 }
 
 class Kanban {
     - taskColumn: HashMap
-    + getTaskColumn(): HashMap
-    + setTaskColumn(taskColumn: HashMap): void
-    + canBeModifiedBy(user: LightUser): boolean
-    + modifyKanban(user: LightUser, newTitle: str): boolean
-    + addTaskToColumn(user: LightUser, task: Task, column: Column): boolean
-    + moveTask(user: LightUser, task: Task, fromColumn: Column, toColumn: Column): boolean
+    '+ getTaskColumn(): HashMap
+    '+ setTaskColumn(taskColumn: HashMap): void
+    '+ canBeModifiedBy(user: LightUser): boolean
+    '+ modifyKanban(user: LightUser, newTitle: str): boolean
+    '+ addTaskToColumn(user: LightUser, task: Task, column: Column): boolean
+    '+ moveTask(user: LightUser, task: Task, fromColumn: Column, toColumn: Column): boolean
 }
 
 class SecureUser {
     - password: str
-    + getPassword(): str
-    + setPassword(password: str): void
+    '+ getPassword(): str
+    '+ setPassword(password: str): void
 }
 
 class User {
@@ -74,25 +80,25 @@ class User {
     - lastName: str
     - birthDate: date
     - avatar: image
-    + getFirstName(): str
-    + getLastName(): str
-    + getBirthDate(): date
-    + getAvatar(): str
-    + setFirstName(firstName: str): void
-    + setLastName(lastName: str): void
-    + setBirthDate(birthDate: date): void
-    + setAvatar(avatar: str): void
-    + canModifyProfile(currentUser: LightUser): boolean
-    + modifyProfile(currentUser: LightUser, newFirstName: str, newLastName: str, newBirthDate: date): boolean
+    '+ getFirstName(): str
+    '+ getLastName(): str
+    '+ getBirthDate(): date
+    '+ getAvatar(): str
+    '+ setFirstName(firstName: str): void
+    '+ setLastName(lastName: str): void
+    '+ setBirthDate(birthDate: date): void
+    '+ setAvatar(avatar: str): void
+    '+ canModifyProfile(currentUser: LightUser): boolean
+    '+ modifyProfile(currentUser: LightUser, newFirstName: str, newLastName: str, newBirthDate: date): boolean
 }
 
 class LightUser {
     - id: str
     - username: str
-    + getId(): str
-    + getUsername(): str
-    + setId(id: str): void
-    + setUsername(username: str): void
+    '+ getId(): str
+    '+ getUsername(): str
+    '+ setId(id: str): void
+    '+ setUsername(username: str): void
 }
 
 enum Role {
@@ -100,43 +106,155 @@ enum Role {
     MODIFIER
 }
 
-class Acces {
+class Access {
     - roles: Role
     - user: LightUser
-    + getRoles(): Role
-    + getUser(): LightUser
-    + setUser(user: LightUser): void
-    + setRoles(roles: Role): void
-    + hasPermission(permission: Role): boolean
+    '+ getRoles(): Role
+    '+ getUser(): LightUser
+    '+ setUser(user: LightUser): void
+    '+ setRoles(roles: Role): void
+    '+ hasPermission(permission: Role): boolean
 }
 
-' Relations de composition et association
+class ModifyTask {
+    - task: Task
+    '+ getTask(): Task
+    '+ setTask(task: Task): void
+}
+
+class ModifyColumn {
+    - column: Column
+    '+ getColumn(): Column
+    '+ setColumn(column: Column): void
+}
+
+class RemoveAccess {
+    - lightKanban: LightKanban
+    '+ getLightKanban(): LightKanban
+    '+ setLightKanban(lightKanban: LightKanban): void
+}
+
+class AddAccess {
+    - lightKanban: LightKanban
+    '+ getLightKanban(): LightKanban
+    '+ setLightKanban(lightKanban: LightKanban): void
+}
+
+class CreateColumn {
+    - newColumn: Column
+    '+ getNewColumn(): Column
+    '+ setNewColumn(newColumn: Column): void
+}
+
+class DeleteColumn {
+    - columnId: str
+    '+ getColumnId(): str
+    '+ setColumnId(columnId: str): void
+}
+
+class ModifyKanban {
+    - kanban: LightKanban
+    '+ getKanban(): LightKanban
+    '+ setKanban(kanban: LightKanban): void
+}
+
+class CreateTask {
+    - newTask: Task
+    - targetColumn: uuid
+    '+ getNewTask(): Task
+    '+ getTargetColumn(): uuid
+    '+ setNewTask(newTask: Task): void
+    '+ setTargetColumn(targetColumn: uuid): void
+}
+
+class DeleteTask {
+    - taskId: uuid
+    '+ getTaskId(): uuid
+    '+ setTaskId(taskId: uuid): void
+}
+
+class MoveTask {
+    - taskId: uuid
+    - targetColumn: uuid
+    '+ getTaskId(): uuid
+    '+ getTargetColumn(): uuid
+    '+ setTaskId(taskId: uuid): void
+    '+ setTargetColumn(targetColumn: uuid): void
+}
+
+class CreateMessage {
+    - message: Message
+    '+ getMessage(): Message
+    '+ setMessage(message: Message): void
+}
+
+abstract Modification <<abstract>>{
+    - id: uuid
+    '+ getId(): uuid
+    '+ setId(id: uuid): void
+}
+
+' ===== INHERITANCE RELATIONSHIPS =====
+
+' User hierarchy
+User --|> LightUser
+SecureUser --|> User
+
+' Kanban hierarchy
+LightKanban --|> Kanban
+
+' Modification hierarchy
+ModifyTask --|> Modification
+ModifyColumn --|> Modification
+ModifyKanban --|> Modification
+CreateTask --|> Modification
+CreateColumn --|> Modification
+DeleteTask --|> Modification
+DeleteColumn --|> Modification
+MoveTask --|> Modification
+CreateMessage --|> Modification
+AddAccess --|> Modification
+RemoveAccess --|> Modification
+
+' ===== COMPOSITION/AGGREGATION RELATIONSHIPS =====
+
+' Kanban composition -> Task/Column/Message
 Kanban *-- "*" Task
 Kanban *-- "*" Column
 Kanban *-- "*" Message
 
-' Relations d'héritage
-Kanban --|> LightKanban
-User --|> LightUser
-SecureUser --|> User
+' ===== ASSOCIATION RELATIONSHIPS =====
 
-' Relations avec les utilisateurs
-Task "*" -- "1" LightUser : creator
-Task "*" -- "*" LightUser: assign a task
+' Task <-> LightUser relationships
+Task "* creator" -- "1" LightUser
+Task "* affected user" -- "*" LightUser
 
-' Relations d'accès
-' (LightKanban, LightUser) .. Acces
-LightKanban "* Acces" -- "*" LightUser
-Acces "*" -- "*" Role : role
+' Message <-> LightUser relationships
+Message "* receiver" -- "*" LightUser
+Message "* sender" -- "1" LightUser
 
-' Relations des kanban
-Kanban "*" -- "*" User: visualizer
-Kanban "* Creator" -- "1" LightUser
+' User/LightUser <-> Kanban/LightKanban relationships
+User "1" -- "* creator" Kanban
+LightUser "1" -- "* creator" Kanban
+User "* joined kanban" -- "*" LightKanban
+LightUser "*" -- "* access" LightKanban
 
-' Relations des messages
-Message "*" -- "1" LightUser: sender
-Message "*" -- "*" LightUser: recipient
+' Modification classes relationships with reference classes
+ModifyTask "*" -- "1" Task
+ModifyColumn "*" -- "1" Column
+ModifyKanban "*" -- "1" LightKanban
+CreateTask "1" -- "1" Task
+CreateColumn "1" -- "1" Column
+CreateMessage "1" -- "1" Message
+DeleteTask "1" -- "1" Task
+DeleteColumn "1" -- "1" Column
+MoveTask "*" -- "1" Task
+AddAccess "*" -- "1" LightKanban
+RemoveAccess "*" -- "1" LightKanban
 
+' ===== SPECIAL RELATIONSHIPS =====
 
+' Association class
+(LightKanban, LightUser) .. Access
 
 @enduml
