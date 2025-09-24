@@ -1,283 +1,74 @@
-Init
-# Diagramme de classes du système Kanban avec option "Message" 1 et sans gestion des modifications
-```mermaid
+# 🗃️ Projet Kanban
+
+Ce projet vise à réaliser une application de création de kanban collaborative. Elle fonctionnera en utilisant des profiles locaux et un serveur centralisé.
+
 ---
-title: Diagramme de classes du système Kanban avec option "Message" 1 et avec gestion des modifications
+
+## 📁 Structure du projet
+
+kanban-project/
+
+│
+
+├── src/                      # Tout le code source
+
+│   ├── const/                # Constient les constantes du projet
+
+│
+
+├── docs/                     # Documentation et rapports/soutenances. Contient les attendus du projet
+
+├── DATACLASS.md              # Graphe résumant la structure de données du projet
+
+├── README.md                 # You are here 📌
+
+├── contributing.md           # Normes pour la contribution (PR, commits messages...)
+
+└── requirements.txt          # Fichier contenant les bibliothèques nécessaires
+
 ---
-classDiagram
 
-class Task {
-    -string title
-    -string description
-    +getTitle() string
-    +getDescription() string
-    +setTitle(title string) void
-    +setDescription(description string) void
-    +canBeModifiedBy(user LightUser) boolean
-    +modifyTask(user LightUser, newTitle string, newDescription string) boolean
-}
+## 🎯 Objectifs
 
-class Message {
-    -uuid id
-    -string content
-    -date date
-    +getId() uuid
-    +getContent() string
-    +getDate() date
-}
+- Développer une application en se basant sur le cahier des charges
+- Apprendre à gérer un projet de plus grande envergure
+- Découvrir les différentes étapes de conceptions
 
-class Column {
-    -string title
-    -string color
-    +getTitle() string
-    +getColor() string
-    +setTitle(title string) void
-    +setColor(color string) void
-    +canBeModifiedBy(user LightUser) boolean
-    +modifyColumn(user LightUser, newTitle string, newColor string) boolean
-}
-
-class Chat {
-}
-
-class LightKanban {
-    -string title
-    -string id
-    #Acces[] acces
-    +getTitle() string
-    +getId() string
-    +getAcces() Acces[]
-    +setTitle(title string) void
-    +setId(id string) void
-    +setAcces(acces Acces[]) void
-    +hasModifyPermission(user LightUser) boolean
-    +getUserRole(user LightUser) Role
-}
-
-class Kanban {
-    -HashMap taskColumn
-    +getTaskColumn() HashMap
-    +setTaskColumn(taskColumn HashMap) void
-    +canBeModifiedBy(user LightUser) boolean
-    +modifyKanban(user LightUser, newTitle string) boolean
-    +addTaskToColumn(user LightUser, task Task, column Column) boolean
-    +moveTask(user LightUser, task Task, fromColumn Column, toColumn Column) boolean
-}
-
-class SecureUser {
-    -string password
-    +getPassword() string
-    +setPassword(password string) void
-}
-
-class User {
-    -string firstName
-    -string lastName
-    -date birthDate
-    +getFirstName() string
-    +getLastName() string
-    +getBirthDate() date
-    +setFirstName(firstName string) void
-    +setLastName(lastName string) void
-    +setBirthDate(birthDate date) void
-    +canModifyProfile(currentUser LightUser) boolean
-    +modifyProfile(currentUser LightUser, newFirstName string, newLastName string, newBirthDate date) boolean
-}
-
-class LightUser {
-    -string id
-    -string username
-    +getId() string
-    +getUsername() string
-    +setId(id string) void
-    +setUsername(username string) void
-}
-
-class Role {
-    <<enumeration>>
-    VIEWER
-    MODIFIER
-}
-
-class Acces {
-    -Role roles
-    -LightUser user
-    -LightKanban kanban
-    +getRoles() Role
-    +setRoles(roles Role) void
-    +getUser() LightUser
-    +getKanban() LightKanban
-    +setUser(user LightUser) void
-    +setKanban(kanban LightKanban) void
-    +hasPermission(permission Role) boolean
-}
-
-class __ {
-  
-}
-
-%% Relationships
-Task "*" --> "1" LightUser : create a task
-Task "*" --> "*" LightUser : assign a task
-
-LightKanban "*" --> "*" LightUser : create a kanban
-LightKanban "*" --> "*" User : visualize a kanban
-Acces --> __
-LightUser --> __
-__ --> LightKanban
-
-Kanban "*" --> "1" LightUser : create a kanban
-Kanban "*" --> "*" User : create a kanban
-
-%% Inheritance
-Kanban --|> LightKanban
-Chat --|> Kanban
-User --|> LightUser
-SecureUser --|> User
-Message --|> Chat
-Task --|> Kanban
-Column --|> Kanban
-
-%% Message relationships
-LightUser "1" --> "*" Message : send a message
-LightUser "*" --> "*" Chat : participate to a chat
-```
-
-# Diagramme de classes du système Kanban avec option "Message" 2 et sans gestion des modifications
-```mermaid
 ---
-title: Diagramme de classes du système Kanban avec option "Message" 2 et avec gestion des modifications
+
+## 🔧 Technologies
+
+- **Java** : langage de programmation
+- **Git** : versionning
+- **Github** : hébergeur pour le versioning et gestion des branches
+- **Github projects**: gestion et organisation du projet
+- **Discord** : communication et partage des ressources
+- **Google drive** : edition et partage de documents collaboratif
+
 ---
-classDiagram
 
-class Task {
-    -string title
-    -string description
-    +getTitle() string
-    +getDescription() string
-    +setTitle(title string) void
-    +setDescription(description string) void
-    +canBeModifiedBy(user LightUser) boolean
-    +modifyTask(user LightUser, newTitle string, newDescription string) boolean
-}
+## 🚀 Lancement du projet
 
-class Message {
-    -uuid id
-    -string content
-    -date date
-    +getId() uuid
-    +getContent() string
-    +getDate() date
-}
 
-class Column {
-    -string title
-    -string color
-    +getTitle() string
-    +getColor() string
-    +setTitle(title string) void
-    +setColor(color string) void
-    +canBeModifiedBy(user LightUser) boolean
-    +modifyColumn(user LightUser, newTitle string, newColor string) boolean
-}
 
-class LightKanban {
-    -string title
-    -string id
-    #Acces[] acces
-    +getTitle() string
-    +getId() string
-    +getAcces() Acces[]
-    +setTitle(title string) void
-    +setId(id string) void
-    +setAcces(acces Acces[]) void
-    +hasModifyPermission(user LightUser) boolean
-    +getUserRole(user LightUser) Role
-}
+## 👥 Collaboration
 
-class Kanban {
-    -HashMap taskColumn
-    +getTaskColumn() HashMap
-    +setTaskColumn(taskColumn HashMap) void
-    +canBeModifiedBy(user LightUser) boolean
-    +modifyKanban(user LightUser, newTitle string) boolean
-    +addTaskToColumn(user LightUser, task Task, column Column) boolean
-    +moveTask(user LightUser, task Task, fromColumn Column, toColumn Column) boolean
-}
+- Travail en groupe de 15
 
-class SecureUser {
-    -string password
-    +getPassword() string
-    +setPassword(password string) void
-}
+- Travail réparti en 4 modules avec 4 rôles différents pour les 4 membres du groupe (Manager, Concepteur, Responsable developpement/git, Responsable qualité/ingénierie soutenable
 
-class User {
-    -string firstName
-    -string lastName
-    -date birthDate
-    +getFirstName() string
-    +getLastName() string
-    +getBirthDate() date
-    +setFirstName(firstName string) void
-    +setLastName(lastName string) void
-    +setBirthDate(birthDate date) void
-    +canModifyProfile(currentUser LightUser) boolean
-    +modifyProfile(currentUser LightUser, newFirstName string, newLastName string, newBirthDate date) boolean
-}
+- Suivi des tâches via issues GitHub
 
-class LightUser {
-    -string id
-    -string username
-    +getId() string
-    +getUsername() string
-    +setId(id string) void
-    +setUsername(username string) void
-}
+- Normes pour les actions git précisées dans **contributing.md**
 
-class Role {
-    <<enumeration>>
-    VIEWER
-    MODIFIER
-}
+---
 
-class Acces {
-    -Role roles
-    -LightUser user
-    -LightKanban kanban
-    +getRoles() Role
-    +setRoles(roles Role) void
-    +getUser() LightUser
-    +getKanban() LightKanban
-    +setUser(user LightUser) void
-    +setKanban(kanban LightKanban) void
-    +hasPermission(permission Role) boolean
-}
+## 🧠 Auteurs
 
-class __ {
-  
-}
 
-%% Relationships
-Task "*" --> "1" LightUser : create a task
-Task "*" --> "*" LightUser : assign a task
-LightKanban "*" --> "*" LightUser : create a kanban
-LightKanban "*" --> "*" User : visualize a kanban
-Kanban "*" --> "1" LightUser : create a kanban
-Kanban "*" --> "*" User : create a kanban
-Acces --> __
-LightUser --> __
-__ --> LightKanban
+---
 
-%% Inheritance
-Kanban --|> LightKanban
-User --|> LightUser
-SecureUser --|> User
-Task --|> Kanban
-Column --|> Kanban
-Message --|> Kanban
+## 🙏 Remerciements
 
-%% Message relationships
-LightUser "1" --> "*" Message : send a message
-LightUser "1" --> "*" Message : send a message to a user
-LightUser "1" --> "*" Message : receive a message
-```
+
+
