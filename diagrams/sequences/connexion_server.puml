@@ -1,0 +1,14 @@
+@startuml
+actor User
+participant "UI-Main" as UIMain
+participant "DATA-Client" as DATA
+participant "COMM-Client" as COMM
+actor "AppServer" as AppServer
+
+AppServer ->> COMM : handleConnectionRequest(lightUser user, <List> lightKanban)
+COMM -> DATA : addNewUser(lightUser user, <List> lightKanban)
+DATA --> COMM : void
+DATA -> UIMain : sendUpdateUserList(LightUser user, <List> lightKanban)
+UIMain --> DATA : void
+
+@enduml
