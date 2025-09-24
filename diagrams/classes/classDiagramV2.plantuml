@@ -1,0 +1,142 @@
+@startuml Class Diagram
+title Diagramme de classes du système Kanban avec option "Message" 2 et gestion des modifications
+!define RECTANGLE class
+
+class Task {
+    - title: str
+    - description: str
+    - startDate: date
+    - endDate: date
+    + getTitle(): str
+    + getDescription(): str
+    + getStartDate(): date
+    + getEndDate(): date
+    + setTitle(title: str): void
+    + setDescription(description: str): void
+    + setStartDate(startDate: date): void
+    + setEndDate(endDate: date): void
+    + canBeModifiedBy(user: LightUser): boolean
+    + modifyTask(user: LightUser, newTitle: str, newDescription: str): boolean
+}
+
+class Message {
+    - id: uuid
+    - content: str
+    - date: date
+    + getId(): uuid
+    + getContent(): str
+    + getDate(): date
+}
+
+class Column {
+    - title: str
+    - color: str
+    - number: int
+    + getTitle(): str
+    + getColor(): str
+    + getNumber(): int
+    + setTitle(title: str): void
+    + setColor(color: str): void
+    + setNumber(number: int): void
+    + canBeModifiedBy(user: LightUser): boolean
+    + modifyColumn(user: LightUser, newTitle: str, newColor: str): boolean
+}
+
+class LightKanban {
+    - title: str
+    - id: str
+    + getTitle(): str
+    + getId(): str
+    + setTitle(title: str): void
+    + setId(id: str): void
+    + hasModifyPermission(user: LightUser): boolean
+    + getUserRole(user: LightUser): Role
+}
+
+class Kanban {
+    - taskColumn: HashMap
+    + getTaskColumn(): HashMap
+    + setTaskColumn(taskColumn: HashMap): void
+    + canBeModifiedBy(user: LightUser): boolean
+    + modifyKanban(user: LightUser, newTitle: str): boolean
+    + addTaskToColumn(user: LightUser, task: Task, column: Column): boolean
+    + moveTask(user: LightUser, task: Task, fromColumn: Column, toColumn: Column): boolean
+}
+
+class SecureUser {
+    - password: str
+    + getPassword(): str
+    + setPassword(password: str): void
+}
+
+class User {
+    - firstName: str
+    - lastName: str
+    - birthDate: date
+    - avatar: image
+    + getFirstName(): str
+    + getLastName(): str
+    + getBirthDate(): date
+    + getAvatar(): str
+    + setFirstName(firstName: str): void
+    + setLastName(lastName: str): void
+    + setBirthDate(birthDate: date): void
+    + setAvatar(avatar: str): void
+    + canModifyProfile(currentUser: LightUser): boolean
+    + modifyProfile(currentUser: LightUser, newFirstName: str, newLastName: str, newBirthDate: date): boolean
+}
+
+class LightUser {
+    - id: str
+    - username: str
+    + getId(): str
+    + getUsername(): str
+    + setId(id: str): void
+    + setUsername(username: str): void
+}
+
+enum Role {
+    VIEWER
+    MODIFIER
+}
+
+class Acces {
+    - roles: Role
+    - user: LightUser
+    + getRoles(): Role
+    + getUser(): LightUser
+    + setUser(user: LightUser): void
+    + setRoles(roles: Role): void
+    + hasPermission(permission: Role): boolean
+}
+
+' Relations de composition et association
+Kanban *-- "*" Task
+Kanban *-- "*" Column
+Kanban *-- "*" Message
+
+' Relations d'héritage
+Kanban --|> LightKanban
+User --|> LightUser
+SecureUser --|> User
+
+' Relations avec les utilisateurs
+Task "*" -- "1" LightUser : creator
+Task "*" -- "*" LightUser: assign a task
+
+' Relations d'accès
+' (LightKanban, LightUser) .. Acces
+LightKanban "* Acces" -- "*" LightUser
+Acces "*" -- "*" Role : role
+
+' Relations des kanban
+Kanban "*" -- "*" User: visualizer
+Kanban "* Creator" -- "1" LightUser
+
+' Relations des messages
+Message "*" -- "1" LightUser: sender
+Message "*" -- "*" LightUser: recipient
+
+
+
+@enduml

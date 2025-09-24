@@ -1,0 +1,16 @@
+@startuml Close Kanban
+actor Creator
+participant "IHM – Kanban Client" as IHM
+participant "Client Communication" as ClientCom
+participant "Server Communication" as ServerCom
+
+note over Creator: Close Kanban visualisation
+
+
+Creator ->> IHM: Close Kanban visualisation (button)
+IHM -> ClientCom: CloseKanban(lightKanban.id)
+ClientCom ->> ServerCom: SendCloseKanbanRequest(lightUser.id, lightKanban.id)
+' ServerCom --> ClientCom: Return closed Communication
+ClientCom --> IHM: Give the execution thread to IHM-Kanban
+note right of IHM: Transfer control back to IHM-Main
+@enduml
