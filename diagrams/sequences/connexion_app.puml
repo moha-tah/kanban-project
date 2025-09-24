@@ -1,0 +1,22 @@
+@startuml
+actor User
+participant "UI-Main" as UIMain
+participant "DATA" as DATA
+participant "COMM" as COMM
+actor "AppServer" as AppServer
+
+' 1) Local authentication (synchronous calls)
+User ->> UIMain : loginUser(String username, String password)
+UIMain -> DATA : authentify(String username, String password)
+
+
+alt invalidCredentials
+  DATA --> UIMain : exception("Invalid username or password")
+else validCredentials
+  DATA --> UIMain : void
+  ' 2) Join server with LightUser (network, async)
+  UIMain -> COMM : connectServer(LightUser user, <List> lightKanban)
+  COMM ->> AppServer : connectionRequest(LightUser user, <List> lightKanban)
+  COMM --> UIMain : void
+end
+@enduml
