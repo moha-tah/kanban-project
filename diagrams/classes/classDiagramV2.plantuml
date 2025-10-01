@@ -19,7 +19,7 @@ class Task {
     ' + setStartDate(startDate: date): void
     ' + setEndDate(endDate: date): void
     ' + canBeModifiedBy(user: LightUser): boolean
-    ' + modifyTask(user: LightUser, newTitle: str, newDescription: str): boolean
+    ' + modifyTask(user: LightUser, newTitle: str, newDescription: str, newStartDate: date, newEndDate: date): boolean
 }
 
 class Message {
@@ -50,11 +50,11 @@ class Column {
 
 class LightKanban {
     - title: str
-    - id: str
+    - id: uuid
     '+ getTitle(): str
-    '+ getId(): str
+    '+ getId(): uuid
     '+ setTitle(title: str): void
-    '+ setId(id: str): void
+    '+ setId(id: uuid): void
     '+ hasModifyPermission(user: LightUser): boolean
     '+ getUserRole(user: LightUser): Role
 }
@@ -70,9 +70,9 @@ class Kanban {
 }
 
 class SecureUser {
-    - password: str
-    '+ getPassword(): str
-    '+ setPassword(password: str): void
+    - password: str encoded(hash)
+    '+ getPassword(): str encoded(hash)
+    '+ setPassword(password: str encoded(hash)): void
 }
 
 class User {
@@ -80,24 +80,27 @@ class User {
     - lastName: str
     - birthDate: date
     - avatar: image
+    - myKanban: list<Kanban>
     '+ getFirstName(): str
     '+ getLastName(): str
     '+ getBirthDate(): date
     '+ getAvatar(): str
+    '+ getMyKanban(): list<Kanban>
     '+ setFirstName(firstName: str): void
     '+ setLastName(lastName: str): void
     '+ setBirthDate(birthDate: date): void
     '+ setAvatar(avatar: str): void
+    '+ setMyKanban(myKanban: list<Kanban>): void
     '+ canModifyProfile(currentUser: LightUser): boolean
     '+ modifyProfile(currentUser: LightUser, newFirstName: str, newLastName: str, newBirthDate: date): boolean
 }
 
 class LightUser {
-    - id: str
+    - id: uuid
     - username: str
-    '+ getId(): str
+    '+ getId(): uuid
     '+ getUsername(): str
-    '+ setId(id: str): void
+    '+ setId(id: uuid): void
     '+ setUsername(username: str): void
 }
 
@@ -147,9 +150,9 @@ class CreateColumn {
 }
 
 class DeleteColumn {
-    - columnId: str
-    '+ getColumnId(): str
-    '+ setColumnId(columnId: str): void
+    - columnId: uuid
+    '+ getColumnId(): uuid
+    '+ setColumnId(columnId: uuid): void
 }
 
 class ModifyKanban {
@@ -188,6 +191,35 @@ class CreateMessage {
     '+ setMessage(message: Message): void
 }
 
+class SnapshotInfo {
+    - id: uuid
+    - name: str
+    - creationDate: datetime
+    - filePath: str
+    '+ getId(): uuid
+    '+ getName(): String
+    '+ getCreationDate(): datetime
+    '+ getFilePath(): str
+    '+ setId(id: uuid): void
+    '+ setName(name: str): void
+    '+ setCreationDate(date: datetime): void
+    '+ setFilePath(path: String): void
+}
+
+class DataClient {
+    - snapshotDirectory: str
+    '+ getSnapshotDirectory(): String
+    '+ setSnapshotDirectory(directory: str): void
+    '+ saveSnapshot(kanbanData: KanbanBoard): boolean
+    '+ writeSnapshotToFile(kanbanData: KanbanBoard, timestamp: datetime): boolean
+    '+ listSnapshots(): List<SnapshotInfo>
+    '+ scanSnapshotDirectory(directoryPath: str): List<SnapshotInfo>
+    '+ getSnapshot(snapshotId: str): KanbanBoard
+    '+ loadSnapshotFromFile(snapshotId: String, filePath: String): KanbanBoard
+    '+ deleteSnapshot(snapshotId: String): boolean
+    '+ deleteSnapshotFile(snapshotId: String, filePath: String): boolean
+}
+
 abstract Modification <<abstract>>{
     - id: uuid
     '+ getId(): uuid
@@ -201,7 +233,7 @@ User --|> LightUser
 SecureUser --|> User
 
 ' Kanban hierarchy
-LightKanban --|> Kanban
+Kanban --|> LightKanban
 
 ' Modification hierarchy
 ModifyTask --|> Modification
@@ -251,6 +283,10 @@ DeleteColumn "1" -- "1" Column
 MoveTask "*" -- "1" Task
 AddAccess "*" -- "1" LightKanban
 RemoveAccess "*" -- "1" LightKanban
+
+' DataClient relationships
+DataClient "1" -- "*" SnapshotInfo
+DataClient "*" -- "1" Kanban
 
 ' ===== SPECIAL RELATIONSHIPS =====
 

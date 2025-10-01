@@ -18,7 +18,7 @@ class Column {
 
 class LightKanban {
     - title: str
-    - id: str
+    - id: uuid
 }
 
 class Message {
@@ -66,9 +66,9 @@ class CreateColumn {
 }
 
 class DeleteColumn {
-    - columnId: str
-    '+ getColumnId(): str
-    '+ setColumnId(columnId: str): void
+    - columnId: uuid
+    '+ getColumnId(): uuid
+    '+ setColumnId(columnId: uuid): void
 }
 
 class ModifyKanban {

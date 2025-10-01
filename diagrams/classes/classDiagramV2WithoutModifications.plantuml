@@ -50,11 +50,11 @@ class Column {
 
 class LightKanban {
     - title: str
-    - id: str
+    - id: uuid
     '+ getTitle(): str
-    '+ getId(): str
+    '+ getId(): uuid
     '+ setTitle(title: str): void
-    '+ setId(id: str): void
+    '+ setId(id: uuid): void
     '+ hasModifyPermission(user: LightUser): boolean
     '+ getUserRole(user: LightUser): Role
 }
@@ -70,9 +70,9 @@ class Kanban {
 }
 
 class SecureUser {
-    - password: str
-    '+ getPassword(): str
-    '+ setPassword(password: str): void
+    - password: str encoded(hash)
+    '+ getPassword(): str encoded(hash)
+    '+ setPassword(password: str encoded(hash)): void
 }
 
 class User {
@@ -80,24 +80,27 @@ class User {
     - lastName: str
     - birthDate: date
     - avatar: image
+    - myKanban: list<Kanban>
     '+ getFirstName(): str
     '+ getLastName(): str
     '+ getBirthDate(): date
     '+ getAvatar(): str
+    '+ getMyKanban(): list<Kanban>
     '+ setFirstName(firstName: str): void
     '+ setLastName(lastName: str): void
     '+ setBirthDate(birthDate: date): void
     '+ setAvatar(avatar: str): void
+    '+ setMyKanban(myKanban: list<Kanban>): void
     '+ canModifyProfile(currentUser: LightUser): boolean
     '+ modifyProfile(currentUser: LightUser, newFirstName: str, newLastName: str, newBirthDate: date): boolean
 }
 
 class LightUser {
-    - id: str
+    - id: uuid
     - username: str
-    '+ getId(): str
+    '+ getId(): uuid
     '+ getUsername(): str
-    '+ setId(id: str): void
+    '+ setId(id: uuid): void
     '+ setUsername(username: str): void
 }
 
@@ -123,7 +126,7 @@ User --|> LightUser
 SecureUser --|> User
 
 ' Kanban hierarchy
-LightKanban --|> Kanban
+Kanban --|> LightKanban
 
 ' ===== COMPOSITION/AGGREGATION RELATIONSHIPS =====
 

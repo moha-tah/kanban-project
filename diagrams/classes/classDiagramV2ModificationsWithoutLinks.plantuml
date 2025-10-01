@@ -44,9 +44,9 @@ class CreateColumn {
 }
 
 class DeleteColumn {
-    - columnId: str
-    '+ getColumnId(): str
-    '+ setColumnId(columnId: str): void
+    - columnId: uuid
+    '+ getColumnId(): uuid
+    '+ setColumnId(columnId: uuid): void
 }
 
 class ModifyKanban {
