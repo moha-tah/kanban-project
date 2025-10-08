@@ -1,4 +1,4 @@
-@startuml
+@startuml Server Connection
 actor User
 participant "UI-Main" as UIMain
 participant "DATA-Client" as DATA

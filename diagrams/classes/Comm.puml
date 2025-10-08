@@ -1,0 +1,96 @@
+@startuml Comm
+
+' --- Définition des classes ---
+class CommCoreClient {
+    +sendToServer(Message msg) : void
+    +serverPort : Int
+    +serverAddress : INetAddress
+    +handle(Message msg) : void
+    
+}
+
+class CommCoreServer {
+    -clients : List <ClientHandler>
+    -running : bool
+    +startCommunication() : void
+    +comCoreServeur(int serverPort)
+    +stopCommunication() : void
+}
+
+abstract class Message {
+    +handle() : void
+}
+
+abstract class CommCore {
+    +handle() : void
+}
+
+class NewUserMsg {
+    +newUser : LightUser
+    +userKanBan : <List> LightKanban
+    +handle(myCore) : void
+}
+
+class AddListModifiersMsg {
+    +newUser : LightUser
+    +userKanBan : <List> LightKanban
+    +handle(myCore) : void
+}
+
+class DataCallsCommImp {
+    +id : UUID
+    +name : string
+}
+
+class MainsCallCommImp {
+    +id : UUID
+    +name : string
+}
+
+interface DataCallsComm {
+    -core : CommCoreClient
+    +doSomething() : void
+}
+
+interface IHMCallsComm {
+    -core : CommCoreClient
+    +doSomething() : void
+}
+
+interface CommCallsData {
+    -core : CommCoreClient
+    +doSomething() : void
+}
+
+interface KanbanCallsData {
+    -core : CommCoreClient
+    +doSomething() : void
+}
+
+class MsgSender {
+    -socket : Socket
+    +sendServerSocket() : void
+}
+
+class MsgReceiver {
+    -core : CommCoreClient
+    -serverSocket : ServerSocket
+    +receiveServerSocket() : void
+}
+
+' --- Relations possibles ---
+MainsCallCommImp -- CommCoreClient
+DataCallsCommImp -- CommCoreClient
+CommCallsData -- CommCoreClient
+MsgReceiver -- CommCoreClient
+MsgSender -- CommCoreClient
+
+DataCallsComm <|-- DataCallsCommImp
+IHMCallsComm <|-- MainsCallCommImp
+CommCore <|-- CommCoreClient
+CommCore <|-- CommCoreServer
+Message <|-- AddListModifiersMsg
+Message <|-- NewUserMsg
+
+
+@enduml

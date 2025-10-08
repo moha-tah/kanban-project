@@ -1,4 +1,4 @@
-@startuml
+@startuml App Connection
 actor User
 participant "UI-Main" as UIMain
 participant "DATA" as DATA
