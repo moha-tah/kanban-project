@@ -1,0 +1,33 @@
+@startuml Message
+title Diagramme des messages Client ↔ Serveur
+
+
+package "Serveur → Client" {
+    class MessageNotifyLogout
+    class MessageAddListModifiers
+    class MessageAddListModifiersClient
+    class MessageNotifyDecisionAccepted
+    class MessageNotifyDecisionRefused
+    class MessageSendUsersAndKanbansList
+    class MessageNotifyEditions
+    class MessageUpdateLists
+    class MessageSendKanban
+    class MessageAddListModifiersData
+    class MessageUploadKanbans
+    class MessageAddAuthorizedUserData
+    class MessageUpdateUserList
+    class MessageDisplayPermissionRequest
+    class MessageDisplayDecisionAccepted
+    class MessageDisplayDecisionRefused
+    class MessageNotifyKanbanCreated
+    class MessageDeliverNotification
+    class MessageModifyKanban
+}
+
+abstract class Message {
+    +handle() : void
+}
+
+
+"Serveur → Client" -|> Message
+@enduml

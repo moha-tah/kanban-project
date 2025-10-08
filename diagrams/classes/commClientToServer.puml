@@ -1,0 +1,44 @@
+@startuml Message
+title Diagramme des messages Client ↔ Serveur
+
+package "Client → Serveur" {
+    class MessageRequestKanban
+    class MessageAskDeleteKanban
+    class MessageAddAuthorizedUser
+    class MessageSaveKanban
+    class MessageSaveModification
+    class MessageCloseKanban
+    class MessageSendModified
+    class MessageUploadListKanban
+    class MessageTransferPermissionRequest
+    class MessageSaveModifiedKanban
+    class MessageToModif
+    class MessageSaveModificationOnDisk
+    class MessageSaveModificationClient
+    class MessageAskIdUser
+    class MessageSaveTempsKanban
+    class MessageLogout
+    class MessageRequestKanbanClient
+    class MessageAskAddListModifiers
+    class MessageAskDeleteKanbanClient
+    class MessageRequestPermission
+    class MessageConnectionRequest
+    class MessageSendNewKanban
+    class MessageModifiedKanban
+    class MessageForwardRequestModification
+    class MessageForwardCloseKanban
+    class MessageAskingKanbanToServer
+    class MessageClosingKanbanToServer
+}
+
+
+abstract class Message {
+    +handle() : void
+}
+
+
+
+
+"Client → Serveur" -|> Message
+
+@enduml

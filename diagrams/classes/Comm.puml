@@ -38,33 +38,33 @@ class AddListModifiersMsg {
 }
 
 class DataCallsCommImp {
-    +id : UUID
-    +name : string
+    -core : CommCoreClient
 }
 
 class MainsCallCommImp {
-    +id : UUID
-    +name : string
+    -core : CommCoreClient
 }
 
 interface DataCallsComm {
-    -core : CommCoreClient
-    +doSomething() : void
+
 }
 
 interface IHMCallsComm {
-    -core : CommCoreClient
-    +doSomething() : void
+
 }
 
 interface CommCallsData {
-    -core : CommCoreClient
-    +doSomething() : void
+
 }
 
-interface KanbanCallsData {
+interface KanbanCallsComm {
+
+
+}
+
+class KanbanCallsComImp {
     -core : CommCoreClient
-    +doSomething() : void
+
 }
 
 class MsgSender {
@@ -84,7 +84,11 @@ DataCallsCommImp -- CommCoreClient
 CommCallsData -- CommCoreClient
 MsgReceiver -- CommCoreClient
 MsgSender -- CommCoreClient
+KanbanCallsComImp -- CommCoreClient
 
+
+
+KanbanCallsComm <|-- KanbanCallsComImp
 DataCallsComm <|-- DataCallsCommImp
 IHMCallsComm <|-- MainsCallCommImp
 CommCore <|-- CommCoreClient
