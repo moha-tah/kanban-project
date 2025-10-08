@@ -1,3 +1,4 @@
+```mermaid
 classDiagram
     title Kanban System Class Diagram
 
@@ -209,3 +210,4 @@ classDiagram
 
     LightKanban -- Access
     LightUser -- Access
+```
