@@ -1,0 +1,160 @@
+```mermaid
+classDiagram
+    title Main Kanban System Class Diagram
+
+    %% ===============================
+    %% CLASSES PRINCIPALES
+    %% ===============================
+
+    class Task {
+        - id: uuid
+        - title: str
+        - description: str
+        - startDate: date
+        - endDate: date
+        + getId(): uuid
+        + getTitle(): str
+        + getDescription(): str
+        + getStartDate(): date
+        + getEndDate(): date
+        + setTitle(title: str): void
+        + setDescription(description: str): void
+        + setStartDate(startDate: date): void
+        + setEndDate(endDate: date): void
+        + canBeModifiedBy(user: LightUser): boolean
+        + modifyTask(user: LightUser, newTitle: str, newDescription: str): boolean
+    }
+
+    class Message {
+        - id: uuid
+        - content: str
+        - date: datetime
+        + getId(): uuid
+        + getContent(): str
+        + getDate(): date
+    }
+
+    class Column {
+        - id: uuid
+        - title: str
+        - color: str
+        - number: int
+        + getId(): uuid
+        + getTitle(): str
+        + getColor(): str
+        + getNumber(): int
+        + setTitle(title: str): void
+        + setId(id: uuid): void
+        + setColor(color: str): void
+        + setNumber(number: int): void
+        + canBeModifiedBy(user: LightUser): boolean
+        + modifyColumn(user: LightUser, newTitle: str, newColor: str): boolean
+    }
+
+    class LightKanban {
+        - title: str
+        - id: uuid
+        + getTitle(): str
+        + getId(): uuid
+        + setTitle(title: str): void
+        + setId(id: uuid): void
+        + hasModifyPermission(user: LightUser): boolean
+        + getUserRole(user: LightUser): Role
+    }
+
+    class Kanban {
+        - taskColumn: HashMap
+        + getTaskColumn(): HashMap
+        + setTaskColumn(taskColumn: HashMap): void
+        + canBeModifiedBy(user: LightUser): boolean
+        + modifyKanban(user: LightUser, newTitle: str): boolean
+        + addTaskToColumn(user: LightUser, task: Task, column: Column): boolean
+        + moveTask(user: LightUser, task: Task, fromColumn: Column, toColumn: Column): boolean
+    }
+
+    class SecureUser {
+        - password: str encoded(hash)
+        + getPassword(): str encoded(hash)
+        + setPassword(password: str encoded(hash)): void
+    }
+
+    class User {
+        - firstName: str
+        - lastName: str
+        - birthDate: date
+        - avatar: image
+        - myKanban: list<Kanban>
+        + getFirstName(): str
+        + getLastName(): str
+        + getBirthDate(): date
+        + getAvatar(): str
+        + getMyKanban(): list<Kanban>
+        + setFirstName(firstName: str): void
+        + setLastName(lastName: str): void
+        + setBirthDate(birthDate: date): void
+        + setAvatar(avatar: str): void
+        + setMyKanban(myKanban: list<Kanban>): void
+        + canModifyProfile(currentUser: LightUser): boolean
+        + modifyProfile(currentUser: LightUser, newFirstName: str, newLastName: str, newBirthDate: date): boolean
+    }
+
+    class LightUser {
+        - id: uuid
+        - username: str
+        + getId(): uuid
+        + getUsername(): str
+        + setId(id: uuid): void
+        + setUsername(username: str): void
+    }
+
+    class Access {
+        - roles: Role
+        - user: LightUser
+        + getRoles(): Role
+        + getUser(): LightUser
+        + setUser(user: LightUser): void
+        + setRoles(roles: Role): void
+        + hasPermission(permission: Role): boolean
+    }
+
+    %% ENUM
+    class Role {
+        <<enumeration>>
+        VIEWER
+        MODIFIER
+    }
+
+    %% ===============================
+    %% HERITAGE
+    %% ===============================
+    User --|> LightUser
+    SecureUser --|> User
+    Kanban --|> LightKanban
+
+    %% ===============================
+    %% COMPOSITIONS
+    %% ===============================
+    Kanban *-- " * " Task
+    Kanban *-- " * " Column
+    Kanban *-- " * " Message
+
+    %% ===============================
+    %% ASSOCIATIONS
+    %% ===============================
+    Task " * creator" -- "1" LightUser
+    Task " * affected user" -- " * " LightUser
+
+    Message " * receiver" -- " * " LightUser
+    Message " * sender" -- "1" LightUser
+
+    User "1" -- " * creator" Kanban
+    User " * joined kanban" -- " * " LightKanban
+    LightUser "1" -- " * creator" Kanban
+    LightUser " * access" -- " * " LightKanban
+
+    %% ===============================
+    %% ASSOCIATION CLASS
+    %% ===============================
+    LightKanban .. Access
+    LightUser .. Access
+```
