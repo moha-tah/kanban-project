@@ -1,3 +1,4 @@
+```mermaid
 classDiagram
     title Kanban System Modifications Class Diagram
 
@@ -100,3 +101,4 @@ classDiagram
     CreateMessage --|> Modification
     AddAccess --|> Modification
     RemoveAccess --|> Modification
+```
