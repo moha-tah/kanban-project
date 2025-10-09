@@ -2,95 +2,116 @@
 
 ' --- Définition des classes ---
 class CommCoreClient {
-    +sendToServer(Message msg) : void
-    +serverPort : Int
-    +serverAddress : INetAddress
-    +handle(Message msg) : void
-    
-}
-
+    + sendToServer(Message msg) : void
+    + serverPort : Int
+    + serverAddress : INetAddress
+    + handle(Message msg) : void
+     
+} 
+ 
 class CommCoreServer {
-    -clients : List <ClientHandler>
-    -running : bool
-    +startCommunication() : void
-    +comCoreServeur(int serverPort)
-    +stopCommunication() : void
-}
-
+    - clients : List <ClientHandler>
+    - running : bool
+    + startCommunication() : void
+    + comCoreServeur(int serverPort)
+    + stopCommunication() : void
+} 
+ 
 abstract class Message {
-    +handle() : void
+    + handle() : void
 }
 
 abstract class CommCore {
-    +handle() : void
+    + handle() : void
 }
 
 class NewUserMsg {
-    +newUser : LightUser
-    +userKanBan : <List> LightKanban
-    +handle(myCore) : void
+    + newUser : LightUser
+    + userKanBan : <List> LightKanban
+    + handle(myCore) : void
 }
 
-class AddListModifiersMsg {
-    +newUser : LightUser
-    +userKanBan : <List> LightKanban
-    +handle(myCore) : void
+class  AddListModifiersMsg {
+    + newUser : LightUser
+    + userKanBan : <List> LightKanban
+    + handle(myCore) : void
 }
 
-class DataCallsCommImp {
-    -core : CommCoreClient
-}
-
-class MainsCallCommImp {
-    -core : CommCoreClient
+class  DataCallsCommImp {
+    - core : CommCoreClient
+} 
+ 
+class MainCallCommImp {
+    - core : CommCoreClient
+    + requestPermission(LightUser, Kanban.id)
 }
 
 interface DataCallsComm {
-
+    + sendNewKanban(Kanban)
+    + askDeleteKanban(LightUser.id, LightKanban.id)
 }
 
 interface IHMCallsComm {
-
+    +logout(LightUser.id)
+    + getKanban(LightKanban.id, User.id) : Kanban
 }
 
 interface CommCallsData {
-
+    + uploadKanban(LightKanban.id)
+    + send(Kanban)
+    + addListModifiers(LightKanban.id, LightUser.id)
+    + askIdUser() : User.id
+    + requestKanban(LightUser.id, LightKanban.id)
+    + saveTempsKanban(Kanban)
+    + saveModifiedKanban(IdModification, IdKanban)
+    + modifiedKanban(IdModification, IdKanban)
+    + saveModification(LightKanban, Modification)
+    + saveModificationOnDisk(LightKanban, Modification)
+    + addAuthorizedUser(Kanban.id, LightUser)
+    + updateLists(LightUser.id)
+    + notifyLogout(LightUser.id)
+    + requestKanban(LightKanban.id, LightUser.id) : Kanban
+    + addAuthorizedUser(Kanban.id, LightUser.id) : UpdateOk
+    + notifyEditions(LightKanban, NewStatus)
+    + saveModification(LightKanban, Modification) : List<LightUser>
+    + saveKanban(Kanban) : LightKanban
+    + sendModified(LightUser.id, List<Kanban>, List<User>) : List<Kanban>
+    + closeKanban(LightKanban.id, User.id)
 }
 
 interface KanbanCallsComm {
-
-
+    + closingKanbanToServer(LightKanban.id, User.id)
 }
 
-class KanbanCallsComImp {
-    -core : CommCoreClient
-
-}
-
+class KanbanCallsCommImp {
+    - core : CommCoreClient
+ 
+} 
+ 
 class MsgSender {
-    -socket : Socket
-    +sendServerSocket() : void
-}
-
+    - socket : Socket
+    + sendServerSocket() : void
+} 
+ 
 class MsgReceiver {
-    -core : CommCoreClient
-    -serverSocket : ServerSocket
-    +receiveServerSocket() : void
+    - core : CommCoreClient
+    - serverSocket : ServerSocket
+    + receiveServerSocket() : void
 }
 
 ' --- Relations possibles ---
-MainsCallCommImp -- CommCoreClient
+MainCallCommImp -- CommCoreClient
 DataCallsCommImp -- CommCoreClient
 CommCallsData -- CommCoreClient
 MsgReceiver -- CommCoreClient
 MsgSender -- CommCoreClient
-KanbanCallsComImp -- CommCoreClient
+KanbanCallsCommImp -- CommCoreClient
 
 
 
-KanbanCallsComm <|-- KanbanCallsComImp
+KanbanCallsComm <|-- KanbanCallsCommImp
 DataCallsComm <|-- DataCallsCommImp
-IHMCallsComm <|-- MainsCallCommImp
+IHMCallsComm <|-- MainCallCommImp
 CommCore <|-- CommCoreClient
 CommCore <|-- CommCoreServer
 Message <|-- AddListModifiersMsg
