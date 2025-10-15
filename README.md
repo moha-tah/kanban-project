@@ -36,13 +36,13 @@ kanban-project/
 
 │   │    ├── src/         # Code source, branches en fonction des modules
 
-│   │   │   ├── ihmK/
+│   │   │   ├── ihmKanban/
 
 │   │   │   │   ├── provider.js
 
 │   │   │   │   ├── implémentations
 
-│   │   │   ├── ihmM/
+│   │   │   ├── ihmMain/
 
 │   │   │   │   ├── provider.js
 
@@ -66,11 +66,11 @@ kanban-project/
 
 │   ├── common_src/        # Ressources communes à tous les modules
 
-│   │   ├── constant
+│   │   ├── constants
 
 │   │   ├── enums
 
-│   │   ├── data
+│   │   ├── dataClasses
 
 │   │   ├── messages
 
