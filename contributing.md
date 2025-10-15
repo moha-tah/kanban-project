@@ -70,3 +70,41 @@ Ainsi nous considèrons que le travail de ces 4 personnes constitue en soit une 
 
 ## Qualite du code
 
+ATTENTION A BIEN VERIFIER QUE SON CODE COMPILE BIEN SANS ERREUR AVANT DE PUSH UNE NOUVELLE VERSION D'UNE FEATURE
+
+### Pré-commit Git (qualité locale)
+
+Un hook **`pre-commit`** a été déployé pour tous les développeurs. Son rôle est de sécuriser et standardiser le code **avant chaque commit**.
+
+#### Fonctionnalités du pré-commit
+1. **Sécurité : détection de secrets**
+   - Empêche de committer des données sensibles comme :
+     - mots de passe (`password`, `passwd`)
+     - tokens (`token`, `apikey`, `api_key`)
+     - clés privées (`-----BEGIN PRIVATE KEY-----`)
+     - clés AWS exposées (`AKIA...`)
+   - Objectif : éviter toute fuite d’informations ou compromission de sécurité via Git.
+
+2. **Formatage automatique du code Java**
+   - Utilise **`google-java-format`** (style Google).
+   - Garantit un code **uniforme entre développeurs**.
+   - Supprime les conflits de style dans les Pull Requests.
+   - Le code est **reformaté automatiquement avant commit**.
+
+---
+
+#### Exigences du linter (`google-java-format`)
+Le formatter applique automatiquement les règles suivantes :
+| Aspect | Règle appliquée |
+|--------|------------------|
+| Indentation | 2 espaces (pas de tabulation) |
+| Longueur de ligne | gestion du retour à la ligne automatique |
+| Accolades | accolade ouvrante en fin de ligne (`if (...) {`) |
+| Imports | triés + pas d’imports `*` |
+| Espaces | propresgardés autour des opérateurs (`a + b`) |
+| Lisibilité | blocs de code uniformisés automatiquement |
+
+Ce système ne nécessite **aucune installation locale**, car l’outil est intégré au projet (`tools/google-java-format.jar`).
+
+---
+Si nécessaire mettre à jour le pom.xml lorsque le maven sera créé (ajout de sonar)
