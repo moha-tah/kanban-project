@@ -1,6 +1,6 @@
 # 🗃️ Projet Kanban
 
-Ce projet vise à réaliser une application de création de kanban collaborative. Elle fonctionnera en utilisant des profiles locaux et un serveur centralisé.
+Ce projet vise à réaliser une application de création de kanban collaborative. Elle fonctionnera en utilisant des profils locaux et un serveur centralisé.
 
 ---
 
