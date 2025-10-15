@@ -12,7 +12,71 @@ kanban-project/
 
 ├── src/                      # Tout le code source
 
-│   ├── const/                # Constient les constantes du projet
+│   ├── back/                 # Côté serveur du projet
+
+│   │   ├── src/              # Code source, branches en fonction des modules
+
+│   │   │   ├── data/
+
+│   │   │   │   ├── provider.js
+
+│   │   │   │   ├── implémentations
+
+│   │   │   ├── comm/
+
+│   │   │   │   ├── provider.js
+
+│   │   │   │   ├── implémentations
+
+│   │   │   ├── interfaces/
+
+│   │   ├── ressources/
+
+│   ├── front/            # Côté client du projet
+
+│   │    ├── src/         # Code source, branches en fonction des modules
+
+│   │   │   ├── ihmK/
+
+│   │   │   │   ├── provider.js
+
+│   │   │   │   ├── implémentations
+
+│   │   │   ├── ihmM/
+
+│   │   │   │   ├── provider.js
+
+│   │   │   │   ├── implémentations
+
+│   │   │   ├── data/
+
+│   │   │   │   ├── provider.js
+
+│   │   │   │   ├── implémentations
+
+│   │   │   ├── comm/
+
+│   │   │   │   ├── provider.js
+
+│   │   │   │   ├── implémentations
+
+│   │   │   ├── interfaces/
+
+│   │    ├── ressources/
+
+│   ├── common_src/        # Ressources communes à tous les modules
+
+│   │   ├── src/
+
+│   │   │   ├── constant
+
+│   │   │   ├── enums
+
+│   │   │   ├── data
+
+│   │   │   ├── messages
+
+│   │   ├── ressources/
 
 │
 
