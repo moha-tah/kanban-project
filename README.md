@@ -12,7 +12,7 @@ kanban-project/
 
 ├── src/                      # Tout le code source
 
-│   ├── back/                 # Côté serveur du projet
+│   ├── server/                 # Côté serveur du projet
 
 │   │   ├── src/              # Code source, branches en fonction des modules
 
@@ -32,7 +32,7 @@ kanban-project/
 
 │   │   ├── ressources/
 
-│   ├── front/            # Côté client du projet
+│   ├── client/            # Côté client du projet
 
 │   │    ├── src/         # Code source, branches en fonction des modules
 
@@ -66,13 +66,17 @@ kanban-project/
 
 │   ├── common_src/        # Ressources communes à tous les modules
 
-│   │   ├── constants
+│   │   ├── src
 
-│   │   ├── enums
+│   │   │   ├── constants
 
-│   │   ├── dataClasses
+│   │   │   ├── enums
 
-│   │   ├── messages
+│   │   │   ├── dataClasses
+
+│   │   │   ├── messages
+
+│   │   ├── ressources
 
 │
 
