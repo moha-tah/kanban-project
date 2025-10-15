@@ -23,10 +23,10 @@ A l'intérieur de sa branche, le module s'organise lui même en respectant les c
 Ce nommage semble créer une redondance mais permet un affichage pratique que ce soit dans l'IDE ou dans les PR.
 
 Types de features:
--feature : ajout d'une nouvelle fonctionnalité
--hotfix : résolution d'un problème critique pour le fonctionnement
--docs : documentation
--refactor : changement dans la structure ou le code interne sans ajout de fonctionnalité
+* feature : ajout d'une nouvelle fonctionnalité
+* hotfix : résolution d'un problème critique pour le fonctionnement
+* docs : documentation
+* refactor : changement dans la structure ou le code interne sans ajout de fonctionnalité
 
 Par exemple: V0 -> hotfix/voir-kanban -> voir-kanban-data
 
@@ -35,10 +35,10 @@ Par exemple: V0 -> hotfix/voir-kanban -> voir-kanban-data
 Les commits consistent en des messages décrivant le contenu. Nous demandons juste d'ajouter un préfix entre crochets pour une lecture rapide des changements.
 
 Type de préfixes:
-- [+] : pour une addition
-- [-] : pour une deletion
-- [~] : pour un changement
-- [fix] : pour une correction
+* [+] : pour une addition
+* [-] : pour une deletion
+* [~] : pour un changement
+* [fix] : pour une correction
 
   Par exemple: [+] Ajout d'un bouton pour supprimer le kanban
 
