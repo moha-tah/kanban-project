@@ -66,17 +66,13 @@ kanban-project/
 
 │   ├── common_src/        # Ressources communes à tous les modules
 
-│   │   ├── src/
+│   │   ├── constant
 
-│   │   │   ├── constant
+│   │   ├── enums
 
-│   │   │   ├── enums
+│   │   ├── data
 
-│   │   │   ├── data
-
-│   │   │   ├── messages
-
-│   │   ├── ressources/
+│   │   ├── messages
 
 │
 
