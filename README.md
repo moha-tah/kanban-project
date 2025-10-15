@@ -64,7 +64,7 @@ kanban-project/
 
 │   │    ├── ressources/
 
-│   ├── common_src/        # Ressources communes à tous les modules
+│   ├── common/        # Ressources communes à tous les modules
 
 │   │   ├── src
 
