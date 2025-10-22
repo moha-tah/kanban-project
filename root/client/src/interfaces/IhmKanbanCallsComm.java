@@ -1,3 +1,4 @@
 public class IhmKanbanCallsComm {
-    // This class is intentionally left blank
+    // This class is intentionally left blank   
+    //comment
 }
