@@ -1,4 +1,5 @@
-public class IhmKanbanCallsComm {
-    // This class is intentionally left blank   
-    //comment
+import java.util.UUID;
+
+public interface IhmKanbanCallsComm {
+    void closingKanban(UUID LightKanbanId, UUID LightUserId);
 }
