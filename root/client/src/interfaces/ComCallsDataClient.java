@@ -1,4 +1,4 @@
-package interfaces ;
+package root.client.src.interfaces;
 
 import root.common.src.dataClasses.Kanban;
 import root.common.src.dataClasses.LightUser;

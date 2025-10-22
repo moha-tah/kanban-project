@@ -1,11 +1,16 @@
+package root.client.src.interfaces;
+
 import java.util.List;
 import java.util.UUID;
+
+import root.common.src.dataClasses.LightUser;
+import root.common.src.dataClasses.LightKanban;
 
 public interface MainCallsDataClient {
 
     void saveUser();
 
-    AuthResult authentify(String username, String password);
+    boolean authentify(String username, String password);
 
     LightUser getLightUser();
 
