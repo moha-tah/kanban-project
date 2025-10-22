@@ -1,0 +1,28 @@
+#!/bin/sh
+set -eu
+
+STAGED_JAVA_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep '\.java$' || true)
+
+# ----------- Test sécurité : secrets -----------
+echo "[pre-commit] Vérification de données sensibles..."
+SECRET_REGEX='(password|passwd|secret|apikey|api_key|token|AKIA[0-9A-Z]{16}|-----BEGIN|PRIVATE KEY)'
+if [ -n "$STAGED_JAVA_FILES" ]; then
+  echo "$STAGED_JAVA_FILES" | while read -r FILE; do
+    grep -En "$SECRET_REGEX" "$FILE" && {
+      echo "[ERREUR] Secret détecté dans le fichier $FILE"
+      exit 1
+    } || true
+  done
+fi
+
+# ----------- Linting auto : google-java-format -----------
+if [ -n "$STAGED_JAVA_FILES" ]; then
+  echo "[pre-commit] Formatage Java avec google-java-format..."
+  for FILE in $STAGED_JAVA_FILES; do
+    java -jar tools/google-java-format.jar --replace "$FILE"
+    git add "$FILE"
+  done
+fi
+
+echo "[pre-commit] OK."
+exit 0
