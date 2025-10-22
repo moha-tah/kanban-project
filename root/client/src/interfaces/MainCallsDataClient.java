@@ -1,7 +1,7 @@
 import java.util.List;
 import java.util.UUID;
 
-public interface MainCallsData {
+public interface MainCallsDataClient {
 
     void saveUser();
 
