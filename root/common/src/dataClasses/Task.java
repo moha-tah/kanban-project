@@ -1,4 +1,4 @@
-package common.src.dataClasses;
+package root.common.src.dataClasses;
 import java.util.UUID;
 import java.time.LocalDate;
 
