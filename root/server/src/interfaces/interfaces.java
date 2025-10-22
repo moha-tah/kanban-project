@@ -15,3 +15,11 @@ public interface CommCallsDataServer {
     Kanban getKanban(LightKanban kanban, LightUser user);
     void closeKanban(LightKanban kaban, LightUser user);
 }
+
+public interface KanbanCallsData {
+    void saveSnapshot(Kanban kanban);
+    List<Snapshot> getListSnapshot();
+    Snapshot getSnapshot(Snapshot snap);
+    void deleteSnapshot(Snapshot snap);
+    void getModified(UUID modificationID, UUID kanbanID);
+}
