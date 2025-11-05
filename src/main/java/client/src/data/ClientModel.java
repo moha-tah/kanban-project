@@ -9,7 +9,7 @@ public class ClientModel {
     private Kanban currentKanban;
     private List<LightKanban> myLightKanbans;
     private User localUser;
-    private LightUser connectedUser;
+    private List<LightUser> connectedUsers;
 
     public ClientModel() {
 
@@ -39,11 +39,12 @@ public class ClientModel {
         this.localUser = localUser;
     }
 
-    public LightUser getConnectedUser() {
-        return connectedUser;
+    public List<LightUser> getConnectedUsers() {
+        return connectedUsers;
     }
 
-    public void setConnectedUser(LightUser connectedUser) {
-        this.connectedUser = connectedUser;
+    public void setConnectedUsers(List<LightUser> connectedUsers) {
+        this.connectedUsers = connectedUsers;
     }
+
 }
