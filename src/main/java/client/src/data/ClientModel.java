@@ -11,11 +11,8 @@ public class ClientModel {
     private User localUser;
     private LightUser connectedUser;
 
-    public ClientModel(Kanban currentKanban, List<LightKanban> myLightKanbans, User localUser, LightUser connectedUser) {
-        this.currentKanban = currentKanban;
-        this.myLightKanbans = myLightKanbans;
-        this.localUser = localUser;
-        this.connectedUser = connectedUser;
+    public ClientModel() {
+
     }
 
     public Kanban getCurrentKanban() {

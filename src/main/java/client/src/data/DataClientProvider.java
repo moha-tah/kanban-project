@@ -1,8 +1,4 @@
-package src.main.java.client.src;
-import src.main.java.client.src.data.ClientModel;
-import src.main.java.client.src.data.CommCallsDataClientImplementation;
-import src.main.java.client.src.data.KanbanCallsDataImplementation;
-import src.main.java.client.src.data.MainCallsDataImplementation;
+package src.main.java.client.src.data;
 import src.main.java.client.src.interfaces.DataCallsComm;
 import src.main.java.client.src.interfaces.DataClientCallsKanban;
 import src.main.java.client.src.interfaces.DataClientCallsMain;
@@ -18,18 +14,12 @@ public class DataClientProvider {
     private DataClientCallsMain mainInterface;
 
     // Constructeur
-    public DataClientProvider(ClientModel model, 
-                              DataCallsComm commInterface,
-                              DataClientCallsKanban kanbanInterface,
-                              DataClientCallsMain mainInterface) 
+    public DataClientProvider() 
             {
-        this.myModel = model;
-        this.toKabanImpl = new KanbanCallsDataImplementation();
-        this.toMainImpl = new MainCallsDataImplementation();
-        this.toCommImpl = new CommCallsDataClientImplementation();
-        this.commInterface = commInterface;
-        this.kanbanInterface = kanbanInterface;
-        this.mainInterface = mainInterface;
+        this.myModel = new ClientModel();
+        this.toKabanImpl = new KanbanCallsDataImplementation(this);
+        this.toMainImpl = new MainCallsDataImplementation(this);
+        this.toCommImpl = new CommCallsDataClientImplementation(this);
     }
 
     // Getters
