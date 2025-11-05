@@ -1,4 +1,4 @@
-package com.kanban;
+package src.main.java.com.kanban;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -16,10 +16,10 @@ public class App extends Application {
         primaryStage.setTitle("Kanban Project");
 
         Label label = new Label("Bienvenue dans l'application Kanban !");
-        StackPane root = new StackPane();
-        root.getChildren().add(label);
+        StackPane src.main.java = new StackPane();
+        src.main.java.getChildren().add(label);
 
-        Scene scene = new Scene(root, 800, 600);
+        Scene scene = new Scene(src.main.java, 800, 600);
         primaryStage.setScene(scene);
         primaryStage.show();
     }
