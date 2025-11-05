@@ -1,4 +1,4 @@
-package root.common.src.dataClasses;
+package common.src.dataClasses;
 import java.util.UUID;
 
 public class DeleteTask extends Modification {

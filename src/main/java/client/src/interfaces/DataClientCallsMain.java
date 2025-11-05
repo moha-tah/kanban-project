@@ -1,9 +1,9 @@
-package root.client.src.interfaces;
+package client.src.interfaces;
 
 import java.util.List;
 import java.util.UUID;
-import root.common.src.dataClasses.LightUser;
-import root.common.src.dataClasses.LightKanban;
+import common.src.dataClasses.LightUser;
+import common.src.dataClasses.LightKanban;
 
 public interface DataClientCallsMain {
     void updateListsKanbansUsers(List<LightKanban> kanbansOfUserDisconnected, UUID userId);

@@ -1,6 +1,8 @@
+package client.src.interfaces;
+import common.src.dataClasses.LightKanban;
+import common.src.dataClasses.LightUser;
 import java.util.List;
 import java.util.UUID;
-package interfaces;
 
 public interface IhmMainCallsComm {
     void logout(UUID LightUserId);
@@ -13,7 +15,4 @@ public interface IhmMainCallsComm {
     void notifyEditions(LightKanban LightKanban);
     void askKanban(UUID LightKanbanId);
     void getKanban(UUID LightKanbanId);   
-
-
-    void sendRequestModification(LightUser LightUser, UUID CardId, newStatus);
 }

@@ -1,4 +1,4 @@
-package root.common.src.dataClasses;
+package common.src.dataClasses;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
