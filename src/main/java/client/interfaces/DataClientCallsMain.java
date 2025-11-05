@@ -10,6 +10,7 @@ public interface DataClientCallsMain {
     void updateListKanban(LightKanban lightKanban);
     void addListModifiers(UUID kanbanId, UUID userId);
     void uploadKanbans(UUID kanbanId);
+    void addUserToList(LightUser users);
     void publishUsersList(List<LightUser> users);
     void publishKanbansList(List<LightKanban> kanbans);
     void addUserToList(LightUser user, List<LightKanban> kanbans);
