@@ -12,9 +12,9 @@ public interface MainCallsDataClient {
 
     boolean authentify(String username, String password);
 
-    LightUser getLightUser();
+    LightUser getMyLightUser();
 
-    List<LightKanban> getLightKanbans();
+    List<LightKanban> getMyListLightKanbans();
 
     void exportProfile(UUID lightUserId, String path);
 
