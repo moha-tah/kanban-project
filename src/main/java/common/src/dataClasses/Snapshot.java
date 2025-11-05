@@ -1,4 +1,4 @@
-package root.common.src.dataClasses;
+package common.src.dataClasses;
 
 public class Snapshot {
     private Kanban kanban;

@@ -1,4 +1,4 @@
-package root.common.src.dataClasses;
+package common.src.dataClasses;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.ArrayList;
