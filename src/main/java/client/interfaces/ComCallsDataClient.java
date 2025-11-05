@@ -8,7 +8,6 @@ import common.dataClasses.Modification;
 import java.util.List;
 import java.util.UUID;
 
-
 public interface ComCallsDataClient {
 
     void send(Kanban kanban);
@@ -28,4 +27,6 @@ public interface ComCallsDataClient {
     void saveModifiedKanban(Modification modification, LightKanban kanban);
 
     void saveTempKanban(Kanban kanban);
+
+    void addUserToList(LightUser user, List<LightKanban> kanbans);
 }
