@@ -11,22 +11,25 @@ import common.src.dataClasses.LightUser;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
- * Suivi strict du diagramme :
- *  1) authentify(username, password) via DATA
- *  2) si KO -> message d'erreur
- *  3) si OK -> getLightUser(), getMyListLightKanbans()
- *  4) connectServer(lightUser, kanbans) via COMM
- *  5) navigation Home
+ * Implémente le scénario complet du login d’après les diagrammes de séquence :
+ *  1) loginUser(username, password) appelé par l’utilisateur (onLogin)
+ *  2) DATA.authentify(username, password)
+ *  3) si OK -> DATA.getLightUser(), DATA.getMyListLightKanbans()
+ *  4) COMM.connectServer(lightUser, kanbans)
+ *  5) Navigation vers Home
  */
 public class LoginController {
 
+    // ---- FXML
     @FXML private TextField usernameField, ipField, portField;
     @FXML private PasswordField passwordField;
     @FXML private Label errorLabel;
 
+    // ---- Core principal
     private MainCore core;
 
     @FXML
@@ -37,6 +40,9 @@ public class LoginController {
         if (portField != null) portField.setText("5050");
     }
 
+    // ================== Handlers ==================
+
+    /** Bouton Login cliqué : lance le scénario complet */
     @FXML
     private void onLogin() {
         showError(null);
@@ -47,49 +53,10 @@ public class LoginController {
         if (username.isBlank())        { showError("Username is required."); return; }
         if (password.length() < 6)     { showError("Password must be ≥ 6 characters."); return; }
 
-        // ---- DATA.authentify ----
-        final MainCallsDataClient data = core.getDataPort();
-        if (data == null) { showError("Data service not wired."); return; }
-
-        boolean ok;
-        try {
-            ok = data.authentify(username, password);
-        } catch (Exception e) {
-            showError("Auth error: " + e.getMessage());
-            return;
-        }
-        if (!ok) { showError("Invalid username or password."); return; }
-
-        // ---- DATA.getLightUser / getMyListLightKanbans ----
-        LightUser me;
-        List<LightKanban> myKanbans;
-        try {
-            me = data.getMyLightUser();
-            myKanbans = data.getMyListLightKanbans();
-        } catch (Exception e) {
-            showError("Loading profile failed: " + e.getMessage());
-            return;
-        }
-
-        // MàJ état IHM
-        core.setMe(me);
-        core.addKanbans(myKanbans);
-
-        // ---- COMM.connectServer(lightUser, kanbans) ----
-        final IhmMainCallsComm comm = core.getCommPort();
-        if (comm != null) {
-            try { comm.connectServer(me, myKanbans); }
-            catch (Exception e) { showError("ConnectServer failed: " + e.getMessage()); return; }
-        }
-
-        // ---- Go Home ----
-        try {
-            MainApp.loadScene("/home.fxml", "Home");
-        } catch (Exception e) {
-            showError("Cannot open Home: " + e.getMessage());
-        }
+        loginUser(username, password);
     }
 
+    /** Bouton SignUp cliqué : redirige vers la page d’inscription */
     @FXML
     private void onGoToSignup() {
         try {
@@ -99,7 +66,89 @@ public class LoginController {
         }
     }
 
-    // -- utils
+    /**
+     * Méthode principale correspondant à l'appel "loginUser(username, password)" du diagramme.
+     * Orchestration complète de la séquence d’authentification.
+     */
+    public void loginUser(String username, String password) {
+
+        // 1) Authentification
+        boolean ok = callAuthentify(username, password);
+        if (!ok) { showError("Invalid username or password."); return; }
+
+        // 2) Récupération du profil utilisateur
+        LightUser me = callGetLightUser();
+        if (me == null) { showError("Unable to load profile."); return; }
+
+        // 3) Récupération de la liste des Kanbans
+        List<LightKanban> myKanbans = callGetLightKanbans();
+        if (myKanbans == null) myKanbans = Collections.emptyList();
+
+        // MàJ état local
+        core.setMe(me);
+        core.addKanbans(myKanbans);
+
+        // 4) Connexion serveur (COMM)
+        callConnectServer(me, myKanbans);
+
+        // 5) Navigation vers la vue Home
+        navigateHome();
+    }
+
+    // ================== Appels élémentaires ==================
+
+    private boolean callAuthentify(String username, String password) {
+        MainCallsDataClient data = core.getDataPort();
+        if (data == null) { showError("Data service not wired."); return false; }
+        try {
+            return data.authentify(username, password);
+        } catch (Exception e) {
+            showError("Auth error: " + e.getMessage());
+            return false;
+        }
+    }
+
+    private LightUser callGetLightUser() {
+        MainCallsDataClient data = core.getDataPort();
+        if (data == null) { showError("Data service not wired."); return null; }
+        try {
+            return data.getMyLightUser();
+        } catch (Exception e) {
+            showError("getLightUser failed: " + e.getMessage());
+            return null;
+        }
+    }
+
+    private List<LightKanban> callGetLightKanbans() {
+        MainCallsDataClient data = core.getDataPort();
+        if (data == null) { showError("Data service not wired."); return Collections.emptyList(); }
+        try {
+            return data.getMyListLightKanbans();
+        } catch (Exception e) {
+            showError("getLightKanbans failed: " + e.getMessage());
+            return Collections.emptyList();
+        }
+    }
+
+    private void callConnectServer(LightUser me, List<LightKanban> kanbans) {
+        IhmMainCallsComm comm = core.getCommPort();
+        if (comm == null) return;
+        try {
+            comm.connectServer(me, kanbans);
+        } catch (Exception e) {
+            showError("connectServer failed: " + e.getMessage());
+        }
+    }
+
+    private void navigateHome() {
+        try {
+            MainApp.loadScene("/home.fxml", "Home");
+        } catch (Exception e) {
+            showError("Cannot open Home: " + e.getMessage());
+        }
+    }
+
+    // ================== Utilitaires ==================
     private void showError(String msg) {
         if (errorLabel == null) return;
         if (msg == null || msg.isBlank()) { errorLabel.setVisible(false); return; }
