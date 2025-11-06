@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="client.src.ihmMain.controllers.SignupController"
+            prefWidth="1280" prefHeight="720"
+            style="-fx-background-color: black;">
+
+    <Label text="SIGNUP VIEW"
+           layoutX="540" layoutY="300"
+           style="-fx-text-fill: white; -fx-font-size: 36px;"/>
+
+    <Button text="Back to Login"
+            layoutX="570" layoutY="400"
+            onAction="#onBackToLogin"
+            style="-fx-background-color: #00cccc; -fx-text-fill: white; -fx-font-size: 16px;"/>
+</AnchorPane>

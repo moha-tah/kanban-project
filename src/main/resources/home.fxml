@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            prefWidth="1280" prefHeight="720"
+            style="-fx-background-color: black;">
+
+    <Label text="HOME VIEW"
+           layoutX="550" layoutY="340"
+           style="-fx-text-fill: white; -fx-font-size: 36px;"/>
+</AnchorPane>
