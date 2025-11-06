@@ -21,7 +21,7 @@
         <StackPane prefHeight="720.0" prefWidth="296.0" style="-fx-background-color: #0b0b0b;">
             <ImageView fitHeight="587.0" fitWidth="113.0" pickOnBounds="true" preserveRatio="true" StackPane.alignment="TOP_LEFT">
                 <image>
-
+                    <Image url="@k-logo.png" />
                 </image>
             </ImageView>
         </StackPane>
