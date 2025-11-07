@@ -1,12 +1,12 @@
-package client.src.interfaces;
+package client.interfaces;
 
-import common.src.dataClasses.Kanban;
-import common.src.dataClasses.Snapshot;
+import common.dataClasses.Kanban;
+import common.dataClasses.Snapshot;
 import java.util.List;
 import java.util.UUID;
-import common.src.dataClasses.LightUser;
-import common.src.dataClasses.LightKanban;
-import common.src.dataClasses.Modification;
+import common.dataClasses.LightUser;
+import common.dataClasses.LightKanban;
+import common.dataClasses.Modification;
 
 
 // CommCallsKanban

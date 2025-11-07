@@ -1,4 +1,4 @@
-package client.src.ihmMain;
+package client.ihmMain;
 
 public class MainCore {
 }

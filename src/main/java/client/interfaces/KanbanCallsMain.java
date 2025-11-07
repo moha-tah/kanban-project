@@ -1,4 +1,4 @@
-package client.src.interfaces;
+package client.interfaces;
 
 import java.util.UUID;
 

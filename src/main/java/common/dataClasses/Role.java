@@ -1,4 +1,4 @@
-package common.src.dataClasses;
+package common.dataClasses;
 
 public enum Role {
     VIEWER,

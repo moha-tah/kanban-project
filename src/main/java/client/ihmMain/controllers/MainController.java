@@ -1,4 +1,4 @@
-package client.src.ihmMain.controllers;
+package client.ihmMain.controllers;
 
 public class MainController {
 }

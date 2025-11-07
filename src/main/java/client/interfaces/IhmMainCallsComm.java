@@ -1,6 +1,6 @@
-package client.src.interfaces;
-import common.src.dataClasses.LightKanban;
-import common.src.dataClasses.LightUser;
+package client.interfaces;
+import common.dataClasses.LightKanban;
+import common.dataClasses.LightUser;
 import java.util.List;
 import java.util.UUID;
 

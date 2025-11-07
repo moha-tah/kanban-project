@@ -1,6 +1,6 @@
-package client.src.interfaces;
+package client.interfaces;
 import java.util.UUID;
-import common.src.dataClasses.Kanban;
+import common.dataClasses.Kanban;
 
 public interface DataCallsComm {
     void askDeleteKanban(UUID LightKanbanId, UUID LightUserId);

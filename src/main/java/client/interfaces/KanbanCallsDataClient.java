@@ -1,7 +1,7 @@
-package client.src.interfaces;
+package client.interfaces;
 
-import common.src.dataClasses.Kanban;
-import common.src.dataClasses.Snapshot;
+import common.dataClasses.Kanban;
+import common.dataClasses.Snapshot;
 import java.util.List;
 import java.util.UUID;
 
