@@ -20,6 +20,30 @@ public interface MainCallsDataClient {
 
     void importMyProfile(String path);
 
+    void sendCreateProfile(List<?> profileDetails);
+}
+package client.interfaces;
+
+import java.util.List;
+import java.util.UUID;
+
+import common.dataClasses.LightUser;
+import common.dataClasses.LightKanban;
+
+public interface MainCallsDataClient {
+
+    void saveUser();
+
+    boolean authentify(String username, String password);
+
+    LightUser getMyLightUser();
+
+    List<LightKanban> getMyListLightKanbans();
+
+    void exportProfile(UUID lightUserId, String path);
+
+    void importMyProfile(String path);
+
     /**
      * Crée un nouveau profil utilisateur selon le diagramme de séquence "Créer un profil".
      * Envoie les informations de profil au composant DATA et retourne un LightUser (LIGHTPROFILE).

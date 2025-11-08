@@ -13,4 +13,5 @@ public interface DataClientCallsMain {
     void publishUsersList(List<LightUser> users);
     void publishKanbansList(List<LightKanban> kanbans);
     void addUserToList(LightUser user, List<LightKanban> kanbans);
+    void addKanbansList(List<LightKanban> kanbans);
 }

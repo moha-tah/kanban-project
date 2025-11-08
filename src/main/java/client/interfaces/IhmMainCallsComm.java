@@ -14,5 +14,7 @@ public interface IhmMainCallsComm {
     void notifyDecision(UUID LightUserId, UUID LightKanbanId, boolean accepted);
     void notifyEditions(LightKanban LightKanban);
     void askKanban(UUID LightKanbanId);
-    void getKanban(UUID LightKanbanId);   
+    void getKanban(UUID LightKanbanId);
+    void connectServer(LightUser user, List<LightKanban> kanbans);
+    void askAddListModifiers(UUID kanbanId);
 }

@@ -1,0 +1,72 @@
+.root-dark {
+    -fx-background-color: #000000;
+}
+
+.left-pane { -fx-background-color: #000000; }
+
+
+.login-pane {
+    -fx-background-color: #000000;
+    -fx-padding: 40;
+}
+
+.title {
+    -fx-text-fill: white;
+    -fx-font-size: 36px;
+    -fx-font-weight: bold;
+}
+
+.label-orange {
+    -fx-text-fill: #ff7a00;
+    -fx-font-weight: bold;
+    -fx-font-size: 16px;
+}
+
+.label-pink {
+    -fx-text-fill: #ff2e8f;
+    -fx-font-weight: bold;
+    -fx-font-size: 16px;
+}
+
+.input, .input-small {
+    -fx-background-radius: 6;
+    -fx-background-color: #e0e0e0;
+    -fx-text-fill: black;
+    -fx-padding: 8;
+    -fx-pref-width: 300;
+}
+
+.input-small {
+    -fx-pref-width: 140;
+}
+
+.primary-btn {
+    -fx-background-color: #11b8ad;
+    -fx-text-fill: white;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8;
+    -fx-padding: 8 20 8 20;
+}
+
+.primary-btn:hover {
+    -fx-background-color: #0fa198;
+}
+
+.text-small {
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+}
+
+.link {
+    -fx-text-fill: #ff2e8f;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+}
+
+.console-output {
+    -fx-control-inner-background: #101010;
+    -fx-text-fill: #ff5555;
+    -fx-font-family: monospace;
+    -fx-padding: 8;
+}

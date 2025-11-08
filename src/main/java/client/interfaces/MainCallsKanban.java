@@ -10,4 +10,6 @@ import java.util.UUID;
 public interface MainCallsKanban {
     void openCreateFrom();
     void displaySnapshotList();
+
+    void openCreateForm();
 }

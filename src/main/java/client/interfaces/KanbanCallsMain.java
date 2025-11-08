@@ -1,7 +1,8 @@
 package client.interfaces;
 
-import java.util.UUID;
+import common.dataClasses.LightKanban;
+import common.dataClasses.LightUser;
 
 public interface KanbanCallsMain {
-    void closingKanbanToServer(UUID kanbanId, UUID userId);
+    void closingKanbanToServer(LightKanban kanban, LightUser user);
 }
