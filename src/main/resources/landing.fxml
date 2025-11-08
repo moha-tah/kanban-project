@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Rectangle?>
 
-<BorderPane fx:id="root" styleClass="root" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/25" fx:controller="client.src.ihmMain.controllers.LandingPageController">
+<BorderPane fx:id="root" styleClass="root" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/25" fx:controller="client.ihmMain.controllers.LandingPageController">
 
     <!-- HEADER -->
     <Label fx:id="usernameLabel" text="Guest" style="-fx-text-fill: white;" />

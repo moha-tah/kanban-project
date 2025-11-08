@@ -7,7 +7,7 @@
 
 <AnchorPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="client.src.ihmMain.controllers.LoginController"
+            fx:controller="client.ihmMain.controllers.LoginController"
             prefWidth="1280" prefHeight="720"
             styleClass="root-dark">
 
