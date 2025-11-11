@@ -15,6 +15,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.Objects;
@@ -33,32 +34,47 @@ public class MainApp extends Application {
         wireMocks();         // mocks très simples pour tester sans serveur
         CORE.initialize();
 
-        Parent root = FXMLLoader.load(require("/login.fxml"));
+        Parent root = FXMLLoader.load(require("/landing.fxml"));
         Scene scene = new Scene(root, 1280, 720);
 
         URL css = MainApp.class.getResource("/styles.css");
         if (css != null) scene.getStylesheets().add(css.toExternalForm());
 
-        stage.setTitle("Login");
+        stage.setTitle("Landing");
         stage.setScene(scene);
         stage.show();
     }
 
-    public static void loadScene(String fxmlPath, String title) throws Exception {
-        Parent root = FXMLLoader.load(require(fxmlPath));
-        Scene scene = new Scene(root, 1280, 720);
+    public static void loadScene(String fxmlPath, String title) {
+        try {
+            URL fxmlUrl = MainApp.class.getResource(fxmlPath);
+            if (fxmlUrl == null) {
+                System.err.println("FXML introuvable : " + fxmlPath);
+                return;
+            }
+            Parent root = FXMLLoader.load(fxmlUrl);
+            Scene scene = new Scene(root, 1280, 720);
 
-        URL css = MainApp.class.getResource("/styles.css");
-        if (css != null) scene.getStylesheets().add(css.toExternalForm());
+            URL cssUrl = MainApp.class.getResource("/styles.css");
+            if (cssUrl != null) {
+                scene.getStylesheets().setAll(cssUrl.toExternalForm()); 
+            } else {
+                System.err.println("Feuille de style introuvable : /styles.css");
+            }
 
-        Stage stage = (Stage) Window.getWindows().stream()
-                .filter(Window::isShowing)
-                .findFirst()
-                .orElse(new Stage());
+            Stage stage = (Stage) Window.getWindows().stream()
+                    .filter(Window::isShowing)
+                    .findFirst()
+                    .orElse(new Stage());
 
-        stage.setTitle(title);
-        stage.setScene(scene);
-        stage.show();
+            stage.setTitle(title);
+            stage.setScene(scene);
+            stage.show();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("Erreur de chargement de la scène : " + fxmlPath);
+        }
     }
 
     private static URL require(String path) {

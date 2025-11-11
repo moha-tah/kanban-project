@@ -5,12 +5,16 @@
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 
+<?import java.net.URL?>
 <AnchorPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="client.ihmMain.controllers.LoginController"
             prefWidth="1280" prefHeight="720"
             styleClass="root-dark">
 
+    <stylesheets>
+        <URL value="@styles.css"/>
+    </stylesheets>
     <HBox spacing="0" AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0"
           AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">
 
