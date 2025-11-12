@@ -12,6 +12,7 @@
     <maven.compiler.target>17</maven.compiler.target>
     <javafx.version>21</javafx.version>
     <javafx.maven.plugin.version>0.0.8</javafx.maven.plugin.version>
+    <sonar.organization>kanban-lo23</sonar.organization>
     </properties>
 
     <dependencies>
