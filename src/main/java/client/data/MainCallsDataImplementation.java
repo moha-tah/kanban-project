@@ -1,10 +1,10 @@
-package client.src.data;
+package client.data;
 
 import java.util.List;
 
-import client.src.interfaces.MainCallsDataClient;
-import common.src.dataClasses.LightKanban;
-import common.src.dataClasses.LightUser;
+import client.interfaces.MainCallsDataClient;
+import common.dataClasses.LightKanban;
+import common.dataClasses.LightUser;
 import java.util.List;
 import java.util.UUID;
 
@@ -18,7 +18,7 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
 
     @Override
     public List<LightKanban> getMyListLightKanbans(){
-        return provider.getMyModel().getLocalUser().getMyLightKanbans();
+        return provider.getMyModel().getMyLightKanbans();
     }
 
     @Override
