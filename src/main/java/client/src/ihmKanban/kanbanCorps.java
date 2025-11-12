@@ -1,9 +1,8 @@
-import interfaces.KanbanCallsData;
-import interfaces.KanbanCallsMain;
-import interfaces.KanbanCallsComm;
-import interfaces.CommCallsKanban;
-import interfaces.DataCallsKanban;
-import interfaces.MainCallsKanban;
+import client.src.interfaces.*; 
+import client.src.ihmKanban.CommCallsKanbanImpl; 
+import client.src.ihmKanban.DataCallsKanbanImpl;
+import client.src.ihmKanban.MainCallsKanbanImpl;
+import client.src.ihmKanban.ManageDisplay;
 
 
 public class kanbanCorps {
@@ -11,15 +10,16 @@ public class kanbanCorps {
     private DataCallsKanbanImpl requestFromData;
     private MainCallsKanbanImpl requestFromMain;
     private ManageDisplay myManageDisplay;
-    private KanbanCallsData requestToData;
+    private KanbanCallsDataClient requestToData;
     private KanbanCallsMain requestToMain;
-    private KanbanCallsComm requestToComm;
+    private IhmKanbanCallsComm requestToComm;
 
-    void initialize() {
+    kanbanCorps() {
+        /* 
         requestFromComm = new CommCallsKanbanImpl(this);
         requestFromData = new DataCallsKanbanImpl(this);
         requestFromMain = new MainCallsKanbanImpl(this);
-        myManageDisplay = new ManageDisplay(this);
+        myManageDisplay = new ManageDisplay(this);*/
 
     }
     CommCallsKanbanImpl getRequestFromComm(){
