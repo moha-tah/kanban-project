@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="client.src.ihmMain.controllers.HomeViewController"
+      alignment="CENTER" spacing="20" styleClass="root-dark"
+      prefWidth="1280" prefHeight="720">
+
+    <!-- Titre principal -->
+    <Label text="Home" styleClass="title"/>
+
+    <!-- Affichage de l'utilisateur connecté -->
+    <Label fx:id="connectedUserLabel"
+           text="Connecté en tant que : "
+
+           style="-fx-font-size: 18px; -fx-text-fill: #ffcc66;"/>
+
+</VBox>
