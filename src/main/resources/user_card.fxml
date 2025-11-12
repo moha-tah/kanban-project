@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.image.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<HBox fx:id="userCardRoot"
+      spacing="10" alignment="CENTER_LEFT"
+      xmlns="http://javafx.com/javafx/25"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="client.ihmMain.controllers.UserCardController"
+      style="-fx-background-color: transparent; -fx-padding: 5 0 5 0;">
+
+    <!-- Photo de profil -->
+    <ImageView fx:id="profilePic" fitHeight="38" fitWidth="38" preserveRatio="false"/>
+
+    <!-- Nom de l’utilisateur -->
+    <Label fx:id="usernameLabel" text="Nom d'utilisateur"
+           style="-fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold;" />
+</HBox>
