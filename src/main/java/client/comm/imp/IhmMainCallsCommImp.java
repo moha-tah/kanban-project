@@ -1,12 +1,13 @@
-package client.src.comm.imp;
+package client.comm.imp;
 
-import client.src.interfaces.IhmMainCallsComm;
-import client.src.comm.CommCoreClient;
+import client.comm.CommCoreClient;
+import client.interfaces.IhmMainCallsComm;
+
 import java.util.Objects;
 import java.util.UUID;
 import java.util.List;
-import common.src.dataClasses.LightKanban;
-import common.src.dataClasses.LightUser;
+import common.dataClasses.LightKanban;
+import common.dataClasses.LightUser;
 
 public class IhmMainCallsCommImp implements IhmMainCallsComm {
     private final CommCoreClient comm;
@@ -25,6 +26,11 @@ public class IhmMainCallsCommImp implements IhmMainCallsComm {
     }
 
     @Override
+    public void askAddListModifiers(UUID LightUserId) {
+        askListModifiers(LightUserId);
+    }
+
+    @Override
     public void sendPermissionRequest(UUID LightUserId, UUID LightKanbanId) {
     }
 
@@ -33,8 +39,10 @@ public class IhmMainCallsCommImp implements IhmMainCallsComm {
     }
 
     @Override
-    public void connectToServer(UUID LightUserId, List<LightKanban> listKanbans) {
+    public void connectServer(LightUser user, List<LightKanban> kanbans) {
+        connectionRequest(user, kanbans);
     }
+
 
     @Override
     public void connectionRequest(LightUser LightUser, List<LightKanban> listKanbans) {
@@ -51,7 +59,9 @@ public class IhmMainCallsCommImp implements IhmMainCallsComm {
     @Override
     public void askKanban(UUID LightKanbanId) {
     }
-
+    @Override
+    public void connectToServer(UUID LightUserId, List<LightKanban> listKanbans) {
+    }
     @Override
     public void getKanban(UUID LightKanbanId) {
     }

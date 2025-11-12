@@ -1,4 +1,4 @@
-package client.src.comm;
+package client.comm;
 
 import java.io.ObjectOutputStream;
 import java.io.IOException;

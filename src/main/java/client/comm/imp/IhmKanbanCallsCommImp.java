@@ -1,7 +1,8 @@
-package client.src.comm.imp;
+package client.comm.imp;
 
-import client.src.interfaces.IhmKanbanCallsComm;
-import client.src.comm.CommCoreClient;
+import client.comm.CommCoreClient;
+import client.interfaces.IhmKanbanCallsComm;
+
 import java.util.Objects;
 import java.util.UUID;
 
