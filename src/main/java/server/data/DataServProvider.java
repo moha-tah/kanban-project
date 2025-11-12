@@ -1,6 +1,6 @@
-package src.main.java.server.src.data;
+package server.data;
 
-import src.main.java.server.src.data.ServerModel;
+import server.data.ServerModel;
 
 public class DataServProvider {
 

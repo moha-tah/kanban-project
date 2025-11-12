@@ -1,10 +1,10 @@
-package server.src.data;
+package server.data;
 import java.util.List;
 import java.util.ArrayList;
-import common.src.dataClasses.Kanban;
-import common.src.dataClasses.LightUser;
-import server.src.data.AssociationUsersOnKanban;
-import common.src.dataClasses.LightKanban;
+import common.dataClasses.Kanban;
+import common.dataClasses.LightUser;
+import server.data.AssociationUsersOnKanban;
+import common.dataClasses.LightKanban;
 
 
 public class ServerModel {

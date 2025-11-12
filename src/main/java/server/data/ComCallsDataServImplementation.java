@@ -1,13 +1,13 @@
-package server.src.data;
+package server.data;
 
 import java.util.List;
 import java.util.UUID;
 
-import common.src.dataClasses.Kanban;
-import common.src.dataClasses.LightKanban;
-import common.src.dataClasses.LightUser;
-import common.src.dataClasses.Modification;
-import server.src.interfaces.CommCallsDataServer;
+import common.dataClasses.Kanban;
+import common.dataClasses.LightKanban;
+import common.dataClasses.LightUser;
+import common.dataClasses.Modification;
+import server.interfaces.CommCallsDataServer;
 
 public class ComCallsDataServImplementation implements CommCallsDataServer {
   private DataServProvider myProvider;

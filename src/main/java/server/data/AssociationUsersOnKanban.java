@@ -1,8 +1,9 @@
-package server.src.data;
+package server.data;
 import java.util.List;
+import java.util.ArrayList;
 
-import src.main.java.common.src.dataClasses.LightKanban;
-import src.main.java.common.src.dataClasses.LightUser;
+import common.dataClasses.LightKanban;
+import common.dataClasses.LightUser;
 
 public class AssociationUsersOnKanban {
     private LightKanban kanban;
@@ -10,7 +11,7 @@ public class AssociationUsersOnKanban {
 
     public AssociationUsersOnKanban(LightKanban kanban) {
         this.kanban = kanban;
-        this.usersOnKanban = new List<>();
+        this.usersOnKanban = new ArrayList <LightUser>();
     }
 
     public LightKanban getKanban() {
