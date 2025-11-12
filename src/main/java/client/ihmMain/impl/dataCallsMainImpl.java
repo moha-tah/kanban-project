@@ -59,6 +59,13 @@ public class dataCallsMainImpl implements DataClientCallsMain {
     }
 
     @Override
+    public void addUserToList(LightUser user, List<LightKanban> kanbans) {
+        core.addUser(user);
+        core.addKanbans(kanbans);
+        System.out.println("[Main->DataCB] addUserToList (2 params) user=" + user.getUsername());
+    }
+
+    @Override
     public void addKanbansList(List<LightKanban> kanbans) {
         core.addKanbans(kanbans);
         System.out.println("[Main->DataCB] addKanbansList size=" + kanbans.size());
