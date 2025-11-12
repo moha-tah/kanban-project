@@ -1,4 +1,4 @@
-package client.src.comm.messages;
+package client.comm.messages;
 
 import java.io.Serializable;
 import java.util.Optional;

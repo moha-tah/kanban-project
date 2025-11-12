@@ -1,8 +1,8 @@
-package client.src.comm.messages;
+package client.comm.messages;
 
 import java.util.Optional;
 import java.util.UUID;
-import common.src.dataClasses.LightUser;
+import common.dataClasses.LightUser;
 
 /**
  * Client -> Server: request to register/connect a user.

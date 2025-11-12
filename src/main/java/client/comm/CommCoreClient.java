@@ -1,16 +1,18 @@
-package client.src.comm;
+package client.comm;
 
 import java.net.Socket;
 import java.io.ObjectOutputStream;
 import java.io.ObjectInputStream;
 import java.io.IOException;
-import client.src.comm.imp.IhmMainCallsCommImp;
-import client.src.comm.imp.DataCallsCommImp;
-import client.src.comm.imp.IhmKanbanCallsCommImp;
-import client.src.interfaces.IhmMainCallsComm;
-import client.src.interfaces.DataCallsComm;
-import client.src.interfaces.IhmKanbanCallsComm;
-import client.src.comm.messages.Message;
+
+import client.interfaces.IhmMainCallsComm;
+import client.interfaces.DataCallsComm;
+import client.interfaces.IhmKanbanCallsComm;
+import client.comm.imp.DataCallsCommImp;
+import client.comm.imp.IhmKanbanCallsCommImp;
+import client.comm.imp.IhmMainCallsCommImp;
+import client.comm.messages.Message;
+
 import java.util.Optional;
 
 public class CommCoreClient {
@@ -102,26 +104,18 @@ public class CommCoreClient {
         if (msgReceiver != null) msgReceiver.stop();
         if (msgSender != null) msgSender.close();
     }
-    /**
-     * Synchronously send a message using the MsgSender helper.
-     */
+    
     public void sendMessage(Object message) throws IOException {
         if (msgSender == null) throw new IOException("Not connected or MsgSender not initialized");
         msgSender.send(message);
     }
 
-    // Deprecated: MessageDispatcher removed; use sendMessage(...) directly when needed.
-
-    /**
-     * Convenience: get MsgReceiver to attach a handler and start it.
-     */
+   
     public MsgReceiver getMsgReceiver() {
         return msgReceiver;
     }
 
-    /**
-     * Convenience: get MsgSender to send messages directly.
-     */
+   
     public MsgSender getMsgSender() {
         return msgSender;
     }
