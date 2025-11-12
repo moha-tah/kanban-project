@@ -1,7 +1,7 @@
-package src.main.java.client.src.data;
-import src.main.java.client.src.interfaces.DataCallsComm;
-import src.main.java.client.src.interfaces.DataClientCallsKanban;
-import src.main.java.client.src.interfaces.DataClientCallsMain;
+package client.data;
+import client.interfaces.DataCallsComm;
+import client.interfaces.DataClientCallsKanban;
+import client.interfaces.DataClientCallsMain;
 
 public class DataClientProvider {
 
