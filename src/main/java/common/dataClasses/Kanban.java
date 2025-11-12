@@ -80,4 +80,9 @@ public class Kanban extends LightKanban {
     public List<Column> getAllColumns() {
         return new ArrayList<>(taskColumn.keySet());
     }
+
+    // methode renvoie lightKanban a partir de Kanban
+    public LightKanban getLightKanban() { 
+        return new LightKanban(this.getId(),this.getTitle());
+    }
 }
