@@ -1,9 +1,9 @@
-package client.src.comm.messages;
+package client.comm.messages;
 
 import java.util.List;
 import java.util.Optional;
-import common.src.dataClasses.LightUser;
-import common.src.dataClasses.LightKanban;
+import common.dataClasses.LightUser;
+import common.dataClasses.LightKanban;
 
 /**
  * Server -> Client: sends the current users and kanbans lists.

@@ -1,13 +1,13 @@
-package client.src.comm.imp;
+package client.comm.imp;
 
 import java.util.UUID;
 import java.util.Arrays;
 import java.util.Objects;
 import java.io.IOException;
 
-import client.src.interfaces.DataCallsComm;
-import client.src.comm.CommCoreClient;
-import common.src.dataClasses.Kanban;
+import client.comm.CommCoreClient;
+import client.interfaces.DataCallsComm;
+import common.dataClasses.Kanban;
 
 public class DataCallsCommImp implements DataCallsComm {
     private final CommCoreClient comm;
