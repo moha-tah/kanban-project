@@ -15,4 +15,11 @@ public class CommCallsDataClientImplementation {
     public void setProvider(DataClientProvider provider) {
         this.provider = provider;
     }
+
+    //autres methodes
+    List<LightUsers> getUsersList() {
+        DataClientProvider prov = this.getProvider();
+        ClientModel model = prov.getMyModel();
+        return model.getConnectedUsers();
+    }
 }
