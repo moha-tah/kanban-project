@@ -3,7 +3,7 @@ package client.src.ihmKanban;
 public class ManageDisplay {
     private kanbanCorps myCorps; 
 
-    public ManageDisplay(myCorp) {
+    public ManageDisplay(kanbanCorps myCorp) {
         myCorps = myCorp; 
 
     }
