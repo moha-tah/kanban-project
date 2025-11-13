@@ -17,6 +17,13 @@ public class CommCallsDataClientImplementation implements ComCallsDataClient{
         provider.getMyModel().setConnectedUsers(users);
     }
 
+    public List<LightUser> getUsersList() {
+        DataClientProvider prov = this.getProvider();
+        ClientModel model = prov.getMyModel();
+        return model.getConnectedUsers();
+    }
+
+
     public void send(Kanban kanban){
         //TODO
     }

@@ -14,8 +14,8 @@ public class DataClientProvider {
     private DataClientCallsMain mainInterface;
 
     // Constructeur
-    public DataClientProvider() 
-            {
+    public DataClientProvider()
+    {
         this.myModel = new ClientModel();
         this.toKabanImpl = new KanbanCallsDataImplementation(this);
         this.toMainImpl = new MainCallsDataImplementation(this);

@@ -60,7 +60,7 @@ public class LoginController {
     @FXML
     private void onGoToSignup() {
         try {
-            MainApp.loadScene("/signup.fxml", "Sign up");
+            core.showSignupView();
         } catch (Exception e) {
             showError("Cannot open signup: " + e.getMessage());
         }
@@ -142,7 +142,7 @@ public class LoginController {
 
     private void navigateHome() {
         try {
-            MainApp.loadScene("/home.fxml", "Home");
+            core.showHomeView();
         } catch (Exception e) {
             showError("Cannot open Home: " + e.getMessage());
         }
