@@ -105,7 +105,7 @@ public class MainCore {
             stage.setScene(scene);
             stage.show();
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println("Error while launching main window: " + e.getMessage());
             throw new RuntimeException("Impossible d’ouvrir la fenêtre Login", e);
         }
     }
@@ -135,7 +135,7 @@ public class MainCore {
             stage.setScene(scene);
             stage.show();
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("Error while launching main window: " + e.getMessage());
         }
     }
 
