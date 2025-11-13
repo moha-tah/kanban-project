@@ -93,8 +93,10 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
     }
 
     @Override
-    public void sendCreateProfile(List<?> profileDetails){
-        throw new UnsupportedOperationException("sendCreateProfile not implemented yet");
+    public LightUser sendCreateProfile(String login, String password, String name, String surname,
+                                        int age, String avatar, String role, String permissions,
+                                        String contacts, String kanbanList, String status) {
+        return new LightUser(login);
     }
 
 
@@ -107,8 +109,5 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
     public void setProvider(DataClientProvider provider) {
         this.provider = provider;
     }
-
-
-
 
 }
