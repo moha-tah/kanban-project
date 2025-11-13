@@ -26,17 +26,16 @@ public class MainApp extends Application {
         COMM = new CommCoreClient("127.0.0.1", 8080);
         DATA = new DataClientProvider();
 
-        // Main -> Data (port sortant de Main vers Data)
-        MainCallsDataClient dataPort = DATA;
-        CORE.setDataPort(dataPort);
+        // Main -> Data
+        CORE.setDataPort(DATA.getToMainImpl());
 
-        // Main -> Comm (port sortant de Main vers Comm)
+        // Main -> Comm
         CORE.setCommPort(COMM.getIhmMainCallsComm());
 
-        // Data -> Main (callbacks Data vers Main)
+        // Data -> Main
         DATA.setMainInterface(CORE.getDATService());
 
-        // Data -> Comm (callbacks Data vers Comm)
+        // Data -> Comm
         DATA.setCommInterface(COMM.getDataCallsComm());
 
         CORE.launchMainWindow(primaryStage);
