@@ -102,7 +102,7 @@ public class SignupController {
         try {
             String imagePath = selectedImageFile != null ? selectedImageFile.getAbsolutePath() : "";
 
-            data.sendCreateProfile(firstName, lastName, username, password, birth.getYear(), "", "", "", "", "", imagePath);
+            data.sendCreateProfile(username, password, firstName, lastName, birth.getYear(), imagePath, "", "", "", "", "");
 
             data.saveUser();
 
