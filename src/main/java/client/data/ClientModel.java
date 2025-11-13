@@ -48,5 +48,6 @@ public class ClientModel {
     }
 
     public void saveUser(LightUser currentUser) {
+        throw new UnsupportedOperationException("saveUser not implemented yet");
     }
 }

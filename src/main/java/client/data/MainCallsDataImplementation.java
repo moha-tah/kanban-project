@@ -34,7 +34,9 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
     }
 
     @Override
-    public void saveUser(){}
+    public void saveUser(){
+        throw new UnsupportedOperationException("saveUser not implemented yet");
+    }
 
     @Override
     public boolean authentify(String username, String password) {
@@ -81,13 +83,19 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
 
 
     @Override
-    public void exportProfile(UUID lightUserId, String path){}
+    public void exportProfile(UUID lightUserId, String path){
+        throw new UnsupportedOperationException("exportProfile not implemented yet");
+    }
 
     @Override
-    public void importMyProfile(String path){}
+    public void importMyProfile(String path){
+        throw new UnsupportedOperationException("importMyProfile not implemented yet");
+    }
 
     @Override
-    public void sendCreateProfile(List<?> profileDetails){}
+    public void sendCreateProfile(List<?> profileDetails){
+        throw new UnsupportedOperationException("sendCreateProfile not implemented yet");
+    }
 
 
 
