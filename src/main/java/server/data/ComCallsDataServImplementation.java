@@ -39,8 +39,7 @@ public class ComCallsDataServImplementation implements CommCallsDataServer {
 
     @Override
     public boolean addAuthorizedUser(UUID kanbanId, UUID userId) {
-        boolean ret = new Boolean("FALSE");
-        return ret;
+        return Boolean.FALSE;
     }
 
     @Override

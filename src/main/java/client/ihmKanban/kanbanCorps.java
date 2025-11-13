@@ -1,8 +1,15 @@
-import client.src.interfaces.*; 
-import client.src.ihmKanban.CommCallsKanbanImpl; 
-import client.src.ihmKanban.DataCallsKanbanImpl;
-import client.src.ihmKanban.MainCallsKanbanImpl;
-import client.src.ihmKanban.ManageDisplay;
+package client.ihmKanban;
+
+import client.ihmKanban.controllers.ManageDisplay;
+import client.ihmKanban.impl.DataCallsKanbanImpl;
+import client.interfaces.IhmKanbanCallsComm;
+import client.interfaces.KanbanCallsDataClient;
+import client.interfaces.KanbanCallsMain;
+import client.ihmKanban.impl.CommCallsKanbanImpl;
+import client.ihmKanban.impl.DataCallsKanbanImpl;
+import client.ihmKanban.impl.MainCallsKanbanImpl;
+import client.src.interfaces.*;
+
 
 
 public class kanbanCorps {

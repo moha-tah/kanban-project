@@ -47,4 +47,7 @@ public class ClientModel {
         this.connectedUsers = connectedUsers;
     }
 
+    public void saveUser(LightUser currentUser) {
+        throw new UnsupportedOperationException("saveUser not implemented yet");
+    }
 }

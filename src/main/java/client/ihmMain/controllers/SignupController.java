@@ -85,7 +85,7 @@ public class SignupController {
     @FXML
     private void onBackToLogin() {
         try {
-            MainApp.loadScene("/login.fxml", "Login");
+            core.showLoginView();
         } catch (Exception e) {
             showError("Cannot return to Login: " + e.getMessage());
         }
@@ -126,7 +126,7 @@ public class SignupController {
 
     private void navigateBackToLogin() {
         try {
-            MainApp.loadScene("/login.fxml", "Login");
+            core.showLoginView();
         } catch (Exception e) {
             showError("Cannot open Home: " + e.getMessage());
         }

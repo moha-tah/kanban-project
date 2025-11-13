@@ -1,4 +1,6 @@
-package client.src.ihmKanban;
+package client.ihmKanban.impl;
+
+import client.ihmKanban.kanbanCorps;
 
 public class DataCallsKanbanImpl {
     private kanbanCorps myCorps; 
