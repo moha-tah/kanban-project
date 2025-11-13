@@ -31,7 +31,7 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
 
     @Override
     public boolean authentify(String username, String password){
-        return new Boolean("TRUE");  //TODO 
+        return Boolean.TRUE;  //TODO
     }
 
     @Override

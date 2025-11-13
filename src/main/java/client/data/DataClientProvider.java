@@ -2,8 +2,15 @@ package client.data;
 import client.interfaces.DataCallsComm;
 import client.interfaces.DataClientCallsKanban;
 import client.interfaces.DataClientCallsMain;
+import client.interfaces.MainCallsDataClient;
+import common.dataClasses.LightKanban;
+import common.dataClasses.LightUser;
 
-public class DataClientProvider {
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+public class DataClientProvider implements MainCallsDataClient {
 
     private ClientModel myModel;
     private KanbanCallsDataImplementation toKabanImpl;
@@ -14,7 +21,7 @@ public class DataClientProvider {
     private DataClientCallsMain mainInterface;
 
     // Constructeur
-    public DataClientProvider() 
+    public DataClientProvider()
             {
         this.myModel = new ClientModel();
         this.toKabanImpl = new KanbanCallsDataImplementation(this);
@@ -45,6 +52,9 @@ public class DataClientProvider {
         return this.mainInterface;
     }
 
+    private LightUser currentUser;
+    private final List<LightKanban> myKanbans = new ArrayList<>();
+
     //setters
     public void setMyModel(ClientModel model) {
         this.myModel = model;
@@ -66,6 +76,44 @@ public class DataClientProvider {
     }
     public void setMainInterface(DataClientCallsMain mainInterface) {
         this.mainInterface = mainInterface;
+    }
+
+    @Override
+    public void saveUser() {
+        if (currentUser != null) {
+            myModel.saveUser(currentUser);
+        }
+    }
+
+    @Override
+    public boolean authentify(String username, String password) {
+        return password != null && password.length() >= 6;
+    }
+
+    @Override
+    public LightUser getMyLightUser() {
+        return currentUser;
+    }
+
+    @Override
+    public List<LightKanban> getMyListLightKanbans() {
+        return new ArrayList<>(myKanbans);
+        //todo
+    }
+
+    @Override
+    public void exportProfile(UUID lightUserId, String path) {
+        // todo
+    }
+
+    @Override
+    public void importMyProfile(String path) {
+
+    }
+
+    @Override
+    public void sendCreateProfile(List<?> profileDetails) {
+
     }
 
     //methodes
