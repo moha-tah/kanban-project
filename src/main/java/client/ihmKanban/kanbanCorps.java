@@ -8,7 +8,6 @@ import client.interfaces.KanbanCallsMain;
 import client.ihmKanban.impl.CommCallsKanbanImpl;
 import client.ihmKanban.impl.DataCallsKanbanImpl;
 import client.ihmKanban.impl.MainCallsKanbanImpl;
-import client.src.interfaces.*;
 
 
 
