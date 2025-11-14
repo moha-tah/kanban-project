@@ -43,8 +43,8 @@ public class IhmMainCallsCommImp implements IhmMainCallsComm {
 
     @Override
     public void connectServer(LightUser user, List<LightKanban> kanbans) {
+        MessageConnectionRequest msg = new MessageConnectionRequest(user, kanbans);
         try {
-            MessageConnectionRequest msg = new MessageConnectionRequest(user, kanbans);
             comm.sendMessage(msg);
         } catch (IOException e) {
             System.err.println("[COMM] Erreur lors de l'envoi de MessageConnectionRequest : " + e.getMessage());

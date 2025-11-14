@@ -71,7 +71,7 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
         if (username == null || password == null) return false;
         try {
             Map<String, String> users = readJsonToMap(USERS_FILE);
-            String storedPassword = users.get(username);
+            String storedPassword = users.get(password);
             return storedPassword != null && storedPassword.equals(password);
         } catch (Exception e) {
             return false;

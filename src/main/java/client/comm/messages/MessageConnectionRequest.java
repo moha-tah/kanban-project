@@ -20,7 +20,6 @@ public class MessageConnectionRequest extends Message implements Serializable {
 
     @Override
     public Optional<Message> handle() {
-        // Côté client : rien à faire
         return Optional.empty();
     }
 
