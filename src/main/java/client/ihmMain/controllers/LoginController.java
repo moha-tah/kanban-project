@@ -27,10 +27,16 @@ public class LoginController {
     @FXML
     public void initialize() {
         core = MainApp.getCore();
-        if (errorLabel != null) errorLabel.setVisible(false);
+        if (errorLabel != null) {
+            errorLabel.setVisible(false);
+        }
 
-        if (ipField != null)   ipField.setText("127.0.0.1");
-        if (portField != null) portField.setText("8080");
+        if (ipField != null) {
+            ipField.setText("127.0.0.1");
+        }
+        if (portField != null) {
+            portField.setText("8080");
+        }
     }
 
     @FXML
@@ -72,7 +78,9 @@ public class LoginController {
         }
 
         List<LightKanban> myKanbans = loadMyKanbans();
-        if (myKanbans == null) myKanbans = Collections.emptyList();
+        if (myKanbans == null) {
+            myKanbans = Collections.emptyList();
+        }
 
         core.setMe(me);
         core.addKanbans(myKanbans);
@@ -83,13 +91,20 @@ public class LoginController {
     }
 
     // ---------------------------------------------------------------------
-    //                         CALLS TO DATA LAYER
+    //                 FACTORISATION ACCÈS DATA LAYER
     // ---------------------------------------------------------------------
 
-    private boolean authentify(String username, String password) {
+    private MainCallsDataClient getDataPortOrShowError() {
         MainCallsDataClient data = core.getDataPort();
         if (data == null) {
             showError("Data service unavailable.");
+        }
+        return data;
+    }
+
+    private boolean authentify(String username, String password) {
+        MainCallsDataClient data = getDataPortOrShowError();
+        if (data == null) {
             return false;
         }
         try {
@@ -101,7 +116,10 @@ public class LoginController {
     }
 
     private LightUser loadLightUser() {
-        MainCallsDataClient data = core.getDataPort();
+        MainCallsDataClient data = getDataPortOrShowError();
+        if (data == null) {
+            return null;
+        }
         try {
             return data.getMyLightUser();
         } catch (Exception e) {
@@ -111,7 +129,10 @@ public class LoginController {
     }
 
     private List<LightKanban> loadMyKanbans() {
-        MainCallsDataClient data = core.getDataPort();
+        MainCallsDataClient data = getDataPortOrShowError();
+        if (data == null) {
+            return Collections.emptyList();
+        }
         try {
             return data.getMyListLightKanbans();
         } catch (Exception e) {
@@ -126,7 +147,9 @@ public class LoginController {
 
     private void connectToServer(LightUser me, List<LightKanban> kanbans) {
         IhmMainCallsComm comm = core.getCommPort();
-        if (comm == null) return;
+        if (comm == null) {
+            return;
+        }
 
         try {
             comm.connectServer(me, kanbans);
@@ -134,8 +157,15 @@ public class LoginController {
             showError("Server connection failed: " + e.getMessage());
         }
     }
+
+    // ---------------------------------------------------------------------
+    //                             UTILITAIRES
+    // ---------------------------------------------------------------------
+
     private void showError(String msg) {
-        if (errorLabel == null) return;
+        if (errorLabel == null) {
+            return;
+        }
         if (msg == null || msg.isBlank()) {
             errorLabel.setVisible(false);
             return;
