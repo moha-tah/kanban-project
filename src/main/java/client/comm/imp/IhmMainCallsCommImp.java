@@ -1,8 +1,11 @@
 package client.comm.imp;
 
 import client.comm.CommCoreClient;
+import client.comm.messages.MessageConnectionRequest;
 import client.interfaces.IhmMainCallsComm;
 
+
+import java.io.IOException;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.List;
@@ -40,12 +43,17 @@ public class IhmMainCallsCommImp implements IhmMainCallsComm {
 
     @Override
     public void connectServer(LightUser user, List<LightKanban> kanbans) {
-        connectionRequest(user, kanbans);
+        try {
+            MessageConnectionRequest msg = new MessageConnectionRequest(user, kanbans);
+            comm.sendMessage(msg);
+        } catch (IOException e) {
+            System.err.println("[COMM] Erreur lors de l'envoi de MessageConnectionRequest : " + e.getMessage());
+        }
     }
 
-
     @Override
-    public void connectionRequest(LightUser LightUser, List<LightKanban> listKanbans) {
+    public void connectionRequest(LightUser user, List<LightKanban> kanbans) {
+        connectServer(user, kanbans);
     }
 
     @Override
