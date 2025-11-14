@@ -4,15 +4,16 @@ import client.MainApp;
 import client.ihmMain.MainCore;
 import client.interfaces.MainCallsDataClient;
 import client.interfaces.IhmMainCallsComm;
-
 import common.dataClasses.LightKanban;
 import common.dataClasses.LightUser;
-
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
 import java.util.Collections;
 import java.util.List;
+
+import static client.ihmMain.utils.UiFormUtils.safe;
+import static client.ihmMain.utils.UiFormUtils.showError;
 
 public class LoginController {
 
@@ -27,10 +28,10 @@ public class LoginController {
     @FXML
     public void initialize() {
         core = MainApp.getCore();
+
         if (errorLabel != null) {
             errorLabel.setVisible(false);
         }
-
         if (ipField != null) {
             ipField.setText("127.0.0.1");
         }
@@ -41,17 +42,17 @@ public class LoginController {
 
     @FXML
     private void onLogin() {
-        showError(null);
+        showError(errorLabel, null);
 
         String username = safe(usernameField.getText());
         String password = safe(passwordField.getText());
 
         if (username.isBlank()) {
-            showError("Username is required.");
+            showError(errorLabel, "Username is required.");
             return;
         }
         if (password.length() < 6) {
-            showError("Password must be ≥ 6 characters.");
+            showError(errorLabel, "Password must be ≥ 6 characters.");
             return;
         }
 
@@ -64,16 +65,15 @@ public class LoginController {
     }
 
     private void loginUser(String username, String password) {
-
         boolean ok = authentify(username, password);
         if (!ok) {
-            showError("Invalid username or password.");
+            showError(errorLabel, "Invalid username or password.");
             return;
         }
 
         LightUser me = loadLightUser();
         if (me == null) {
-            showError("Unable to load profile.");
+            showError(errorLabel, "Unable to load profile.");
             return;
         }
 
@@ -97,7 +97,7 @@ public class LoginController {
     private MainCallsDataClient getDataPortOrShowError() {
         MainCallsDataClient data = core.getDataPort();
         if (data == null) {
-            showError("Data service unavailable.");
+            showError(errorLabel, "Data service unavailable.");
         }
         return data;
     }
@@ -110,7 +110,7 @@ public class LoginController {
         try {
             return data.authentify(username, password);
         } catch (Exception e) {
-            showError("Auth error: " + e.getMessage());
+            showError(errorLabel, "Auth error: " + e.getMessage());
             return false;
         }
     }
@@ -123,7 +123,7 @@ public class LoginController {
         try {
             return data.getMyLightUser();
         } catch (Exception e) {
-            showError("Error loading profile: " + e.getMessage());
+            showError(errorLabel, "Error loading profile: " + e.getMessage());
             return null;
         }
     }
@@ -136,7 +136,7 @@ public class LoginController {
         try {
             return data.getMyListLightKanbans();
         } catch (Exception e) {
-            showError("Error loading Kanbans: " + e.getMessage());
+            showError(errorLabel, "Error loading Kanbans: " + e.getMessage());
             return Collections.emptyList();
         }
     }
@@ -150,32 +150,10 @@ public class LoginController {
         if (comm == null) {
             return;
         }
-
         try {
             comm.connectServer(me, kanbans);
         } catch (Exception e) {
-            showError("Server connection failed: " + e.getMessage());
+            showError(errorLabel, "Server connection failed: " + e.getMessage());
         }
-    }
-
-    // ---------------------------------------------------------------------
-    //                             UTILITAIRES
-    // ---------------------------------------------------------------------
-
-    private void showError(String msg) {
-        if (errorLabel == null) {
-            return;
-        }
-        if (msg == null || msg.isBlank()) {
-            errorLabel.setVisible(false);
-            return;
-        }
-        errorLabel.setText(msg);
-        errorLabel.setStyle("-fx-text-fill: red;");
-        errorLabel.setVisible(true);
-    }
-
-    private static String safe(String s) {
-        return s == null ? "" : s.trim();
     }
 }
