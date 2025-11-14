@@ -37,23 +37,20 @@ public class commCallsMainImpl implements CommClientCallsMain {
     }
 
     @Override
-    public void connectServer(LightUser user, List<LightKanban> kanbans) {
+    public void addUserToList(LightUser user, List<LightKanban> kanbans) {
+
         if (user == null) {
-            System.err.println("[CommCallsMainImpl] connectServer: user is null");
+            System.err.println("[Comm->Main] addUserToList: user is null");
             return;
         }
+        core.addUser(user);
 
-        // 1) Mettre à jour l’état IHM
-        core.setMe(user);
         if (kanbans != null && !kanbans.isEmpty()) {
             core.addKanbans(kanbans);
         }
 
-        // 2) Log pour debug
-        System.out.println(
-                "[CommCallsMainImpl] connectServer: user=" + user.getUsername()
-                        + ", kanbans=" + (kanbans == null ? 0 : kanbans.size())
-        );
-
+        System.out.println("[Comm->Main] addUserToList: "
+                + user.getUsername() + " (" + user.getId() + "), kanbans="
+                + (kanbans == null ? 0 : kanbans.size()));
     }
 }

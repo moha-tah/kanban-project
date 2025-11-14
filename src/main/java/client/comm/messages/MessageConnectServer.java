@@ -1,4 +1,4 @@
-package client.comm.messages; // <-- adapte ce package à ton projet
+package client.comm.messages;
 
 import java.util.List;
 import java.util.Optional;
@@ -9,6 +9,7 @@ import client.interfaces.CommClientCallsMain;
 import common.dataClasses.LightKanban;
 import common.dataClasses.LightUser;
 import javafx.application.Platform;
+import client.comm.messages.MessageConnectionRequest;
 
 /**
  * Message envoyé par le serveur au client pour confirmer la connexion
@@ -35,6 +36,7 @@ public class MessageConnectServer extends Message {
 
     @Override
     public Optional<Message> handle() {
+
         MainCore core = MainApp.getCore();
         if (core == null) {
             System.err.println("[MessageConnectServer] MainCore is null");
@@ -48,9 +50,14 @@ public class MessageConnectServer extends Message {
 
         CommClientCallsMain callbacks = core.getCOMMService();
         if (callbacks != null) {
-            callbacks.connectionRequest(user, kanbans);
+            try {
+                callbacks.connectionAccepted(user, kanbans);
+            } catch (Exception e) {
+                System.err.println("[MessageConnectServer] Callback failed: " + e.getMessage());
+            }
         }
 
+        // Affichage de l’écran Home
         Platform.runLater(core::showHomeView);
 
         return Optional.empty();
