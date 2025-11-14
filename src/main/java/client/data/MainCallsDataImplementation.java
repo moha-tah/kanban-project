@@ -109,7 +109,11 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
         return map;
     }
 
-    // Écriture très simple d'une Map vers un fichier JSON objet plat sans dépendances externes.
+    /**
+     * Écriture très simple d'une Map vers un fichier JSON objet plat sans dépendances externes.
+     * Cette méthode convertit une Map de paires clé-valeur en format JSON valide en construisant manuellement la chaîne JSON.
+     * Elle crée automatiquement le répertoire parent si nécessaire, échappe les caractères spéciaux dans les clés et valeurs, puis écrit le résultat dans le fichier spécifié.
+     */
     private void writeMapToJson(Path file, Map<String, String> map) throws IOException {
         // Créer le répertoire parent s'il n'existe pas
         if (file.getParent() != null && !Files.exists(file.getParent())) {
@@ -135,7 +139,11 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
         Files.write(file, json.toString().getBytes(StandardCharsets.UTF_8));
     }
 
-    // Sérialise un User en JSON
+    /**
+     * Sérialise un User en JSON.
+     * Cette méthode convertit un objet User (ou SecureUser) en chaîne JSON en extrayant tous ses attributs (id, username, firstName, lastName, birthDate, avatar).
+     * Si l'utilisateur est un SecureUser, elle inclut également le hash du mot de passe dans le JSON pour permettre sa restauration ultérieure.
+     */
     private String serializeUserToJson(User user) {
         StringBuilder json = new StringBuilder("{");
         json.append("\"id\":\"").append(escapeJson(user.getId().toString())).append("\",");
@@ -154,7 +162,11 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
         return json.toString();
     }
 
-    // Désérialise un User depuis JSON
+    /**
+     * Désérialise un User depuis JSON.
+     * Cette méthode parse une chaîne JSON pour reconstruire un objet User, en extrayant tous les champs nécessaires (id, username, firstName, lastName, birthDate, avatar).
+     * Si un passwordHash est présent dans le JSON, elle crée un SecureUser et utilise la réflexion pour restaurer le hash du mot de passe stocké.
+     */
     private User deserializeUserFromJson(String jsonContent) throws IOException {
         // Parser simple du JSON
         Map<String, String> fields = parseJsonObject(jsonContent);
@@ -203,7 +215,11 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
         return user;
     }
 
-    // Charge un User depuis un fichier
+    /**
+     * Charge un User depuis un fichier.
+     * Cette méthode lit le fichier JSON correspondant à un utilisateur dans le répertoire data/users/ et le désérialise en objet User.
+     * Elle retourne null si le fichier n'existe pas ou si une erreur survient lors de la lecture, en affichant un message d'erreur dans la console.
+     */
     private User loadUser(String username) {
         try {
             Path userFile = USERS_DIR.resolve(username + ".json");
@@ -219,7 +235,11 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
         }
     }
 
-    // Parse un objet JSON simple en Map
+    /**
+     * Parse un objet JSON simple en Map.
+     * Cette méthode analyse une chaîne JSON et extrait toutes les paires clé-valeur dans une Map, en gérant correctement les virgules à l'intérieur des valeurs grâce à un système de profondeur (depth).
+     * Elle supprime les accolades externes, sépare les champs en tenant compte des structures imbriquées, puis déséchappe les clés et valeurs avant de les stocker dans la Map.
+     */
     private Map<String, String> parseJsonObject(String json) {
         Map<String, String> map = new HashMap<>();
         if (json == null || json.trim().isEmpty()) {
@@ -264,7 +284,11 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
         return map;
     }
 
-    // Échappe une chaîne pour JSON
+    /**
+     * Échappe une chaîne pour JSON.
+     * Cette méthode convertit les caractères spéciaux d'une chaîne en séquences d'échappement JSON valides pour éviter les erreurs de parsing.
+     * Elle remplace les backslashes, guillemets doubles, retours à la ligne et tabulations par leurs équivalents échappés (\\, \", \n, \r, \t).
+     */
     private String escapeJson(String str) {
         if (str == null) return "";
         return str.replace("\\", "\\\\")
@@ -274,7 +298,11 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
                   .replace("\t", "\\t");
     }
 
-    // Déséchappe une chaîne JSON
+    /**
+     * Déséchappe une chaîne JSON.
+     * Cette méthode restaure les caractères originaux d'une chaîne JSON en convertissant les séquences d'échappement en leurs caractères réels.
+     * Elle remplace les séquences échappées (\\\", \\\\, \\n, \\r, \\t) par leurs caractères correspondants (", \, saut de ligne, retour chariot, tabulation).
+     */
     private String unescapeJson(String str) {
         if (str == null) return "";
         return str.replace("\\\"", "\"")
@@ -340,3 +368,16 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
     }
 
 }
+
+/*
+saveUser()
+  └─> serializeUserToJson()
+        └─> escapeJson() (6 fois)
+sendCreateProfile()
+  └─> writeMapToJson()
+authentify() (ne contient pas loadUser() pour l'instant)
+  └─> loadUser() (non utilisée actuellement)
+        └─> deserializeUserFromJson()
+                └─> parseJsonObject()
+                    └─> unescapeJson() (2 fois)
+ */
