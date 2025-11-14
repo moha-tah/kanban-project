@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.UUID;
 import java.security.MessageDigest;
 
-import static com.sun.javafx.util.Utils.stripQuotes;
 
 
 public class MainCallsDataImplementation implements MainCallsDataClient {
@@ -24,6 +23,18 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
 
     private static final Path USERS_FILE = Path.of("data", "users.json");
     private static final Path USERS_DIR = Path.of("data", "users");
+
+    private static String stripQuotes(String s) {
+        if (s == null) {
+            return null;
+        }
+        String trimmed = s.trim();
+        int len = trimmed.length();
+        if (len >= 2 && trimmed.charAt(0) == '"' && trimmed.charAt(len - 1) == '"') {
+            return trimmed.substring(1, len - 1);
+        }
+        return trimmed;
+    }
     //Constructeur
     public MainCallsDataImplementation(DataClientProvider provider) {
         this.provider = provider;
