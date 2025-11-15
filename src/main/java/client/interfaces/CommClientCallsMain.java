@@ -8,5 +8,5 @@ public interface CommClientCallsMain {
     void displayDecision(LightUser user, LightKanban kanban, boolean decision);
     void displayPermissionRequest(LightUser user, LightKanban kanban);
     void connectionAccepted(LightUser user, List<LightKanban> kanban);
-    void connectServer(LightUser user, List<LightKanban> kanbans);
+    void addUserToList(LightUser user, List<LightKanban> kanban);
 }
