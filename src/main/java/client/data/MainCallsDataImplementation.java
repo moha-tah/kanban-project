@@ -97,7 +97,6 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
             return isValid;
         } catch (Exception e) {
             System.err.println("Erreur lors de l'authentification de " + username + ": " + e.getMessage());
-            e.printStackTrace();
             return false;
         }
     }
