@@ -6,17 +6,24 @@ import java.util.UUID;
 
 public class Kanban extends LightKanban {
     private HashMap<Column, List<Task>> taskColumn;
-    
+    private String visibility; // public / private
+    private User creator;
+
+
     // Constructeur
-    public Kanban(String title) {
+    public Kanban(String title , String visibility, User creator) {
         super(title);
         this.taskColumn = new HashMap<>();
+        this.visibility = visibility;
+        this.creator = creator;
     }
     
     // Constructeur avec ID
-    public Kanban(UUID id, String title) {
+    public Kanban(UUID id, String title, String visibility, User creator) {
         super(id, title);
+        this.visibility = visibility;
         this.taskColumn = new HashMap<>();
+        this.creator = creator;
     }
     
     // Getters
@@ -84,5 +91,13 @@ public class Kanban extends LightKanban {
     // methode renvoie lightKanban a partir de Kanban
     public LightKanban getLightKanban() { 
         return new LightKanban(this.getId(),this.getTitle());
+    }
+
+    public String getVisibility() {
+        return visibility;
+    }
+
+    public User getCreator() {
+        return creator;
     }
 }

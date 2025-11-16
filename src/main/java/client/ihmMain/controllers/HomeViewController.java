@@ -6,12 +6,18 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+
 import java.io.IOException;
+import java.time.LocalDate;
+
+import common.dataClasses.User;
 
 public class HomeViewController {
 
@@ -22,6 +28,14 @@ public class HomeViewController {
     @FXML private TextField searchField;
     @FXML private Button createKanbanButton;
     @FXML private ImageView profilePic;
+
+
+    @FXML private Pane notifPanel;
+    @FXML private VBox notifContainer;
+
+    private boolean notifVisible = false;
+
+
 
     @FXML
     private void initialize() {
@@ -36,20 +50,29 @@ public class HomeViewController {
     private void loadDummyKanbans() {
         System.out.println("📋 Loading dummy Kanban cards...");
 
-        addKanban(createdKanbansContainer, "Projet Alpha", "Alice", 5, "Active", "#72e379");
-        addKanban(createdKanbansContainer, "Projet Beta", "Bob", 4, "Active", "#72e379");
+        User alice = new User("aaalice","Alice","Biden", LocalDate.of(1990, 5, 15));
+        User chloe = new User("ccchloe","Chloe","Smith", LocalDate.of(1988, 8, 22));
 
-        addKanban(participateKanbansContainer, "Projet Gamma", "Chloe", 3, "Active", "#f79a3e");
-        addKanban(availableKanbansContainer, "Projet Delta", "Eve", 4, "Pending", "#d16ef5");
+        User eve = new User("eeve","Eve","Davis", LocalDate.of(1992, 12, 1));
+
+        // Kanbans créés par l’utilisateur → en général publics ou privés
+        addKanban(createdKanbansContainer, "Projet Alpha", alice, 5, "public", "#72e379");
+        addKanban(createdKanbansContainer, "Projet Beta", alice, 4, "private", "#72e379");
+
+        // Kanbans où l’utilisateur participe
+        addKanban(participateKanbansContainer, "Projet Gamma", chloe, 3, "public", "#f79a3e");
+
+        // Kanbans disponibles → peut être privés (demander accès)
+        addKanban(availableKanbansContainer, "Projet Delta", eve, 4, "private", "#d16ef5");
     }
 
-    private void addKanban(HBox container, String title, String creator, int columns, String status, String color) {
+    private void addKanban(HBox container, String title, User creator, int columns, String visibility, String color) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/kanban_card.fxml"));
             Node card = loader.load();
 
             KanbanCardController controller = loader.getController();
-            controller.setKanbanData(title, creator, columns, status, color);
+            controller.setKanbanData(title, creator, columns, visibility, color);
 
             container.getChildren().add(card);
             System.out.println("✅ Added Kanban card: " + title);
@@ -112,8 +135,43 @@ public class HomeViewController {
 
     @FXML
     private void handleNotif() {
-        System.out.println("🔔 Notifications — à implémenter plus tard.");
+        notifVisible = !notifVisible;
+
+        notifPanel.setVisible(notifVisible);
+        notifPanel.setMouseTransparent(!notifVisible);
+
+        if (notifVisible) {
+            System.out.println("Ouverture du panneau de notifications");
+            loadNotifications();
+        } else {
+            System.out.println("Fermeture du panneau de notifications");
+        }
     }
+
+    private void loadNotifications() {
+        notifContainer.getChildren().clear();
+
+            addNotification("Invitation à rejoindre Projet Alpha");
+            addNotification("Chloe a commenté votre tâche");
+            addNotification("Nouvelle mise à jour du Kanban Delta");
+        }
+
+        private void addNotification(String message) {
+        HBox box = new HBox();
+        box.setSpacing(10);
+        box.setStyle("-fx-background-color: #f2f2f2; -fx-padding: 10; -fx-background-radius: 8;");
+        box.getStyleClass().add("notification-item");
+
+        Label msg = new Label(message);
+        msg.setStyle("-fx-font-size: 14;");
+
+        box.getChildren().add(msg);
+
+        notifContainer.getChildren().add(box);
+    }
+
+
+
 
     @FXML
     private void handleLogout() {
@@ -121,7 +179,7 @@ public class HomeViewController {
     }
 
     // ===============================================================
-    // 🔁 MÉTHODE UTILITAIRE POUR CHANGER DE SCÈNE
+    // 🔁 SWITCH DE SCÈNE UTILITAIRE
     // ===============================================================
     private void switchScene(String fxmlPath, String title, Node triggerNode) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
