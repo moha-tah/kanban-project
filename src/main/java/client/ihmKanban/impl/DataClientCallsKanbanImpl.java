@@ -3,6 +3,7 @@ package client.ihmKanban.impl;
 import client.interfaces.DataClientCallsKanban;
 import common.dataClasses.Kanban;
 import client.ihmKanban.kanbanCorps;
+import common.dataClasses.LightKanban;
 
 /** Impl des callbacks de la couche Communication vers la couche Kanban (IHM Kanban). */
 public class DataClientCallsKanbanImpl implements DataClientCallsKanban {
@@ -14,7 +15,7 @@ public class DataClientCallsKanbanImpl implements DataClientCallsKanban {
     }
 
     @Override
-    public void displayKanban(Kanban kanban) {
+    public void displayKanban(LightKanban kanban) {
         // A IMPLEMENTER 
         System.out.println("[Data->kanban] Display kanban : "
                 + "kanban=" + kanban);

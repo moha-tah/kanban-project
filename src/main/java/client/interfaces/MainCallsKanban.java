@@ -7,7 +7,7 @@ import common.dataClasses.LightKanban;
 
 // MainCallsKanban
 public interface MainCallsKanban {
-    void openCreateFrom(LightKanban lightKanban);
+    void openCreateForm(LightKanban lightKanban);
     void displaySnapshotList();
 
 }

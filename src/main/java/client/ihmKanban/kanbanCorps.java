@@ -10,8 +10,8 @@ import client.interfaces.DataClientCallsKanban;
 import client.interfaces.MainCallsKanban;
 import client.interfaces.CommClientCallsKanban;
 
-import client.ihmKanban.impl.CommCallsKanbanImpl;
-import client.ihmKanban.impl.DataCallsKanbanImpl;
+import client.ihmKanban.impl.CommClientCallsKanbanImpl;
+import client.ihmKanban.impl.DataClientCallsKanbanImpl;
 import client.ihmKanban.impl.MainCallsKanbanImpl;
 
 import common.dataClasses.LightKanban;
@@ -49,8 +49,8 @@ public class kanbanCorps {
 
 
     // ---- Impl des callbacks (autres couches -> Kanban) ----
-    private final DataCallsKanbanImpl  datCallbacks   = new DataCallsKanbanImpl(this);
-    private final CommCallsKanbanImpl  commCallbacks  = new CommCallsKanbanImpl(this);
+    private final DataClientCallsKanbanImpl  datCallbacks   = new DataClientCallsKanbanImpl(this);
+    private final CommClientCallsKanbanImpl  commCallbacks  = new CommClientCallsKanbanImpl(this);
     private final MainCallsKanbanImpl mainCallbacks = new MainCallsKanbanImpl(this);
 
     public void launchApp() {
