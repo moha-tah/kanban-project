@@ -23,6 +23,10 @@ public class CommCallsDataClientImplementation implements ComCallsDataClient{
         return model.getConnectedUsers();
     }
 
+    public UUID askIdUser(){
+        return this.provider.getMyModel().getLocalUser().getId();
+    }
+
 
     public void send(Kanban kanban){
         //TODO
