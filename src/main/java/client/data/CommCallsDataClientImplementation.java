@@ -11,7 +11,9 @@ import java.util.UUID;
 
 public class CommCallsDataClientImplementation implements ComCallsDataClient{
     private DataClientProvider provider;
+ 
 
+    @Override
     public void updateUserList(List<LightUser> users, List<LightKanban> kanbans){
         provider.getMyModel().setMyLightKanbans(kanbans);
         provider.getMyModel().setConnectedUsers(users);
@@ -22,28 +24,33 @@ public class CommCallsDataClientImplementation implements ComCallsDataClient{
         ClientModel model = prov.getMyModel();
         return model.getConnectedUsers();
     }
-
+    @Override
     public UUID askIdUser(){
         return this.provider.getMyModel().getLocalUser().getId();
     }
 
 
+    @Override
     public void send(Kanban kanban){
         //TODO
     }
 
+    @Override
     public void updateLists(LightUser user){
         //TODO
     }
 
+    @Override
     public void uploadKanbans(LightKanban kanban){
         //TODO
     }
 
+    @Override
     public void addListModifiers(LightUser user, LightKanban kanban){
         //TODO
     }
 
+    @Override
     public boolean addAuthorizedUser(UUID kanbanId, UUID userId){
         //TODO
         return true;
@@ -58,7 +65,7 @@ public class CommCallsDataClientImplementation implements ComCallsDataClient{
     }
 
     public void saveTempKanban(Kanban kanban){
-        //TODO
+        provider.getMyModel().setCurrentKanban(kanban);
     }
 
     public void addUserToList(LightUser user, List<LightKanban> kanbans){
