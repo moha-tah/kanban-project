@@ -13,7 +13,7 @@ import client.interfaces.CommClientCallsKanban;
 import client.ihmKanban.impl.CommClientCallsKanbanImpl;
 import client.ihmKanban.impl.DataClientCallsKanbanImpl;
 import client.ihmKanban.impl.MainCallsKanbanImpl;
-
+import common.dataClasses.Kanban;
 import common.dataClasses.LightKanban;
 import common.dataClasses.LightUser;
 import javafx.fxml.FXMLLoader;
@@ -83,6 +83,12 @@ public class kanbanCorps {
         kanbans.add(k);
     }
 
+    private Kanban kanban;
+
+    public void setKanban(Kanban kanban) {
+        this.kanban = kanban;
+    }
+
     public void addKanbans(List<LightKanban> list) { for (var k : list) addOrReplaceKanban(k); }
 
     public void addUser(LightUser u) {
@@ -95,6 +101,7 @@ public class kanbanCorps {
         System.out.println("[MainCore] updateAllKanbansForUser: " + userId);
     }
 
+    /*
     public void launchMainWindow(Stage stage, LightKanban kanban) {
         try {
             final String first = "/displayKanban.fxml";
@@ -114,7 +121,7 @@ public class kanbanCorps {
             System.err.println("Error while launching main window: " + e.getMessage());
             throw new RuntimeException("Impossible d’ouvrir la fenêtre Login", e);
         }
-    }
+    }*/
 
 
     private void loadScene(String fxmlPath, String title) {

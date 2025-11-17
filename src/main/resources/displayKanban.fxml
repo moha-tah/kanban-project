@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.*?>
 
 <BorderPane xmlns:fx="http://javafx.com/fxml"
-            fx:controller="client.ihmKanban.DisplayKanbanController">
+            fx:controller="client.ihmKanban.controllers.DisplayKanbanController">
 
     <!-- HEADER -->
     <top>
