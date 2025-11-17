@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="client.ihmKanban.DisplayKanbanController">
+
+    <!-- HEADER -->
+    <top>
+        <HBox alignment="CENTER" style="-fx-padding: 20;">
+            <Label fx:id="kanbanTitle"
+                   style="-fx-font-size: 28px; -fx-font-weight: bold;"/>
+        </HBox>
+    </top>
+
+    <!-- CONTENU PRINCIPAL : scroll horizontal -->
+    <center>
+        <ScrollPane fitToHeight="true"
+                    hbarPolicy="ALWAYS"
+                    vbarPolicy="NEVER"
+                    style="-fx-background:transparent;">
+            <HBox fx:id="columnsContainer"
+                  spacing="25"
+                  style="-fx-padding: 20;">
+            </HBox>
+        </ScrollPane>
+    </center>
+
+</BorderPane>

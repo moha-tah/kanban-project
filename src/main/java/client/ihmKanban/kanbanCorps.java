@@ -60,15 +60,15 @@ public class kanbanCorps {
     // Exposition des callbacks (pour câblage)
     public DataClientCallsKanban getDATService()   { return datCallbacks; }
     public CommClientCallsKanban  getCOMMService() { return commCallbacks; }
-    public MainCallsKanban      getKANBANService(){ return mainCallbacks; }
+    public MainCallsKanban      getMAINService(){ return mainCallbacks; }
 
     // Injection des ports sortants
     public void setDataPort(KanbanCallsDataClient dataPort) { this.dataPort = dataPort; }
-    public void setKanbanPort(KanbanCallsMain mainPort) { this.mainPort = mainPort; }
+    public void setMainPort(KanbanCallsMain mainPort) { this.mainPort = mainPort; }
     public void setCommPort(IhmKanbanCallsComm commPort)    { this.commPort = commPort; }
 
     public KanbanCallsDataClient getDataPort() { return dataPort; }
-    public KanbanCallsMain getKanbanPort()   { return mainPort; }
+    public KanbanCallsMain getMainPort()   { return mainPort; }
     public IhmKanbanCallsComm getCommPort()    { return commPort; }
 
     // Accès état
@@ -145,13 +145,9 @@ public class kanbanCorps {
             System.err.println("Error while launching main window: " + e.getMessage());
         }
     }
-    /* ce qui est fait chez main s'en inspirée pour la suite 
-    public void showLoginView()  { loadScene("/login.fxml",  "Login"); }
-    public void showSignupView() { loadScene("/signup.fxml", "Sign up"); }
-    public void showHomeView()   { loadScene("/home.fxml",   "Home"); }
-    public void showLandingView() { loadScene("/landing.fxml", "Welcome");}
-    
-     */
+
+    public void displayKanban()  { loadScene("/displayKanban.fxml",  "Kanban"); }
+
 
 
 }
