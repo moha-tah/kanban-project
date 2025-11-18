@@ -6,7 +6,6 @@ import java.io.ObjectOutputStream;
 import java.net.BindException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Optional;
 
 // Fallback: common.messages.Message was not available, we declare a local package-level Message
 // interface at the end of this file so this compilation unit can compile independently.
@@ -98,14 +97,14 @@ public class CommCoreServer {
 
             // Création du Receiver avec la logique de réaction (Callback)
             SrvMsgReceiver msgReceiver = new SrvMsgReceiver(in, (obj) -> {
-                if (obj instanceof Message receivedMsg) {
+                if (obj instanceof client.comm.messages.Message receivedMsg) {
                     
                     // ----------------------------------------------------
                     // C'est ICI que la méthode handle() du message est exécutée
                     // (Ex: MsgRequestKanban.handle() qui interroge la BDD)
                     // ----------------------------------------------------
                     try {
-                        Optional<Message> response = receivedMsg.handle();
+                        java.util.Optional<client.comm.messages.Message> response = receivedMsg.handle();
 
                         // Si handle() retourne une réponse (ex: MsgSendKanban), on l'envoie
                         if (response.isPresent()) {
@@ -135,12 +134,7 @@ public class CommCoreServer {
     }
 }
 
-// Fallback package-local Message interface to replace missing common.messages.Message.
-// This matches the minimal contract used in this file: a handle() method returning
-// an Optional<Message> and possibly throwing exceptions.
-interface Message {
-    java.util.Optional<Message> handle() throws Exception;
-}
+// Note: We now rely on client.comm.messages.Message for the contract
 
 // --- Local helper classes to send/receive messages ---
 class SrvMsgSender implements AutoCloseable {

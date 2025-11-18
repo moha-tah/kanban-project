@@ -2,10 +2,12 @@ package client.comm.imp;
 
 import client.comm.CommCoreClient;
 import client.comm.messages.MessageConnectionRequest;
+import client.comm.messages.RequestPermission;
+import client.comm.messages.PermissionResponse;
+import client.comm.messages.NotifyDecision;
 import client.interfaces.IhmMainCallsComm;
 
 
-import java.io.IOException;
 import java.util.Objects;
 import java.util.UUID;
 import java.io.IOException;
@@ -50,10 +52,24 @@ public class IhmMainCallsCommImp implements IhmMainCallsComm {
 
     @Override
     public void sendPermissionRequest(UUID LightUserId, UUID LightKanbanId) {
+        try {
+            RequestPermission msg = new RequestPermission(LightUserId, LightKanbanId);
+            commCore.sendMessage(msg);
+            System.out.println("[COMM] sendPermissionRequest user=" + LightUserId + " kanban=" + LightKanbanId);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void sendPermissionResponse(UUID LightUserId, UUID LightKanbanId, boolean accepted) {
+        try {
+            PermissionResponse msg = new PermissionResponse(LightUserId, LightKanbanId, accepted);
+            commCore.sendMessage(msg);
+            System.out.println("[COMM] sendPermissionResponse user=" + LightUserId + " kanban=" + LightKanbanId + " accepted=" + accepted);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -83,6 +99,13 @@ public class IhmMainCallsCommImp implements IhmMainCallsComm {
 
     @Override
     public void notifyDecision(UUID LightUserId, UUID LightKanbanId, boolean accepted) {
+        try {
+            NotifyDecision msg = new NotifyDecision(LightUserId, LightKanbanId, accepted);
+            commCore.sendMessage(msg);
+            System.out.println("[COMM] notifyDecision user=" + LightUserId + " kanban=" + LightKanbanId + " accepted=" + accepted);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
