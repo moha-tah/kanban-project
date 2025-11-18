@@ -1,10 +1,10 @@
 package server.data;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
+
 import common.dataClasses.Kanban;
-import common.dataClasses.LightUser;
-import server.data.AssociationUsersOnKanban;
 import common.dataClasses.LightKanban;
+import common.dataClasses.LightUser;
 
 
 public class ServerModel {
@@ -18,13 +18,16 @@ public class ServerModel {
         this.usersOnKanbans = new ArrayList<AssociationUsersOnKanban>();
     }
 
-    public List<LightKanban> getInUseKanbans() {
+    public List<LightKanban> getInUseLightKanbans() {
         ArrayList<LightKanban> myList = new  ArrayList<LightKanban>();
         for (Kanban l:inUseKanbans) {
             myList.add(l.getLightKanban());
         }
 
         return myList;
+    }
+    public List<Kanban> getInUseKanbans() {
+        return inUseKanbans;
     }
     public List<LightUser> getConnectedUsers() {
         return connectedUsers;
