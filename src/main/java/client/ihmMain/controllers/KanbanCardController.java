@@ -24,13 +24,9 @@ public class KanbanCardController {
     @FXML private Button requestButton;
     @FXML private Button deleteButton;
 
-    // private String title = kanban.getTitle();
     private String title ;
-    // private User creator = kanban.getCreator();
     private User creator ;
-    // private int columns = kanban.getAllColumns().size();
     private int columns ;
-    // private String visibility = kanban.getVisibility();
     private String visibility ;
     private String color ; 
     
