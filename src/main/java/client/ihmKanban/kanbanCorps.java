@@ -116,6 +116,7 @@ public class kanbanCorps {
             controller.setKanban(this.kanban);
             Scene scene = new Scene(root, 1280, 720);
 
+
             URL cssUrl = MainApp.class.getResource("/styles.css");
             if (cssUrl != null) {
                 scene.getStylesheets().setAll(cssUrl.toExternalForm());
