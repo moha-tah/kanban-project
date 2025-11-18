@@ -17,7 +17,23 @@ public class ComCallsDataServImplementation implements CommCallsDataServer {
   }
   @Override
     public Kanban requestKanban(LightUser user, LightKanban kanban) {
-        return null; //TODO V2
+        ServerModel model = myProvider.getModel();
+        List<Kanban> inUseKanbans = model.getInUseKanbans();
+        Kanban myKanban = null;
+        for (Kanban k : inUseKanbans) {
+            LightKanban lightK = k.getLightKanban();
+            if (lightK.getId().equals(kanban.getId())) {
+                myKanban = k;
+                break;
+            }
+        }
+        //doute sur la méthode, peut etre que les classes ont des problèmes d'implémentation (manque d'attributs ?)
+        if(myKanban.canBeModifiedBy(user)){
+            return myKanban;
+        }
+        else{
+            return null;
+        }
     }
 
     @Override
@@ -62,7 +78,7 @@ public class ComCallsDataServImplementation implements CommCallsDataServer {
 
     @Override
     public List<LightKanban> getKanbansList() {
-        return myProvider.getModel().getInUseKanbans();
+        return myProvider.getModel().getInUseLightKanbans();
     }
 
     @Override
