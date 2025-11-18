@@ -1,7 +1,6 @@
 package client.comm.imp;
 
 import client.comm.CommCoreClient;
-import client.comm.messages.MessageConnectionRequest;
 import client.comm.messages.RequestPermission;
 import client.comm.messages.PermissionResponse;
 import client.comm.messages.NotifyDecision;
@@ -46,7 +45,8 @@ public class IhmMainCallsCommImp implements IhmMainCallsComm {
                 System.out.println("COMM IMP: Demande envoyée." + msg);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            java.util.logging.Logger.getLogger(IhmMainCallsCommImp.class.getName())
+                    .log(java.util.logging.Level.SEVERE, "IhmMainCallsCommImp: Erreur lors de l'envoi de AskAddListModifiers.", e);
         }
     }
 
@@ -57,7 +57,8 @@ public class IhmMainCallsCommImp implements IhmMainCallsComm {
             commCore.sendMessage(msg);
             System.out.println("[COMM] sendPermissionRequest user=" + LightUserId + " kanban=" + LightKanbanId);
         } catch (Exception e) {
-            e.printStackTrace();
+            java.util.logging.Logger.getLogger(IhmMainCallsCommImp.class.getName())
+                    .log(java.util.logging.Level.SEVERE, "IhmMainCallsCommImp: Erreur dans sendPermissionRequest.", e);
         }
     }
 
@@ -68,7 +69,8 @@ public class IhmMainCallsCommImp implements IhmMainCallsComm {
             commCore.sendMessage(msg);
             System.out.println("[COMM] sendPermissionResponse user=" + LightUserId + " kanban=" + LightKanbanId + " accepted=" + accepted);
         } catch (Exception e) {
-            e.printStackTrace();
+            java.util.logging.Logger.getLogger(IhmMainCallsCommImp.class.getName())
+                    .log(java.util.logging.Level.SEVERE, "IhmMainCallsCommImp: Erreur dans sendPermissionResponse.", e);
         }
     }
 
@@ -84,11 +86,12 @@ public class IhmMainCallsCommImp implements IhmMainCallsComm {
             if (commCore.getMsgSender() != null) {
                 commCore.sendMessage(msg);
             } else {
-                System.err.println("ERREUR: Impossible d'envoyer la demande de connexion (Socket non connecté ?)");
+                java.util.logging.Logger.getLogger(IhmMainCallsCommImp.class.getName())
+                        .log(java.util.logging.Level.WARNING, "IhmMainCallsCommImp: Impossible d'envoyer la demande de connexion (Socket non connecté ?)");
             }
         } catch (IOException e) {
-            e.printStackTrace();
-            System.err.println("ERREUR: Problème réseau lors de la connexion.");
+            java.util.logging.Logger.getLogger(IhmMainCallsCommImp.class.getName())
+                    .log(java.util.logging.Level.SEVERE, "IhmMainCallsCommImp: Problème réseau lors de la connexion.", e);
         }
     }
 
@@ -104,7 +107,8 @@ public class IhmMainCallsCommImp implements IhmMainCallsComm {
             commCore.sendMessage(msg);
             System.out.println("[COMM] notifyDecision user=" + LightUserId + " kanban=" + LightKanbanId + " accepted=" + accepted);
         } catch (Exception e) {
-            e.printStackTrace();
+            java.util.logging.Logger.getLogger(IhmMainCallsCommImp.class.getName())
+                    .log(java.util.logging.Level.SEVERE, "IhmMainCallsCommImp: Erreur dans notifyDecision.", e);
         }
     }
 
@@ -127,7 +131,8 @@ public class IhmMainCallsCommImp implements IhmMainCallsComm {
         try {
             commCore.sendMessage(msg);
         } catch (Exception e) {
-            e.printStackTrace();
+            java.util.logging.Logger.getLogger(IhmMainCallsCommImp.class.getName())
+                    .log(java.util.logging.Level.SEVERE, "IhmMainCallsCommImp: Erreur lors de getKanban.", e);
         }
     }
 

@@ -33,8 +33,8 @@ public class DataCallsCommImp implements DataCallsComm {
                 commCore.sendMessage(msg);
             }
         } catch (IOException e) {
-            e.printStackTrace();
-            System.err.println("ERREUR: Echec envoi nouveau Kanban");
+            java.util.logging.Logger.getLogger(DataCallsCommImp.class.getName())
+                    .log(java.util.logging.Level.SEVERE, "DataCallsCommImp: Echec envoi nouveau Kanban", e);
         }
     }
 }

@@ -153,7 +153,13 @@ public class HomeViewController {
     //  MÉTHODE UTILITAIRE POUR CHANGER DE SCÈNE
     // ===============================================================
     private void switchScene(String fxmlPath, String title, Node triggerNode) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+        java.net.URL resource = getClass().getResource(fxmlPath);
+        if (resource == null) {
+            java.util.logging.Logger.getLogger(HomeViewController.class.getName())
+                    .log(java.util.logging.Level.SEVERE, "HomeViewController: FXML resource not found: " + fxmlPath);
+            throw new IOException("FXML resource not found: " + fxmlPath);
+        }
+        FXMLLoader loader = new FXMLLoader(resource);
         Parent root = loader.load();
 
         Stage stage = (Stage) triggerNode.getScene().getWindow();

@@ -30,7 +30,8 @@ public class RequestPermission extends Message {
                 // For now, no server state change beyond logging.
             }
         } catch (Throwable t) {
-            t.printStackTrace();
+            java.util.logging.Logger.getLogger(RequestPermission.class.getName())
+                    .log(java.util.logging.Level.SEVERE, "RequestPermission: erreur lors du traitement de la requête.", t);
         }
         return Optional.empty();
     }

@@ -33,7 +33,8 @@ public class PermissionResponse extends Message {
                 data.addAuthorizedUser(kanbanId, requesterId);
             }
         } catch (Throwable t) {
-            t.printStackTrace();
+            java.util.logging.Logger.getLogger(PermissionResponse.class.getName())
+                    .log(java.util.logging.Level.SEVERE, "PermissionResponse: erreur lors du traitement de la réponse.", t);
         }
         // In a full implementation we would forward a NotifyDecision to the requester client here.
         return Optional.empty();

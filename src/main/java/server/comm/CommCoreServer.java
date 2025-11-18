@@ -75,7 +75,8 @@ public class CommCoreServer {
                 serverThread.join(5000); // Wait up to 5 seconds for thread to finish
             }
         } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
+            java.util.logging.Logger.getLogger(CommCoreServer.class.getName())
+                    .log(java.util.logging.Level.SEVERE, "SERVER: Erreur lors de l'arrêt du serveur.", e);
         }
     }
 
@@ -98,7 +99,6 @@ public class CommCoreServer {
             // Création du Receiver avec la logique de réaction (Callback)
             SrvMsgReceiver msgReceiver = new SrvMsgReceiver(in, (obj) -> {
                 if (obj instanceof client.comm.messages.Message receivedMsg) {
-                    
                     // ----------------------------------------------------
                     // C'est ICI que la méthode handle() du message est exécutée
                     // (Ex: MsgRequestKanban.handle() qui interroge la BDD)
@@ -106,30 +106,33 @@ public class CommCoreServer {
                     try {
                         java.util.Optional<client.comm.messages.Message> response = receivedMsg.handle();
 
-                        // Si handle() retourne une réponse (ex: MsgSendKanban), on l'envoie
-                        if (response.isPresent()) {
+                        // Si handle() retourne une réponse, on l'envoie de façon sûre
+                        response.ifPresent(resp -> {
                             try {
-                                msgSender.send(response.get());
+                                msgSender.send(resp);
                             } catch (IOException e) {
-                                System.err.println("SERVER: Erreur lors de l'envoi de la réponse.");
-                                e.printStackTrace();
+                                java.util.logging.Logger.getLogger(CommCoreServer.class.getName())
+                                        .log(java.util.logging.Level.SEVERE, "SERVER: Erreur lors de l'envoi de la réponse.", e);
                             }
-                        }
+                        });
+
                     } catch (Exception e) {
-                        System.err.println("SERVER: Erreur lors du traitement du message " + receivedMsg.getClass().getSimpleName());
-                        e.printStackTrace();
+                        String logMsg = "SERVER: Erreur lors du traitement du message " + receivedMsg.getClass().getSimpleName();
+                        java.util.logging.Logger.getLogger(CommCoreServer.class.getName())
+                                .log(java.util.logging.Level.SEVERE, logMsg, e);
                     }
+                } else {
+                    java.util.logging.Logger.getLogger(CommCoreServer.class.getName())
+                            .log(java.util.logging.Level.WARNING, "SERVER: Message inattendu re\u00e7u: {0}", obj);
                 }
             });
 
             // Démarrer l'écoute pour ce client
             msgReceiver.start();
 
-            // Note : Ce thread se termine ici, mais le thread interne de MsgReceiver continue de tourner
-            // tant que la connexion est active.
         } catch (IOException e) {
-            System.err.println("SERVER: Erreur de connexion avec un client.");
-            e.printStackTrace();
+            java.util.logging.Logger.getLogger(CommCoreServer.class.getName())
+                    .log(java.util.logging.Level.SEVERE, "SERVER: Erreur de connexion avec un client.", e);
         }
     }
 }
@@ -144,6 +147,7 @@ class SrvMsgSender implements AutoCloseable {
         out.writeObject(message);
         out.flush();
     }
+    @Override
     public void close() throws java.io.IOException { out.close(); }
 }
 
@@ -169,19 +173,34 @@ class SrvMsgReceiver implements Runnable, AutoCloseable {
             try { worker.join(2000); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
         }
     }
+    @Override
     public void run() {
         try {
             while (running.get()) {
-                Object msg = in.readObject();
-                try { handler.accept(msg); } catch (Throwable t) { t.printStackTrace(); }
+                Object msg;
+                    try { 
+                        msg = in.readObject(); 
+                    } catch (java.io.IOException e) { 
+                        java.util.logging.Logger.getLogger(SrvMsgReceiver.class.getName()) 
+                                .log(java.util.logging.Level.SEVERE, "SrvMsgReceiver: I/O error while reading message.", e); 
+                        break; 
+                    }
+                try { handler.accept(msg); } catch (Throwable t) { 
+                    java.util.logging.Logger.getLogger(SrvMsgReceiver.class.getName())
+                        .log(java.util.logging.Level.SEVERE, "SrvMsgReceiver: Exception in handler.", t);
+                }
             }
-        } catch (java.io.IOException e) {
-            // stream closed, exit
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } finally {
-            running.set(false);
+            } catch (ClassNotFoundException e) {
+                java.util.logging.Logger.getLogger(SrvMsgReceiver.class.getName())
+                        .log(java.util.logging.Level.SEVERE, "SrvMsgReceiver: Class not found while reading message.", e);
+            } finally { 
+                running.set(false); 
+            }
+    }
+    @Override
+    public void close() throws java.io.IOException {
+        try (in) {
+            stop();
         }
     }
-    public void close() throws java.io.IOException { stop(); in.close(); }
 }

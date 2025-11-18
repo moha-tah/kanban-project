@@ -6,7 +6,6 @@ import java.io.ObjectInputStream;
 import java.io.IOException;
 
 import client.interfaces.IhmMainCallsComm;
-import client.interfaces.ComCallsDataClient;
 import client.interfaces.DataCallsComm;
 import client.interfaces.IhmKanbanCallsComm;
 import client.comm.imp.DataCallsCommImp;
@@ -27,7 +26,7 @@ public class CommCoreClient {
     private final IhmMainCallsComm ihmMainCallsComm;
     private final DataCallsComm dataCallsComm;
     private final IhmKanbanCallsComm ihmKanbanCallsComm;
-    private ComCallsDataClient comCallsDataClient;
+
 
     public CommCoreClient(String serverAddress, int serverPort) {
         this.serverAddress = serverAddress;
@@ -37,9 +36,6 @@ public class CommCoreClient {
         this.ihmKanbanCallsComm = new IhmKanbanCallsCommImp(this);
     }
 
-    public void setComCallsDataClient(ComCallsDataClient clientInterface) {
-        this.comCallsDataClient = clientInterface;
-    }
 
     // Getters
     public String getServerAddress() {
