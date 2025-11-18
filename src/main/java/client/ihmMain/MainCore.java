@@ -1,6 +1,7 @@
 package client.ihmMain;
 
 import client.MainApp;
+import client.ihmKanban.controllers.DisplayKanbanController;
 import client.interfaces.MainCallsDataClient;
 import client.interfaces.MainCallsKanban;
 import client.interfaces.IhmMainCallsComm;
@@ -14,6 +15,9 @@ import client.ihmMain.impl.commCallsMainImpl;
 import client.ihmMain.impl.kanbanCallsMainImpl;
 
 import common.dataClasses.LightKanban;
+import common.dataClasses.Column;
+import common.dataClasses.Kanban;
+import common.dataClasses.Task;
 import common.dataClasses.LightUser;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -23,14 +27,36 @@ import javafx.stage.Window;
 
 import java.io.IOException;
 import java.net.URL;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+
+
+
+
+
+
 
 /**
  * Coeur IHM : orchestre les appels entre la UI et les couches DATA/COMM/KANBAN.
  */
 public class MainCore {
+
+    Kanban KanbanTest = new Kanban("Projet IHM Kanban"); 
+    Column todo = new Column("To Do", "#FFAAAA", 1); Column doing = new Column("Doing", "#FFD580", 2); Column done = new Column("Done", "#AAFFAA", 3);
+    Task t1 = new Task("Créer interface JavaFX", "description", LocalDate.now(), LocalDate.now().plusDays(2));
+    Task t2 = new Task("Implémenter DisplayKanban", "description", LocalDate.now(), LocalDate.now().plusDays(3));
+    Task t3 = new Task("Créer classes métier", "description", LocalDate.now(), LocalDate.now().plusDays(4));
+    Task t4 = new Task("Tester le mouvement des tâches", "description", LocalDate.now(), LocalDate.now().plusDays(5));
+    
+    {
+        KanbanTest.getTaskColumn().put(todo, new ArrayList<>()); KanbanTest.getTaskColumn().put(doing, new ArrayList<>()); KanbanTest.getTaskColumn().put(done, new ArrayList<>());
+        KanbanTest.getTaskColumn().get(todo).add(t1); KanbanTest.getTaskColumn().get(todo).add(t2);
+        KanbanTest.getTaskColumn().get(doing).add(t3);
+        KanbanTest.getTaskColumn().get(done).add(t4);
+    }
 
     // ---- Ports sortants (UI/Main -> autres couches) ----
     private MainCallsDataClient dataPort;
@@ -91,11 +117,15 @@ public class MainCore {
 
     public void launchMainWindow(Stage stage) {
         try {
-            final String first = "/landing.fxml";
+            final String first = "/displayKanban.fxml";
             URL url = getClass().getResource(first);
             if (url == null) throw new IllegalStateException("FXML introuvable: " + first);
 
-            Parent root = FXMLLoader.load(url);
+            /*Parent root = FXMLLoader.load(url);*/
+            FXMLLoader loader = new FXMLLoader(url);
+            Parent root = loader.load();
+            DisplayKanbanController controller = loader.getController();
+            controller.setKanban(KanbanTest);
             Scene scene = new Scene(root, 1280, 720);
 
             URL css = getClass().getResource("/styles.css");

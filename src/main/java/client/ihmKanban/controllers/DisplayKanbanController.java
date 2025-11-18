@@ -22,6 +22,10 @@ public class DisplayKanbanController {
     @FXML private Label kanbanTitle;
     @FXML private HBox columnsContainer;
 
+    @FXML
+    public void initialize(){ 
+    }
+
     private Kanban kanban;
 
     /** Appelé par ton corps lorsqu'on charge le Kanban */
