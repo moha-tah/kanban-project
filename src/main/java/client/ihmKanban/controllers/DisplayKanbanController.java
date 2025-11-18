@@ -32,6 +32,8 @@ public class DisplayKanbanController implements Initializable {
     private List<Column> columns;
     private List<CreateTask> taskCreations;
 
+
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         // on ne fait rien au chargement : on attend initBoard(...)

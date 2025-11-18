@@ -1,7 +1,9 @@
 package client.ihmMain;
 
 import client.MainApp;
+import client.ihmKanban.kanbanCorps;
 import client.ihmKanban.controllers.DisplayKanbanController;
+import client.ihmKanban.controllers.ManageDisplay;
 import client.interfaces.MainCallsDataClient;
 import client.interfaces.MainCallsKanban;
 import client.interfaces.IhmMainCallsComm;
@@ -32,6 +34,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import client.ihmKanban.impl.MainCallsKanbanImpl;
+
 
 
 
@@ -44,6 +48,8 @@ import java.util.UUID;
  */
 public class MainCore {
 
+    // ---- Exemple de Kanban pour tests de la V2 surment plus pertinant pour la suite----
+    /* 
     Kanban KanbanTest = new Kanban("Projet IHM Kanban"); 
     Column todo = new Column("To Do", "#FFAAAA", 1); Column doing = new Column("Doing", "#FFD580", 2); Column done = new Column("Done", "#AAFFAA", 3);
     Task t1 = new Task("Créer interface JavaFX", "description", LocalDate.now(), LocalDate.now().plusDays(2));
@@ -57,6 +63,8 @@ public class MainCore {
         KanbanTest.getTaskColumn().get(doing).add(t3);
         KanbanTest.getTaskColumn().get(done).add(t4);
     }
+    */
+
 
     // ---- Ports sortants (UI/Main -> autres couches) ----
     private MainCallsDataClient dataPort;
@@ -115,17 +123,22 @@ public class MainCore {
         System.out.println("[MainCore] updateAllKanbansForUser: " + userId);
     }
 
+
+
     public void launchMainWindow(Stage stage) {
         try {
-            final String first = "/displayKanban.fxml";
+
+            /* 
+            kanbanCorps core = new kanbanCorps();
+            MainCallsKanban mainCalls = new MainCallsKanbanImpl(core);
+            mainCalls.openCreateForm(KanbanTest);
+            */
+            
+            final String first = "/landing.fxml";
             URL url = getClass().getResource(first);
             if (url == null) throw new IllegalStateException("FXML introuvable: " + first);
 
-            /*Parent root = FXMLLoader.load(url);*/
-            FXMLLoader loader = new FXMLLoader(url);
-            Parent root = loader.load();
-            DisplayKanbanController controller = loader.getController();
-            controller.setKanban(KanbanTest);
+            Parent root = FXMLLoader.load(url);
             Scene scene = new Scene(root, 1280, 720);
 
             URL css = getClass().getResource("/styles.css");

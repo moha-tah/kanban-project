@@ -1,7 +1,8 @@
 package client.ihmKanban.controllers;
 
 import client.MainApp;
-import common.dataClasses.LightKanban;
+import client.ihmKanban.kanbanCorps;
+import common.dataClasses.Kanban;
 import common.dataClasses.Column;
 import common.dataClasses.CreateTask;
 import common.dataClasses.Task;
@@ -18,60 +19,51 @@ import java.util.List;
 
 public class ManageDisplay {
 
-    public ManageDisplay() {}
+        private final kanbanCorps corps; 
 
-    public void openKanbanScreen(LightKanban lk,
-                                 List<Column> cols,
-                                 List<CreateTask> taskCreations) throws Exception {
+    public ManageDisplay(kanbanCorps corps) {
+        this.corps = corps;
+    }
 
-        // 👇 DEBUG : on regarde si le fichier est trouvé
-        URL fxmlUrl = MainApp.class.getResource("/display-kanban.fxml");
+    public void openKanbanScreen(Kanban kanban) {
+
+    try {
+        // Charger FXML
+        URL fxmlUrl = MainApp.class.getResource("/displayKanban.fxml");
         System.out.println("DEBUG FXML URL = " + fxmlUrl);
 
         if (fxmlUrl == null) {
-            throw new IllegalStateException("display-kanban.fxml introuvable dans le classpath !");
+            throw new IllegalStateException("displayKanban.fxml introuvable dans le classpath !");
         }
 
         FXMLLoader loader = new FXMLLoader(fxmlUrl);
         Parent root = loader.load();
 
-        DisplayKanbanController controller = loader.getController();
-        controller.initBoard(lk, cols, taskCreations);
+        // Extraction automatique des colonnes
+        List<Column> cols = kanban.getAllColumns();
 
+        // Conversion HashMap<Column, List<Task>> → List<CreateTask>
+        List<CreateTask> taskCreations = new ArrayList<>();
+        for (Column col : cols) {
+            List<Task> tasks = kanban.getTasksFromColumn(col);
+            for (Task t : tasks) {
+                taskCreations.add(new CreateTask(t, col.getId()));
+            }
+        }
+
+        // Initialisation du contrôleur
+        DisplayKanbanController controller = loader.getController();
+        controller.initBoard(kanban, cols, taskCreations);
+
+        // Ouverture de la fenêtre
         Stage stage = new Stage();
-        stage.setTitle("Kanban - " + lk.getTitle());
+        stage.setTitle("Kanban - " + kanban.getTitle());
         stage.setScene(new Scene(root, 1280, 720));
         stage.show();
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        System.err.println("Erreur lors de l'ouverture de l'écran Kanban : " + e.getMessage());
     }
-
-    // pour tester
-    public void openDemoKanban() throws Exception {
-        LightKanban lk = new LightKanban("Mon Kanban de Test");
-
-        List<Column> cols = new ArrayList<>();
-        Column todo   = new Column("TO DO",   "#5D8BF4", 1);
-        Column doing  = new Column("DOING",   "#f06a10", 2);
-        Column done   = new Column("DONE",    "#0ec20e", 3);
-        cols.add(todo);
-        cols.add(doing);
-        cols.add(done);
-
-        List<CreateTask> tasks = new ArrayList<>();
-        tasks.add(new CreateTask(
-                new Task("Créer maquette", "Faire les écrans principaux",
-                        LocalDate.now(), LocalDate.now().plusDays(3)),
-                todo.getId()));
-
-        tasks.add(new CreateTask(
-                new Task("Implémenter backend", "Coder les endpoints",
-                        LocalDate.now(), LocalDate.now().plusDays(5)),
-                doing.getId()));
-
-        tasks.add(new CreateTask(
-                new Task("Réunion finale", "Revue du projet",
-                        LocalDate.now(), LocalDate.now().plusDays(7)),
-                done.getId()));
-
-        openKanbanScreen(lk, cols, tasks);
-    }
+}
 }

@@ -83,11 +83,14 @@ public class kanbanCorps {
         kanbans.add(k);
     }
 
-    private Kanban kanban;
+    
+    private ManageDisplay manageDisplay = new ManageDisplay( this);
 
+    /* 
+    private Kanban kanban;
     public void setKanban(Kanban kanban) {
         this.kanban = kanban;
-    }
+    }*/
 
     public void addKanbans(List<LightKanban> list) { for (var k : list) addOrReplaceKanban(k); }
 
@@ -102,42 +105,9 @@ public class kanbanCorps {
     }
 
 
-    private void loadScene(String fxmlPath, String title) {
-        try {
-            URL fxmlUrl = MainApp.class.getResource(fxmlPath);
-            if (fxmlUrl == null) {
-                System.err.println("FXML introuvable : " + fxmlPath);
-                return;
-            }
-
-            FXMLLoader loader = new FXMLLoader(fxmlUrl);
-            Parent root = loader.load();
-            DisplayKanbanController controller = loader.getController();
-            controller.setKanban(this.kanban);
-            Scene scene = new Scene(root, 1280, 720);
-
-
-            URL cssUrl = MainApp.class.getResource("/styles.css");
-            if (cssUrl != null) {
-                scene.getStylesheets().setAll(cssUrl.toExternalForm());
-            }
-
-            Stage stage = (Stage) Window.getWindows().stream()
-                    .filter(Window::isShowing)
-                    .findFirst()
-                    .orElse(new Stage());
-
-            stage.setTitle(title);
-            stage.setScene(scene);
-            stage.show();
-        } catch (IOException e) {
-            System.err.println("Error while launching main window: " + e.getMessage());
-        }
-    }
-
     public void displayKanban(Kanban kanban)  { 
-        setKanban(kanban);
-        loadScene("/displayKanban.fxml",  "Kanban"); }
+        manageDisplay.openKanbanScreen(kanban); 
+    }
 
 
 
