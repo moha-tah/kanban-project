@@ -33,4 +33,13 @@ public class DataCallsCommImp implements DataCallsComm {
             e.printStackTrace();
         }
     }
+
+    @Override
+    public void addAuthorizedUser(UUID kanbanId, UUID userId) {
+        try {
+            comm.sendMessage(Arrays.asList("addAuthorizedUser", kanbanId, userId));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }
