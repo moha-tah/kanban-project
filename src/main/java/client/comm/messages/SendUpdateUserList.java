@@ -8,8 +8,8 @@ import common.dataClasses.LightUser;
 public class SendUpdateUserList extends Message {
     private static final long serialVersionUID = 1L;
 
-    private LightUser newUser;
-    private List<LightKanban> newKanbans;
+    private final LightUser newUser;
+    private final List<LightKanban> newKanbans;
 
     public SendUpdateUserList(LightUser newUser, List<LightKanban> newKanbans) {
         this.newUser = newUser;
