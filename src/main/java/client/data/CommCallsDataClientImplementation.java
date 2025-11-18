@@ -52,7 +52,7 @@ public class CommCallsDataClientImplementation implements ComCallsDataClient{
     }
 
     public void addListModifiers(LightUser user, LightKanban kanban){
-        //TODO
+        provider.getMyModel().addKanban(kanban);
     }
 
     public boolean addAuthorizedUser(UUID kanbanId, UUID userId){
