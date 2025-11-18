@@ -25,6 +25,7 @@ public class ManageDisplay {
         this.corps = corps;
     }
 
+
     public void openKanbanScreen(Kanban kanban) {
 
     try {
