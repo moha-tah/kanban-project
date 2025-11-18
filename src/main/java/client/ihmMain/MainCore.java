@@ -75,9 +75,14 @@ public class MainCore {
     public void addOrReplaceKanban(LightKanban k) {
         kanbans.removeIf(x -> x.getId().equals(k.getId()));
         kanbans.add(k);
+        System.out.println("[MainCore] Kanban added/updated: " + k.getTitle() + " (total=" + kanbans.size() + ")");
     }
 
-    public void addKanbans(List<LightKanban> list) { for (var k : list) addOrReplaceKanban(k); }
+    public void addKanbans(List<LightKanban> list) {
+        if (list == null) return;
+        for (LightKanban k : list) addOrReplaceKanban(k);
+        System.out.println("[MainCore] Bulk add kanbans, now total=" + kanbans.size());
+    }
 
     public void addUser(LightUser u) {
         users.removeIf(x -> x.getId().equals(u.getId())); users.add(u);
@@ -92,18 +97,19 @@ public class MainCore {
     public void launchMainWindow(Stage stage) {
         try {
             final String first = "/landing.fxml";
-            URL url = getClass().getResource(first);
+            URL url = MainApp.class.getResource(first);
             if (url == null) throw new IllegalStateException("FXML introuvable: " + first);
 
             Parent root = FXMLLoader.load(url);
             Scene scene = new Scene(root, 1280, 720);
 
-            URL css = getClass().getResource("/styles.css");
+            URL css = MainApp.class.getResource("/styles.css");
             if (css != null) scene.getStylesheets().add(css.toExternalForm());
 
             stage.setTitle("Login");
             stage.setScene(scene);
             stage.show();
+            System.out.println("[MainCore] Launched main window with FXML: " + first);
         } catch (Exception e) {
             System.err.println("Error while launching main window: " + e.getMessage());
             throw new RuntimeException("Impossible d’ouvrir la fenêtre Login", e);
