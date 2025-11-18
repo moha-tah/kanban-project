@@ -15,8 +15,8 @@ public class DataClientCallsKanbanImpl implements DataClientCallsKanban {
     }
 
     @Override
-    public void displayKanban(LightKanban kanban) {
-        // A IMPLEMENTER 
+    public void displayKanban(Kanban kanban) {
+        corps.displayKanban(kanban); 
         System.out.println("[Data->kanban] Display kanban : "
                 + "kanban=" + kanban);
 

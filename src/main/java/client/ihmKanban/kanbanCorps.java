@@ -28,7 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-
+import client.ihmKanban.controllers.DisplayKanbanController;
 import client.ihmKanban.controllers.ManageDisplay;
 
 
@@ -101,28 +101,6 @@ public class kanbanCorps {
         System.out.println("[MainCore] updateAllKanbansForUser: " + userId);
     }
 
-    /*
-    public void launchMainWindow(Stage stage, LightKanban kanban) {
-        try {
-            final String first = "/displayKanban.fxml";
-            URL url = getClass().getResource(first);
-            if (url == null) throw new IllegalStateException("FXML introuvable: " + first);
-
-            Parent root = FXMLLoader.load(url);
-            Scene scene = new Scene(root, 1280, 720);
-
-            URL css = getClass().getResource("/styles.css");
-            if (css != null) scene.getStylesheets().add(css.toExternalForm());
-
-            stage.setTitle("Kanban");
-            stage.setScene(scene);
-            stage.show();
-        } catch (Exception e) {
-            System.err.println("Error while launching main window: " + e.getMessage());
-            throw new RuntimeException("Impossible d’ouvrir la fenêtre Login", e);
-        }
-    }*/
-
 
     private void loadScene(String fxmlPath, String title) {
         try {
@@ -132,7 +110,10 @@ public class kanbanCorps {
                 return;
             }
 
-            Parent root = FXMLLoader.load(fxmlUrl);
+            FXMLLoader loader = new FXMLLoader(fxmlUrl);
+            Parent root = loader.load();
+            DisplayKanbanController controller = loader.getController();
+            controller.setKanban(this.kanban);
             Scene scene = new Scene(root, 1280, 720);
 
             URL cssUrl = MainApp.class.getResource("/styles.css");
@@ -153,7 +134,9 @@ public class kanbanCorps {
         }
     }
 
-    public void displayKanban()  { loadScene("/displayKanban.fxml",  "Kanban"); }
+    public void displayKanban(Kanban kanban)  { 
+        setKanban(kanban);
+        loadScene("/displayKanban.fxml",  "Kanban"); }
 
 
 
