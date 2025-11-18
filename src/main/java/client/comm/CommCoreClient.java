@@ -6,14 +6,15 @@ import java.io.ObjectInputStream;
 import java.io.IOException;
 
 import client.interfaces.IhmMainCallsComm;
+import client.interfaces.ComCallsDataClient;
 import client.interfaces.DataCallsComm;
 import client.interfaces.IhmKanbanCallsComm;
 import client.comm.imp.DataCallsCommImp;
 import client.comm.imp.IhmKanbanCallsCommImp;
 import client.comm.imp.IhmMainCallsCommImp;
 import client.comm.messages.Message;
-
 import java.util.Optional;
+
 
 public class CommCoreClient {
     private final String serverAddress;
@@ -26,6 +27,7 @@ public class CommCoreClient {
     private final IhmMainCallsComm ihmMainCallsComm;
     private final DataCallsComm dataCallsComm;
     private final IhmKanbanCallsComm ihmKanbanCallsComm;
+    private ComCallsDataClient comCallsDataClient;
 
     public CommCoreClient(String serverAddress, int serverPort) {
         this.serverAddress = serverAddress;
@@ -33,6 +35,10 @@ public class CommCoreClient {
         this.ihmMainCallsComm = new IhmMainCallsCommImp(this);
         this.dataCallsComm = new DataCallsCommImp(this);
         this.ihmKanbanCallsComm = new IhmKanbanCallsCommImp(this);
+    }
+
+    public void setComCallsDataClient(ComCallsDataClient clientInterface) {
+        this.comCallsDataClient = clientInterface;
     }
 
     // Getters
@@ -74,24 +80,20 @@ public class CommCoreClient {
         in = new ObjectInputStream(socket.getInputStream());
         // initialize message helpers
         this.msgSender = new MsgSender(out);
-        // receiver: dispatch to message.handle() and send any optional response
+
         this.msgReceiver = new MsgReceiver(in, obj -> {
-            if (obj instanceof Message) {
+            if (obj instanceof Message msg) {
                 try {
-                    Optional<Message> resp = ((Message) obj).handle();
-                    if (resp != null && resp.isPresent()) {
-                        try {
-                            sendMessage(resp.get());
-                        } catch (IOException e) {
-                            // sending failed; log and continue
-                            e.printStackTrace();
-                        }
+                    Optional<Message> response = msg.handle();
+                    
+                    if (response.isPresent()) {
+                        sendMessage(response.get());
                     }
-                } catch (Throwable t) {
-                    t.printStackTrace();
+                } catch (Exception e) {
+                    // Convert checked exceptions to unchecked so the receiver can handle them,
+                    // or add proper logging/handling here as needed.
+                    throw new RuntimeException(e);
                 }
-            } else {
-                // non-message objects are ignored
             }
         });
         this.msgReceiver.start();

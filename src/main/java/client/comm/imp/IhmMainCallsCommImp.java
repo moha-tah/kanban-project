@@ -5,15 +5,19 @@ import client.interfaces.IhmMainCallsComm;
 
 import java.util.Objects;
 import java.util.UUID;
+import java.io.IOException;
 import java.util.List;
+
+import client.comm.messages.ConnectionRequest;
+import client.comm.messages.RequestKanban;
 import common.dataClasses.LightKanban;
 import common.dataClasses.LightUser;
 
 public class IhmMainCallsCommImp implements IhmMainCallsComm {
-    private final CommCoreClient comm;
+    private final CommCoreClient commCore;
 
-    public IhmMainCallsCommImp(CommCoreClient comm) {
-        this.comm = Objects.requireNonNull(comm);
+    public IhmMainCallsCommImp(CommCoreClient commCore) {
+        this.commCore = Objects.requireNonNull(commCore);
     }
 
 
@@ -38,11 +42,25 @@ public class IhmMainCallsCommImp implements IhmMainCallsComm {
     public void sendPermissionResponse(UUID LightUserId, UUID LightKanbanId, boolean accepted) {
     }
 
+
     @Override
     public void connectServer(LightUser user, List<LightKanban> kanbans) {
-        connectionRequest(user, kanbans);
-    }
 
+        // 1. On encapsule les données dans le Message qu'on vient de créer
+        ConnectionRequest msg = new ConnectionRequest(user, kanbans);
+
+        // 2. On envoie le message au serveur
+        try {
+            if (commCore.getMsgSender() != null) {
+                commCore.sendMessage(msg);
+            } else {
+                System.err.println("ERREUR: Impossible d'envoyer la demande de connexion (Socket non connecté ?)");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("ERREUR: Problème réseau lors de la connexion.");
+        }
+    }
 
     @Override
     public void connectionRequest(LightUser LightUser, List<LightKanban> listKanbans) {
@@ -63,7 +81,16 @@ public class IhmMainCallsCommImp implements IhmMainCallsComm {
     public void connectToServer(UUID LightUserId, List<LightKanban> listKanbans) {
     }
     @Override
-    public void getKanban(UUID LightKanbanId) {
+    public void getKanban(UUID LightKanbanId, UUID LightUserId) {
+        // 1. Création du message
+        RequestKanban msg = new RequestKanban(LightUserId, LightKanbanId);
+        
+        // 2. Envoi réseau
+        try {
+            commCore.sendMessage(msg);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void sendRequestModification(LightUser LightUser, UUID CardId, Object newStatus) {

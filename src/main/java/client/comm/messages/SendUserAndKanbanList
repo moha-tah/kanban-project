@@ -1,0 +1,35 @@
+package common.messages;
+
+import java.util.List;
+import java.util.Optional;
+import common.model.LightKanban;
+import common.model.LightUser;
+
+public class MsgSendUsersAndKanbansList extends Message {
+    private static final long serialVersionUID = 1L;
+
+    private List<LightUser> users;
+    private List<LightKanban> kanbans;
+
+    public MsgSendUsersAndKanbansList(List<LightUser> users, List<LightKanban> kanbans) {
+        this.users = users;
+        this.kanbans = kanbans;
+    }
+
+    @Override
+    public Optional<Message> handle() {
+        try {
+            // LOGIQUE CLIENT (Fig 16 bas)
+            // Le nouveau client reçoit la liste complète pour s'initialiser
+            if (client.ClientContext.getData() != null) {
+                System.out.println("CLIENT: Réception de la liste globale des utilisateurs/kanbans");
+                
+                // Appel de updateUserList(List<LightUser>, List<LightKanban>) dans ComCallsDataClient
+                client.ClientContext.getData().updateUserList(this.users, this.kanbans);
+            }
+        } catch (Throwable t) {
+            // Ignoré sur le serveur
+        }
+        return Optional.empty();
+    }
+}
