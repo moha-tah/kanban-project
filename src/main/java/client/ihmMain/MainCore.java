@@ -91,7 +91,7 @@ public class MainCore {
 
     public void launchMainWindow(Stage stage) {
         try {
-            final String first = "/landing.fxml";
+            final String first = "/home.fxml";
             URL url = getClass().getResource(first);
             if (url == null) throw new IllegalStateException("FXML introuvable: " + first);
 

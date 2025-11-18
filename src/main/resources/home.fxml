@@ -83,4 +83,17 @@
             </VBox>
         </ScrollPane>
     </HBox>
+
+    <!-- POPUP NOTIFICATION PANEL -->
+    <Pane fx:id="notifPanel"
+        prefWidth="300" prefHeight="400"
+        visible="false" mouseTransparent="true"
+        style="-fx-background-color: white; -fx-border-color: #ccc; -fx-border-radius: 10; -fx-background-radius: 10; -fx-padding: 15;"
+        AnchorPane.topAnchor="60" AnchorPane.rightAnchor="20">
+
+        <VBox fx:id="notifContainer" spacing="10">
+            <Label text="Notifications" style="-fx-font-size: 18; -fx-font-weight: bold;"/>
+        </VBox>
+    </Pane>
+
 </AnchorPane>
