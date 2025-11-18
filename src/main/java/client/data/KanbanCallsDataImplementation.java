@@ -1,14 +1,22 @@
 package client.data;
 
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.UUID;
 
+import com.google.gson.Gson;
+
+import client.interfaces.DataCallsComm;
 import client.interfaces.KanbanCallsDataClient;
 import common.dataClasses.Kanban;
 import common.dataClasses.Snapshot;
+
 
 public class KanbanCallsDataImplementation implements  KanbanCallsDataClient {
     private DataClientProvider provider;
@@ -20,6 +28,44 @@ public class KanbanCallsDataImplementation implements  KanbanCallsDataClient {
 
     public void saveSnapshot(Kanban kanban){
         //TODO
+    }
+
+    public void saveKanban(Kanban kanban){
+        DataCallsComm comm = provider.getCommInterface();
+        comm.sendKanban(kanban);
+        //Enregistrer le kanban en local
+        saveKanbanAsJson(kanban);
+
+    }
+
+    public static void saveKanbanAsJson(Kanban kanban){
+        try {
+            Path KANBAN_DIR = Paths.get(System.getProperty("user.home"), ".kanban", "kanbans");
+            Files.createDirectories(KANBAN_DIR);
+            Path file = KANBAN_DIR.resolve(kanban.getId().toString() + ".json");
+            String kanbanJson = new Gson().toJson(kanban);
+
+            Path tmp = KANBAN_DIR.resolve(kanban.getId().toString() + ".json.tmp");
+            Files.writeString(tmp, kanbanJson, StandardCharsets.UTF_8);
+            Files.move(tmp, file, java.nio.file.StandardCopyOption.REPLACE_EXISTING, java.nio.file.StandardCopyOption.ATOMIC_MOVE);
+        } catch (java.io.IOException e) {
+            throw new RuntimeException("Failed to save kanban as JSON", e);
+        }
+    }
+
+    public static Kanban loadKanbanFromJson(UUID kanbanId){
+        try {
+            Path KANBAN_DIR = Paths.get(System.getProperty("user.home"), ".kanban", "kanbans");
+            Path file = KANBAN_DIR.resolve(kanbanId.toString() + ".json");
+            if (Files.exists(file)) {
+                String kanbanJson = Files.readString(file, StandardCharsets.UTF_8);
+                return new Gson().fromJson(kanbanJson, Kanban.class);
+            } else {
+                return null;
+            }
+        } catch (java.io.IOException e) {
+            throw new RuntimeException("Failed to load kanban from JSON", e);
+        }
     }
 
     public List<Snapshot> getListSnapshot(){
