@@ -6,6 +6,7 @@ import common.dataClasses.LightKanban;
 import common.dataClasses.LightUser;
 import common.dataClasses.Modification;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -46,7 +47,22 @@ public class CommCallsDataClientImplementation implements ComCallsDataClient{
     }
 
     public void addToListKanban(LightKanban kanban){
-        //TODO
+        if (provider == null || provider.getMyModel() == null || kanban == null) {
+            return;
+        }
+        
+        ClientModel model = provider.getMyModel();
+        List<LightKanban> kanbans = model.getMyLightKanbans();
+        
+        // Initialiser la liste si elle est null
+        if (kanbans == null) {
+            kanbans = new ArrayList<>();
+            model.setMyLightKanbans(kanbans);
+        }
+        
+        // Retirer le kanban s'il existe déjà (même ID) puis ajouter le nouveau
+        kanbans.removeIf(k -> k.getId().equals(kanban.getId()));
+        kanbans.add(kanban);
     }
 
     public void saveModifiedKanban(Modification modification, LightKanban kanban){
@@ -63,7 +79,7 @@ public class CommCallsDataClientImplementation implements ComCallsDataClient{
 
     //Constructeur
     public CommCallsDataClientImplementation(DataClientProvider provider) {
-        
+        this.provider = provider;
     }
     //getters
     public DataClientProvider getProvider() {
