@@ -15,9 +15,10 @@ public class ComCallsDataServImplementation implements CommCallsDataServer {
   public static ComCallsDataServImplementation newComCallsDataServImplementation() {
         return new ComCallsDataServImplementation();
   }
-  @Override
-    public Kanban requestKanban(LightUser user, LightKanban kanban) {
-        return null; //TODO V2
+
+    @Override
+    public Kanban requestKanban(UUID kanbanId, UUID userId) {
+        return null; // TODO V2: implement lookup by IDs or delegate to requestKanban(LightUser, LightKanban)
     }
 
     @Override
