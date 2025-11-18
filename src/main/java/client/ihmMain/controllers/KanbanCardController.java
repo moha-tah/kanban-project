@@ -37,29 +37,30 @@ public class KanbanCardController {
     private String color ; 
     
 
-    public void setKanbanData(String title, User creator, int columns, String visibility, String color) {
+    public void setKanbanData(String title, User creator, int columns, String visibility, String color, boolean isAvailableSection) {
         this.title = title;
         this.creator = creator;
         this.columns = columns;
-        this.visibility = visibility;  
+        this.visibility = visibility;
         this.color = color;
 
         titleLabel.setText(title);
         creatorLabel.setText("Creator: " + creator.getFirstName() + " " + creator.getLastName());
         columnsLabel.setText("Columns: " + columns);
-
         visibilityLabel.setText("Visibility: " + visibility);
 
         cardRoot.setStyle("-fx-background-color: " + color + "; -fx-background-radius: 10; -fx-padding: 10;");
 
-        if (visibility.equalsIgnoreCase("private")) {
-            viewButton.setVisible(false);        // On ne peut pas voir
-            requestButton.setVisible(true);      // On demande accès
+        // --- 🔥 Logique des boutons ---
+        if (visibility.equalsIgnoreCase("private") && isAvailableSection) {
+            requestButton.setVisible(true);
+            viewButton.setVisible(false);
         } else {
-            viewButton.setVisible(true);
             requestButton.setVisible(false);
+            viewButton.setVisible(true);
         }
     }
+
 
     @FXML
     private void handleView() {
@@ -74,7 +75,12 @@ public class KanbanCardController {
         // IhmMainCallsComm comm = core.getCommPort();
         // comm.sendPermissionRequest(core.getMe().getId(), lightKanbanID);
 
+        // === 🔄 Mettre le bouton en mode "Pending" ===
+        requestButton.setText("Pending");
+        requestButton.getStyleClass().add("btn-pending");
+        requestButton.setDisable(true); // empêche de redemander
     }
+
 
     // Supprimer
     @FXML

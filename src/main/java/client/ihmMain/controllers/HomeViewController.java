@@ -67,20 +67,24 @@ public class HomeViewController {
     }
 
     private void addKanban(HBox container, String title, User creator, int columns, String visibility, String color) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/kanban_card.fxml"));
-            Node card = loader.load();
+    try {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/kanban_card.fxml"));
+        Node card = loader.load();
 
-            KanbanCardController controller = loader.getController();
-            controller.setKanbanData(title, creator, columns, visibility, color);
+        KanbanCardController controller = loader.getController();
 
-            container.getChildren().add(card);
-            System.out.println("✅ Added Kanban card: " + title);
-        } catch (IOException e) {
-            System.err.println("❌ Erreur lors du chargement de kanban_card.fxml");
-            e.printStackTrace();
-        }
+        boolean isAvailableSection = container == availableKanbansContainer;
+
+        controller.setKanbanData(title, creator, columns, visibility, color, isAvailableSection);
+
+        container.getChildren().add(card);
+        System.out.println("✅ Added card: " + title);
+
+    } catch (IOException e) {
+        e.printStackTrace();
     }
+}
+
 
     // ===============================================================
     // 🟦 CHARGEMENT DES USER CARDS
