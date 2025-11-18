@@ -78,7 +78,7 @@ public class CreateKanbanController {
         columnName.setPromptText("Column name");
         columnName.setStyle("-fx-background-radius: 8; -fx-border-color: #ccc; -fx-border-radius: 8; -fx-padding: 6;");
 
-        ColorPicker colorPicker = new ColorPicker(Color.web(randomColorHex()));
+        ColorPicker colorPicker = new ColorPicker(Color.web("#FF6B6B"));
 
         newColumn.getChildren().addAll(columnName, colorPicker);
         columnsContainer.getChildren().add(newColumn);
