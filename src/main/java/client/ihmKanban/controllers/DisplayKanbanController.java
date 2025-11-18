@@ -1,235 +1,151 @@
 package client.ihmKanban.controllers;
 
-import javafx.fxml.FXML;
-import javafx.scene.control.ListView;
 import common.dataClasses.LightKanban;
+import common.dataClasses.Column;
+import common.dataClasses.Task;
+import common.dataClasses.CreateTask;
 
-
-import common.dataClasses.*;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
-import common.dataClasses.Kanban;
-import javafx.fxml.FXMLLoader;
-import javafx.geometry.Insets;
-import javafx.scene.Node;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.StackPane;
 
-public class DisplayKanbanController  {
+import java.net.URL;
+import java.util.List;
+import java.util.ResourceBundle;
+import java.util.UUID;
+
+public class DisplayKanbanController implements Initializable {
+
     @FXML
-    private Label kanbanTitle;  // Le label du titre du Kanban en haut  
+    private Label kanbanTitleLabel;      // label en haut : titre du kanban
 
-    private Kanban kanban;
+    @FXML
+    private HBox columnsContainer;       // contient toutes les colonnes
 
-    /** Appelé par ton corps lorsqu'on charge le Kanban */
-    public void setKanban(Kanban kanban) {
+    // Données du modèle
+    private LightKanban kanban;
+    private List<Column> columns;
+    private List<CreateTask> taskCreations;
+
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        // on ne fait rien au chargement : on attend initBoard(...)
+    }
+
+    /**
+     * Appelée par ManageDisplay pour injecter les objets.
+     */
+    public void initBoard(LightKanban kanban,
+                          List<Column> columns,
+                          List<CreateTask> taskCreations) {
+
         this.kanban = kanban;
-        kanbanTitle.setText(kanban.getTitle());
-        //loadColumns();
+        this.columns = columns;
+        this.taskCreations = taskCreations;
+
+        renderKanban();
     }
 
-    // ----- POPUP 1 : MENU DE LA TÂCHE -----
-    @FXML
-    private VBox taskMenuPane;        // le petit menu gris (ADD A USER / SEE USERS / ...)
+    // --------------------------------------------------------------------
+    // Construction de l'IHM à partir des objets Java
+    // --------------------------------------------------------------------
+    private void renderKanban() {
+        if (kanban == null || columns == null) return;
 
-    // ----- POPUP 2 : CONTENEUR + VARIANTS -----
-    @FXML
-    private StackPane detailPopup;    // le grand overlay au centre
+        kanbanTitleLabel.setText(kanban.getTitle());
 
-    @FXML
-    private VBox seeUsersPane;        // variant "SEE USERS"
-    @FXML
-    private VBox addUsersPane;        // variant "ADD USER"
-    @FXML
-    private VBox editTaskPane;        // variant "EDIT TASK"
+        columnsContainer.getChildren().clear();
 
-    // Champs d'édition de tâche
-    @FXML
-    private TextField editNameField;
-    @FXML
-    private TextArea editDescField;
-
-    // Tâche actuellement sélectionnée (la carte VBox sur laquelle on a cliqué les 3 points)
-    private VBox currentTaskCard;
-
-    @FXML
-    private void initialize() {
-        // Au démarrage on cache tous les popups
-        if (taskMenuPane != null) taskMenuPane.setVisible(false);
-        if (detailPopup != null) detailPopup.setVisible(false);
-        hideAllDetailPanes();
-    }
-
-    // ----------------------
-    // 1) Clic sur "⋮" d'une tâche
-    // ----------------------
-    @FXML
-    private void onTaskMenuClick(MouseEvent event) {
-        // Retrouver la VBox qui représente la carte de la tâche
-        Node n = (Node) event.getSource();
-        while (n != null && !(n instanceof VBox)) {
-            n = n.getParent();
+        for (Column col : columns) {
+            VBox columnNode = createColumnNode(col);
+            columnsContainer.getChildren().add(columnNode);
         }
-        if (n instanceof VBox) {
-            currentTaskCard = (VBox) n;
-        }
-
-        // Afficher le petit menu de la tâche
-        taskMenuPane.setVisible(true);
-
-        // Fermer le popup de détail s'il était ouvert
-        detailPopup.setVisible(false);
-        hideAllDetailPanes();
-
-        // (optionnel) Pré-remplir les champs d'édition avec le titre / desc de la tâche
-        fillEditFieldsFromCurrentTask();
     }
 
-    // ----------------------
-    // 2) Boutons du menu
-    // ----------------------
+    private VBox createColumnNode(Column col) {
+        VBox columnBox = new VBox(10);
+        columnBox.setPadding(new Insets(10));
+        columnBox.setPrefWidth(260);
 
-    @FXML
-    private void onMenuAddUser() {
-        showDetailPane(addUsersPane);
-    }
+        String bgColor = col.getColor() != null ? col.getColor() : "#5D8BF4";
+        columnBox.setStyle("-fx-background-color: " + bgColor + "; -fx-background-radius: 10;");
 
-    @FXML
-    private void onMenuSeeUsers() {
-        showDetailPane(seeUsersPane);
-    }
+        // ----- header colonne -----
+        HBox header = new HBox();
+        header.setAlignment(Pos.CENTER_LEFT);
+        header.setSpacing(5);
 
-    @FXML
-    private void onMenuEditTask() {
-        // s'assurer que les champs sont pré-remplis
-        fillEditFieldsFromCurrentTask();
-        showDetailPane(editTaskPane);
-    }
+        Label titleLabel = new Label(col.getTitle());
+        titleLabel.setStyle("-fx-text-fill: white; -fx-font-weight: bold;");
 
-    // Afficher un des panneaux de détail (SEE / ADD / EDIT)
-    private void showDetailPane(VBox paneToShow) {
-        detailPopup.setVisible(true);
-        hideAllDetailPanes();
-        paneToShow.setVisible(true);
-    }
+        Label menuLabel = new Label("⋮");
+        menuLabel.setStyle("-fx-text-fill: white; -fx-font-size: 16;");
+        menuLabel.setOnMouseClicked(e -> onColumnMenuClick(col, columnBox));
 
-    // Cacher tous les panneaux de détail
-    private void hideAllDetailPanes() {
-        if (seeUsersPane != null) seeUsersPane.setVisible(false);
-        if (addUsersPane != null) addUsersPane.setVisible(false);
-        if (editTaskPane != null) editTaskPane.setVisible(false);
-    }
+        HBox spacer = new HBox();
+        HBox.setHgrow(spacer, javafx.scene.layout.Priority.ALWAYS);
 
-    // ----------------------
-    // 3) Fermeture des popups
-    // ----------------------
+        header.getChildren().addAll(titleLabel, spacer, menuLabel);
 
-    // Bouton "Close" du petit menu
-    @FXML
-    private void onCloseAllPopups() {
-        taskMenuPane.setVisible(false);
-        detailPopup.setVisible(false);
-        hideAllDetailPanes();
-        currentTaskCard = null;
-    }
+        // ----- tâches de cette colonne -----
+        VBox tasksBox = new VBox(8);
+        UUID colId = col.getId();
 
-    // Bouton "Close" ou "Cancel" des popups de détail
-    @FXML
-    private void onCloseDetail() {
-        detailPopup.setVisible(false);
-        hideAllDetailPanes();
-    }
-
-    // ----------------------
-    // 4) Sauvegarde d'une tâche modifiée
-    // ----------------------
-    @FXML
-    private void onSaveTask() {
-        if (currentTaskCard == null) {
-            onCloseDetail();
-            return;
-        }
-
-        String newName = editNameField.getText();
-        String newDesc = editDescField.getText();
-
-        // TODO : ici tu peux mettre à jour le modèle + appeler ton backend
-        System.out.println("Sauver tâche : " + newName + " / " + newDesc);
-
-        // (facultatif) mettre à jour l'affichage de la carte directement
-        updateCurrentTaskLabels(newName, newDesc);
-
-        onCloseDetail();
-    }
-
-    // ----------------------
-    // 5) Helpers internes
-    // ----------------------
-
-    // Récupère le titre / description de la carte et les met dans les champs d'édition
-    private void fillEditFieldsFromCurrentTask() {
-        if (currentTaskCard == null) return;
-
-        String title = null;
-        String desc = null;
-
-        // On cherche les deux premiers Label de la carte :
-        // 1er = titre, 2ème = description
-        int count = 0;
-        for (Node child : currentTaskCard.getChildren()) {
-            if (child instanceof Label) {
-                count++;
-                if (count == 1) {
-                    title = ((Label) child).getText();
-                } else if (count == 2) {
-                    desc = ((Label) child).getText();
-                    break;
+        if (taskCreations != null) {
+            for (CreateTask ct : taskCreations) {
+                if (ct.getTargetColumn().equals(colId)) {
+                    Task t = ct.getNewTask();
+                    VBox taskCard = createTaskCard(t);
+                    tasksBox.getChildren().add(taskCard);
                 }
             }
         }
 
-        if (editNameField != null && title != null) {
-            editNameField.setText(title);
-        }
-        if (editDescField != null && desc != null) {
-            editDescField.setText(desc);
-        }
+        columnBox.getChildren().addAll(header, tasksBox);
+        return columnBox;
     }
 
-    // Met à jour les labels de la carte avec les nouvelles valeurs
-    private void updateCurrentTaskLabels(String newName, String newDesc) {
-        if (currentTaskCard == null) return;
+    private VBox createTaskCard(Task task) {
+        VBox card = new VBox(5);
+        card.setPadding(new Insets(8));
+        card.setStyle("-fx-background-color: white; -fx-background-radius: 6;");
 
-        int count = 0;
-        for (Node child : currentTaskCard.getChildren()) {
-            if (child instanceof Label) {
-                count++;
-                if (count == 1 && newName != null && !newName.isBlank()) {
-                    ((Label) child).setText(newName);
-                } else if (count == 2 && newDesc != null && !newDesc.isBlank()) {
-                    ((Label) child).setText(newDesc);
-                }
-            }
-        }
+        HBox topRow = new HBox();
+        topRow.setAlignment(Pos.CENTER_RIGHT);
+        Button menuBtn = new Button("⋮");
+        menuBtn.setOnAction(e -> onTaskMenuClick(task, card));
+        topRow.getChildren().add(menuBtn);
+
+        Label title = new Label(task.getTitle());
+        title.setStyle("-fx-font-weight: bold;");
+
+        Label desc = new Label(task.getDescription());
+        desc.setWrapText(true);
+        desc.setStyle("-fx-font-size: 11; -fx-text-fill: gray;");
+
+        Button statusBtn = new Button("STATUS");
+        statusBtn.setStyle("-fx-background-color: #ffa500; -fx-text-fill: white; -fx-font-size: 10;");
+        statusBtn.setOnAction(e -> onStatusClick(task, statusBtn));
+
+        card.getChildren().addAll(topRow, title, desc, statusBtn);
+        return card;
     }
 
-    // ----------------------
-    // 6) (Optionnel) Gestion des boutons ADD / View / Delete
-    // ----------------------
-    // Pour l'instant ils n'ont pas de handler spécifique dans le FXML.
-    // Tu pourras ajouter :
-    //
-    // @FXML
-    // private void onAddUserClicked(ActionEvent e) { ... }
-    //
-    // puis mettre onAction="#onAddUserClicked" sur les boutons ADD
-    // et faire pareil pour View / Delete.
+    // ---- Handlers basiques (tu pourras les relier à tes popups) ----
+    private void onColumnMenuClick(Column col, VBox columnNode) {
+        System.out.println("Menu colonne : " + col.getTitle());
+    }
+
+    private void onTaskMenuClick(Task task, VBox cardNode) {
+        System.out.println("Menu tâche : " + task.getTitle());
+    }
+
+    private void onStatusClick(Task task, Button statusBtn) {
+        System.out.println("Changer état de : " + task.getTitle());
+    }
 }
