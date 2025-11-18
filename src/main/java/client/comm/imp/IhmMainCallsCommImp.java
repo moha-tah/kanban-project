@@ -38,10 +38,10 @@ public class IhmMainCallsCommImp implements IhmMainCallsComm {
         System.out.println("COMM IMP: Envoi demande ajout modificateur...");
         
         AskAddListModifiers msg = new AskAddListModifiers(userId, kanbanId);
-        
         try {
             if (commCore.getMsgSender() != null) {
                 commCore.sendMessage(msg);
+                System.out.println("COMM IMP: Demande envoyée." + msg);
             }
         } catch (IOException e) {
             e.printStackTrace();
