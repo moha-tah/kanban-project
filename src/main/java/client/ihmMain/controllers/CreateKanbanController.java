@@ -157,11 +157,6 @@ public class CreateKanbanController {
         }
     }
 
-    private String randomColorHex() {
-        String[] colors = {"#FF6B6B", "#6BCB77", "#4D96FF", "#FFD93D", "#9D4EDD"};
-        return colors[(int) (Math.random() * colors.length)];
-    }
-
     private String colorToHex(Color color) {
         return String.format("#%02X%02X%02X",
                 (int) (color.getRed() * 255),
