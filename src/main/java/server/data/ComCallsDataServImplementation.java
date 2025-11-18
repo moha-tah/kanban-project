@@ -3,6 +3,7 @@ package server.data;
 import java.util.List;
 import java.util.UUID;
 
+import common.dataClasses.AddAccess;
 import common.dataClasses.Kanban;
 import common.dataClasses.LightKanban;
 import common.dataClasses.LightUser;
@@ -31,8 +32,19 @@ public class ComCallsDataServImplementation implements CommCallsDataServer {
     }
 
     @Override
-    public void askAddListModifiers(LightUser user, LightKanban kanban) {
-        
+    public void addListModifiers(LightUser user, LightKanban kanban) {
+        ServerModel model = myProvider.getModel();
+        //Ici on prend en compte les changements de la branche 'feature/getKanban' (à vérifier)
+        List<Kanban> kanbans = model.getInUseKanbans();
+        for (Kanban k : kanbans) {
+            if (k.getId().equals(kanban.getId())) {
+                LightKanban lightK = k.getLightKanban();
+                AddAccess modifier = new AddAccess(lightK);
+                // A voir avec l'équipe si ajout d'un argument
+                modifier.execute(user);
+                break;
+            }
+        }  
     }
 
 
