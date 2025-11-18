@@ -24,7 +24,6 @@ public class ManageDisplay {
                                  List<Column> cols,
                                  List<CreateTask> taskCreations) throws Exception {
 
-        // 👇 DEBUG : on regarde si le fichier est trouvé
         URL fxmlUrl = MainApp.class.getResource("/display-kanban.fxml");
         System.out.println("DEBUG FXML URL = " + fxmlUrl);
 
