@@ -74,7 +74,7 @@ public class HomeViewController {
 
     @FXML
     private void handleCreateKanban() throws IOException {
-        switchScene("/create_kanban.fxml", "Créer un Kanban", createKanbanButton);
+        openPopup("/createKanban.fxml", "Créer un Kanban");
     }
 
     @FXML
@@ -90,6 +90,18 @@ public class HomeViewController {
     @FXML
     private void handleLogout() {
         System.out.println("Déconnexion — à implémenter plus tard.");
+    }
+
+    private void openPopup(String fxmlPath, String title) throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+        Parent root = loader.load();
+
+        Stage popup = new Stage();
+        popup.setTitle(title);
+        popup.setScene(new Scene(root));
+        popup.setResizable(false);
+        popup.initOwner(createKanbanButton.getScene().getWindow()); // Facultatif (fenêtre parent)
+        popup.show();
     }
 
     // ===============================================================
