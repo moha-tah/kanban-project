@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.List;
 
 import client.comm.messages.ConnectionRequest;
+import client.comm.messages.AskAddListModifiers;
 import client.comm.messages.RequestKanban;
 import common.dataClasses.LightKanban;
 import common.dataClasses.LightUser;
@@ -30,8 +31,18 @@ public class IhmMainCallsCommImp implements IhmMainCallsComm {
     }
 
     @Override
-    public void askAddListModifiers(UUID LightUserId) {
-        askListModifiers(LightUserId);
+    public void askAddListModifiers(UUID userId, UUID kanbanId) {
+        System.out.println("COMM IMP: Envoi demande ajout modificateur...");
+        
+        AskAddListModifiers msg = new AskAddListModifiers(userId, kanbanId);
+        
+        try {
+            if (commCore.getMsgSender() != null) {
+                commCore.sendMessage(msg);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

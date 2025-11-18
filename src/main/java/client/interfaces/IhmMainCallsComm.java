@@ -16,5 +16,5 @@ public interface IhmMainCallsComm {
     void askKanban(UUID LightKanbanId);
     void getKanban(UUID LightKanbanId, UUID LightUserId);
     void connectServer(LightUser user, List<LightKanban> kanbans);
-    void askAddListModifiers(UUID kanbanId);
+    void askAddListModifiers(UUID userId, UUID kanbanId);
 }
