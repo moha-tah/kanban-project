@@ -13,7 +13,6 @@ import javafx.scene.layout.AnchorPane;
 
 public class KanbanCardController {
 
-    private MainCore core;
 
     private Kanban kanban;
 
