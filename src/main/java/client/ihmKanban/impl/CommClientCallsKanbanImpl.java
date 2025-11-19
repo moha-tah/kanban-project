@@ -16,9 +16,9 @@ public class CommClientCallsKanbanImpl implements CommClientCallsKanban {
 
     @Override
     public void deliverNotification(LightKanban idKanban, Modification modification) {
-        System.out.println("[Comm->kanban] notification reçue : "
+        /*System.out.println("[Comm->kanban] notification reçue : "
                 + "kanban=" + idKanban
-                + " modification=" + modification);
+                + " modification=" + modification);*/
 
     }
 }

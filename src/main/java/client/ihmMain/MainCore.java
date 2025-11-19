@@ -62,8 +62,8 @@ public class MainCore {
         KanbanTest.getTaskColumn().get(todo).add(t1); KanbanTest.getTaskColumn().get(todo).add(t2);
         KanbanTest.getTaskColumn().get(doing).add(t3);
         KanbanTest.getTaskColumn().get(done).add(t4);
-    }
-    */
+    }*/
+    
 
 
     // ---- Ports sortants (UI/Main -> autres couches) ----

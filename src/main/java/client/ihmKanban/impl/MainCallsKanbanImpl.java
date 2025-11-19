@@ -18,13 +18,13 @@ public class MainCallsKanbanImpl implements MainCallsKanban {
     @Override
     public void displaySnapshotList(){
         // A IMPLEMENTER 
-        System.out.println("[MainCallsKanban] displaySnapshotList called");
+        /*System.out.println("[MainCallsKanban] displaySnapshotList called");*/
     }
 
     @Override
     public void openCreateForm(Kanban kanban){ 
         corps.displayKanban(kanban); 
-        System.out.println("[MainCallsKanban] openCreateForm called");
+        /*System.out.println("[MainCallsKanban] openCreateForm called");*/
     }
 
 }

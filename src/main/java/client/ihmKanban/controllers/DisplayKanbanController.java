@@ -139,6 +139,7 @@ public class DisplayKanbanController implements Initializable {
     }
 
     // ---- Handlers basiques (tu pourras les relier à tes popups) ----
+    /* 
     private void onColumnMenuClick(Column col, VBox columnNode) {
         System.out.println("Menu colonne : " + col.getTitle());
     }
@@ -149,5 +150,5 @@ public class DisplayKanbanController implements Initializable {
 
     private void onStatusClick(Task task, Button statusBtn) {
         System.out.println("Changer état de : " + task.getTitle());
-    }
+    } */
 }
