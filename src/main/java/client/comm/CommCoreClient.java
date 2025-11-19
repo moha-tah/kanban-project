@@ -5,19 +5,19 @@ import java.io.ObjectOutputStream;
 import java.io.ObjectInputStream;
 import java.io.IOException;
 
-import client.interfaces.IhmMainCallsComm;
-import client.interfaces.DataCallsComm;
-import client.interfaces.IhmKanbanCallsComm;
+import client.interfaces.*;
 import client.comm.imp.DataCallsCommImp;
 import client.comm.imp.IhmKanbanCallsCommImp;
 import client.comm.imp.IhmMainCallsCommImp;
 import client.comm.messages.Message;
+import server.interfaces.CommCallsDataServer;
+
 import java.util.Optional;
 
 
 public class CommCoreClient {
-    private final String serverAddress;
-    private final int serverPort;
+    private String serverAddress;
+    private int serverPort;
     private Socket socket;
     private ObjectOutputStream out;
     private ObjectInputStream in;
@@ -26,6 +26,10 @@ public class CommCoreClient {
     private final IhmMainCallsComm ihmMainCallsComm;
     private final DataCallsComm dataCallsComm;
     private final IhmKanbanCallsComm ihmKanbanCallsComm;
+
+    private CommClientCallsMain mainInterface;
+    private ComCallsDataClient dataInterface;
+    private CommClientCallsKanban kanbanInterface;
 
 
     public CommCoreClient(String serverAddress, int serverPort) {
@@ -70,6 +74,34 @@ public class CommCoreClient {
         return ihmKanbanCallsComm;
     }
 
+    public void setMainInterface(CommClientCallsMain mainInterface) {
+        this.mainInterface = mainInterface;
+    }
+
+    public void setDataInterface(ComCallsDataClient dataInterface) {
+        this.dataInterface = dataInterface;
+    }
+
+    public void setKanbanInterface(CommClientCallsKanban kanbanInterface) {
+        this.kanbanInterface = kanbanInterface;
+    }
+
+    public CommClientCallsMain getMainInterface() { return mainInterface; }
+    public ComCallsDataClient getDataInterface() { return dataInterface; }
+
+    public boolean connect_host_port(String host, int port) {
+        try {
+            disconnect(); // Tenter de déconnecter proprement l'ancienne connexion (si elle existe)
+            this.serverAddress = host; // récupérer dynamiquement les host et port
+            this.serverPort = port;
+            connect(); // Appelle la méthode connect() sans argument qui utilise maintenant les champs mis à jour
+            return true;
+        } catch (IOException e) {
+            System.err.println("Connection failed to " + host + ":" + port + ": " + e.getMessage());
+            return false;
+        }
+    }
+
     public void connect() throws IOException {
         socket = new Socket(serverAddress, serverPort);
         out = new ObjectOutputStream(socket.getOutputStream());
@@ -101,6 +133,11 @@ public class CommCoreClient {
         if (socket != null) socket.close();
         if (msgReceiver != null) msgReceiver.stop();
         if (msgSender != null) msgSender.close();
+
+        socket = null;
+        out = null;
+        in = null;
+        msgReceiver = null;
     }
     
     public void sendMessage(Object message) throws IOException {
@@ -117,4 +154,6 @@ public class CommCoreClient {
     public MsgSender getMsgSender() {
         return msgSender;
     }
+
+
 }
