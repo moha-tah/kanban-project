@@ -1,11 +1,8 @@
 package client;
 
 import client.ihmMain.MainCore;
-import client.interfaces.MainCallsDataClient;
 import client.comm.CommCoreClient;
 import client.data.DataClientProvider;
-import client.ihmKanban.kanbanCorps;
-import server.comm.CommCoreServer;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.stage.Stage;
@@ -17,9 +14,6 @@ public class MainApp extends Application {
     private MainCore        core;
     private CommCoreClient  comm;
     private DataClientProvider data;
-    private kanbanCorps kanban;
-
-    private  CommCoreServer commServer;
 
     public MainApp() {
         INSTANCE = this;
@@ -48,7 +42,13 @@ public class MainApp extends Application {
     public void start(Stage primaryStage) throws Exception {
         core = new MainCore();
         data = new DataClientProvider();
-        comm = new CommCoreClient(DEFAULT_HOST, DEFAULT_PORT); // gérer côté cient en dynamique avec valeur par défault
+        kanban = new kanbanCorps(); 
+
+        // Connect to external server (must be running separately via ServerApp)
+        String serverHost = System.getProperty("server.host", "127.0.0.1");
+        int serverPort = Integer.parseInt(System.getProperty("server.port", "8080"));
+        
+        comm = new CommCoreClient(serverHost, serverPort);
 
         // Main -> Data
         core.setDataPort(data.getToMainImpl());
@@ -72,6 +72,30 @@ public class MainApp extends Application {
 
         // Connect the client after UI launched
         comm.connect();
+
+        // Ensure we stop network resources when the UI is closed
+        primaryStage.setOnCloseRequest(event -> {
+            try {
+                if (comm != null) {
+                    try {
+                        comm.disconnect();
+                    } catch (Exception ex) {
+                        System.err.println("Erreur lors de la déconnexion du client: " + ex.getMessage());
+                    }
+                }
+            } finally {
+                // Ensure JavaFX exits and the JVM terminates
+                Platform.exit();
+                System.exit(0);
+            }
+        });
+
+        // JVM shutdown hook as a safety net for non-UI shutdowns
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            try {
+                if (comm != null) comm.disconnect();
+            } catch (Exception ignored) {}
+        }));
 
     }
 
