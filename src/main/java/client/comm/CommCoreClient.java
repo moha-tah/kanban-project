@@ -5,13 +5,13 @@ import java.io.ObjectOutputStream;
 import java.io.ObjectInputStream;
 import java.io.IOException;
 
-import client.interfaces.IhmMainCallsComm;
-import client.interfaces.DataCallsComm;
-import client.interfaces.IhmKanbanCallsComm;
+import client.interfaces.*;
 import client.comm.imp.DataCallsCommImp;
 import client.comm.imp.IhmKanbanCallsCommImp;
 import client.comm.imp.IhmMainCallsCommImp;
 import client.comm.messages.Message;
+import server.interfaces.CommCallsDataServer;
+
 import java.util.Optional;
 
 
@@ -26,6 +26,9 @@ public class CommCoreClient {
     private final IhmMainCallsComm ihmMainCallsComm;
     private final DataCallsComm dataCallsComm;
     private final IhmKanbanCallsComm ihmKanbanCallsComm;
+
+    private CommClientCallsMain mainInterface;
+    private ComCallsDataClient dataInterface;
 
 
     public CommCoreClient(String serverAddress, int serverPort) {
@@ -69,6 +72,18 @@ public class CommCoreClient {
     public IhmKanbanCallsComm getIhmKanbanCallsComm() {
         return ihmKanbanCallsComm;
     }
+
+    public void setMainInterface(CommClientCallsMain mainInterface) {
+        this.mainInterface = mainInterface;
+    }
+
+    public void setDataInterface(ComCallsDataClient dataInterface) {
+        this.dataInterface = dataInterface;
+    }
+
+    public CommClientCallsMain getMainInterface() { return mainInterface; }
+    public ComCallsDataClient getDataInterface() { return dataInterface; }
+
 
     public void connect() throws IOException {
         socket = new Socket(serverAddress, serverPort);
