@@ -8,6 +8,8 @@ public class Task {
     private String description;
     private LocalDate startDate;
     private LocalDate endDate;
+    private LightUser creator;
+    private List<LightUser> affectedUsers; 
     
     // Constructeur
     public Task(String title, String description, LocalDate startDate, LocalDate endDate) {
@@ -38,6 +40,14 @@ public class Task {
     public LocalDate getEndDate() {
         return endDate;
     }
+
+    public LightUser getCreator() {
+        return creator;
+    }
+
+    public List<LightUser> getAffectedUsers() {
+        return affectedUsers;
+    }
     
     // Setters
     public void setTitle(String title) {
@@ -54,5 +64,13 @@ public class Task {
     
     public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
+    }
+
+    public void setCreator(LightUser creator) {
+        this.creator = creator;
+    }
+
+    public void setAffectedUsers(List<LightUser> affectedUsers) {
+        this.affectedUsers = affectedUsers;
     }
 }

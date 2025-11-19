@@ -6,6 +6,8 @@ public class Message {
     private UUID id;
     private String content;
     private LocalDateTime date;
+    private LightUser receiver;
+    private LightUser sender;
     
     // Constructeur
     public Message(String content) {
@@ -26,6 +28,14 @@ public class Message {
     public LocalDateTime getDate() {
         return date;
     }
+
+    public LightUser getReceiver(){
+        return receiver;
+    }
+
+    public LightUser getSender(){
+        return sender;
+    }
     
     // Setters
     public void setContent(String content) {
@@ -34,5 +44,13 @@ public class Message {
     
     public void setDate(LocalDateTime date) {
         this.date = date;
+    }
+
+    public void setReceiver(LightUser receiver){
+        this.receiver = receiver;
+    }
+
+    public void setSender(LightUser sender){
+        this.sender = sender;
     }
 }
