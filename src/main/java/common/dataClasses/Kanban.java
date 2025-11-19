@@ -6,6 +6,7 @@ import java.util.UUID;
 
 public class Kanban extends LightKanban {
     private HashMap<Column, List<Task>> taskColumn;
+    private User creator; 
     
     // Constructeur
     public Kanban(String title) {
@@ -23,11 +24,20 @@ public class Kanban extends LightKanban {
     public HashMap<Column, List<Task>> getTaskColumn() {
         return taskColumn;
     }
+
+    public User getCreator() {
+        return creator;
+    }
     
     // Setters
     public void setTaskColumn(HashMap<Column, List<Task>> taskColumn) {
         this.taskColumn = taskColumn;
     }
+
+    public void setCreator(User creator) {
+        this.creator = creator;
+    }
+    
     
     // Méthodes métier
     public boolean canBeModifiedBy(LightUser user) {
