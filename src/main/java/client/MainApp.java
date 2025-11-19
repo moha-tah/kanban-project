@@ -22,6 +22,9 @@ public class MainApp extends Application {
         INSTANCE = this;
     }
 
+    private static final String DEFAULT_HOST = "127.0.0.1";
+    private static final int    DEFAULT_PORT = 8080;
+
     public static MainCore getCore() {
         return INSTANCE != null ? INSTANCE.core : null;
     }
@@ -38,14 +41,7 @@ public class MainApp extends Application {
     public void start(Stage primaryStage) throws Exception {
         core = new MainCore();
         data = new DataClientProvider();
-
-        // Start server first, potentially on a fallback port
-        commServer = new CommCoreServer(8080);
-        commServer.start();
-        int actualPort = commServer.getLocalPort();
-
-        // Create client using the actual bound port and connect
-        comm = new CommCoreClient("127.0.0.1", actualPort);
+        comm = new CommCoreClient(DEFAULT_HOST, DEFAULT_PORT); // gérer côté cient en dynamique avec valeur par défault
 
         // Main -> Data
         core.setDataPort(data.getToMainImpl());
@@ -59,44 +55,16 @@ public class MainApp extends Application {
         // Data -> Comm
         data.setCommInterface(comm.getDataCallsComm());
 
+        // comm -> data
+        comm.setDataInterface(comm.getDataInterface());
+
+        // Comm -> Main
+        comm.setMainInterface(comm.getMainInterface());
+
         core.launchMainWindow(primaryStage);
 
         // Connect the client after UI launched
         comm.connect();
-
-        // Ensure we stop network resources when the UI is closed
-        primaryStage.setOnCloseRequest(event -> {
-            try {
-                if (comm != null) {
-                    try {
-                        comm.disconnect();
-                    } catch (Exception ex) {
-                        System.err.println("Erreur lors de la déconnexion du client: " + ex.getMessage());
-                    }
-                }
-                if (commServer != null) {
-                    try {
-                        commServer.stop();
-                    } catch (Exception ex) {
-                        System.err.println("Erreur lors de l'arrêt du serveur: " + ex.getMessage());
-                    }
-                }
-            } finally {
-                // Ensure JavaFX exits and the JVM terminates
-                Platform.exit();
-                System.exit(0);
-            }
-        });
-
-        // JVM shutdown hook as a safety net for non-UI shutdowns
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            try {
-                if (comm != null) comm.disconnect();
-            } catch (Exception ignored) {}
-            try {
-                if (commServer != null) commServer.stop();
-            } catch (Exception ignored) {}
-        }));
 
     }
 
