@@ -1,11 +1,8 @@
 package client;
 
 import client.ihmMain.MainCore;
-import client.interfaces.MainCallsDataClient;
 import client.comm.CommCoreClient;
 import client.data.DataClientProvider;
-import client.ihmKanban.kanbanCorps;
-import server.comm.CommCoreServer;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.stage.Stage;
@@ -75,6 +72,30 @@ public class MainApp extends Application {
 
         // Connect the client after UI launched
         comm.connect();
+
+        // Ensure we stop network resources when the UI is closed
+        primaryStage.setOnCloseRequest(event -> {
+            try {
+                if (comm != null) {
+                    try {
+                        comm.disconnect();
+                    } catch (Exception ex) {
+                        System.err.println("Erreur lors de la déconnexion du client: " + ex.getMessage());
+                    }
+                }
+            } finally {
+                // Ensure JavaFX exits and the JVM terminates
+                Platform.exit();
+                System.exit(0);
+            }
+        });
+
+        // JVM shutdown hook as a safety net for non-UI shutdowns
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            try {
+                if (comm != null) comm.disconnect();
+            } catch (Exception ignored) {}
+        }));
 
     }
 
