@@ -36,7 +36,11 @@ public class KanbanCardController {
         this.color = color;
 
         titleLabel.setText(title);
-        creatorLabel.setText("Creator: " + creator.getFirstName() + " " + creator.getLastName());
+        if (creator != null) {
+            creatorLabel.setText("Creator: " + creator.getFirstName() + " " + creator.getLastName());
+        } else {
+            creatorLabel.setText("Creator: Unknown");
+        }
         columnsLabel.setText("Columns: " + columns);
         visibilityLabel.setText("Visibility: " + visibility);
 
