@@ -1,5 +1,5 @@
 package common.dataClasses;
-
+import java.io.Serializable;
 
 public class Access implements Serializable  {
   private static final long serialVersionUID = 1L;
