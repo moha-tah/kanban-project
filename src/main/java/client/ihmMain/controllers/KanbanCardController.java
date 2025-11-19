@@ -61,11 +61,11 @@ public class KanbanCardController {
 
     // Demander autorisation
     @FXML
-    private void requestPermission(/*UUID lightKanbanID*/) {
+    private void requestPermission(UUID lightKanbanID) {
         System.out.println("[REQUEST ACCESS] Kanban privé: " + title);
 
-        // IhmMainCallsComm comm = core.getCommPort();
-        // comm.sendPermissionRequest(core.getMe().getId(), lightKanbanID);
+        IhmMainCallsComm comm = core.getCommPort();
+        comm.sendPermissionRequest(core.getMe().getId(), lightKanbanID);
 
         // === 🔄 Mettre le bouton en mode "Pending" ===
         requestButton.setText("Pending");
