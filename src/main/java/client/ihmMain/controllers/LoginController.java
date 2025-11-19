@@ -47,12 +47,38 @@ public class LoginController {
         String username = safe(usernameField.getText());
         String password = safe(passwordField.getText());
 
-        if (username.isBlank()) {
-            showError(errorLabel, "Username is required.");
+        // --- Récupération et validation IP/Port ---
+        String ip = safe(ipField.getText());
+        String portStr = safe(portField.getText());
+        int port;
+
+        if (username.isBlank() || password.isBlank()) {
+            showError(errorLabel, "Username and password are required.");
             return;
         }
         if (password.length() < 6) {
             showError(errorLabel, "Password must be ≥ 6 characters.");
+            return;
+        }
+        if (ip.isBlank()) {
+            showError(errorLabel, "IP Address is required.");
+            return;
+        }
+        try {
+            port = Integer.parseInt(portStr);
+            if (port <= 0 || port > 65535) {
+                showError(errorLabel, "Invalid port number.");
+                return;
+            }
+        } catch (NumberFormatException e) {
+            showError(errorLabel, "Port must be a number.");
+            return;
+        }
+        // ------------------------------------------
+
+        // Connexion dynamique
+        if (!updateConnection(ip, port)) {
+            // L'erreur est affichée dans updateConnection si échec
             return;
         }
 
@@ -89,6 +115,22 @@ public class LoginController {
 
         core.showHomeView();
     }
+
+    // Gère l'appel à la couche COMM pour la connexion dynamique
+    private boolean updateConnection(String newHost, int newPort) {
+        IhmMainCallsComm comm = core.getCommPort();
+        if (comm == null) {
+            showError(errorLabel, "Communication service unavailable.");
+            return false;
+        }
+
+        if (!comm.connect(newHost, newPort)) {
+            showError(errorLabel, "Failed to connect to " + newHost + ":" + newPort);
+            return false;
+        }
+        return true;
+    }
+
 
     // ---------------------------------------------------------------------
     //                 FACTORISATION ACCÈS DATA LAYER
