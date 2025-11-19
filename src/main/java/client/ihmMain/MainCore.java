@@ -1,9 +1,6 @@
 package client.ihmMain;
 
 import client.MainApp;
-import client.ihmKanban.kanbanCorps;
-import client.ihmKanban.controllers.DisplayKanbanController;
-import client.ihmKanban.controllers.ManageDisplay;
 import client.interfaces.MainCallsDataClient;
 import client.interfaces.MainCallsKanban;
 import client.interfaces.IhmMainCallsComm;
@@ -17,9 +14,9 @@ import client.ihmMain.impl.commCallsMainImpl;
 import client.ihmMain.impl.kanbanCallsMainImpl;
 
 import common.dataClasses.LightKanban;
-import common.dataClasses.Column;
+/*import common.dataClasses.Column;
 import common.dataClasses.Kanban;
-import common.dataClasses.Task;
+import common.dataClasses.Task;*/
 import common.dataClasses.LightUser;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -49,7 +46,7 @@ import client.ihmKanban.impl.MainCallsKanbanImpl;
 public class MainCore {
 
     // ---- Exemple de Kanban pour tests de la V2 surment plus pertinant pour la suite----
-    
+    /*
     Kanban KanbanTest = new Kanban("Projet IHM Kanban"); 
     Column todo = new Column("To Do", "#FFAAAA", 1); Column doing = new Column("Doing", "#FFD580", 2); Column done = new Column("Done", "#AAFFAA", 3);
     Task t1 = new Task("Créer interface JavaFX", "description", LocalDate.now(), LocalDate.now().plusDays(2));
@@ -62,7 +59,7 @@ public class MainCore {
         KanbanTest.getTaskColumn().get(todo).add(t1); KanbanTest.getTaskColumn().get(todo).add(t2);
         KanbanTest.getTaskColumn().get(doing).add(t3);
         KanbanTest.getTaskColumn().get(done).add(t4);
-    }
+    }*/
     
 
 
@@ -109,9 +106,14 @@ public class MainCore {
     public void addOrReplaceKanban(LightKanban k) {
         kanbans.removeIf(x -> x.getId().equals(k.getId()));
         kanbans.add(k);
+        System.out.println("[MainCore] Kanban added/updated: " + k.getTitle() + " (total=" + kanbans.size() + ")");
     }
 
-    public void addKanbans(List<LightKanban> list) { for (var k : list) addOrReplaceKanban(k); }
+    public void addKanbans(List<LightKanban> list) {
+        if (list == null) return;
+        for (LightKanban k : list) addOrReplaceKanban(k);
+        System.out.println("[MainCore] Bulk add kanbans, now total=" + kanbans.size());
+    }
 
     public void addUser(LightUser u) {
         users.removeIf(x -> x.getId().equals(u.getId())); users.add(u);
@@ -128,25 +130,28 @@ public class MainCore {
     public void launchMainWindow(Stage stage) {
         try {
 
-            
+            /* 
             kanbanCorps core = new kanbanCorps();
             MainCallsKanban mainCalls = new MainCallsKanbanImpl(core);
-            mainCalls.openCreateForm(KanbanTest);
+            mainCalls.openCreateForm(KanbanTest);*/
             
-            /* 
+            
             final String first = "/landing.fxml";
-            URL url = getClass().getResource(first);
+            URL url = MainApp.class.getResource(first);
             if (url == null) throw new IllegalStateException("FXML introuvable: " + first);
 
             Parent root = FXMLLoader.load(url);
             Scene scene = new Scene(root, 1280, 720);
 
-            URL css = getClass().getResource("/styles.css");
+            URL css = MainApp.class.getResource("/styles.css");
             if (css != null) scene.getStylesheets().add(css.toExternalForm());
 
             stage.setTitle("Login");
             stage.setScene(scene);
-            stage.show();*/
+
+            stage.show();
+            System.out.println("[MainCore] Launched main window with FXML: " + first);
+
         } catch (Exception e) {
             System.err.println("Error while launching main window: " + e.getMessage());
             throw new RuntimeException("Impossible d’ouvrir la fenêtre Login", e);

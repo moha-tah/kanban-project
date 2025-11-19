@@ -5,7 +5,9 @@ import client.interfaces.MainCallsDataClient;
 import client.comm.CommCoreClient;
 import client.data.DataClientProvider;
 import client.ihmKanban.kanbanCorps;
+import server.comm.CommCoreServer;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.stage.Stage;
 
 public class MainApp extends Application {
@@ -17,6 +19,7 @@ public class MainApp extends Application {
     private DataClientProvider data;
     private kanbanCorps kanban;
 
+    private  CommCoreServer commServer;
 
     public MainApp() {
         INSTANCE = this;
@@ -41,9 +44,16 @@ public class MainApp extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         core = new MainCore();
-        comm = new CommCoreClient("127.0.0.1", 8080);
         data = new DataClientProvider();
         kanban = new kanbanCorps(); 
+
+        // Start server first, potentially on a fallback port
+        commServer = new CommCoreServer(8080);
+        commServer.start();
+        int actualPort = commServer.getLocalPort();
+
+        // Create client using the actual bound port and connect
+        comm = new CommCoreClient("127.0.0.1", actualPort);
 
         // Main -> Data
         core.setDataPort(data.getToMainImpl());
@@ -67,6 +77,44 @@ public class MainApp extends Application {
         kanban.setCommPort(comm.getIhmKanbanCallsComm());
 
         core.launchMainWindow(primaryStage);
+
+        // Connect the client after UI launched
+        comm.connect();
+
+        // Ensure we stop network resources when the UI is closed
+        primaryStage.setOnCloseRequest(event -> {
+            try {
+                if (comm != null) {
+                    try {
+                        comm.disconnect();
+                    } catch (Exception ex) {
+                        System.err.println("Erreur lors de la déconnexion du client: " + ex.getMessage());
+                    }
+                }
+                if (commServer != null) {
+                    try {
+                        commServer.stop();
+                    } catch (Exception ex) {
+                        System.err.println("Erreur lors de l'arrêt du serveur: " + ex.getMessage());
+                    }
+                }
+            } finally {
+                // Ensure JavaFX exits and the JVM terminates
+                Platform.exit();
+                System.exit(0);
+            }
+        });
+
+        // JVM shutdown hook as a safety net for non-UI shutdowns
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            try {
+                if (comm != null) comm.disconnect();
+            } catch (Exception ignored) {}
+            try {
+                if (commServer != null) commServer.stop();
+            } catch (Exception ignored) {}
+        }));
+
     }
 
     public static void main(String[] args) { launch(args); }
