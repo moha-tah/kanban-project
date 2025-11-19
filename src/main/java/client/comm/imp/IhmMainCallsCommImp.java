@@ -96,6 +96,12 @@ public class IhmMainCallsCommImp implements IhmMainCallsComm {
     }
 
     @Override
+    public boolean connect(String host, int port) {
+        return commCore.connect_host_port(host, port);
+    }
+
+
+    @Override
     public void connectionRequest(LightUser user, List<LightKanban> kanbans) {
         connectServer(user, kanbans);
     }

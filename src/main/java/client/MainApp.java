@@ -17,9 +17,8 @@ public class MainApp extends Application {
     private MainCore        core;
     private CommCoreClient  comm;
     private DataClientProvider data;
-    private kanbanCorps kanban;
-
     private  CommCoreServer commServer;
+    private kanbanCorps kanbanCorps;
 
     public MainApp() {
         INSTANCE = this;
@@ -40,33 +39,37 @@ public class MainApp extends Application {
         return INSTANCE != null ? INSTANCE.data : null;
     }
 
-    public static kanbanCorps getKanbanCorps() {
-        return INSTANCE != null ? INSTANCE.kanban : null;
-    }
-
     @Override
     public void start(Stage primaryStage) throws Exception {
         core = new MainCore();
         data = new DataClientProvider();
         comm = new CommCoreClient(DEFAULT_HOST, DEFAULT_PORT); // gérer côté cient en dynamique avec valeur par défault
+        kanbanCorps = new kanbanCorps();
 
         // Main -> Data
         core.setDataPort(data.getToMainImpl());
 
         // Main -> Comm
         core.setCommPort(comm.getIhmMainCallsComm());
+        core.setKanbanPort(kanbanCorps.getMAINService());
 
         // Data -> Main
         data.setMainInterface(core.getDATService());
 
         // Data -> Comm
         data.setCommInterface(comm.getDataCallsComm());
+        data.setKanbanInterface(kanbanCorps.getDATService());
 
         // comm -> data
         comm.setDataInterface(comm.getDataInterface());
 
         // Comm -> Main
         comm.setMainInterface(comm.getMainInterface());
+        comm.setKanbanInterface(kanbanCorps.getCOMMService());
+
+        kanbanCorps.setCommPort(kanbanCorps.getCommPort());
+        kanbanCorps.setDataPort(kanbanCorps.getDataPort());
+        kanbanCorps.setMainPort(kanbanCorps.getMainPort());
 
         core.launchMainWindow(primaryStage);
 
