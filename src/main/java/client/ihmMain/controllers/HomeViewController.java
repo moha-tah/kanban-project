@@ -202,6 +202,7 @@ public class HomeViewController {
 
     // ===============================================================
     //  MÉTHODE UTILITAIRE POUR CHANGER DE SCÈNE
+    // ===============================================================
 
     private void switchScene(String fxmlPath, String title, Node triggerNode) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
