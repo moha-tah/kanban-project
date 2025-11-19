@@ -16,8 +16,8 @@ import java.util.Optional;
 
 
 public class CommCoreClient {
-    private final String serverAddress;
-    private final int serverPort;
+    private String serverAddress;
+    private int serverPort;
     private Socket socket;
     private ObjectOutputStream out;
     private ObjectInputStream in;
@@ -29,6 +29,7 @@ public class CommCoreClient {
 
     private CommClientCallsMain mainInterface;
     private ComCallsDataClient dataInterface;
+    private CommClientCallsKanban kanbanInterface;
 
 
     public CommCoreClient(String serverAddress, int serverPort) {
@@ -81,9 +82,25 @@ public class CommCoreClient {
         this.dataInterface = dataInterface;
     }
 
+    public void setKanbanInterface(CommClientCallsKanban kanbanInterface) {
+        this.kanbanInterface = kanbanInterface;
+    }
+
     public CommClientCallsMain getMainInterface() { return mainInterface; }
     public ComCallsDataClient getDataInterface() { return dataInterface; }
 
+    public boolean connect_host_port(String host, int port) {
+        try {
+            disconnect(); // Tenter de déconnecter proprement l'ancienne connexion (si elle existe)
+            this.serverAddress = host; // récupérer dynamiquement les host et port
+            this.serverPort = port;
+            connect(); // Appelle la méthode connect() sans argument qui utilise maintenant les champs mis à jour
+            return true;
+        } catch (IOException e) {
+            System.err.println("Connection failed to " + host + ":" + port + ": " + e.getMessage());
+            return false;
+        }
+    }
 
     public void connect() throws IOException {
         socket = new Socket(serverAddress, serverPort);
@@ -116,6 +133,11 @@ public class CommCoreClient {
         if (socket != null) socket.close();
         if (msgReceiver != null) msgReceiver.stop();
         if (msgSender != null) msgSender.close();
+
+        socket = null;
+        out = null;
+        in = null;
+        msgReceiver = null;
     }
     
     public void sendMessage(Object message) throws IOException {
@@ -132,4 +154,6 @@ public class CommCoreClient {
     public MsgSender getMsgSender() {
         return msgSender;
     }
+
+
 }

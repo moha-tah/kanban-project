@@ -14,6 +14,8 @@ public class MainApp extends Application {
     private MainCore        core;
     private CommCoreClient  comm;
     private DataClientProvider data;
+    private  CommCoreServer commServer;
+    private kanbanCorps kanbanCorps;
 
     public MainApp() {
         INSTANCE = this;
@@ -34,39 +36,37 @@ public class MainApp extends Application {
         return INSTANCE != null ? INSTANCE.data : null;
     }
 
-    public static kanbanCorps getKanbanCorps() {
-        return INSTANCE != null ? INSTANCE.kanban : null;
-    }
-
     @Override
     public void start(Stage primaryStage) throws Exception {
         core = new MainCore();
         data = new DataClientProvider();
-        kanban = new kanbanCorps(); 
-
-        // Connect to external server (must be running separately via ServerApp)
-        String serverHost = System.getProperty("server.host", "127.0.0.1");
-        int serverPort = Integer.parseInt(System.getProperty("server.port", "8080"));
-        
-        comm = new CommCoreClient(serverHost, serverPort);
+        comm = new CommCoreClient(DEFAULT_HOST, DEFAULT_PORT); // gérer côté cient en dynamique avec valeur par défault
+        kanbanCorps = new kanbanCorps();
 
         // Main -> Data
         core.setDataPort(data.getToMainImpl());
 
         // Main -> Comm
         core.setCommPort(comm.getIhmMainCallsComm());
+        core.setKanbanPort(kanbanCorps.getMAINService());
 
         // Data -> Main
         data.setMainInterface(core.getDATService());
 
         // Data -> Comm
         data.setCommInterface(comm.getDataCallsComm());
+        data.setKanbanInterface(kanbanCorps.getDATService());
 
         // comm -> data
         comm.setDataInterface(comm.getDataInterface());
 
         // Comm -> Main
         comm.setMainInterface(comm.getMainInterface());
+        comm.setKanbanInterface(kanbanCorps.getCOMMService());
+
+        kanbanCorps.setCommPort(kanbanCorps.getCommPort());
+        kanbanCorps.setDataPort(kanbanCorps.getDataPort());
+        kanbanCorps.setMainPort(kanbanCorps.getMainPort());
 
         core.launchMainWindow(primaryStage);
 
