@@ -49,7 +49,7 @@ import client.ihmKanban.impl.MainCallsKanbanImpl;
 public class MainCore {
 
     // ---- Exemple de Kanban pour tests de la V2 surment plus pertinant pour la suite----
-    /* 
+    
     Kanban KanbanTest = new Kanban("Projet IHM Kanban"); 
     Column todo = new Column("To Do", "#FFAAAA", 1); Column doing = new Column("Doing", "#FFD580", 2); Column done = new Column("Done", "#AAFFAA", 3);
     Task t1 = new Task("Créer interface JavaFX", "description", LocalDate.now(), LocalDate.now().plusDays(2));
@@ -62,7 +62,7 @@ public class MainCore {
         KanbanTest.getTaskColumn().get(todo).add(t1); KanbanTest.getTaskColumn().get(todo).add(t2);
         KanbanTest.getTaskColumn().get(doing).add(t3);
         KanbanTest.getTaskColumn().get(done).add(t4);
-    }*/
+    }
     
 
 
@@ -128,12 +128,12 @@ public class MainCore {
     public void launchMainWindow(Stage stage) {
         try {
 
-            /* 
+            
             kanbanCorps core = new kanbanCorps();
             MainCallsKanban mainCalls = new MainCallsKanbanImpl(core);
             mainCalls.openCreateForm(KanbanTest);
-            */
             
+            /* 
             final String first = "/landing.fxml";
             URL url = getClass().getResource(first);
             if (url == null) throw new IllegalStateException("FXML introuvable: " + first);
@@ -146,7 +146,7 @@ public class MainCore {
 
             stage.setTitle("Login");
             stage.setScene(scene);
-            stage.show();
+            stage.show();*/
         } catch (Exception e) {
             System.err.println("Error while launching main window: " + e.getMessage());
             throw new RuntimeException("Impossible d’ouvrir la fenêtre Login", e);

@@ -87,7 +87,7 @@ public class DisplayKanbanController implements Initializable {
 
         Label menuLabel = new Label("⋮");
         menuLabel.setStyle("-fx-text-fill: white; -fx-font-size: 16;");
-        menuLabel.setOnMouseClicked(e -> onColumnMenuClick(col, columnBox));
+        menuLabel.setOnMouseClicked(e -> onColumnMenuClick(col));
 
         HBox spacer = new HBox();
         HBox.setHgrow(spacer, javafx.scene.layout.Priority.ALWAYS);
@@ -139,16 +139,16 @@ public class DisplayKanbanController implements Initializable {
     }
 
     // ---- Handlers basiques (tu pourras les relier à tes popups) ----
-    /* 
-    private void onColumnMenuClick(Column col, VBox columnNode) {
-        System.out.println("Menu colonne : " + col.getTitle());
+    
+    private void onColumnMenuClick(Column col/*, VBox columnNode*/) {
+        col.getTitle();
     }
 
     private void onTaskMenuClick(Task task, VBox cardNode) {
-        System.out.println("Menu tâche : " + task.getTitle());
+        task.getTitle();
     }
 
     private void onStatusClick(Task task, Button statusBtn) {
-        System.out.println("Changer état de : " + task.getTitle());
-    } */
+        task.getTitle();
+    } 
 }

@@ -27,9 +27,11 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 import client.ihmKanban.controllers.DisplayKanbanController;
 import client.ihmKanban.controllers.ManageDisplay;
+import java.util.logging.Logger;
 
 
 /**
@@ -86,11 +88,8 @@ public class kanbanCorps {
     
     private ManageDisplay manageDisplay = new ManageDisplay( this);
 
-    /* 
-    private Kanban kanban;
-    public void setKanban(Kanban kanban) {
-        this.kanban = kanban;
-    }*/
+
+    public static final Logger LOGGER = Logger.getLogger("Kanban Corps");
 
     public void addKanbans(List<LightKanban> list) { for (var k : list) addOrReplaceKanban(k); }
 
@@ -101,7 +100,7 @@ public class kanbanCorps {
     public void addUsers(List<LightUser> list) { for (var u : list) addUser(u); }
 
     public void updateAllKanbansForUser(UUID userId) {
-        System.out.println("[MainCore] updateAllKanbansForUser: " + userId);
+        LOGGER.info("[MainCore] updateAllKanbansForUser: " + userId);
     }
 
 

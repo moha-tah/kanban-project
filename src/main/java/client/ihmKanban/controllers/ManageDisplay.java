@@ -16,8 +16,11 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.net.URL;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class ManageDisplay {
+
+    
 
         private final kanbanCorps corps; 
 
@@ -31,7 +34,7 @@ public class ManageDisplay {
     try {
         // Charger FXML
         URL fxmlUrl = MainApp.class.getResource("/displayKanban.fxml");
-        System.out.println("DEBUG FXML URL = " + fxmlUrl);
+        corps.LOGGER.info("DEBUG FXML DisplayKanban");
 
         if (fxmlUrl == null) {
             throw new IllegalStateException("displayKanban.fxml introuvable dans le classpath !");
@@ -63,8 +66,7 @@ public class ManageDisplay {
         stage.show();
 
     } catch (Exception e) {
-        e.printStackTrace();
-        System.err.println("Erreur lors de l'ouverture de l'écran Kanban : " + e.getMessage());
+        corps.LOGGER.info("Erreur lors de l'ouverture de l'écran Kanban : " + e.getMessage());
     }
 }
 }
