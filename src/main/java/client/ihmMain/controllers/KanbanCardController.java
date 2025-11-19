@@ -68,7 +68,7 @@ public class KanbanCardController {
 
         // === 🔄 Mettre le bouton en mode "Pending" ===
         requestButton.setText("Pending");
-        requestButton.getStyleClass().add("btn-pending");
+        requestButton.getStyleClass().setAll("request-btn", "btn-pending");
         requestButton.setDisable(true); // empêche de redemander
     }
 
