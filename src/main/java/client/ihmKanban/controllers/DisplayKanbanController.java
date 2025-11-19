@@ -19,7 +19,20 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.UUID;
 
+import client.ihmKanban.kanbanCorps;
+
+
 public class DisplayKanbanController implements Initializable {
+
+    private DisplayKanbanController() {
+        this.corps = null; // temporaire
+    }
+    
+    private kanbanCorps corps;
+
+    public void setCore(kanbanCorps Kcorps) {
+        this.corps = Kcorps;
+    }
 
     @FXML
     private Label kanbanTitleLabel;      // label en haut : titre du kanban
@@ -38,6 +51,9 @@ public class DisplayKanbanController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         // on ne fait rien au chargement : on attend initBoard(...)
     }
+
+    
+
 
     /**
      * Appelée par ManageDisplay pour injecter les objets.
