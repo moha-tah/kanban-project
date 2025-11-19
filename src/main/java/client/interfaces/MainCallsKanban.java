@@ -1,15 +1,13 @@
 package client.interfaces;
 
-import common.dataClasses.Kanban;
-import common.dataClasses.Snapshot;
 import java.util.List;
 import java.util.UUID;
-
+import common.dataClasses.LightUser;
+import common.dataClasses.Kanban;
 
 // MainCallsKanban
 public interface MainCallsKanban {
-    void openCreateFrom();
+    void openCreateForm(Kanban Kanban);
     void displaySnapshotList();
 
-    void openCreateForm();
 }

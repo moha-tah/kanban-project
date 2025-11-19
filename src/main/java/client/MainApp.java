@@ -4,6 +4,7 @@ import client.ihmMain.MainCore;
 import client.interfaces.MainCallsDataClient;
 import client.comm.CommCoreClient;
 import client.data.DataClientProvider;
+import client.ihmKanban.kanbanCorps;
 import server.comm.CommCoreServer;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -16,6 +17,8 @@ public class MainApp extends Application {
     private MainCore        core;
     private CommCoreClient  comm;
     private DataClientProvider data;
+    private kanbanCorps kanban;
+
     private  CommCoreServer commServer;
 
     public MainApp() {
@@ -35,6 +38,10 @@ public class MainApp extends Application {
 
     public static DataClientProvider getDataCore() {
         return INSTANCE != null ? INSTANCE.data : null;
+    }
+
+    public static kanbanCorps getKanbanCorps() {
+        return INSTANCE != null ? INSTANCE.kanban : null;
     }
 
     @Override
