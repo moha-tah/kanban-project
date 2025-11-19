@@ -23,7 +23,7 @@
             <Button fx:id="logoButton" style="-fx-background-color: transparent; -fx-padding: 0;">
                 <graphic>
                     <ImageView fitHeight="40" fitWidth="40">
-                        <image><Image url="@k-logo-bg.png"/></image>
+                        <image><Image url="@logo.png"/></image>
                     </ImageView>
                 </graphic>
             </Button>

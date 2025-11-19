@@ -105,4 +105,5 @@ public class User extends LightUser {
     public String getFullName() {
         return firstName + " " + lastName;
     }
+
 }

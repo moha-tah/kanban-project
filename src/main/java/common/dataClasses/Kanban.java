@@ -11,6 +11,25 @@ public class Kanban extends LightKanban {
     private List<Task> tasks;
     private List<Column> columns;
     private User creator; 
+    private String visibility; // public / private
+    
+
+// Constructeur sans ID et visibility
+    public Kanban(String title , String visibility, User creator) {
+        super(title);
+        this.taskColumn = new HashMap<>();
+        this.visibility = visibility;
+        this.creator = creator;
+    }
+    
+    // Constructeur avec ID et visibility
+    public Kanban(UUID id, String title, String visibility, User creator) {
+        super(id, title);
+        this.visibility = visibility;
+        this.taskColumn = new HashMap<>();
+        this.creator = creator;
+    }
+
     
 
     // Constructeur
@@ -43,6 +62,9 @@ public class Kanban extends LightKanban {
     public User getCreator() {
         return creator;
     }
+    public String getVisibility() {
+        return visibility;
+    }
     
     // Setters
     public void setTaskColumn(HashMap<Column, List<Task>> taskColumn) {
@@ -52,8 +74,11 @@ public class Kanban extends LightKanban {
     public void setCreator(User creator) {
         this.creator = creator;
     }
-    
-    
+
+    public void setVisibility(String visibility) {
+        this.visibility = visibility;
+    }
+
     // Méthodes métier
     public boolean canBeModifiedBy(LightUser user) {
         // Logique pour vérifier si l'utilisateur peut modifier le kanban
