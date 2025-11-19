@@ -19,7 +19,7 @@ public class ComCallsDataServImplementation implements CommCallsDataServer {
         return new ComCallsDataServImplementation();
   }
   @Override
-    public Kanban requestKanban(LightUser user, LightKanban kanban) {
+  public Kanban requestKanban(LightUser user, LightKanban kanban) {
         ServerModel model = myProvider.getModel();
         List<Kanban> inUseKanbans = model.getInUseKanbans();
         Kanban myKanban = null;
