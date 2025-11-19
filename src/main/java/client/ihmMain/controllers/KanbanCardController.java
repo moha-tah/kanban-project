@@ -1,6 +1,5 @@
 package client.ihmMain.controllers;
 
-import java.util.UUID;
 
 import client.ihmMain.MainCore;
 import common.dataClasses.User;
