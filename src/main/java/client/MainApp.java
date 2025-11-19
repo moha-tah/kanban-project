@@ -1,11 +1,8 @@
 package client;
 
 import client.ihmMain.MainCore;
-import client.interfaces.MainCallsDataClient;
 import client.comm.CommCoreClient;
 import client.data.DataClientProvider;
-import client.ihmKanban.kanbanCorps;
-import server.comm.CommCoreServer;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.stage.Stage;
@@ -17,13 +14,13 @@ public class MainApp extends Application {
     private MainCore        core;
     private CommCoreClient  comm;
     private DataClientProvider data;
-    private kanbanCorps kanban;
-
-    private  CommCoreServer commServer;
 
     public MainApp() {
         INSTANCE = this;
     }
+
+    private static final String DEFAULT_HOST = "127.0.0.1";
+    private static final int    DEFAULT_PORT = 8080;
 
     public static MainCore getCore() {
         return INSTANCE != null ? INSTANCE.core : null;
@@ -47,13 +44,11 @@ public class MainApp extends Application {
         data = new DataClientProvider();
         kanban = new kanbanCorps(); 
 
-        // Start server first, potentially on a fallback port
-        commServer = new CommCoreServer(8080);
-        commServer.start();
-        int actualPort = commServer.getLocalPort();
-
-        // Create client using the actual bound port and connect
-        comm = new CommCoreClient("127.0.0.1", actualPort);
+        // Connect to external server (must be running separately via ServerApp)
+        String serverHost = System.getProperty("server.host", "127.0.0.1");
+        int serverPort = Integer.parseInt(System.getProperty("server.port", "8080"));
+        
+        comm = new CommCoreClient(serverHost, serverPort);
 
         // Main -> Data
         core.setDataPort(data.getToMainImpl());
@@ -67,14 +62,11 @@ public class MainApp extends Application {
         // Data -> Comm
         data.setCommInterface(comm.getDataCallsComm());
 
-        // Kanban -> Data
-        kanban.setDataPort(data.getToKabanImpl());
+        // comm -> data
+        comm.setDataInterface(comm.getDataInterface());
 
-        //Kanban -> Main
-        kanban.setMainPort(core.getKANBANService());
-
-        //Kanban -> Comm 
-        kanban.setCommPort(comm.getIhmKanbanCallsComm());
+        // Comm -> Main
+        comm.setMainInterface(comm.getMainInterface());
 
         core.launchMainWindow(primaryStage);
 
@@ -91,13 +83,6 @@ public class MainApp extends Application {
                         System.err.println("Erreur lors de la déconnexion du client: " + ex.getMessage());
                     }
                 }
-                if (commServer != null) {
-                    try {
-                        commServer.stop();
-                    } catch (Exception ex) {
-                        System.err.println("Erreur lors de l'arrêt du serveur: " + ex.getMessage());
-                    }
-                }
             } finally {
                 // Ensure JavaFX exits and the JVM terminates
                 Platform.exit();
@@ -109,9 +94,6 @@ public class MainApp extends Application {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             try {
                 if (comm != null) comm.disconnect();
-            } catch (Exception ignored) {}
-            try {
-                if (commServer != null) commServer.stop();
             } catch (Exception ignored) {}
         }));
 
