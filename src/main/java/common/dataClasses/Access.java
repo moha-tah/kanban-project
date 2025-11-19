@@ -1,11 +1,12 @@
 package common.dataClasses;
 
 
-public class Access {
+public class Access implements Serializable  {
+  private static final long serialVersionUID = 1L;
   private Role role;          
   private LightUser user;
 
-   public Access(LightUser user, Role role) {
+   public Access(LightUser user, Role role)  {
         this.user = user;
         this.role = role;
     }
