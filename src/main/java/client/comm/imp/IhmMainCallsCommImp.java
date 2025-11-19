@@ -1,22 +1,28 @@
 package client.comm.imp;
 
 import client.comm.CommCoreClient;
-import client.comm.messages.MessageConnectionRequest;
+import client.comm.messages.RequestPermission;
+import client.comm.messages.PermissionResponse;
+import client.comm.messages.NotifyDecision;
 import client.interfaces.IhmMainCallsComm;
 
 
-import java.io.IOException;
 import java.util.Objects;
 import java.util.UUID;
+import java.io.IOException;
 import java.util.List;
+
+import client.comm.messages.ConnectionRequest;
+import client.comm.messages.AskAddListModifiers;
+import client.comm.messages.RequestKanban;
 import common.dataClasses.LightKanban;
 import common.dataClasses.LightUser;
 
 public class IhmMainCallsCommImp implements IhmMainCallsComm {
-    private final CommCoreClient comm;
+    private final CommCoreClient commCore;
 
-    public IhmMainCallsCommImp(CommCoreClient comm) {
-        this.comm = Objects.requireNonNull(comm);
+    public IhmMainCallsCommImp(CommCoreClient commCore) {
+        this.commCore = Objects.requireNonNull(commCore);
     }
 
 
@@ -29,27 +35,71 @@ public class IhmMainCallsCommImp implements IhmMainCallsComm {
     }
 
     @Override
-    public void askAddListModifiers(UUID LightUserId) {
-        askListModifiers(LightUserId);
+    public void askAddListModifiers(UUID userId, UUID kanbanId) {
+        System.out.println("COMM IMP: Envoi demande ajout modificateur...");
+        
+        AskAddListModifiers msg = new AskAddListModifiers(userId, kanbanId);
+        try {
+            if (commCore.getMsgSender() != null) {
+                commCore.sendMessage(msg);
+                System.out.println("COMM IMP: Demande envoyée." + msg);
+            }
+        } catch (IOException e) {
+            java.util.logging.Logger.getLogger(IhmMainCallsCommImp.class.getName())
+                    .log(java.util.logging.Level.SEVERE, "IhmMainCallsCommImp: Erreur lors de l'envoi de AskAddListModifiers.", e);
+        }
     }
 
     @Override
     public void sendPermissionRequest(UUID LightUserId, UUID LightKanbanId) {
+        try {
+            RequestPermission msg = new RequestPermission(LightUserId, LightKanbanId);
+            commCore.sendMessage(msg);
+            System.out.println("[COMM] sendPermissionRequest user=" + LightUserId + " kanban=" + LightKanbanId);
+        } catch (Exception e) {
+            java.util.logging.Logger.getLogger(IhmMainCallsCommImp.class.getName())
+                    .log(java.util.logging.Level.SEVERE, "IhmMainCallsCommImp: Erreur dans sendPermissionRequest.", e);
+        }
     }
 
     @Override
     public void sendPermissionResponse(UUID LightUserId, UUID LightKanbanId, boolean accepted) {
+        try {
+            PermissionResponse msg = new PermissionResponse(LightUserId, LightKanbanId, accepted);
+            commCore.sendMessage(msg);
+            System.out.println("[COMM] sendPermissionResponse user=" + LightUserId + " kanban=" + LightKanbanId + " accepted=" + accepted);
+        } catch (Exception e) {
+            java.util.logging.Logger.getLogger(IhmMainCallsCommImp.class.getName())
+                    .log(java.util.logging.Level.SEVERE, "IhmMainCallsCommImp: Erreur dans sendPermissionResponse.", e);
+        }
     }
+
 
     @Override
     public void connectServer(LightUser user, List<LightKanban> kanbans) {
-        MessageConnectionRequest msg = new MessageConnectionRequest(user, kanbans);
+
+        // 1. On encapsule les données dans le Message qu'on vient de créer
+        ConnectionRequest msg = new ConnectionRequest(user, kanbans);
+
+        // 2. On envoie le message au serveur
         try {
-            comm.sendMessage(msg);
+            if (commCore.getMsgSender() != null) {
+                commCore.sendMessage(msg);
+            } else {
+                java.util.logging.Logger.getLogger(IhmMainCallsCommImp.class.getName())
+                        .log(java.util.logging.Level.WARNING, "IhmMainCallsCommImp: Impossible d'envoyer la demande de connexion (Socket non connecté ?)");
+            }
         } catch (IOException e) {
-            System.err.println("[COMM] Erreur lors de l'envoi de MessageConnectionRequest : " + e.getMessage());
+            java.util.logging.Logger.getLogger(IhmMainCallsCommImp.class.getName())
+                    .log(java.util.logging.Level.SEVERE, "IhmMainCallsCommImp: Problème réseau lors de la connexion.", e);
         }
     }
+
+    @Override
+    public boolean connect(String host, int port) {
+        return commCore.connect_host_port(host, port);
+    }
+
 
     @Override
     public void connectionRequest(LightUser user, List<LightKanban> kanbans) {
@@ -58,6 +108,14 @@ public class IhmMainCallsCommImp implements IhmMainCallsComm {
 
     @Override
     public void notifyDecision(UUID LightUserId, UUID LightKanbanId, boolean accepted) {
+        try {
+            NotifyDecision msg = new NotifyDecision(LightUserId, LightKanbanId, accepted);
+            commCore.sendMessage(msg);
+            System.out.println("[COMM] notifyDecision user=" + LightUserId + " kanban=" + LightKanbanId + " accepted=" + accepted);
+        } catch (Exception e) {
+            java.util.logging.Logger.getLogger(IhmMainCallsCommImp.class.getName())
+                    .log(java.util.logging.Level.SEVERE, "IhmMainCallsCommImp: Erreur dans notifyDecision.", e);
+        }
     }
 
     @Override
@@ -67,11 +125,19 @@ public class IhmMainCallsCommImp implements IhmMainCallsComm {
     @Override
     public void askKanban(UUID LightKanbanId) {
     }
+
     @Override
-    public void connectToServer(UUID LightUserId, List<LightKanban> listKanbans) {
-    }
-    @Override
-    public void getKanban(UUID LightKanbanId) {
+    public void getKanban(UUID LightKanbanId, UUID LightUserId) {
+        // 1. Création du message
+        RequestKanban msg = new RequestKanban(LightUserId, LightKanbanId);
+        
+        // 2. Envoi réseau
+        try {
+            commCore.sendMessage(msg);
+        } catch (Exception e) {
+            java.util.logging.Logger.getLogger(IhmMainCallsCommImp.class.getName())
+                    .log(java.util.logging.Level.SEVERE, "IhmMainCallsCommImp: Erreur lors de getKanban.", e);
+        }
     }
 
     public void sendRequestModification(LightUser LightUser, UUID CardId, Object newStatus) {

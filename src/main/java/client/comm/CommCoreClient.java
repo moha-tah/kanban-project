@@ -5,19 +5,19 @@ import java.io.ObjectOutputStream;
 import java.io.ObjectInputStream;
 import java.io.IOException;
 
-import client.interfaces.IhmMainCallsComm;
-import client.interfaces.DataCallsComm;
-import client.interfaces.IhmKanbanCallsComm;
+import client.interfaces.*;
 import client.comm.imp.DataCallsCommImp;
 import client.comm.imp.IhmKanbanCallsCommImp;
 import client.comm.imp.IhmMainCallsCommImp;
 import client.comm.messages.Message;
+import server.interfaces.CommCallsDataServer;
 
 import java.util.Optional;
 
+
 public class CommCoreClient {
-    private final String serverAddress;
-    private final int serverPort;
+    private String serverAddress;
+    private int serverPort;
     private Socket socket;
     private ObjectOutputStream out;
     private ObjectInputStream in;
@@ -27,6 +27,11 @@ public class CommCoreClient {
     private final DataCallsComm dataCallsComm;
     private final IhmKanbanCallsComm ihmKanbanCallsComm;
 
+    private CommClientCallsMain mainInterface;
+    private ComCallsDataClient dataInterface;
+    private CommClientCallsKanban kanbanInterface;
+
+
     public CommCoreClient(String serverAddress, int serverPort) {
         this.serverAddress = serverAddress;
         this.serverPort = serverPort;
@@ -34,6 +39,7 @@ public class CommCoreClient {
         this.dataCallsComm = new DataCallsCommImp(this);
         this.ihmKanbanCallsComm = new IhmKanbanCallsCommImp(this);
     }
+
 
     // Getters
     public String getServerAddress() {
@@ -68,30 +74,54 @@ public class CommCoreClient {
         return ihmKanbanCallsComm;
     }
 
+    public void setMainInterface(CommClientCallsMain mainInterface) {
+        this.mainInterface = mainInterface;
+    }
+
+    public void setDataInterface(ComCallsDataClient dataInterface) {
+        this.dataInterface = dataInterface;
+    }
+
+    public void setKanbanInterface(CommClientCallsKanban kanbanInterface) {
+        this.kanbanInterface = kanbanInterface;
+    }
+
+    public CommClientCallsMain getMainInterface() { return mainInterface; }
+    public ComCallsDataClient getDataInterface() { return dataInterface; }
+
+    public boolean connect_host_port(String host, int port) {
+        try {
+            disconnect(); // Tenter de déconnecter proprement l'ancienne connexion (si elle existe)
+            this.serverAddress = host; // récupérer dynamiquement les host et port
+            this.serverPort = port;
+            connect(); // Appelle la méthode connect() sans argument qui utilise maintenant les champs mis à jour
+            return true;
+        } catch (IOException e) {
+            System.err.println("Connection failed to " + host + ":" + port + ": " + e.getMessage());
+            return false;
+        }
+    }
+
     public void connect() throws IOException {
         socket = new Socket(serverAddress, serverPort);
         out = new ObjectOutputStream(socket.getOutputStream());
         in = new ObjectInputStream(socket.getInputStream());
         // initialize message helpers
         this.msgSender = new MsgSender(out);
-        // receiver: dispatch to message.handle() and send any optional response
+
         this.msgReceiver = new MsgReceiver(in, obj -> {
-            if (obj instanceof Message) {
+            if (obj instanceof Message msg) {
                 try {
-                    Optional<Message> resp = ((Message) obj).handle();
-                    if (resp != null && resp.isPresent()) {
-                        try {
-                            sendMessage(resp.get());
-                        } catch (IOException e) {
-                            // sending failed; log and continue
-                            e.printStackTrace();
-                        }
+                    Optional<Message> response = msg.handle();
+                    
+                    if (response.isPresent()) {
+                        sendMessage(response.get());
                     }
-                } catch (Throwable t) {
-                    t.printStackTrace();
+                } catch (Exception e) {
+                    // Convert checked exceptions to unchecked so the receiver can handle them,
+                    // or add proper logging/handling here as needed.
+                    throw new RuntimeException(e);
                 }
-            } else {
-                // non-message objects are ignored
             }
         });
         this.msgReceiver.start();
@@ -103,6 +133,11 @@ public class CommCoreClient {
         if (socket != null) socket.close();
         if (msgReceiver != null) msgReceiver.stop();
         if (msgSender != null) msgSender.close();
+
+        socket = null;
+        out = null;
+        in = null;
+        msgReceiver = null;
     }
     
     public void sendMessage(Object message) throws IOException {
@@ -119,4 +154,6 @@ public class CommCoreClient {
     public MsgSender getMsgSender() {
         return msgSender;
     }
+
+
 }

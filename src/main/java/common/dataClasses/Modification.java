@@ -1,8 +1,10 @@
 package common.dataClasses;
 import java.util.UUID;
 
+
 public abstract class Modification {
     private UUID id;
+    private LightKanban targetKanban;
     
     // Constructeur
     public Modification() {
@@ -18,10 +20,18 @@ public abstract class Modification {
     public UUID getId() {
         return id;
     }
+
+    public LightKanban getTargetKanban() {
+        return targetKanban;
+    }
     
     // Setters
     public void setId(UUID id) {
         this.id = id;
+    }
+
+    public void setTargetKanban(LightKanban targetKanban) {
+        this.targetKanban = targetKanban;
     }
     
     // Méthode abstraite pour exécuter la modification

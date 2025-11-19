@@ -51,14 +51,17 @@ public class MsgReceiver implements Runnable, AutoCloseable {
                     handler.accept(msg);
                 } catch (Throwable t) {
                     // Handler exception should not kill the receiver loop
-                    t.printStackTrace();
+                    java.util.logging.Logger.getLogger(MsgReceiver.class.getName())
+                            .log(java.util.logging.Level.SEVERE, "MsgReceiver: Exception in handler.", t);
                 }
             }
         } catch (IOException e) {
             // Stream closed or network issue; stop running
-            // Optionally log or notify via handler (not implemented)
+            java.util.logging.Logger.getLogger(MsgReceiver.class.getName())
+                    .log(java.util.logging.Level.INFO, "MsgReceiver: I/O error or stream closed.", e);
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+            java.util.logging.Logger.getLogger(MsgReceiver.class.getName())
+                    .log(java.util.logging.Level.SEVERE, "MsgReceiver: Class not found while reading message.", e);
         } finally {
             running.set(false);
         }
@@ -66,7 +69,8 @@ public class MsgReceiver implements Runnable, AutoCloseable {
 
     @Override
     public void close() throws IOException {
-        stop();
-        in.close();
+        try (in) {
+            stop();
+        }
     }
 }
