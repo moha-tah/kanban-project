@@ -94,7 +94,7 @@
     -fx-padding: 8;
 }
 
-/* 🌿 Boutons arrondis, doux */
+/* Boutons arrondis, doux */
 .pretty-button {
     -fx-background-color: linear-gradient(to bottom, #ffffff33, #00000011);
     -fx-background-radius: 10;
