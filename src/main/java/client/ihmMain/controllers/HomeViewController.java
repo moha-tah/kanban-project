@@ -2,6 +2,11 @@ package client.ihmMain.controllers;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.Collections;
+import java.util.logging.Logger;
+import java.util.logging.Level;
+
+import common.dataClasses.User;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -15,8 +20,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import java.util.Collections;
-import common.dataClasses.User;
 
 public class HomeViewController {
 
@@ -30,14 +33,22 @@ public class HomeViewController {
     @FXML private VBox notifContainer;
 
     private boolean notifVisible = false;
+
+    // Singleton instance
     private static HomeViewController instance;
+
+    public static HomeViewController getInstance() {
+        return instance;
+    }
+
+    private static final Logger LOGGER = Logger.getLogger(HomeViewController.class.getName());
 
     @FXML
     private void initialize() {
         instance = this;
-        System.out.println("🏠 HomeView loaded!");
+        LOGGER.info("🏠 HomeView loaded!");
 
-        // Charger le composant users.fxml
+        // Charger users.fxml
         FXMLLoader usersLoader = new FXMLLoader(getClass().getResource("/users.fxml"));
         try {
             Node usersNode = usersLoader.load();
@@ -45,15 +56,20 @@ public class HomeViewController {
             UsersController usersController = usersLoader.getController();
             usersController.loadDummyUsers();
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "❌ Erreur lors du chargement de users.fxml", e);
         }
 
         loadDummyKanbans();
     }
 
+    /**
+     * Méthode statique pour gérer les notifications depuis l’extérieur
+     */
     public static void handleNotif() {
         if (instance != null) {
             instance.toggleNotif();
+        } else {
+            LOGGER.warning("⚠️ HomeViewController instance is null. Cannot handle notifications.");
         }
     }
 
@@ -64,10 +80,10 @@ public class HomeViewController {
 
         if (notifVisible) {
             notifPanel.toFront();
-            System.out.println("Ouverture du panneau de notifications");
+            LOGGER.info("📨 Ouverture du panneau de notifications");
             loadNotifications();
         } else {
-            System.out.println("Fermeture du panneau de notifications");
+            LOGGER.info("📪 Fermeture du panneau de notifications");
         }
     }
 
@@ -91,7 +107,7 @@ public class HomeViewController {
     }
 
     private void loadDummyKanbans() {
-        System.out.println("📋 Loading dummy Kanban cards...");
+        LOGGER.info("📋 Loading dummy Kanban cards...");
 
         User alice = new User("aaalice", "Alice", "Biden", LocalDate.of(1990, 5, 15));
         User chloe = new User("ccchloe", "Chloe", "Smith", LocalDate.of(1988, 8, 22));
@@ -110,10 +126,9 @@ public class HomeViewController {
             KanbanCardController controller = loader.getController();
             controller.setKanbanData(title, creator, columns, visibility, color);
             container.getChildren().add(card);
-            System.out.println("✅ Added Kanban card: " + title);
+            LOGGER.info("✅ Added Kanban card: " + title);
         } catch (IOException e) {
-            System.err.println("❌ Erreur lors du chargement de kanban_card.fxml");
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "❌ Erreur lors du chargement de kanban_card.fxml", e);
         }
     }
 
@@ -128,6 +143,6 @@ public class HomeViewController {
         Stage stage = (Stage) triggerNode.getScene().getWindow();
         stage.setTitle(title);
         stage.setScene(new Scene(root, 1280, 720));
+        LOGGER.info("🔁 Scene switched to: " + title);
     }
 }
-

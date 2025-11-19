@@ -111,9 +111,6 @@
     -fx-background-color: linear-gradient(to bottom, #ffffff55, #00000022);
 }
 
-.pretty-button:pressed {
-    -fx-background-color: linear-gradient(to bottom, #ffffff99, #00000033);
-}
 
 .badge-public {
     -fx-text-fill: #0a5f0a;
