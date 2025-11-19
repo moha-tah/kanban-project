@@ -6,7 +6,9 @@ import java.util.UUID;
 
 public class Kanban extends LightKanban {
     private HashMap<Column, List<Task>> taskColumn;
-    
+    private List<Message> messages;
+    private List<Task> tasks;
+    private List<Column> columns;
     // Constructeur
     public Kanban(String title) {
         super(title);
@@ -22,6 +24,15 @@ public class Kanban extends LightKanban {
     // Getters
     public HashMap<Column, List<Task>> getTaskColumn() {
         return taskColumn;
+    }
+    public List<Message>  getMessages() {
+        return messages;
+    }
+    public List<Task> getTasks() {
+        return tasks;
+    }
+    public List<Column> getColumns() {
+        return columns;
     }
     
     // Setters
