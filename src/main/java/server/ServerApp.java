@@ -48,7 +48,7 @@ public class ServerApp {
             
         } catch (Exception e) {
             System.err.println("Fatal error starting server: " + e.getMessage());
-            e.printStackTrace();
+          //  e.printStackTrace();
             System.exit(1);
         }
         
