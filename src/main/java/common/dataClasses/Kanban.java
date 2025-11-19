@@ -135,4 +135,5 @@ public class Kanban extends LightKanban {
     public LightKanban getLightKanban() { 
         return new LightKanban(this.getId(),this.getTitle());
     }
+
 }
