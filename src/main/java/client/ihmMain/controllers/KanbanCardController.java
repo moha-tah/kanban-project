@@ -1,5 +1,8 @@
 package client.ihmMain.controllers;
 
+import java.util.UUID;
+
+import client.ihmMain.MainCore;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -21,6 +24,12 @@ public class KanbanCardController {
     private int columns;
     private String status;
     private String color;
+    private MainCore mainCore;
+    private UUID kanbanId;
+
+    public void setMainCore(MainCore core) { this.mainCore = core; }
+    public void setKanbanId(UUID id) { this.kanbanId = id; }
+
 
     @FXML
     private void initialize() {
@@ -43,12 +52,16 @@ public class KanbanCardController {
         cardRoot.setStyle("-fx-background-color: " + color + "; -fx-background-radius: 10; -fx-padding: 10;");
     }
 
-    // === 🔍 Bouton VIEW ===
     @FXML
     private void handleView() {
-        System.out.println("👁 [VIEW] Kanban: " + title + " | Creator: " + creator);
-        // TODO: futur backend → ouvrir la page détaillée du Kanban
+        if (mainCore == null) return;
+        if (kanbanId == null) return;
+
+        System.out.println("[VIEW] Request Kanban: " + kanbanId);
+
+        mainCore.viewKanban(kanbanId);  
     }
+
 
     // === 🗑 Bouton DELETE ===
     @FXML

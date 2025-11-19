@@ -37,7 +37,7 @@ public class UserCardController {
             Image img = new Image(imageUrl, true);
             profilePic.setImage(img);
         } catch (Exception e) {
-            System.err.println("⚠️ Erreur chargement image pour " + username);
+            System.err.println(" Erreur chargement image pour " + username);
         }
     }
 
