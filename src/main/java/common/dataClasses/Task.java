@@ -1,6 +1,7 @@
 package common.dataClasses;
 import java.util.UUID;
 import java.time.LocalDate;
+import java.util.List;
 
 public class Task {
     private UUID id;
