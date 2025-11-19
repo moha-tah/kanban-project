@@ -12,7 +12,7 @@ import client.interfaces.CommClientCallsMain;
 import client.ihmMain.impl.dataCallsMainImpl;
 import client.ihmMain.impl.commCallsMainImpl;
 import client.ihmMain.impl.kanbanCallsMainImpl;
-
+import common.dataClasses.Kanban;
 import common.dataClasses.LightKanban;
 /*import common.dataClasses.Column;
 import common.dataClasses.Kanban;
@@ -124,6 +124,31 @@ public class MainCore {
     public void updateAllKanbansForUser(UUID userId) {
         System.out.println("[MainCore] updateAllKanbansForUser: " + userId);
     }
+
+    public void viewKanban(UUID kanbanId) {
+        System.out.println("[MainCore] Opening kanban " + kanbanId);
+
+        if (kanbanPort == null) {
+            System.err.println("[MainCore] ERROR: kanbanPort is null");
+            return;
+        }
+
+        // Récupérer la version complète du Kanban dans la liste locale
+        Kanban full = null;
+        for (LightKanban lk : kanbans) {
+            if (lk.getId().equals(kanbanId) && lk instanceof Kanban k) {
+                full = k;
+                break;
+            }
+        }
+
+    if (full == null) { 
+        System.err.println("[MainCore] Kanban non trouvé ou pas la version complète");
+        return;
+    }
+
+    kanbanPort.openCreateForm(full);  //backend
+}
 
 
 
