@@ -20,9 +20,9 @@ public class ConnectionRequest extends Message {
     public Optional<Message> handle() {
         try {
             // On appelle la méthode addNewUser de l'interface Serveur
-            if (server.ServerContext.getData() != null) {
+            if (this.getServerContext().getData() != null) {
 
-                server.ServerContext.getData().addNewUser(this.user, this.kanbans);
+                this.getServerContext().getData().addNewUser(this.user, this.kanbans);
             }
         } catch (Throwable t) {
             // Ignoré sur le client

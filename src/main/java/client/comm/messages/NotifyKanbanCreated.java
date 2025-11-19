@@ -19,8 +19,8 @@ public class NotifyKanbanCreated extends Message {
     @Override
     public Optional<Message> handle() {
         try {
-            // Accès au contexte client (ou via l'injection DataAwareMessage si tu as choisi cette option)
-            var dataClient = client.ClientContext.getData();
+            // Accès au contexte client via l'objet générique stocké dans ClientContext
+            var dataClient = this.getClientContext().getData();
 
             if (dataClient != null) {
                 System.out.println("CLIENT: Notification de création reçue pour " + lightKanban.getTitle());

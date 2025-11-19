@@ -17,7 +17,7 @@ public class SendNewKanban extends Message {
     public Optional<Message> handle() {
         try {
             // Accès au contexte serveur
-            var dataServer = server.ServerContext.getData();
+            var dataServer = this.getServerContext().getData();
             
             if (dataServer != null) {
                 System.out.println("SERVEUR: Demande de création de Kanban reçue.");
