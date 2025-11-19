@@ -100,9 +100,9 @@ public class SignupController {
         if (data == null) { showError("Data service not wired."); return; }
 
         try {
-            List<?> profileDetails = List.of(firstName, lastName, username, password, birth, selectedImageFile);
+            String imagePath = selectedImageFile != null ? selectedImageFile.getAbsolutePath() : "";
 
-            data.sendCreateProfile(profileDetails);
+            data.sendCreateProfile(username, password, firstName, lastName, birth.getYear(), imagePath, "", "", "", "", "");
 
             data.saveUser();
 

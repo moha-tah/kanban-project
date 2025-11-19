@@ -15,7 +15,8 @@ public class kanbanCallsMainImpl implements KanbanCallsMain {
 
     @Override
     public void closingKanbanToServer(LightKanban kanban, LightUser user) {
-        System.out.println("[Kanban->Main] closingKanbanToServer kanbanId=" + kanban.getId() + " userId=" + user.getId());
+        System.out
+                .println("[Kanban->Main] closingKanbanToServer kanbanId=" + kanban.getId() + " userId=" + user.getId());
         // core.onCloseKanban(kanbanId, userId);
     }
 }

@@ -19,12 +19,14 @@ public class MainCallsKanbanImpl implements MainCallsKanban {
     public void displaySnapshotList(){
         // A IMPLEMENTER 
         corps.LOGGER.info("[MainCallsKanban] displaySnapshotList called");
+
     }
 
     @Override
     public void openCreateForm(Kanban kanban){ 
         corps.displayKanban(kanban); 
         corps.LOGGER.info("[MainCallsKanban] openCreateForm called");
+
     }
 
 }
