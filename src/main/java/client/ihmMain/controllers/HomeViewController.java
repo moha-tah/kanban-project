@@ -104,9 +104,6 @@ public class HomeViewController {
 }
 
 
-    // ===============================================================
-    // CHARGEMENT DES USER CARDS
-    // ===============================================================
 
     private void addUser(String username, String imagePath) {
         try {
