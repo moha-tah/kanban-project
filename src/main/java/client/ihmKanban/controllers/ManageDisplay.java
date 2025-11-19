@@ -57,6 +57,7 @@ public class ManageDisplay {
 
         // Initialisation du contrôleur
         DisplayKanbanController controller = loader.getController();
+        controller.setCore(corps);
         controller.initBoard(kanban, cols, taskCreations);
 
         // Ouverture de la fenêtre
