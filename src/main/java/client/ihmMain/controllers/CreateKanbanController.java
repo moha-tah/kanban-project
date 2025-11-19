@@ -128,13 +128,19 @@ public class CreateKanbanController {
             if (mainCore.getCommPort() != null)
                 mainCore.getCommPort().notifyEditions(newKanban);
 
-            System.out.println("✅ Kanban created: " + title);
+            int total = mainCore.getKanbansSnapshot().size();
+            System.out.println("✅ Kanban created: " + title + " (total now=" + total + ")");
             System.out.println("🧩 Columns: " + newKanban.getTaskColumn().keySet());
         }
 
         // Ferme la fenêtre
         Stage stage = (Stage) createButton.getScene().getWindow();
         stage.close();
+
+        // Rafraîchit la Home pour afficher le nouveau Kanban
+        if (mainCore != null) {
+            mainCore.showHomeView();
+        }
     }
 
     // Utils internes
