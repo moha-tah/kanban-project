@@ -158,10 +158,10 @@ public class HomeViewController {
     private void loadNotifications() {
         notifContainer.getChildren().clear();
 
-            addNotification("Invitation à rejoindre Projet Alpha");
-            addNotification("Chloe a commenté votre tâche");
-            addNotification("Nouvelle mise à jour du Kanban Delta");
-        }
+        addNotification("Invitation à rejoindre Projet Alpha");
+        addNotification("Chloe a commenté votre tâche");
+        addNotification("Nouvelle mise à jour du Kanban Delta");
+    }
 
         private void addNotification(String message) {
         HBox box = new HBox();
