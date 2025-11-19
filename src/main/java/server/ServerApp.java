@@ -3,7 +3,6 @@ package server;
 import server.comm.CommCoreServer;
 import server.data.DataServProvider;
 import server.data.ComCallsDataServImplementation;
-import server.ServerContext;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
@@ -49,6 +48,9 @@ public class ServerApp {
             // Keep server running
             Thread.currentThread().join();
             
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            logger.log(Level.WARNING, "Server interrupted", e);
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Fatal error starting server", e);
             System.exit(1);
