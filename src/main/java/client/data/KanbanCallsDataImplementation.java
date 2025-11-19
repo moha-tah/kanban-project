@@ -32,11 +32,25 @@ public class KanbanCallsDataImplementation implements  KanbanCallsDataClient {
 
     public void saveKanban(Kanban kanban){
         DataCallsComm comm = provider.getCommInterface();
-        comm.sendKanban(kanban);
-        //Enregistrer le kanban en local
-        saveKanbanAsJson(kanban);
+        ClientModel model = provider.getClientModel();
+        User modelUser = model.getLocalUser();
+        List<LightKanban> availableLightKanbans = model.getAvailableLightKanbans();
 
+        //Mettre à jour le modele
+        model.setCurrentKanban(kanban);
+        model.setAvailableLightKanbans(availableLightKanbans.add(kanban.getLightKanban()));
+        List<Kanban> userKanbans = modelUser.getMyKanban();
+        modelUser.setMyKanban(userKanbans.add(kanban));
+        model.setLocalUser(modelUser);
+
+        //Mettre à jour le provider
+        provider.setClientModel(model);
+
+        //Envoyer le kanban au serveur
+        comm.sendKanban(kanban);
     }
+
+    //A supprimer pour update saveUser
 
     public static void saveKanbanAsJson(Kanban kanban){
         try {
@@ -67,6 +81,8 @@ public class KanbanCallsDataImplementation implements  KanbanCallsDataClient {
             throw new RuntimeException("Failed to load kanban from JSON", e);
         }
     }
+
+    //Fin a supprimer pour update saveUser
 
     public List<Snapshot> getListSnapshot(){
         //TODO
