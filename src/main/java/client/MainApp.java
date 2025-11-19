@@ -4,6 +4,7 @@ import client.ihmMain.MainCore;
 import client.interfaces.MainCallsDataClient;
 import client.comm.CommCoreClient;
 import client.data.DataClientProvider;
+import client.ihmKanban.kanbanCorps;
 import server.comm.CommCoreServer;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -16,6 +17,8 @@ public class MainApp extends Application {
     private MainCore        core;
     private CommCoreClient  comm;
     private DataClientProvider data;
+    private kanbanCorps kanban;
+
     private  CommCoreServer commServer;
 
     public MainApp() {
@@ -34,10 +37,15 @@ public class MainApp extends Application {
         return INSTANCE != null ? INSTANCE.data : null;
     }
 
+    public static kanbanCorps getKanbanCorps() {
+        return INSTANCE != null ? INSTANCE.kanban : null;
+    }
+
     @Override
     public void start(Stage primaryStage) throws Exception {
         core = new MainCore();
         data = new DataClientProvider();
+        kanban = new kanbanCorps(); 
 
         // Start server first, potentially on a fallback port
         commServer = new CommCoreServer(8080);
@@ -58,6 +66,15 @@ public class MainApp extends Application {
 
         // Data -> Comm
         data.setCommInterface(comm.getDataCallsComm());
+
+        // Kanban -> Data
+        kanban.setDataPort(data.getToKabanImpl());
+
+        //Kanban -> Main
+        kanban.setMainPort(core.getKANBANService());
+
+        //Kanban -> Comm 
+        kanban.setCommPort(comm.getIhmKanbanCallsComm());
 
         core.launchMainWindow(primaryStage);
 
