@@ -12,7 +12,6 @@ import javafx.scene.layout.AnchorPane;
 public class KanbanCardController {
 
 
-    private Kanban kanban;
 
     @FXML private AnchorPane cardRoot;
     @FXML private Label titleLabel;
