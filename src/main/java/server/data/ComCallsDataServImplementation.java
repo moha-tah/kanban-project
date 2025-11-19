@@ -7,7 +7,10 @@ import common.dataClasses.Kanban;
 import common.dataClasses.LightKanban;
 import common.dataClasses.LightUser;
 import common.dataClasses.Modification;
+import common.dataClasses.Access;
+import static common.dataClasses.Role;
 import server.interfaces.CommCallsDataServer;
+
 
 public class ComCallsDataServImplementation implements CommCallsDataServer {
   private DataServProvider myProvider;
@@ -28,7 +31,17 @@ public class ComCallsDataServImplementation implements CommCallsDataServer {
             }
         }
         //doute sur la méthode, peut etre que les classes ont des problèmes d'implémentation (manque d'attributs ?)
-        if(myKanban.canBeModifiedBy(user)){
+        Access accessList = myKanban.getAccessList()
+        Boolean hasAccess = false;
+        for (Access a : accessList) {
+            aUser = a.getUser();
+            aRole = a.getRole();
+            if (aUser.getId().equals(user.getId()) && (aRole.equals(VIEWER) || aRole.equals(MODIFIER))) {
+                hasAccess = true;
+                break;
+            }
+        }
+        if (hasAccess) {
             return myKanban;
         }
         else{
