@@ -6,6 +6,8 @@ import java.io.ObjectOutputStream;
 import java.net.BindException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 // Fallback: common.messages.Message was not available, we declare a local package-level Message
 // interface at the end of this file so this compilation unit can compile independently.
@@ -20,6 +22,9 @@ public class CommCoreServer {
     private ServerSocket serverSocket;
     private boolean isRunning;
     private Thread serverThread;
+    
+    // Liste thread-safe des clients connectés pour broadcaster les mises à jour
+    private final List<SrvMsgSender> connectedClients = new CopyOnWriteArrayList<>();
 
     public CommCoreServer(int port) {
         this.port = port;
@@ -86,6 +91,7 @@ public class CommCoreServer {
      */
     @SuppressWarnings("resource")
     private void handleClientConnection(Socket socket) {
+        SrvMsgSender msgSender = null;
         try {
             // IMPORTANT : Toujours créer l'ObjectOutputStream AVANT l'ObjectInputStream
             // et faire un flush() sinon les deux côtés vont s'attendre mutuellement (deadlock).
@@ -94,10 +100,14 @@ public class CommCoreServer {
             ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
 
             // Création du Sender pour répondre à ce client spécifique
-            SrvMsgSender msgSender = new SrvMsgSender(out);
+            msgSender = new SrvMsgSender(out);
+            final SrvMsgSender finalMsgSender = msgSender;
+            
+            // Ajouter ce client à la liste des clients connectés
+            connectedClients.add(msgSender);
 
             // Création du Receiver avec la logique de réaction (Callback)
-            SrvMsgReceiver msgReceiver = new SrvMsgReceiver(in, (obj) -> {
+            SrvMsgReceiver msgReceiver = new SrvMsgReceiver(in, obj -> {
                 if (obj instanceof client.comm.messages.Message receivedMsg) {
                     // ----------------------------------------------------
                     // C'est ICI que la méthode handle() du message est exécutée
@@ -109,12 +119,17 @@ public class CommCoreServer {
                         // Si handle() retourne une réponse, on l'envoie de façon sûre
                         response.ifPresent(resp -> {
                             try {
-                                msgSender.send(resp);
+                                finalMsgSender.send(resp);
                             } catch (IOException e) {
                                 java.util.logging.Logger.getLogger(CommCoreServer.class.getName())
                                         .log(java.util.logging.Level.SEVERE, "SERVER: Erreur lors de l'envoi de la réponse.", e);
                             }
                         });
+                        
+                        // Si c'est une ConnectionRequest, broadcaster la mise à jour à tous les clients
+                        if (receivedMsg instanceof client.comm.messages.ConnectionRequest) {
+                            broadcastUsersAndKanbansUpdate();
+                        }
 
                     } catch (Exception e) {
                         String logMsg = "SERVER: Erreur lors du traitement du message " + receivedMsg.getClass().getSimpleName();
@@ -133,6 +148,45 @@ public class CommCoreServer {
         } catch (IOException e) {
             java.util.logging.Logger.getLogger(CommCoreServer.class.getName())
                     .log(java.util.logging.Level.SEVERE, "SERVER: Erreur de connexion avec un client.", e);
+            // Retirer le client de la liste en cas d'erreur
+            if (msgSender != null) {
+                connectedClients.remove(msgSender);
+            }
+        }
+    }
+    
+    /**
+     * Envoie les listes mises à jour d'utilisateurs et de kanbans à tous les clients connectés.
+     */
+    private void broadcastUsersAndKanbansUpdate() {
+        try {
+            // Récupérer les listes depuis le serveur de données
+            var users = server.ServerContext.getData().getUsersList();
+            var kanbans = server.ServerContext.getData().getKanbansList();
+            
+            // Créer le message de mise à jour
+            client.comm.messages.UpdateUsersAndKanbansListResponse updateMsg = 
+                new client.comm.messages.UpdateUsersAndKanbansListResponse(users, kanbans);
+            
+            // Envoyer à tous les clients connectés
+            for (SrvMsgSender client : connectedClients) {
+                try {
+                    client.send(updateMsg);
+                } catch (IOException e) {
+                    java.util.logging.Logger.getLogger(CommCoreServer.class.getName())
+                            .log(java.util.logging.Level.WARNING, "SERVER: Échec de l'envoi de la mise à jour à un client.", e);
+                    // Retirer les clients déconnectés
+                    connectedClients.remove(client);
+                }
+            }
+            
+            java.util.logging.Logger.getLogger(CommCoreServer.class.getName())
+                    .log(java.util.logging.Level.INFO, "SERVER: Broadcast de {0} utilisateurs et {1} kanbans à {2} clients.", 
+                         new Object[]{users.size(), kanbans.size(), connectedClients.size()});
+            
+        } catch (Exception e) {
+            java.util.logging.Logger.getLogger(CommCoreServer.class.getName())
+                    .log(java.util.logging.Level.SEVERE, "SERVER: Erreur lors du broadcast des listes.", e);
         }
     }
 }
