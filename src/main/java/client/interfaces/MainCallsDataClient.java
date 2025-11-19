@@ -20,25 +20,7 @@ public interface MainCallsDataClient {
 
     void importMyProfile(String path);
 
-    void sendCreateProfile(List<?> profileDetails);
-
-    default LightUser sendCreateProfile(String login, String password, String name, String surname,
+    LightUser sendCreateProfile(String login, String password, String name, String surname,
                                         int age, String avatar, String role, String permissions,
-                                        String contacts, String kanbanList, String status) {
-        // Note: Cette implémentation par défaut doit être surchargée par les classes concrètes
-        // pour gérer la persistance et la communication avec le composant DATA
-
-        // Calculer la date de naissance à partir de l'âge (sera utilisé dans l'implémentation concrète)
-        // LocalDate birthDate = LocalDate.now().minusYears(age);
-
-        // TODO: Implémenter la création du profil dans le composant DATA
-        // TODO: Créer un SecureUser avec les informations fournies (login, password, name, surname, birthDate)
-        // TODO: Définir l'avatar, le rôle, les permissions, les contacts, le statut
-        // TODO: Sauvegarder le SecureUser dans le système de persistance
-        // TODO: Retourner le LightUser correspondant (LIGHTPROFILE)
-
-        // Pour l'instant, création d'un LightUser basique
-        // Les classes concrètes devront implémenter la logique complète
-        return new LightUser(login);
-    }
+                                        String contacts, String kanbanList, String status);
 }

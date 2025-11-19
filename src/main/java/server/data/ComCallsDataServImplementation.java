@@ -15,9 +15,10 @@ public class ComCallsDataServImplementation implements CommCallsDataServer {
   public static ComCallsDataServImplementation newComCallsDataServImplementation() {
         return new ComCallsDataServImplementation();
   }
-  @Override
-    public Kanban requestKanban(LightUser user, LightKanban kanban) {
-        return null; //TODO V2
+    @Override
+    public Kanban requestKanban(UUID userId, UUID kanbanId) {
+        // Minimal implementation to satisfy the interface; replace with real lookup logic.
+        return null; // TODO V2
     }
 
     @Override
@@ -36,7 +37,6 @@ public class ComCallsDataServImplementation implements CommCallsDataServer {
     }
 
 
-
     @Override
     public boolean addAuthorizedUser(UUID kanbanId, UUID userId) {
         return Boolean.FALSE;
@@ -44,7 +44,16 @@ public class ComCallsDataServImplementation implements CommCallsDataServer {
 
     @Override
     public void addNewUser(LightUser user, List<LightKanban> kanbans) {
-        
+        List<LightUser> updatedUsersList = getUsersList();
+        List<LightKanban> updatedKanbansList = getKanbansList();
+
+        if (updatedUsersList != null && user != null) {
+            updatedUsersList.add(user);
+        }
+
+        if (updatedKanbansList != null && kanbans != null && !kanbans.isEmpty()) {
+            updatedKanbansList.addAll(kanbans);
+        }
     }
 
     @Override
