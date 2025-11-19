@@ -115,21 +115,6 @@
     -fx-background-color: linear-gradient(to bottom, #ffffff99, #00000033);
 }
 
-.badge-public {
-    -fx-text-fill: #0a5f0a;
-    -fx-background-color: #baf5ba;
-    -fx-background-radius: 8;
-    -fx-padding: 2 8;
-    -fx-font-weight: bold;
-}
-
-.badge-private {
-    -fx-text-fill: #8a0000;
-    -fx-background-color: #ffbcbc;
-    -fx-background-radius: 8;
-    -fx-padding: 2 8;
-    -fx-font-weight: bold;
-}
 #notifPanel {
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 20, 0.2, 0, 4);
 }
