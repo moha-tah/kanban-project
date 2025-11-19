@@ -115,7 +115,7 @@ public class SignupController {
             core.setMe(me);
             core.addKanbans(myKanbans);
 
-            if (comm != null) comm.connectToServer(me.getId(), myKanbans);
+            if (comm != null) comm.connectServer(me, myKanbans);
 
             navigateBackToLogin();
 

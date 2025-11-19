@@ -1,14 +1,14 @@
 package client;
 
+import client.ihmKanban.kanbanCorps;
 import client.ihmMain.MainCore;
-import client.interfaces.MainCallsDataClient;
 import client.comm.CommCoreClient;
 import client.data.DataClientProvider;
 import client.ihmKanban.kanbanCorps;
-import server.comm.CommCoreServer;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.stage.Stage;
+import server.comm.CommCoreServer;
 
 public class MainApp extends Application {
     // Singleton pour accès global contrôlé => passer sonarqube check
@@ -17,13 +17,15 @@ public class MainApp extends Application {
     private MainCore        core;
     private CommCoreClient  comm;
     private DataClientProvider data;
-    private kanbanCorps kanban;
-
-    private  CommCoreServer commServer;
+    private CommCoreServer commServer;
+    private kanbanCorps kanbanCore;
 
     public MainApp() {
         INSTANCE = this;
     }
+
+    private static final String DEFAULT_HOST = "127.0.0.1";
+    private static final int    DEFAULT_PORT = 8080;
 
     public static MainCore getCore() {
         return INSTANCE != null ? INSTANCE.core : null;
@@ -37,44 +39,37 @@ public class MainApp extends Application {
         return INSTANCE != null ? INSTANCE.data : null;
     }
 
-    public static kanbanCorps getKanbanCorps() {
-        return INSTANCE != null ? INSTANCE.kanban : null;
-    }
-
     @Override
     public void start(Stage primaryStage) throws Exception {
         core = new MainCore();
         data = new DataClientProvider();
-        kanban = new kanbanCorps(); 
-
-        // Start server first, potentially on a fallback port
-        commServer = new CommCoreServer(8080);
-        commServer.start();
-        int actualPort = commServer.getLocalPort();
-
-        // Create client using the actual bound port and connect
-        comm = new CommCoreClient("127.0.0.1", actualPort);
+        comm = new CommCoreClient(DEFAULT_HOST, DEFAULT_PORT); // gérer côté cient en dynamique avec valeur par défault
+        kanbanCore = new kanbanCorps();
 
         // Main -> Data
         core.setDataPort(data.getToMainImpl());
 
         // Main -> Comm
         core.setCommPort(comm.getIhmMainCallsComm());
+        core.setKanbanPort(kanbanCore.getMAINService());
 
         // Data -> Main
         data.setMainInterface(core.getDATService());
 
         // Data -> Comm
         data.setCommInterface(comm.getDataCallsComm());
+        data.setKanbanInterface(kanbanCore.getDATService());
 
-        // Kanban -> Data
-        kanban.setDataPort(data.getToKabanImpl());
+        // comm -> data
+        comm.setDataInterface(comm.getDataInterface());
 
-        //Kanban -> Main
-        kanban.setMainPort(core.getKANBANService());
+        // Comm -> Main
+        comm.setMainInterface(comm.getMainInterface());
+        comm.setKanbanInterface(kanbanCore.getCOMMService());
 
-        //Kanban -> Comm 
-        kanban.setCommPort(comm.getIhmKanbanCallsComm());
+        kanbanCore.setCommPort(kanbanCore.getCommPort());
+        kanbanCore.setDataPort(kanbanCore.getDataPort());
+        kanbanCore.setMainPort(kanbanCore.getMainPort());
 
         core.launchMainWindow(primaryStage);
 
@@ -82,38 +77,6 @@ public class MainApp extends Application {
         comm.connect();
 
         // Ensure we stop network resources when the UI is closed
-        primaryStage.setOnCloseRequest(event -> {
-            try {
-                if (comm != null) {
-                    try {
-                        comm.disconnect();
-                    } catch (Exception ex) {
-                        System.err.println("Erreur lors de la déconnexion du client: " + ex.getMessage());
-                    }
-                }
-                if (commServer != null) {
-                    try {
-                        commServer.stop();
-                    } catch (Exception ex) {
-                        System.err.println("Erreur lors de l'arrêt du serveur: " + ex.getMessage());
-                    }
-                }
-            } finally {
-                // Ensure JavaFX exits and the JVM terminates
-                Platform.exit();
-                System.exit(0);
-            }
-        });
-
-        // JVM shutdown hook as a safety net for non-UI shutdowns
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            try {
-                if (comm != null) comm.disconnect();
-            } catch (Exception ignored) {}
-            try {
-                if (commServer != null) commServer.stop();
-            } catch (Exception ignored) {}
-        }));
 
     }
 
