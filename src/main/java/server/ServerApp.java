@@ -4,12 +4,15 @@ import server.comm.CommCoreServer;
 import server.data.DataServProvider;
 import server.data.ComCallsDataServImplementation;
 import server.ServerContext;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 /**
  * Standalone server application - runs independently of clients.
  * Launch this first, then launch client instances that connect to it.
  */
 public class ServerApp {
+    private static final Logger logger = Logger.getLogger(ServerApp.class.getName());
     private static CommCoreServer server;
     private static DataServProvider dataProvider;
 
@@ -21,7 +24,7 @@ public class ServerApp {
             try {
                 port = Integer.parseInt(args[0]);
             } catch (NumberFormatException e) {
-                System.err.println("Invalid port number, using default 8080");
+                logger.warning("Invalid port number, using default 8080");
             }
         }
 
@@ -37,30 +40,29 @@ public class ServerApp {
             server = new CommCoreServer(port);
             server.start();
             
-            System.out.println("========================================");
-            System.out.println("  Kanban Server Started");
-            System.out.println("  Port: " + server.getLocalPort());
-            System.out.println("  Press Ctrl+C to stop");
-            System.out.println("========================================");
+            logger.info("========================================");
+            logger.info("  Kanban Server Started");
+            logger.info("  Port: " + server.getLocalPort());
+            logger.info("  Press Ctrl+C to stop");
+            logger.info("========================================");
             
             // Keep server running
             Thread.currentThread().join();
             
         } catch (Exception e) {
-            System.err.println("Fatal error starting server: " + e.getMessage());
-          //  e.printStackTrace();
+            logger.log(Level.SEVERE, "Fatal error starting server", e);
             System.exit(1);
         }
         
         // Cleanup on shutdown
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            System.out.println("\nShutting down server...");
+            logger.info("\nShutting down server...");
             if (server != null) {
                 try {
                     server.stop();
-                    System.out.println("Server stopped cleanly");
+                    logger.info("Server stopped cleanly");
                 } catch (Exception e) {
-                    System.err.println("Error stopping server: " + e.getMessage());
+                    logger.log(Level.SEVERE, "Error stopping server", e);
                 }
             }
         }));
