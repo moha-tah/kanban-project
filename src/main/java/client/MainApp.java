@@ -19,6 +19,9 @@ public class MainApp extends Application {
         INSTANCE = this;
     }
 
+    private static final String DEFAULT_HOST = "127.0.0.1";
+    private static final int    DEFAULT_PORT = 8080;
+
     public static MainCore getCore() {
         return INSTANCE != null ? INSTANCE.core : null;
     }
@@ -59,14 +62,11 @@ public class MainApp extends Application {
         // Data -> Comm
         data.setCommInterface(comm.getDataCallsComm());
 
-        // Kanban -> Data
-        kanban.setDataPort(data.getToKabanImpl());
+        // comm -> data
+        comm.setDataInterface(comm.getDataInterface());
 
-        //Kanban -> Main
-        kanban.setMainPort(core.getKANBANService());
-
-        //Kanban -> Comm 
-        kanban.setCommPort(comm.getIhmKanbanCallsComm());
+        // Comm -> Main
+        comm.setMainInterface(comm.getMainInterface());
 
         core.launchMainWindow(primaryStage);
 
