@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="client.ihmKanban.controllers.DisplayKanbanController">
+
+    <top>
+        <HBox spacing="10"
+              style="-fx-padding: 10; -fx-background-color: #f0f0f0;">
+            <Label text="KANBAN :" style="-fx-font-weight: bold; -fx-font-size: 16;"/>
+            <Label fx:id="kanbanTitleLabel" text="(titre)" style="-fx-font-size: 16;"/>
+        </HBox>
+    </top>
+
+    <center>
+        <ScrollPane fitToHeight="true" hbarPolicy="ALWAYS" vbarPolicy="NEVER">
+            <content>
+                <HBox fx:id="columnsContainer" spacing="15" style="-fx-padding: 15;"/>
+            </content>
+        </ScrollPane>
+    </center>
+
+</BorderPane>

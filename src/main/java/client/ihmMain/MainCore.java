@@ -14,6 +14,9 @@ import client.ihmMain.impl.commCallsMainImpl;
 import client.ihmMain.impl.kanbanCallsMainImpl;
 
 import common.dataClasses.LightKanban;
+/*import common.dataClasses.Column;
+import common.dataClasses.Kanban;
+import common.dataClasses.Task;*/
 import common.dataClasses.LightUser;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -23,14 +26,42 @@ import javafx.stage.Window;
 
 import java.io.IOException;
 import java.net.URL;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import client.ihmKanban.impl.MainCallsKanbanImpl;
+
+
+
+
+
+
+
 
 /**
  * Coeur IHM : orchestre les appels entre la UI et les couches DATA/COMM/KANBAN.
  */
 public class MainCore {
+
+    // ---- Exemple de Kanban pour tests de la V2 surment plus pertinant pour la suite----
+    /*
+    Kanban KanbanTest = new Kanban("Projet IHM Kanban"); 
+    Column todo = new Column("To Do", "#FFAAAA", 1); Column doing = new Column("Doing", "#FFD580", 2); Column done = new Column("Done", "#AAFFAA", 3);
+    Task t1 = new Task("Créer interface JavaFX", "description", LocalDate.now(), LocalDate.now().plusDays(2));
+    Task t2 = new Task("Implémenter DisplayKanban", "description", LocalDate.now(), LocalDate.now().plusDays(3));
+    Task t3 = new Task("Créer classes métier", "description", LocalDate.now(), LocalDate.now().plusDays(4));
+    Task t4 = new Task("Tester le mouvement des tâches", "description", LocalDate.now(), LocalDate.now().plusDays(5));
+    
+    {
+        KanbanTest.getTaskColumn().put(todo, new ArrayList<>()); KanbanTest.getTaskColumn().put(doing, new ArrayList<>()); KanbanTest.getTaskColumn().put(done, new ArrayList<>());
+        KanbanTest.getTaskColumn().get(todo).add(t1); KanbanTest.getTaskColumn().get(todo).add(t2);
+        KanbanTest.getTaskColumn().get(doing).add(t3);
+        KanbanTest.getTaskColumn().get(done).add(t4);
+    }*/
+    
+
 
     // ---- Ports sortants (UI/Main -> autres couches) ----
     private MainCallsDataClient dataPort;
@@ -94,8 +125,17 @@ public class MainCore {
         System.out.println("[MainCore] updateAllKanbansForUser: " + userId);
     }
 
+
+
     public void launchMainWindow(Stage stage) {
         try {
+
+            /* 
+            kanbanCorps core = new kanbanCorps();
+            MainCallsKanban mainCalls = new MainCallsKanbanImpl(core);
+            mainCalls.openCreateForm(KanbanTest);*/
+            
+            
             final String first = "/landing.fxml";
             URL url = MainApp.class.getResource(first);
             if (url == null) throw new IllegalStateException("FXML introuvable: " + first);
@@ -108,8 +148,10 @@ public class MainCore {
 
             stage.setTitle("Login");
             stage.setScene(scene);
+
             stage.show();
             System.out.println("[MainCore] Launched main window with FXML: " + first);
+
         } catch (Exception e) {
             System.err.println("Error while launching main window: " + e.getMessage());
             throw new RuntimeException("Impossible d’ouvrir la fenêtre Login", e);
