@@ -31,10 +31,15 @@ public class MainApp extends Application {
         return INSTANCE != null ? INSTANCE.data : null;
     }
 
+    public static kanbanCorps getKanbanCorps() {
+        return INSTANCE != null ? INSTANCE.kanban : null;
+    }
+
     @Override
     public void start(Stage primaryStage) throws Exception {
         core = new MainCore();
         data = new DataClientProvider();
+        kanban = new kanbanCorps(); 
 
         // Connect to external server (must be running separately via ServerApp)
         String serverHost = System.getProperty("server.host", "127.0.0.1");
@@ -53,6 +58,15 @@ public class MainApp extends Application {
 
         // Data -> Comm
         data.setCommInterface(comm.getDataCallsComm());
+
+        // Kanban -> Data
+        kanban.setDataPort(data.getToKabanImpl());
+
+        //Kanban -> Main
+        kanban.setMainPort(core.getKANBANService());
+
+        //Kanban -> Comm 
+        kanban.setCommPort(comm.getIhmKanbanCallsComm());
 
         core.launchMainWindow(primaryStage);
 
