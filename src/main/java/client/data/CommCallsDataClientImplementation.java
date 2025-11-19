@@ -28,12 +28,26 @@ public class CommCallsDataClientImplementation implements ComCallsDataClient{
         //TODO
     }
 
+    @Override
     public void updateLists(LightUser user){
-        //TODO
+        // Récupérer et publier les listes d'utilisateurs mises à jour
+        if (provider != null && provider.getMyModel() != null) {
+            List<LightUser> users = provider.getMyModel().getConnectedUsers();
+            if (provider.getMainInterface() != null) {
+                provider.getMainInterface().publishUsersList(users);
+            }
+        }
     }
 
+    @Override
     public void uploadKanbans(LightKanban kanban){
-        //TODO
+        // Publier les listes de kanbans mises à jour
+        if (provider != null && provider.getMyModel() != null) {
+            List<LightKanban> kanbans = provider.getMyModel().getMyLightKanbans();
+            if (provider.getMainInterface() != null) {
+                provider.getMainInterface().publishKanbansList(kanbans);
+            }
+        }
     }
 
     public void addListModifiers(LightUser user, LightKanban kanban){
