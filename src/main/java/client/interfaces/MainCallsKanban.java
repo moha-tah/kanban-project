@@ -8,8 +8,6 @@ import java.util.UUID;
 
 // MainCallsKanban
 public interface MainCallsKanban {
-    void openCreateFrom();
     void displaySnapshotList();
-
-    void openCreateForm();
+    void openCreateForm(Kanban kanban);
 }
