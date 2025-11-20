@@ -16,6 +16,8 @@ import client.interfaces.DataCallsComm;
 import client.interfaces.KanbanCallsDataClient;
 import common.dataClasses.Kanban;
 import common.dataClasses.Snapshot;
+import common.dataClasses.LightKanban;
+import common.dataClasses.User;
 
 
 public class KanbanCallsDataImplementation implements  KanbanCallsDataClient {
@@ -32,19 +34,22 @@ public class KanbanCallsDataImplementation implements  KanbanCallsDataClient {
 
     public void saveKanban(Kanban kanban){
         DataCallsComm comm = provider.getCommInterface();
-        ClientModel model = provider.getClientModel();
+        ClientModel model = provider.getMyModel();
         User modelUser = model.getLocalUser();
         List<LightKanban> availableLightKanbans = model.getAvailableLightKanbans();
 
         //Mettre à jour le modele
         model.setCurrentKanban(kanban);
-        model.setAvailableLightKanbans(availableLightKanbans.add(kanban.getLightKanban()));
+        availableLightKanbans.add(kanban.getLightKanban());
+        model.setAvailableLightKanbans(availableLightKanbans);
         List<Kanban> userKanbans = modelUser.getMyKanban();
-        modelUser.setMyKanban(userKanbans.add(kanban));
+
+        userKanbans.add(kanban);
+        modelUser.setMyKanban(userKanbans);
         model.setLocalUser(modelUser);
 
         //Mettre à jour le provider
-        provider.setClientModel(model);
+        provider.setMyModel(model);
 
         //Envoyer le kanban au serveur
         comm.sendKanban(kanban);

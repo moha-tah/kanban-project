@@ -16,13 +16,13 @@ public class ComCallsDataServImplementation implements CommCallsDataServer {
         return new ComCallsDataServImplementation();
   }
   @Override
-    public Kanban requestKanban(LightUser user, LightKanban kanban) {
+    public Kanban requestKanban(LightUser user, UUID kanbanID) {
         ServerModel model = myProvider.getModel();
         List<Kanban> inUseKanbans = model.getInUseKanbans();
         Kanban myKanban = null;
         for (Kanban k : inUseKanbans) {
             LightKanban lightK = k.getLightKanban();
-            if (lightK.getId().equals(kanban.getId())) {
+            if (lightK.getId().equals(kanbanID)) {
                 myKanban = k;
                 break;
             }
