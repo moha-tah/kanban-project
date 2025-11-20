@@ -1,8 +1,10 @@
 package client.ihmMain.controllers;
 
-import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import client.ihmMain.MainCore;
+import common.dataClasses.User;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -10,71 +12,61 @@ import javafx.scene.layout.AnchorPane;
 
 public class KanbanCardController {
 
+    private MainCore core;
+    private static final Logger LOGGER = Logger.getLogger(KanbanCardController.class.getName());
+
     @FXML private AnchorPane cardRoot;
     @FXML private Label titleLabel;
     @FXML private Label creatorLabel;
     @FXML private Label columnsLabel;
-    @FXML private Label statusLabel;
+    @FXML private Label visibilityLabel;
     @FXML private Button viewButton;
+    @FXML private Button requestButton;
     @FXML private Button deleteButton;
 
-    // Données internes du Kanban (transmises par le controller parent)
     private String title;
-    private String creator;
+    private User creator;
     private int columns;
-    private String status;
+    private String visibility;
     private String color;
-    private MainCore mainCore;
-    private UUID kanbanId;
 
-    public void setMainCore(MainCore core) { this.mainCore = core; }
-    public void setKanbanId(UUID id) { this.kanbanId = id; }
-
-
-    @FXML
-    private void initialize() {
-        // rien de spécial ici pour le moment
-    }
-
-    /** Initialise la carte avec les données d’un Kanban */
-    public void setKanbanData(String title, String creator, int columns, String status, String color) {
+    public void setKanbanData(String title, User creator, int columns, String visibility, String color) {
         this.title = title;
         this.creator = creator;
         this.columns = columns;
-        this.status = status;
+        this.visibility = visibility;
         this.color = color;
 
         titleLabel.setText(title);
-        creatorLabel.setText("Creator: " + creator);
+        creatorLabel.setText("Creator: " + creator.getFirstName() + " " + creator.getLastName());
         columnsLabel.setText("Columns: " + columns);
-        statusLabel.setText("Status: " + status);
+        visibilityLabel.setText("Visibility: " + visibility);
 
         cardRoot.setStyle("-fx-background-color: " + color + "; -fx-background-radius: 10; -fx-padding: 10;");
+
+        if (visibility.equalsIgnoreCase("private")) {
+            viewButton.setVisible(false);
+            requestButton.setVisible(true);
+        } else {
+            viewButton.setVisible(true);
+            requestButton.setVisible(false);
+        }
+
+        LOGGER.info("🔧 Kanban data initialized: " + title);
     }
 
     @FXML
     private void handleView() {
-        if (mainCore == null) return;
-        if (kanbanId == null) return;
-
-        System.out.println("[VIEW] Request Kanban: " + kanbanId);
-
-        mainCore.viewKanban(kanbanId);  
+        LOGGER.info("[VIEW] Kanban: " + title);
     }
 
+    @FXML
+    private void requestPermission() {
+        LOGGER.info("[REQUEST ACCESS] Kanban privé: " + title);
+    }
 
-    // === 🗑 Bouton DELETE ===
     @FXML
     private void handleDelete() {
-        System.out.println("🗑 [DELETE] Kanban: " + title);
-        // TODO: futur backend → envoyer une requête de suppression au serveur
-        // Exemple futur :
-        // backendService.deleteKanban(this.kanbanId);
+        LOGGER.warning("[DELETE] Kanban: " + title);
     }
-
-    // Optionnel pour futur backend
-    public String getTitle() { return title; }
-    public String getCreator() { return creator; }
-    public int getColumns() { return columns; }
-    public String getStatus() { return status; }
 }
