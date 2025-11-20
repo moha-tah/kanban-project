@@ -7,7 +7,7 @@ import common.dataClasses.User;
 
 public class ClientModel {
     private Kanban currentKanban;
-    private List<LightKanban> myLightKanbans;
+    private List<LightKanban> availableLightKanbans;
     private User localUser;
     private List<LightUser> connectedUsers;
 
@@ -23,12 +23,12 @@ public class ClientModel {
         this.currentKanban = currentKanban;
     }
 
-    public List<LightKanban> getMyLightKanbans() {
-        return myLightKanbans;
+    public List<LightKanban> getAvailableLightKanbans() {
+        return availableLightKanbans;
     }
 
-    public void setMyLightKanbans(List<LightKanban> myLightKanbans) {
-        this.myLightKanbans = myLightKanbans;
+    public void setAvailableLightKanbans(List<LightKanban> availableLightKanbans) {
+        this.availableLightKanbans = availableLightKanbans;
     }
 
     public User getLocalUser() {

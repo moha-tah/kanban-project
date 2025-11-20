@@ -29,7 +29,7 @@ public class ComCallsDataServImplementation implements CommCallsDataServer {
                 myKanban = k;
                 break;
             }
-        }
+    }
         //doute sur la méthode, peut etre que les classes ont des problèmes d'implémentation (manque d'attributs ?)
         Access accessList = myKanban.getAccessList()
         Boolean hasAccess = false;
