@@ -1,38 +1,36 @@
 package client.ihmMain.controllers;
 
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import java.io.IOException;
+import javafx.fxml.FXMLLoader;
 
 public class UserCardController {
-
     @FXML private HBox userCardRoot;
     @FXML private ImageView profilePic;
     @FXML private Label usernameLabel;
-
     private String username;
 
     @FXML
     private void initialize() {
-        // Rendre la photo de profil ronde
         makeProfilePictureRound();
-
-        // Clique sur la carte pour ouvrir le profil
         userCardRoot.setOnMouseClicked(event -> openProfile());
+    }
+
+    public String getUserName() {
+        return username;
     }
 
     public void setUserData(String username, String imageUrl) {
         this.username = username;
         usernameLabel.setText(username);
-
         try {
             Image img = new Image(imageUrl, true);
             profilePic.setImage(img);
@@ -42,7 +40,7 @@ public class UserCardController {
     }
 
     private void makeProfilePictureRound() {
-        double radius = 19; // moitié de 38px (ta taille)
+        double radius = 19;
         Circle clip = new Circle(radius, radius, radius);
         profilePic.setClip(clip);
     }
@@ -52,10 +50,6 @@ public class UserCardController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/profile.fxml"));
             Parent root = loader.load();
-
-            // 🔹 plus tard : passer les données de l’utilisateur
-            // ((ProfileController) loader.getController()).setUser(username);
-
             Stage stage = (Stage) userCardRoot.getScene().getWindow();
             stage.setTitle("Profil de " + username);
             stage.setScene(new Scene(root, 1280, 720));

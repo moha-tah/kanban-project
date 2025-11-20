@@ -39,7 +39,6 @@ import client.ihmKanban.impl.MainCallsKanbanImpl;
 
 
 
-
 /**
  * Coeur IHM : orchestre les appels entre la UI et les couches DATA/COMM/KANBAN.
  */
