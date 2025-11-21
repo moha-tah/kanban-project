@@ -92,6 +92,21 @@ public class CommCoreClient {
         this.clientContext.setMainInterface(mainInterface);
     }
 
+    public CommClientCallsMain getMainInterface() { return clientContext.getMainInterface(); }
+    public ComCallsDataClient getDataInterface() { return clientContext.getDataInterface(); }
+
+    public boolean connect_host_port(String host, int port) {
+        try {
+            disconnect(); // Tenter de déconnecter proprement l'ancienne connexion (si elle existe)
+            this.serverAddress = host; // récupérer dynamiquement les host et port
+            this.serverPort = port;
+            connect(); // Appelle la méthode connect() sans argument qui utilise maintenant les champs mis à jour
+            return true;
+        } catch (IOException e) {
+            System.err.println("Connection failed to " + host + ":" + port + ": " + e.getMessage());
+            return false;
+        }
+    }
     public void connect() throws IOException {
         socket = new Socket(serverAddress, serverPort);
         out = new ObjectOutputStream(socket.getOutputStream());

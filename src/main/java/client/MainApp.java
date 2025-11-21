@@ -3,6 +3,7 @@ package client;
 import client.ihmMain.MainCore;
 import client.comm.CommCoreClient;
 import client.data.DataClientProvider;
+import client.ihmKanban.kanbanCorps;
 import server.comm.CommCoreServer;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -38,14 +39,10 @@ public class MainApp extends Application {
         core = new MainCore();
         data = new DataClientProvider();
 
-        // Start server first, potentially on a fallback port
-        commServer = new CommCoreServer(8080);
-        commServer.start();
-        int actualPort = commServer.getLocalPort();
-
         // Create a non-global runtime ClientContext and client using the actual bound port
-        comm = new CommCoreClient("127.0.0.1", actualPort);
-
+        comm = new CommCoreClient(DEFAULT_HOST, DEFAULT_PORT);
+        kanbanCore = new kanbanCorps();
+        
         // Main -> Data
         core.setDataPort(data.getToMainImpl());
 
@@ -63,6 +60,9 @@ public class MainApp extends Application {
 
         // Comm -> Main
         comm.setIhmMainInterface(core.getCOMMService());
+
+        // Comm -> Kanban
+        // comm.setIhmKanbanInterface(());
 
         core.launchMainWindow(primaryStage);
 

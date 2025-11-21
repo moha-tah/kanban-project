@@ -23,7 +23,11 @@ public class ConnectionRequest extends Message {
             if (this.getServerContext().getData() != null) {
 
                 this.getServerContext().getData().addNewUser(this.user, this.kanbans);
-            }
+                var users = this.getServerContext().getData().getUsersList();
+                var allKanbans = this.getServerContext().getData().getKanbansList();
+
+                return Optional.of(new UpdateUsersAndKanbansListResponse(users, allKanbans));
+            }    
         } catch (Throwable t) {
             // Ignoré sur le client
         }
