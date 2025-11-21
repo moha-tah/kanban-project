@@ -33,11 +33,11 @@ public class UsersController {
         LOGGER.info("👥 Refreshing users list...");
 
         if (core == null) {
-            LOGGER.severe("❌ MainCore n'est pas initialisé dans UsersController !");
+            LOGGER.severe("MainCore n'est pas initialisé dans UsersController !");
             return;
         }
         if (usersContainer == null) {
-            LOGGER.severe("❌ usersContainer est null dans UsersController !");
+            LOGGER.severe("usersContainer est null dans UsersController !");
             return;
         }
 
@@ -65,11 +65,11 @@ public class UsersController {
             controller.setUserData(user.getUsername(), "");
 
             usersContainer.getChildren().add(userCard);
-            LOGGER.info("✅ Added user to UI: " + user.getUsername());
+            LOGGER.info("Added user to UI: " + user.getUsername());
 
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE,
-                    "❌ Erreur lors du chargement de user_card.fxml pour l'utilisateur : " + user.getUsername(), e);
+                    "Erreur lors du chargement de user_card.fxml pour l'utilisateur : " + user.getUsername(), e);
         }
     }
 }
