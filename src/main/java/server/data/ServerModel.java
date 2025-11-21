@@ -50,39 +50,6 @@ public class ServerModel {
     public void removeUserOnKanban(AssociationUsersOnKanban oldAssoc) {
         usersOnKanbans.remove(oldAssoc);
     }
-
-    public boolean addAuthorizedUser(UUID kanbanId, UUID userId) {
-        LightUser targetUser = null;
-        for (LightUser u : connectedUsers) {
-            if (u.getId().equals(userId)) {
-                targetUser = u;
-                break;
-            }
-        }
-        if (targetUser == null) return false; // Utilisateur inconnu
-        Kanban targetKanban = null;
-        for (Kanban k : inUseKanbans) {
-            if (k.getId().equals(kanbanId)) {
-                targetKanban = k;
-                break;
-            }
-        }
-        if (targetKanban == null) return false; // Kanban inconnu
-
-        AssociationUsersOnKanban assoc = null;
-        for (AssociationUsersOnKanban a : usersOnKanbans) {
-            if (a.getKanban().getId().equals(kanbanId)) {
-                assoc = a;
-                break;
-            }
-        }
-        if (assoc == null) {
-            assoc = new AssociationUsersOnKanban(targetKanban.getLightKanban());
-            usersOnKanbans.add(assoc);
-        }
-        assoc.addUserOnKanban(targetUser);
-
-        return true;
-    }
+    
 }
 
