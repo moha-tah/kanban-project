@@ -39,8 +39,7 @@ public class MainApp extends Application {
         data = new DataClientProvider();
 
         // Start server first, potentially on a fallback port
-        server.ServerContext serverCtx = new server.ServerContext();
-        commServer = new CommCoreServer(8080, serverCtx);
+        commServer = new CommCoreServer(8080);
         commServer.start();
         int actualPort = commServer.getLocalPort();
 
