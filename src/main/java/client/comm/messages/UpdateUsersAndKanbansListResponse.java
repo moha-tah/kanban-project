@@ -44,14 +44,14 @@ public class UpdateUsersAndKanbansListResponse extends Message implements Serial
                 logger.warning("UpdateUsersAndKanbansListResponse: ClientContext is null!");
                 return Optional.empty();
             }
-            if (ctx.getData() == null) {
+            if (client.ClientContext.getData() == null) {
                 logger.warning("UpdateUsersAndKanbansListResponse: Data interface is null!");
                 return Optional.empty();
             }
             
             logger.log(Level.INFO, "UpdateUsersAndKanbansListResponse: Updating model with {0} users", this.users.size());
             // Mettre à jour le modèle avec les listes reçues (peut être fait sur le thread réseau)
-            ctx.getData().updateUserList(this.users, this.kanbans);
+            client.ClientContext.getData().updateUserList(this.users, this.kanbans);
             
             // Notifier l'UI des changements via les méthodes existantes
             // IMPORTANT: Les modifications de l'UI JavaFX doivent être faites sur le thread JavaFX
@@ -59,7 +59,7 @@ public class UpdateUsersAndKanbansListResponse extends Message implements Serial
                 try {
                     logger.info("UpdateUsersAndKanbansListResponse: Updating UI on JavaFX thread");
                     // Appeler updateLists pour publier la liste complète des utilisateurs
-                    ctx.getData().updateLists(null); // null car on veut publier toute la liste
+                    client.ClientContext.getData().updateLists(null); // null car on veut publier toute la liste
                 } catch (Exception e) {
                     logger.log(java.util.logging.Level.SEVERE, "Error updating UI in Platform.runLater", e);
                 }
