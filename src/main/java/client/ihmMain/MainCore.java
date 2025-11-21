@@ -182,7 +182,7 @@ public class MainCore {
             mainCalls.openCreateForm(KanbanTest);*/
             
             
-            final String first = "/home.fxml";
+            final String first = "/landing.fxml";
             URL url = MainApp.class.getResource(first);
             if (url == null) throw new IllegalStateException("FXML introuvable: " + first);
 

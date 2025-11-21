@@ -41,18 +41,6 @@ public class dataCallsMainImpl implements DataClientCallsMain {
     }
 
     @Override
-    public void publishUsersList(List<LightUser> users) {
-        core.addUsers(users);
-        System.out.println("[Main->DataCB] publishUsersList size=" + users.size());
-    }
-
-    @Override
-    public void publishKanbansList(List<LightKanban> kanbans) {
-        core.addKanbans(kanbans);
-        System.out.println("[Main->DataCB] publishKanbansList size=" + kanbans.size());
-    }
-
-    @Override
     public void addUserToList(LightUser user) {
         core.addUser(user);
         System.out.println("[Main->DataCB] addUserToList user=" + user.getUsername());
@@ -90,26 +78,5 @@ public class dataCallsMainImpl implements DataClientCallsMain {
         core.replaceKanbans(kanbans);
         System.out.println("[Data->MainCB] publishKanbansList size=" + kanbans.size());
     }
-
-    @Override
-    public void publishUsersList(List<LightUser> users) {
-        if (users == null) {
-            System.err.println("[Data->MainCB] publishUsersList: null list, ignored");
-            return;
-        }
-        core.replaceUsers(users); 
-        System.out.println("[Data->MainCB] publishUsersList size=" + users.size());
-    }
-
-    @Override
-    public void publishKanbansList(List<LightKanban> kanbans) {
-        if (kanbans == null) {
-            System.err.println("[Data->MainCB] publishKanbansList: null list, ignored");
-            return;
-        }
-        core.replaceKanbans(kanbans);
-        System.out.println("[Data->MainCB] publishKanbansList size=" + kanbans.size());
-    }
-
 
 }
