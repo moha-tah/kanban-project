@@ -7,25 +7,23 @@ import java.util.Optional;
 
 public class RequestKanban extends Message {
 
-    private final UUID lightKanbanId; // ou LightKanban.id
-    private final UUID lightUserId; // ou LightKanban.id
+    private final UUID lightKanbanId;
+    private final common.dataClasses.LightUser lightUser; 
 
-    public RequestKanban(UUID kanbanId, UUID userId) {
+    public RequestKanban(UUID kanbanId, common.dataClasses.LightUser user) {
         this.lightKanbanId = kanbanId;
-        this.lightUserId = userId;
+        this.lightUser = user;
     }
-    
+
     @Override
     public Optional<Message> handle() {
         try {
             // 1. Récupération de l'interface via le Contexte
-            // (On utilise le chemin complet ou l'import server.ServerContext)
             var dataServer = server.ServerContext.getData();
 
             if (dataServer != null) {
-
                 // 2. Appel de la méthode EXACTE de ton interface
-                Kanban fullKanban = dataServer.requestKanban(this.lightUserId, this.lightKanbanId);
+                Kanban fullKanban = dataServer.requestKanban(this.lightUser, this.lightKanbanId);
 
                 // 3. Si on a un résultat, on renvoie le message de réponse
                 if (fullKanban != null) {
@@ -36,7 +34,7 @@ public class RequestKanban extends Message {
             // Ignore l'erreur si on est coté client (ServerContext n'existe pas)
             // Ou log l'erreur si c'est un vrai problème serveur
         }
-        
+
         return Optional.empty();
     }
 
