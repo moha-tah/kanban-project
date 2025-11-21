@@ -1,10 +1,11 @@
 package client;
+import client.data.CommCallsDataClientImplementation;
 import client.interfaces.ComCallsDataClient;
 
 public class ClientContext {
     private static ComCallsDataClient dataInterface;
 
-    public static void init(ComCallsDataClient data) {
+    public static void setData(CommCallsDataClientImplementation data) {
         dataInterface = data;
     }
 

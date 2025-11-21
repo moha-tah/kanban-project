@@ -1,21 +1,20 @@
 package client.ihmMain.controllers;
 
 import java.io.IOException;
-import java.time.LocalDate;
 import java.util.Collections;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
-import common.dataClasses.User;
+import client.MainApp;
+import client.ihmMain.MainCore;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.image.ImageView;
+import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -34,7 +33,9 @@ public class HomeViewController {
 
     private boolean notifVisible = false;
 
-    // Singleton instance
+    private MainCore core;
+
+    // Singleton instance pour accès statique (pour les notifs notamment)
     private static HomeViewController instance;
 
     public static HomeViewController getInstance() {
@@ -48,18 +49,44 @@ public class HomeViewController {
         instance = this;
         LOGGER.info("🏠 HomeView loaded!");
 
-        // Charger users.fxml
+        core = MainApp.getCore();
+        if (core == null) {
+            LOGGER.severe("❌ MainCore est null dans HomeViewController !");
+        }
+
+        // Charger users.fxml et injecter MainCore dans UsersController
+        loadUsersBar();
+
+        // Charger les Kanbans à partir du modèle (sans dummy)
+        refreshKanbansFromModel();
+    }
+
+    /**
+     * Charge la barre des utilisateurs (users.fxml) et injecte MainCore
+     * dans son contrôleur, puis demande un refresh de la liste.
+     */
+    private void loadUsersBar() {
+        if (usersBar == null) {
+            LOGGER.severe("❌ usersBar est null dans HomeViewController !");
+            return;
+        }
+
         FXMLLoader usersLoader = new FXMLLoader(getClass().getResource("/users.fxml"));
         try {
             Node usersNode = usersLoader.load();
             usersBar.getChildren().setAll(Collections.singletonList(usersNode));
+
             UsersController usersController = usersLoader.getController();
-            usersController.loadDummyUsers();
+            if (usersController != null) {
+                usersController.setCore(core);
+                usersController.refreshUsers();
+            } else {
+                LOGGER.severe("❌ UsersController est null après le chargement de users.fxml");
+            }
+
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "❌ Erreur lors du chargement de users.fxml", e);
         }
-
-        loadDummyKanbans();
     }
 
     /**
@@ -89,9 +116,8 @@ public class HomeViewController {
 
     private void loadNotifications() {
         notifContainer.getChildren().clear();
-        addNotification("Invitation à rejoindre Projet Alpha");
-        addNotification("Chloe a commenté votre tâche");
-        addNotification("Nouvelle mise à jour du Kanban Delta");
+        // Ici tu peux plugger de vraies notifications plus tard.
+        addNotification("Nouvelle notification (placeholder)");
     }
 
     private void addNotification(String message) {
@@ -106,35 +132,31 @@ public class HomeViewController {
         notifContainer.getChildren().add(box);
     }
 
-    private void loadDummyKanbans() {
-        LOGGER.info("📋 Loading dummy Kanban cards...");
-
-        User alice = new User("aaalice", "Alice", "Biden", LocalDate.of(1990, 5, 15));
-        User chloe = new User("ccchloe", "Chloe", "Smith", LocalDate.of(1988, 8, 22));
-        User eve = new User("eeve", "Eve", "Davis", LocalDate.of(1992, 12, 1));
-
-        addKanban(createdKanbansContainer, "Projet Alpha", alice, 5, "public", "#72e379");
-        addKanban(createdKanbansContainer, "Projet Beta", alice, 4, "private", "#72e379");
-        addKanban(participateKanbansContainer, "Projet Gamma", chloe, 3, "public", "#f79a3e");
-        addKanban(availableKanbansContainer, "Projet Delta", eve, 4, "private", "#d16ef5");
-    }
-
-    private void addKanban(HBox container, String title, User creator, int columns, String visibility, String color) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/kanban_card.fxml"));
-            Node card = loader.load();
-            KanbanCardController controller = loader.getController();
-            controller.setKanbanData(title, creator, columns, visibility, color);
-            container.getChildren().add(card);
-            LOGGER.info("✅ Added Kanban card: " + title);
-        } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "❌ Erreur lors du chargement de kanban_card.fxml", e);
+    /**
+     * Recharge les Kanbans à partir du modèle.
+     * Pour l'instant, aucun dummy n'est créé : les conteneurs sont simplement
+     * vidés en attendant l’intégration avec les vrais Kanbans.
+     */
+    private void refreshKanbansFromModel() {
+        if (createdKanbansContainer != null) {
+            createdKanbansContainer.getChildren().clear();
         }
+        if (participateKanbansContainer != null) {
+            participateKanbansContainer.getChildren().clear();
+        }
+        if (availableKanbansContainer != null) {
+            availableKanbansContainer.getChildren().clear();
+        }
+
+        LOGGER.info("📋 Kanban containers cleared (no dummy Kanbans).");
+
+        // TODO : plus tard, parcourir core.getKanbansSnapshot() et distribuer
+        // les Kanbans dans les bons HBox selon leur type / relation.
     }
 
     @FXML
     private void handleCreateKanban() throws IOException {
-        switchScene("/create_kanban.fxml", "Créer un Kanban", createKanbanButton);
+        switchScene("/createKanban.fxml", "Créer un Kanban", createKanbanButton);
     }
 
     private void switchScene(String fxmlPath, String title, Node triggerNode) throws IOException {
