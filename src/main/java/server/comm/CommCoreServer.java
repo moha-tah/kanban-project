@@ -130,8 +130,19 @@ public class CommCoreServer {
             }, () -> {
                 // Callback appelé quand le receiver s'arrête (client déconnecté)
                 connectedClients.remove(finalMsgSender);
-                java.util.logging.Logger.getLogger(CommCoreServer.class.getName())
-                        .log(java.util.logging.Level.INFO, "SERVER: Client déconnecté, retiré de la liste.");
+                java.util.logging.Logger logger = java.util.logging.Logger.getLogger(CommCoreServer.class.getName());
+                logger.log(java.util.logging.Level.INFO, "SERVER: Client déconnecté, retiré de la liste.");
+                
+                // Afficher le nombre d'utilisateurs restants
+                try {
+                    CommCallsDataServer data = ServerContext.getData();
+                    if (data != null) {
+                        var users = data.getUsersList();
+                        logger.info("SERVER: " + users.size() + " utilisateur(s) connecté(s) restant(s).");
+                    }
+                } catch (Exception e) {
+                    // Ignorer les erreurs lors de l'affichage
+                }
             });
 
             msgReceiver.start();
@@ -161,24 +172,46 @@ public class CommCoreServer {
             var users = data.getUsersList();
             var kanbans = data.getKanbansList();
 
-            client.comm.messages.UpdateUsersAndKanbansListResponse updateMsg =
-                    new client.comm.messages.UpdateUsersAndKanbansListResponse(users, kanbans);
+            java.util.logging.Logger logger = java.util.logging.Logger.getLogger(CommCoreServer.class.getName());
+            logger.info("SERVER: Creating broadcast message with " + users.size() + " users for " + connectedClients.size() + " clients");
 
-            for (SrvMsgSender client : connectedClients) {
+            // Créer un nouveau message pour chaque client pour éviter les problèmes de référence partagée
+            for (SrvMsgSender clientSender : connectedClients) {
                 try {
-                    client.send(updateMsg);
+                    // Créer une nouvelle instance du message pour chaque client
+                    client.comm.messages.UpdateUsersAndKanbansListResponse updateMsg =
+                            new client.comm.messages.UpdateUsersAndKanbansListResponse(
+                                    new java.util.ArrayList<>(users), // Copie de la liste
+                                    new java.util.ArrayList<>(kanbans)); // Copie de la liste
+                    
+                    logger.info("SERVER: Sending broadcast to client with " + updateMsg.getUsers().size() + " users");
+                    clientSender.send(updateMsg);
                 } catch (IOException e) {
-                    java.util.logging.Logger.getLogger(CommCoreServer.class.getName())
-                            .log(java.util.logging.Level.WARNING,
-                                    "SERVER: Échec de l'envoi de la mise à jour à un client.", e);
-                    connectedClients.remove(client);
+                    logger.log(java.util.logging.Level.WARNING,
+                            "SERVER: Échec de l'envoi de la mise à jour à un client.", e);
+                    connectedClients.remove(clientSender);
                 }
             }
 
-            java.util.logging.Logger.getLogger(CommCoreServer.class.getName())
-                    .log(java.util.logging.Level.INFO,
-                            "SERVER: Broadcast de {0} utilisateurs et {1} kanbans à {2} clients.",
-                            new Object[]{users.size(), kanbans.size(), connectedClients.size()});
+            // Afficher la liste des utilisateurs connectés
+            logger.log(java.util.logging.Level.INFO,
+                    "SERVER: Broadcast de {0} utilisateurs et {1} kanbans à {2} clients.",
+                    new Object[]{users.size(), kanbans.size(), connectedClients.size()});
+            
+            // Afficher les détails des utilisateurs connectés
+            if (!users.isEmpty()) {
+                StringBuilder userList = new StringBuilder("Utilisateurs connectés: ");
+                for (int i = 0; i < users.size(); i++) {
+                    common.dataClasses.LightUser user = users.get(i);
+                    userList.append(user.getUsername());
+                    if (i < users.size() - 1) {
+                        userList.append(", ");
+                    }
+                }
+                logger.info("SERVER: " + userList.toString());
+            } else {
+                logger.info("SERVER: Aucun utilisateur connecté.");
+            }
 
         } catch (Exception e) {
             java.util.logging.Logger.getLogger(CommCoreServer.class.getName())
