@@ -29,7 +29,9 @@ public class ConnectionRequest extends Message {
                 return Optional.of(new UpdateUsersAndKanbansListResponse(users, allKanbans));
             }    
         } catch (Throwable t) {
-            // Ignoré sur le client
+            // Log error on server side
+            java.util.logging.Logger.getLogger(ConnectionRequest.class.getName())
+                    .log(java.util.logging.Level.SEVERE, "Error handling connection request", t);
         }
         
         return Optional.empty();

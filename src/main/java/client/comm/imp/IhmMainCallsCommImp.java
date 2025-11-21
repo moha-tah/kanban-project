@@ -96,6 +96,12 @@ public class IhmMainCallsCommImp implements IhmMainCallsComm {
     }
 
     @Override
+    public boolean connect(String host, int port) {
+        return commCore.connect_host_port(host, port);
+    }
+
+
+    @Override
     public void connectionRequest(LightUser user, List<LightKanban> kanbans) {
         connectServer(user, kanbans);
     }
@@ -119,13 +125,11 @@ public class IhmMainCallsCommImp implements IhmMainCallsComm {
     @Override
     public void askKanban(UUID LightKanbanId) {
     }
+
     @Override
-    public void connectToServer(UUID LightUserId, List<LightKanban> listKanbans) {
-    }
-    @Override
-    public void getKanban(UUID LightKanbanId, UUID LightUserId) {
+    public void getKanban(LightKanban LightKanbanId, LightUser LightUserId) {
         // 1. Création du message
-        RequestKanban msg = new RequestKanban(LightUserId, LightKanbanId);
+        RequestKanban msg = new RequestKanban(LightKanbanId, LightUserId);
         
         // 2. Envoi réseau
         try {

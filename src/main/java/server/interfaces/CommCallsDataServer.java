@@ -11,7 +11,7 @@ import common.dataClasses.Modification;
 
 // CommCallsData
 public interface CommCallsDataServer {
-    Kanban requestKanban(UUID lightUserId, UUID lightKanbId);
+    Kanban requestKanban(LightUser lightUser, UUID lightKanbId);
     List<Kanban> notifyLogout(UUID userId);
     void askDeleteKanban(LightUser user, LightKanban kanban);
     void askAddListModifiers(LightUser user, LightKanban kanban);

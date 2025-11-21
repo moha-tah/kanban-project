@@ -48,6 +48,11 @@
         <version>5.10.0</version>
         <scope>test</scope>
     </dependency>
+        <dependency>
+        <groupId>com.google.code.gson</groupId>
+        <artifactId>gson</artifactId>
+        <version>2.10.1</version>
+    </dependency>
     </dependencies>
 
     <build>
@@ -68,6 +73,23 @@
             <configuration>
                 <mainClass>client.MainApp</mainClass>
             </configuration>
+        </plugin>
+
+        <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <version>3.1.0</version>
+            <executions>
+                <execution>
+                    <id>server</id>
+                    <goals>
+                        <goal>java</goal>
+                    </goals>
+                    <configuration>
+                        <mainClass>server.ServerApp</mainClass>
+                    </configuration>
+                </execution>
+            </executions>
         </plugin>
     </plugins>
     </build>

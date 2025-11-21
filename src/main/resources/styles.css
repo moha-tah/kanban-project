@@ -93,3 +93,49 @@
     -fx-font-family: monospace;
     -fx-padding: 8;
 }
+
+/* 🌿 Boutons arrondis, doux */
+.pretty-button {
+    -fx-background-color: linear-gradient(to bottom, #ffffff33, #00000011);
+    -fx-background-radius: 10;
+    -fx-padding: 6 14;
+    -fx-text-fill: #222;
+    -fx-font-weight: bold;
+    -fx-border-radius: 10;
+    -fx-border-color: #00000022;
+    -fx-border-width: 1;
+    -fx-cursor: hand;
+}
+
+.pretty-button:hover {
+    -fx-background-color: linear-gradient(to bottom, #ffffff55, #00000022);
+}
+
+
+.badge-public {
+    -fx-text-fill: #0a5f0a;
+    -fx-background-color: #baf5ba;
+    -fx-background-radius: 8;
+    -fx-padding: 2 8;
+    -fx-font-weight: bold;
+}
+
+.badge-private {
+    -fx-text-fill: #8a0000;
+    -fx-background-color: #ffbcbc;
+    -fx-background-radius: 8;
+    -fx-padding: 2 8;
+    -fx-font-weight: bold;
+}
+#notifPanel {
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 20, 0.2, 0, 4);
+}
+
+.notification-item {
+    -fx-background-color: #f2f2f2;
+    -fx-padding: 10;
+    -fx-background-radius: 8;
+}
+.notification-item:hover {
+    -fx-background-color: #e8e8e8;
+}
