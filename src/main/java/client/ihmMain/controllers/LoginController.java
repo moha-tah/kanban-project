@@ -12,7 +12,7 @@ import javafx.scene.control.*;
 
 import java.util.Collections;
 import java.util.List;
-import client.ihmMain.impl;
+import client.ihmMain.impl.*;
 
 import static client.ihmMain.utils.UiFormUtils.safe;
 import static client.ihmMain.utils.UiFormUtils.showError;
