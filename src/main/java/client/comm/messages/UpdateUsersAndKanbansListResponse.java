@@ -32,16 +32,17 @@ public class UpdateUsersAndKanbansListResponse extends Message {
     public Optional<Message> handle() {
         try {
             // Update the client's local data model with the lists from server
-            if (client.ClientContext.getData() != null) {
+            client.ClientContext ctx = new client.ClientContext();
+            if (ctx.getData() != null) {
                 // Mettre à jour le modèle avec les listes reçues
-                client.ClientContext.getData().updateUserList(this.users, this.kanbans);
+                ctx.getData().updateUserList(this.users, this.kanbans);
                 
                 // Notifier l'UI des changements via les méthodes existantes
                 if (!this.users.isEmpty()) {
-                    client.ClientContext.getData().updateLists(this.users.get(0));
+                    ctx.getData().updateLists(this.users.get(0));
                 }
                 if (!this.kanbans.isEmpty()) {
-                    client.ClientContext.getData().uploadKanbans(this.kanbans.get(0));
+                    ctx.getData().uploadKanbans(this.kanbans.get(0));
                 }
             }
         } catch (Throwable t) {

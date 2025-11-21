@@ -14,7 +14,6 @@ public class MainApp extends Application {
     private MainCore          core;
     private CommCoreClient    comm;
     private DataClientProvider data;
-    private CommCoreServer    commServer;
     private kanbanCorps       kanbanCore;
 
     public MainApp() {
@@ -57,12 +56,10 @@ public class MainApp extends Application {
         // Comm -> Data
         comm.setDataInterface(data.getToCommImpl());
         // Comm -> Main
-        comm.setMainInterface(core.getCOMMService());
+        comm.setIhmMainInterface(core.getCOMMService());
         // Comm -> Kanban
-        comm.setKanbanInterface(kanbanCore.getCOMMService());
+        comm.setIhmKanbanInterface(kanbanCore.getCOMMService());
 
-        // -------- Contexte global pour les messages réseau --------
-        ClientContext.setData(data.getToCommImpl());
 
         // -------- Lancement de l'IHM --------
         core.launchMainWindow(primaryStage);

@@ -18,10 +18,9 @@ public class ClientContext {
         ClientContext.kanbanInterface = kanbanInterface;
     }
 
-    public static void setData(CommCallsDataClientImplementation data) {
-        dataInterface = data;
+    public void setMainInterface(CommClientCallsMain mainInterface) {
+        ClientContext.mainInterface = mainInterface;
     }
-
 
     public ComCallsDataClient getData() {
         return dataInterface;
