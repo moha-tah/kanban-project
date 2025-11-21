@@ -71,6 +71,15 @@ public class MainApp extends Application {
         kanbanCore.setDataPort(kanbanCore.getDataPort());
         kanbanCore.setMainPort(kanbanCore.getMainPort());
 
+        // Comm -> Data
+        comm.setDataInterface(data.getToCommImpl());
+
+        // Comm -> Main
+        comm.setIhmMainInterface(core.getCOMMService());
+
+        // Comm -> Kanban
+        // comm.setIhmKanbanInterface(());
+
         core.launchMainWindow(primaryStage);
 
         // Connect the client after UI launched

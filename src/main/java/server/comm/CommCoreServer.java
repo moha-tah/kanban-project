@@ -6,6 +6,8 @@ import java.io.ObjectOutputStream;
 import java.net.BindException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import server.ServerContext;
+import server.interfaces.CommCallsDataServer;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -19,6 +21,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class CommCoreServer {
 
     private final int port;
+    private final ServerContext serverContext;
     private ServerSocket serverSocket;
     private boolean isRunning;
     private Thread serverThread;
@@ -28,8 +31,12 @@ public class CommCoreServer {
 
     public CommCoreServer(int port) {
         this.port = port;
+        this.serverContext = new ServerContext();
     }
 
+    public void setDataInterface(CommCallsDataServer dataInterface) {
+        this.serverContext.setDataInterface(dataInterface);
+    }
     /**
      * Démarre le serveur dans un thread séparé pour ne pas bloquer l'application.
      */
@@ -109,6 +116,15 @@ public class CommCoreServer {
             // Création du Receiver avec la logique de réaction (Callback)
             SrvMsgReceiver msgReceiver = new SrvMsgReceiver(in, obj -> {
                 if (obj instanceof client.comm.messages.Message receivedMsg) {
+                    // attach runtime server context before handling
+                    try {
+                        if (this.serverContext != null) {
+                            receivedMsg.setServerContext(this.serverContext);
+                        }
+                    } catch (Throwable t) {
+                        java.util.logging.Logger.getLogger(CommCoreServer.class.getName())
+                                .log(java.util.logging.Level.WARNING, "SERVER: Unable to attach ServerContext to message", t);
+                    }
                     // ----------------------------------------------------
                     // C'est ICI que la méthode handle() du message est exécutée
                     // (Ex: MsgRequestKanban.handle() qui interroge la BDD)

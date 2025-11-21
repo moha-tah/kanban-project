@@ -25,7 +25,7 @@ public class RequestPermission extends Message {
         // Executed on the SERVER side when received
         System.out.println("[SERVER] RequestPermission received: user=" + requesterId + ", kanban=" + kanbanId);
         try {
-            if (server.ServerContext.getData() != null) {
+            if (this.getServerContext().getData() != null) {
                 // Minimal hook: could record pending request or notify owner later
                 // For now, no server state change beyond logging.
             }
