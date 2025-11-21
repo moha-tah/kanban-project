@@ -9,7 +9,7 @@ public class ServerContext {
         ServerContext.serverData = serverData;
     }
 
-    public CommCallsDataServer getData() {
+    public static CommCallsDataServer getData() {
         return serverData;
     }
 
