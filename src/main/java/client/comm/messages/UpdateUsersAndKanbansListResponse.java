@@ -7,6 +7,8 @@ import client.interfaces.DataClientCallsMain;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Level;
+import javafx.application.Platform;
 
 public class UpdateUsersAndKanbansListResponse extends Message implements Serializable {
 
@@ -32,7 +34,7 @@ public class UpdateUsersAndKanbansListResponse extends Message implements Serial
     @Override
     public Optional<Message> handle() {
         java.util.logging.Logger logger = java.util.logging.Logger.getLogger(UpdateUsersAndKanbansListResponse.class.getName());
-        logger.info("UpdateUsersAndKanbansListResponse received: " + this.users.size() + " users, " + this.kanbans.size() + " kanbans");
+        logger.log(Level.INFO, "UpdateUsersAndKanbansListResponse received: {0} users, {1} kanbans", new Object[]{this.users.size(), this.kanbans.size()});
         
         try {
             // Update the client's local data model with the lists from server
@@ -75,6 +77,7 @@ public class UpdateUsersAndKanbansListResponse extends Message implements Serial
             // On remplace la liste complète côté MainCore
             dataMain.publishUsersList(users);
             dataMain.publishKanbansList(kanbans);
+        }
 
         // Pas de réponse à renvoyer au serveur
         return Optional.empty();
