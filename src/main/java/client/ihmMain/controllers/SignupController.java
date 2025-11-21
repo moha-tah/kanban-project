@@ -15,6 +15,7 @@ import javafx.stage.FileChooser;
 
 import java.io.File;
 import java.time.LocalDate;
+import javafx.scene.control.DateCell;
 import java.util.Collections;
 import java.util.List;
 
@@ -44,6 +45,21 @@ public class SignupController {
     public void initialize() {
         core = MainApp.getCore();
         if (errorLabel != null) errorLabel.setVisible(false);
+
+        // Prevent selecting future dates from the date picker UI
+        if (birthDatePicker != null) {
+            birthDatePicker.setEditable(false);
+            birthDatePicker.setDayCellFactory(picker -> new DateCell() {
+                @Override
+                public void updateItem(LocalDate date, boolean empty) {
+                    super.updateItem(date, empty);
+                    if (date != null && date.isAfter(LocalDate.now())) {
+                        setDisable(true);
+                        setStyle("-fx-background-color: #f4cccc;");
+                    }
+                }
+            });
+        }
     }
 
     // ================== Handlers ==================
@@ -78,6 +94,11 @@ public class SignupController {
         if (username.isBlank())  { showError("Username is required."); return; }
         if (password.length() < 6) { showError("Password must be ≥ 6 characters."); return; }
         if (birth == null) { showError("Please select your birth date."); return; }
+        // Prevent selecting a birth date in the future
+        if (birth.isAfter(LocalDate.now())) {
+            showError("Birth date cannot be in the future.");
+            return;
+        }
 
         createProfile(firstName, lastName, username, password, birth);
     }
