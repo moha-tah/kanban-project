@@ -1,7 +1,6 @@
 package client;
 
 import client.ihmMain.MainCore;
-import client.interfaces.MainCallsDataClient;
 import client.comm.CommCoreClient;
 import client.data.DataClientProvider;
 import server.comm.CommCoreServer;
@@ -40,11 +39,12 @@ public class MainApp extends Application {
         data = new DataClientProvider();
 
         // Start server first, potentially on a fallback port
-        commServer = new CommCoreServer(8080);
+        server.ServerContext serverCtx = new server.ServerContext();
+        commServer = new CommCoreServer(8080, serverCtx);
         commServer.start();
         int actualPort = commServer.getLocalPort();
 
-        // Create client using the actual bound port and connect
+        // Create a non-global runtime ClientContext and client using the actual bound port
         comm = new CommCoreClient("127.0.0.1", actualPort);
 
         // Main -> Data
@@ -58,6 +58,12 @@ public class MainApp extends Application {
 
         // Data -> Comm
         data.setCommInterface(comm.getDataCallsComm());
+
+        // Comm -> Data
+        comm.setDataInterface(data.getToCommImpl());
+
+        // Comm -> Main
+        comm.setIhmMainInterface(core.getCOMMService());
 
         core.launchMainWindow(primaryStage);
 

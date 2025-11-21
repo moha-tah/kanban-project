@@ -5,8 +5,8 @@ public class ServerContext {
     private static CommCallsDataServer serverData;
     // Generic application context accessible from messages or other static places
 
-    public static void init(CommCallsDataServer data) {
-        serverData = data;
+    public void setDataInterface(CommCallsDataServer serverData) {
+        ServerContext.serverData = serverData;
     }
 
     public CommCallsDataServer getData() {

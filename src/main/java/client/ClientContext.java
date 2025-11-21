@@ -9,12 +9,18 @@ public class ClientContext {
     private static CommClientCallsKanban kanbanInterface;
     private static CommClientCallsMain mainInterface;
 
-    public static void init(ComCallsDataClient data, CommClientCallsKanban commKanban,
-            CommClientCallsMain commMain) {
-        dataInterface = data;
-        kanbanInterface = commKanban;
-        mainInterface = commMain;
+    public void setDataInterface(ComCallsDataClient dataInterface) {
+        ClientContext.dataInterface = dataInterface;
     }
+    
+    public void setKanbanInterface(CommClientCallsKanban kanbanInterface) {
+        ClientContext.kanbanInterface = kanbanInterface;
+    }
+
+    public void setMainInterface(CommClientCallsMain mainInterface) {
+        ClientContext.mainInterface = mainInterface;
+    }
+
 
     public ComCallsDataClient getData() {
         return dataInterface;
