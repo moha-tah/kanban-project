@@ -1,16 +1,19 @@
 package server;
+
 import server.interfaces.CommCallsDataServer;
 
-public class ServerContext {
-    private static CommCallsDataServer serverData;
-    // Generic application context accessible from messages or other static places
+public final class ServerContext {
 
-    public void setDataInterface(CommCallsDataServer serverData) {
-        ServerContext.serverData = serverData;
+    private static CommCallsDataServer serverData;
+
+    private ServerContext() {
     }
 
-    public CommCallsDataServer getData() {
+    public static void setDataInterface(CommCallsDataServer data) {
+        serverData = data;
+    }
+
+    public static CommCallsDataServer getData() {
         return serverData;
     }
-
 }

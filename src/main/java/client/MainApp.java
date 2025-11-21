@@ -5,18 +5,16 @@ import client.ihmMain.MainCore;
 import client.comm.CommCoreClient;
 import client.data.DataClientProvider;
 import javafx.application.Application;
-
 import javafx.stage.Stage;
 
 public class MainApp extends Application {
     // Singleton pour accès global contrôlé => passer sonarqube check
     private static MainApp INSTANCE;
 
-    private MainCore        core;
-    private CommCoreClient  comm;
+    private MainCore          core;
+    private CommCoreClient    comm;
     private DataClientProvider data;
-
-    private kanbanCorps kanbanCore;
+    private kanbanCorps       kanbanCore;
 
     public MainApp() {
         INSTANCE = this;
@@ -39,46 +37,38 @@ public class MainApp extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        core = new MainCore();
-        data = new DataClientProvider();
-        comm = new CommCoreClient(DEFAULT_HOST, DEFAULT_PORT); // gérer côté cient en dynamique avec valeur par défault
+        core       = new MainCore();
+        data       = new DataClientProvider();
+        comm       = new CommCoreClient(DEFAULT_HOST, DEFAULT_PORT); // valeurs par défaut
         kanbanCore = new kanbanCorps();
 
-        // Main -> Data
+        // -------- Câblage Main -> autres couches --------
         core.setDataPort(data.getToMainImpl());
-
-        // Main -> Comm
         core.setCommPort(comm.getIhmMainCallsComm());
         core.setKanbanPort(kanbanCore.getMAINService());
 
-        // Data -> Main
+        // -------- Câblage Data -> autres couches --------
         data.setMainInterface(core.getDATService());
-
-        // Data -> Comm
         data.setCommInterface(comm.getDataCallsComm());
         data.setKanbanInterface(kanbanCore.getDATService());
 
-        kanbanCore.setCommPort(kanbanCore.getCommPort());
-        kanbanCore.setDataPort(kanbanCore.getDataPort());
-        kanbanCore.setMainPort(kanbanCore.getMainPort());
-
+        // -------- Câblage Comm -> autres couches --------
         // Comm -> Data
         comm.setDataInterface(data.getToCommImpl());
-
         // Comm -> Main
         comm.setIhmMainInterface(core.getCOMMService());
-
         // Comm -> Kanban
-        // comm.setIhmKanbanInterface(());
+        comm.setIhmKanbanInterface(kanbanCore.getCOMMService());
 
+
+        // -------- Lancement de l'IHM --------
         core.launchMainWindow(primaryStage);
 
-        // Connect the client after UI launched
+        // Connexion réseau après lancement de la fenêtre
         comm.connect();
-
-        // Ensure we stop network resources when the UI is closed
-
     }
 
-    public static void main(String[] args) { launch(args); }
+    public static void main(String[] args) {
+        launch(args);
+    }
 }

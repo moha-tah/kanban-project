@@ -24,9 +24,10 @@
         AnchorPane.rightAnchor="0.0">
 
         <!-- Barre des utilisateurs -->
-        <Pane fx:id="usersBar" prefWidth="200" style="-fx-background-color: linear-gradient(to bottom, #1a1a1a, #4b006e); -fx-padding: 16;" HBox.hgrow="NEVER">
-            <fx:include source="users.fxml" />
-        </Pane>
+        <Pane fx:id="usersBar"
+              prefWidth="200"
+              style="-fx-background-color: linear-gradient(to bottom, #1a1a1a, #4b006e); -fx-padding: 16;"
+              HBox.hgrow="NEVER" />
 
         <!-- Zone Kanban -->
         <ScrollPane fx:id="kanbanArea" fitToWidth="true" HBox.hgrow="ALWAYS" style="-fx-background-color: #E6DEE4;">

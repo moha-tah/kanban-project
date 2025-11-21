@@ -21,41 +21,52 @@ public class UsersController {
 
     private MainCore core;
 
-    // Setter pour injecter MainCore
     public void setCore(MainCore core) {
         this.core = core;
     }
 
-    public void loadDummyUsers() {
-        LOGGER.info("👥 Loading dummy users...");
+    public void refreshUsers() {
+        LOGGER.info("Refreshing users list...");
 
         if (core == null) {
-            LOGGER.severe("❌ MainCore n'est pas initialisé !");
+            LOGGER.severe("MainCore n'est pas initialisé dans UsersController !");
+            return;
+        }
+        if (usersContainer == null) {
+            LOGGER.severe("usersContainer est null dans UsersController !");
             return;
         }
 
-        List<LightUser> users = core.getUsersSnapshot();
-        LOGGER.info("Users: " + users);
+        usersContainer.getChildren().clear();
 
-        //pas d'avatar pour l'instant
+        List<LightUser> users = core.getUsersSnapshot();
+        LOGGER.info("Users from MainCore: " + users.size());
+
         for (LightUser user : users) {
-            addUser(user.getUsername(), "https://randomuser.me/api/portraits/women/1.jpg");
+            if (user != null) {
+                addUser(user);
+            }
         }
     }
 
-    private void addUser(String username, String imagePath) {
+    private void addUser(LightUser user) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/user_card.fxml"));
             Node userCard = loader.load();
 
             UserCardController controller = loader.getController();
-            controller.setUserData(username, imagePath);
+
+            String avatarPath = user.getAvatar();   // plus besoin de instanceof
+            controller.setUserData(user.getUsername(), avatarPath);
+
+            controller.setUserData(user.getUsername(), avatarPath);
 
             usersContainer.getChildren().add(userCard);
-            LOGGER.info("✅ Added user: " + username);
+            LOGGER.info("Added user to UI: " + user.getUsername());
 
         } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "❌ Erreur lors du chargement de user_card.fxml pour l'utilisateur : " + username, e);
+            LOGGER.log(Level.SEVERE,
+                    "Erreur lors du chargement de user_card.fxml pour l'utilisateur : " + user.getUsername(), e);
         }
     }
 }

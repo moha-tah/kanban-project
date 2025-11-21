@@ -36,6 +36,7 @@ public class ServerApp {
 
             // Start server
             server = new CommCoreServer(port);
+            server.setDataInterface(commImpl);
             server.start();
             
             logger.info("========================================");

@@ -1,60 +1,51 @@
 package client.ihmMain.controllers;
 
+import java.io.File;
+import java.util.logging.Logger;
+
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.HBox;
-import javafx.scene.shape.Circle;
-import javafx.stage.Stage;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import java.io.IOException;
-import javafx.fxml.FXMLLoader;
 
 public class UserCardController {
-    @FXML private HBox userCardRoot;
-    @FXML private ImageView profilePic;
-    @FXML private Label usernameLabel;
-    private String username;
+
+    private static final Logger LOGGER = Logger.getLogger(UserCardController.class.getName());
 
     @FXML
-    private void initialize() {
-        makeProfilePictureRound();
-        userCardRoot.setOnMouseClicked(event -> openProfile());
-    }
+    private Label nameLabel;
 
-    public String getUserName() {
-        return username;
-    }
+    @FXML
+    private ImageView avatarImageView;
 
-    public void setUserData(String username, String imageUrl) {
-        this.username = username;
-        usernameLabel.setText(username);
-        try {
-            Image img = new Image(imageUrl, true);
-            profilePic.setImage(img);
-        } catch (Exception e) {
-            System.err.println(" Erreur chargement image pour " + username);
+    public void setUserData(String username, String avatarPath) {
+        nameLabel.setText(username);
+
+        if (avatarImageView == null) {
+            LOGGER.warning("avatarImageView est null (vérifie fx:id dans user_card.fxml)");
+            return;
         }
-    }
 
-    private void makeProfilePictureRound() {
-        double radius = 19;
-        Circle clip = new Circle(radius, radius, radius);
-        profilePic.setClip(clip);
-    }
+        // Pas d’avatar → on laisse vide
+        if (avatarPath == null || avatarPath.isBlank()) {
+            avatarImageView.setImage(null);
+            return;
+        }
 
-    private void openProfile() {
-        System.out.println("👤 Ouverture du profil de : " + username);
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/profile.fxml"));
-            Parent root = loader.load();
-            Stage stage = (Stage) userCardRoot.getScene().getWindow();
-            stage.setTitle("Profil de " + username);
-            stage.setScene(new Scene(root, 1280, 720));
-        } catch (IOException e) {
-            e.printStackTrace();
+            File file = new File(avatarPath);
+            if (!file.exists()) {
+                LOGGER.warning("Fichier avatar introuvable: " + avatarPath);
+                avatarImageView.setImage(null);
+                return;
+            }
+
+            String url = file.toURI().toString();   // file:/Users/...
+            Image img = new Image(url, true);
+            avatarImageView.setImage(img);
+        } catch (Exception e) {
+            LOGGER.warning("Impossible de charger l'image avatar: " + avatarPath);
+            avatarImageView.setImage(null);
         }
     }
 }
