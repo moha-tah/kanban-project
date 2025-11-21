@@ -176,30 +176,40 @@ public class CommCoreServer {
      */
     private void broadcastUsersAndKanbansUpdate() {
         try {
-            // Récupérer les listes depuis le serveur de données
-            var users = server.ServerContext.getData().getUsersList();
-            var kanbans = server.ServerContext.getData().getKanbansList();
-            
-            // Créer le message de mise à jour
-            client.comm.messages.UpdateUsersAndKanbansListResponse updateMsg = 
-                new client.comm.messages.UpdateUsersAndKanbansListResponse(users, kanbans);
-            
-            // Envoyer à tous les clients connectés
+            // 1) Récupérer l'interface data depuis *l'instance* de serverContext
+            CommCallsDataServer data = serverContext.getData();
+            if (data == null) {
+                java.util.logging.Logger.getLogger(CommCoreServer.class.getName())
+                        .log(java.util.logging.Level.SEVERE,
+                                "SERVER: Data interface is null in ServerContext, broadcast annulé.");
+                return;
+            }
+
+            // 2) Récupérer les listes via cette interface
+            var users = data.getUsersList();
+            var kanbans = data.getKanbansList();
+
+            // 3) Construire le message de mise à jour
+            client.comm.messages.UpdateUsersAndKanbansListResponse updateMsg =
+                    new client.comm.messages.UpdateUsersAndKanbansListResponse(users, kanbans);
+
+            // 4) Envoyer à tous les clients connectés
             for (SrvMsgSender client : connectedClients) {
                 try {
                     client.send(updateMsg);
                 } catch (IOException e) {
                     java.util.logging.Logger.getLogger(CommCoreServer.class.getName())
-                            .log(java.util.logging.Level.WARNING, "SERVER: Échec de l'envoi de la mise à jour à un client.", e);
-                    // Retirer les clients déconnectés
+                            .log(java.util.logging.Level.WARNING,
+                                    "SERVER: Échec de l'envoi de la mise à jour à un client.", e);
                     connectedClients.remove(client);
                 }
             }
-            
+
             java.util.logging.Logger.getLogger(CommCoreServer.class.getName())
-                    .log(java.util.logging.Level.INFO, "SERVER: Broadcast de {0} utilisateurs et {1} kanbans à {2} clients.", 
-                         new Object[]{users.size(), kanbans.size(), connectedClients.size()});
-            
+                    .log(java.util.logging.Level.INFO,
+                            "SERVER: Broadcast de {0} utilisateurs et {1} kanbans à {2} clients.",
+                            new Object[]{users.size(), kanbans.size(), connectedClients.size()});
+
         } catch (Exception e) {
             java.util.logging.Logger.getLogger(CommCoreServer.class.getName())
                     .log(java.util.logging.Level.SEVERE, "SERVER: Erreur lors du broadcast des listes.", e);
