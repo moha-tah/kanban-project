@@ -1,9 +1,12 @@
 package client.ihmMain.controllers;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import client.ihmMain.MainCore;
+import common.dataClasses.LightUser;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -16,16 +19,27 @@ public class UsersController {
 
     private static final Logger LOGGER = Logger.getLogger(UsersController.class.getName());
 
+    private MainCore core;
+
+    // Setter pour injecter MainCore
+    public void setCore(MainCore core) {
+        this.core = core;
+    }
+
     public void loadDummyUsers() {
         LOGGER.info("👥 Loading dummy users...");
-        Object[][] dummyUsers = {
-            {"Jenny", "https://randomuser.me/api/portraits/women/1.jpg"},
-            {"Mina", "https://randomuser.me/api/portraits/women/65.jpg"},
-            {"Thomas", "https://randomuser.me/api/portraits/men/22.jpg"}
-        };
 
-        for (Object[] user : dummyUsers) {
-            addUser((String) user[0], (String) user[1]);
+        if (core == null) {
+            LOGGER.severe("❌ MainCore n'est pas initialisé !");
+            return;
+        }
+
+        List<LightUser> users = core.getUsersSnapshot();
+        LOGGER.info("Users: " + users);
+
+        //pas d'avatar pour l'instant
+        for (LightUser user : users) {
+            addUser(user.getUsername(), "https://randomuser.me/api/portraits/women/1.jpg");
         }
     }
 

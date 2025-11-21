@@ -149,6 +149,28 @@ public class MainCore {
     kanbanPort.openCreateForm(full);  //backend
 }
 
+    public void replaceUsers(List<LightUser> newUsers) {
+        users.clear();
+        if (newUsers != null) {
+            for (LightUser u : newUsers) {
+                if (u != null) {
+                    users.add(u);
+                }
+            }
+        }
+    }
+
+    public void replaceKanbans(List<LightKanban> newKanbans) {
+        kanbans.clear();
+        if (newKanbans != null) {
+            for (LightKanban k : newKanbans) {
+                if (k != null) {
+                    kanbans.add(k);
+                }
+            }
+        }
+    }
+
 
 
     public void launchMainWindow(Stage stage) {
@@ -160,7 +182,7 @@ public class MainCore {
             mainCalls.openCreateForm(KanbanTest);*/
             
             
-            final String first = "/landing.fxml";
+            final String first = "/home.fxml";
             URL url = MainApp.class.getResource(first);
             if (url == null) throw new IllegalStateException("FXML introuvable: " + first);
 
