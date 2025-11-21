@@ -11,6 +11,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.logging.Level;
 
 public class CommCoreServer {
 
@@ -138,7 +139,7 @@ public class CommCoreServer {
                     CommCallsDataServer data = ServerContext.getData();
                     if (data != null) {
                         var users = data.getUsersList();
-                        logger.info("SERVER: " + users.size() + " utilisateur(s) connecté(s) restant(s).");
+                        logger.log(Level.INFO, "SERVER: {0} utilisateur(s) connect\u00e9(s) restant(s).", users.size());
                     }
                 } catch (Exception e) {
                     // Ignorer les erreurs lors de l'affichage
@@ -150,9 +151,6 @@ public class CommCoreServer {
         } catch (IOException e) {
             java.util.logging.Logger.getLogger(CommCoreServer.class.getName())
                     .log(java.util.logging.Level.SEVERE, "SERVER: Erreur de connexion avec un client.", e);
-            if (msgSender != null) {
-                connectedClients.remove(msgSender);
-            }
         }
     }
 
@@ -173,7 +171,7 @@ public class CommCoreServer {
             var kanbans = data.getKanbansList();
 
             java.util.logging.Logger logger = java.util.logging.Logger.getLogger(CommCoreServer.class.getName());
-            logger.info("SERVER: Creating broadcast message with " + users.size() + " users for " + connectedClients.size() + " clients");
+            logger.log(Level.INFO, "SERVER: Creating broadcast message with {0} users for {1} clients", new Object[]{users.size(), connectedClients.size()});
 
             // Créer un nouveau message pour chaque client pour éviter les problèmes de référence partagée
             for (SrvMsgSender clientSender : connectedClients) {
@@ -184,7 +182,7 @@ public class CommCoreServer {
                                     new java.util.ArrayList<>(users), // Copie de la liste
                                     new java.util.ArrayList<>(kanbans)); // Copie de la liste
                     
-                    logger.info("SERVER: Sending broadcast to client with " + updateMsg.getUsers().size() + " users");
+                    logger.log(Level.INFO, "SERVER: Sending broadcast to client with {0} users", updateMsg.getUsers().size());
                     clientSender.send(updateMsg);
                 } catch (IOException e) {
                     logger.log(java.util.logging.Level.WARNING,
@@ -208,7 +206,7 @@ public class CommCoreServer {
                         userList.append(", ");
                     }
                 }
-                logger.info("SERVER: " + userList.toString());
+                logger.log(Level.INFO, "SERVER: {0}", userList.toString());
             } else {
                 logger.info("SERVER: Aucun utilisateur connecté.");
             }
@@ -283,10 +281,15 @@ class SrvMsgReceiver implements Runnable, AutoCloseable {
                                     "SrvMsgReceiver: Client déconnecté (EOF).");
                     break;
                 } catch (IOException e) {
-                    // Autres erreurs I/O sont des vraies erreurs
-                    java.util.logging.Logger.getLogger(SrvMsgReceiver.class.getName())
-                            .log(java.util.logging.Level.WARNING,
-                                    "SrvMsgReceiver: I/O error while reading message.", e);
+                    // Traiter les SocketException (connection reset) comme une déconnexion normale
+                    java.util.logging.Logger logger = java.util.logging.Logger.getLogger(SrvMsgReceiver.class.getName());
+                    if (e instanceof java.net.SocketException) {
+                        // Connection reset / abort — log informatif sans stacktrace
+                        logger.log(java.util.logging.Level.INFO, "SrvMsgReceiver: I/O error while reading message: {0}", e.getMessage());
+                    } else {
+                        // Autres erreurs I/O gardent la stacktrace pour le débogage
+                        logger.log(java.util.logging.Level.WARNING, "SrvMsgReceiver: I/O error while reading message.", e);
+                    }
                     break;
                 }
                 try {

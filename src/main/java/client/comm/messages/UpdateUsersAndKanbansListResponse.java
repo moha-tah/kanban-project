@@ -49,7 +49,7 @@ public class UpdateUsersAndKanbansListResponse extends Message implements Serial
                 return Optional.empty();
             }
             
-            logger.info("UpdateUsersAndKanbansListResponse: Updating model with " + this.users.size() + " users");
+            logger.log(Level.INFO, "UpdateUsersAndKanbansListResponse: Updating model with {0} users", this.users.size());
             // Mettre à jour le modèle avec les listes reçues (peut être fait sur le thread réseau)
             ctx.getData().updateUserList(this.users, this.kanbans);
             
