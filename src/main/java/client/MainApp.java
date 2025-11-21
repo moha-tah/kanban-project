@@ -6,7 +6,6 @@ import client.comm.CommCoreClient;
 import client.data.DataClientProvider;
 import javafx.application.Application;
 import javafx.stage.Stage;
-import server.comm.CommCoreServer;
 
 public class MainApp extends Application {
     // Singleton pour accès global contrôlé => passer sonarqube check

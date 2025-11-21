@@ -10,9 +10,12 @@ import client.comm.imp.DataCallsCommImp;
 import client.comm.imp.IhmKanbanCallsCommImp;
 import client.comm.imp.IhmMainCallsCommImp;
 import client.comm.messages.Message;
-import server.interfaces.CommCallsDataServer;
+
 
 import java.util.Optional;
+
+import client.ClientContext;
+
 
 
 public class CommCoreClient {
@@ -26,10 +29,7 @@ public class CommCoreClient {
     private final IhmMainCallsComm ihmMainCallsComm;
     private final DataCallsComm dataCallsComm;
     private final IhmKanbanCallsComm ihmKanbanCallsComm;
-
-    private CommClientCallsMain mainInterface;
-    private ComCallsDataClient dataInterface;
-    private CommClientCallsKanban kanbanInterface;
+    private final ClientContext clientContext;
 
 
     public CommCoreClient(String serverAddress, int serverPort) {
@@ -38,8 +38,8 @@ public class CommCoreClient {
         this.ihmMainCallsComm = new IhmMainCallsCommImp(this);
         this.dataCallsComm = new DataCallsCommImp(this);
         this.ihmKanbanCallsComm = new IhmKanbanCallsCommImp(this);
+        this.clientContext = new ClientContext();
     }
-
 
     // Getters
     public String getServerAddress() {
@@ -74,20 +74,17 @@ public class CommCoreClient {
         return ihmKanbanCallsComm;
     }
 
-    public void setMainInterface(CommClientCallsMain mainInterface) {
-        this.mainInterface = mainInterface;
-    }
-
     public void setDataInterface(ComCallsDataClient dataInterface) {
-        this.dataInterface = dataInterface;
+        this.clientContext.setDataInterface(dataInterface);
     }
 
-    public void setKanbanInterface(CommClientCallsKanban kanbanInterface) {
-        this.kanbanInterface = kanbanInterface;
+    public void setIhmKanbanInterface(CommClientCallsKanban kanbanInterface) {
+        this.clientContext.setKanbanInterface(kanbanInterface);
     }
 
-    public CommClientCallsMain getMainInterface() { return mainInterface; }
-    public ComCallsDataClient getDataInterface() { return dataInterface; }
+    public void setIhmMainInterface(CommClientCallsMain mainInterface) {
+        this.clientContext.setMainInterface(mainInterface);
+    }
 
     public boolean connect_host_port(String host, int port) {
         try {
@@ -101,7 +98,6 @@ public class CommCoreClient {
             return false;
         }
     }
-
     public void connect() throws IOException {
         socket = new Socket(serverAddress, serverPort);
         out = new ObjectOutputStream(socket.getOutputStream());
@@ -112,8 +108,13 @@ public class CommCoreClient {
         this.msgReceiver = new MsgReceiver(in, obj -> {
             if (obj instanceof Message msg) {
                 try {
+                    // Ensure the runtime-only client context is attached before handling.
+                    if (this.clientContext != null) {
+                        msg.setClientContext(this.clientContext);
+                    }
+
                     Optional<Message> response = msg.handle();
-                    
+
                     if (response.isPresent()) {
                         sendMessage(response.get());
                     }

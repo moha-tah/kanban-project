@@ -19,7 +19,7 @@ public class SendKanban extends Message {
         // Note : Il faut gérer le cas où on est sur le serveur (try/catch ou vérification)
         try {
 
-            client.ClientContext.getData().send(this.kanban);
+            this.getClientContext().getData().send(this.kanban);
         } catch (Throwable t) {
             // On ignore si on n'est pas sur le client
         }

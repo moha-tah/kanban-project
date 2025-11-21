@@ -20,15 +20,14 @@ public class ConnectionRequest extends Message {
     public Optional<Message> handle() {
         try {
             // On appelle la méthode addNewUser de l'interface Serveur
-            if (server.ServerContext.getData() != null) {
-                server.ServerContext.getData().addNewUser(this.user, this.kanbans);
-                
-                // Retourner les listes mises à jour au nouveau client
-                var users = server.ServerContext.getData().getUsersList();
-                var allKanbans = server.ServerContext.getData().getKanbansList();
-                
+            if (this.getServerContext().getData() != null) {
+
+                this.getServerContext().getData().addNewUser(this.user, this.kanbans);
+                var users = this.getServerContext().getData().getUsersList();
+                var allKanbans = this.getServerContext().getData().getKanbansList();
+
                 return Optional.of(new UpdateUsersAndKanbansListResponse(users, allKanbans));
-            }
+            }    
         } catch (Throwable t) {
             // Log error on server side
             java.util.logging.Logger.getLogger(ConnectionRequest.class.getName())

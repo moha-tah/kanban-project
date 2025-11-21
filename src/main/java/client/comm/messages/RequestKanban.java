@@ -22,7 +22,7 @@ public class RequestKanban extends Message {
         try {
             // 1. Récupération de l'interface via le Contexte
             // (On utilise le chemin complet ou l'import server.ServerContext)
-            var dataServer = server.ServerContext.getData();
+            var dataServer = this.getServerContext().getData();
 
             if (dataServer != null) {
 
