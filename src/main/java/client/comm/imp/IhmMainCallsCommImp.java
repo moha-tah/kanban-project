@@ -127,9 +127,9 @@ public class IhmMainCallsCommImp implements IhmMainCallsComm {
     }
 
     @Override
-    public void getKanban(UUID LightKanbanId, UUID LightUserId) {
+    public void getKanban(LightKanban LightKanbanId, LightUser LightUserId) {
         // 1. Création du message
-        RequestKanban msg = new RequestKanban(LightUserId, LightKanbanId);
+        RequestKanban msg = new RequestKanban(LightKanbanId, LightUserId);
         
         // 2. Envoi réseau
         try {
