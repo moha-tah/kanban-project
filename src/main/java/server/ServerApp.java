@@ -33,15 +33,14 @@ public class ServerApp {
             ComCallsDataServImplementation commImpl = ComCallsDataServImplementation.newComCallsDataServImplementation();
             commImpl.setDataServProvider(dataProvider);
             dataProvider.setDataCallsComServ(commImpl);
-            ServerContext.init(commImpl);
-            
+
             // Start server
             server = new CommCoreServer(port);
             server.start();
             
             logger.info("========================================");
             logger.info("  Kanban Server Started");
-            logger.info("  Port: " + server.getLocalPort());
+            logger.log(Level.INFO, "  Port: {0}", server.getLocalPort());
             logger.info("  Press Ctrl+C to stop");
             logger.info("========================================");
             
