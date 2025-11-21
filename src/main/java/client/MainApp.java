@@ -4,11 +4,9 @@ import client.ihmKanban.kanbanCorps;
 import client.ihmMain.MainCore;
 import client.comm.CommCoreClient;
 import client.data.DataClientProvider;
-import client.ihmKanban.kanbanCorps;
 import javafx.application.Application;
-import javafx.application.Platform;
+
 import javafx.stage.Stage;
-import server.comm.CommCoreServer;
 
 public class MainApp extends Application {
     // Singleton pour accès global contrôlé => passer sonarqube check
@@ -17,7 +15,7 @@ public class MainApp extends Application {
     private MainCore        core;
     private CommCoreClient  comm;
     private DataClientProvider data;
-    private CommCoreServer commServer;
+
     private kanbanCorps kanbanCore;
 
     public MainApp() {
@@ -59,13 +57,6 @@ public class MainApp extends Application {
         // Data -> Comm
         data.setCommInterface(comm.getDataCallsComm());
         data.setKanbanInterface(kanbanCore.getDATService());
-
-        // comm -> data
-        comm.setDataInterface(comm.getDataInterface());
-
-        // Comm -> Main
-        comm.setMainInterface(comm.getMainInterface());
-        comm.setKanbanInterface(kanbanCore.getCOMMService());
 
         kanbanCore.setCommPort(kanbanCore.getCommPort());
         kanbanCore.setDataPort(kanbanCore.getDataPort());

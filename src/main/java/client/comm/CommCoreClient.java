@@ -10,7 +10,7 @@ import client.comm.imp.DataCallsCommImp;
 import client.comm.imp.IhmKanbanCallsCommImp;
 import client.comm.imp.IhmMainCallsCommImp;
 import client.comm.messages.Message;
-import server.interfaces.CommCallsDataServer;
+
 
 import java.util.Optional;
 
@@ -32,11 +32,6 @@ public class CommCoreClient {
     private final ClientContext clientContext;
 
 
-    private CommClientCallsMain mainInterface;
-    private ComCallsDataClient dataInterface;
-    private CommClientCallsKanban kanbanInterface;
-
-
     public CommCoreClient(String serverAddress, int serverPort) {
         this.serverAddress = serverAddress;
         this.serverPort = serverPort;
@@ -45,7 +40,6 @@ public class CommCoreClient {
         this.ihmKanbanCallsComm = new IhmKanbanCallsCommImp(this);
         this.clientContext = new ClientContext();
     }
-
 
     // Getters
     public String getServerAddress() {
@@ -91,9 +85,6 @@ public class CommCoreClient {
     public void setIhmMainInterface(CommClientCallsMain mainInterface) {
         this.clientContext.setMainInterface(mainInterface);
     }
-
-    public CommClientCallsMain getMainInterface() { return clientContext.getMainInterface(); }
-    public ComCallsDataClient getDataInterface() { return clientContext.getDataInterface(); }
 
     public boolean connect_host_port(String host, int port) {
         try {
