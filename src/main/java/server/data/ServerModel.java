@@ -1,10 +1,12 @@
 package server.data;
 import java.util.ArrayList;
 import java.util.List;
+import common.dataClasses.Access;
 
 import common.dataClasses.Kanban;
 import common.dataClasses.LightKanban;
 import common.dataClasses.LightUser;
+import common.dataClasses.Role;
 
 
 public class ServerModel {
@@ -52,5 +54,25 @@ public class ServerModel {
     public void removeUserOnKanban(AssociationUsersOnKanban oldAssoc) {
         usersOnKanbans.remove(oldAssoc);
     }
+    
+    public boolean addAuthorizedUser(LightKanban kanban, LightUser user) {
+
+        if (kanban == null || user == null) {
+        return false;
+        }
+        if (kanban.getAccessList() == null) {
+        kanban.setAccessList(new ArrayList<>());
+        }
+        List<Access> accessList = kanban.getAccessList();
+        for (Access a : accessList) {
+            if (a.getUser().getId().equals(user.getId())) {
+                return true; 
+            }
+        }
+        Access newAccess = new Access(user, Role.VIEWER);
+        accessList.add(newAccess);
+        return true;
+    }
+
 }
 

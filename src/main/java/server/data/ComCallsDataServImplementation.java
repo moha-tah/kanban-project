@@ -53,8 +53,8 @@ public class ComCallsDataServImplementation implements CommCallsDataServer {
 
 
     @Override
-    public boolean addAuthorizedUser(UUID kanbanId, UUID userId) {
-        return Boolean.FALSE;
+    public boolean addAuthorizedUser(LightKanban kanban, LightUser user) {
+        return myProvider.getModel().addAuthorizedUser(kanban, user);
     }
 
     @Override
