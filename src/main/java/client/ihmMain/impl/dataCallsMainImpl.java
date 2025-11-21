@@ -65,10 +65,20 @@ public class dataCallsMainImpl implements DataClientCallsMain {
             System.err.println("[Data->MainCB] publishUsersList: null list, ignored");
             return;
         }
-        core.replaceUsers(users); 
-        System.out.println("[Data->MainCB] publishUsersList size=" + users.size());
-    }
 
+        // Met à jour le modèle dans MainCore
+        core.replaceUsers(users);
+        System.out.println("[Data->MainCB] publishUsersList size=" + users.size());
+
+        // Demande à la HomeView de rafraîchir la barre des utilisateurs
+        client.ihmMain.controllers.HomeViewController home =
+                client.ihmMain.controllers.HomeViewController.getInstance();
+        if (home != null) {
+            home.refreshUsersBar();
+        } else {
+            System.err.println("[Data->MainCB] HomeViewController instance is null, UI not refreshed.");
+        }
+    }
     @Override
     public void publishKanbansList(List<LightKanban> kanbans) {
         if (kanbans == null) {

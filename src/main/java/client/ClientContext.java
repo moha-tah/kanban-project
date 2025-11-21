@@ -1,5 +1,4 @@
 package client;
-import client.data.CommCallsDataClientImplementation;
 import client.interfaces.ComCallsDataClient;
 import client.interfaces.CommClientCallsKanban;
 import client.interfaces.CommClientCallsMain;
@@ -22,7 +21,8 @@ public class ClientContext {
         ClientContext.mainInterface = mainInterface;
     }
 
-    public ComCallsDataClient getData() {
+
+    public static ComCallsDataClient getData() {
         return dataInterface;
     }
 

@@ -35,7 +35,10 @@ public class HomeViewController {
 
     private MainCore core;
 
-    // Singleton instance pour accès statique (pour les notifs notamment)
+    // Référence vers le UsersController chargé depuis users.fxml
+    private UsersController usersController;
+
+    // Singleton instance pour accès statique (depuis dataCallsMainImpl)
     private static HomeViewController instance;
 
     public static HomeViewController getInstance() {
@@ -47,11 +50,11 @@ public class HomeViewController {
     @FXML
     private void initialize() {
         instance = this;
-        LOGGER.info("🏠 HomeView loaded!");
+        LOGGER.info("HomeView loaded!");
 
         core = MainApp.getCore();
         if (core == null) {
-            LOGGER.severe("❌ MainCore est null dans HomeViewController !");
+            LOGGER.severe("MainCore est null dans HomeViewController !");
         }
 
         // Charger users.fxml et injecter MainCore dans UsersController
@@ -62,41 +65,53 @@ public class HomeViewController {
     }
 
     /**
-     * Charge la barre des utilisateurs (users.fxml) et injecte MainCore
-     * dans son contrôleur, puis demande un refresh de la liste.
+     * Charge la barre des utilisateurs (users.fxml),
+     * stocke son controller, injecte MainCore et fait un premier refresh.
      */
     private void loadUsersBar() {
         if (usersBar == null) {
-            LOGGER.severe("❌ usersBar est null dans HomeViewController !");
+            LOGGER.severe("usersBar est null dans HomeViewController !");
             return;
         }
 
-        FXMLLoader usersLoader = new FXMLLoader(getClass().getResource("/users.fxml"));
         try {
+            FXMLLoader usersLoader = new FXMLLoader(getClass().getResource("/users.fxml"));
             Node usersNode = usersLoader.load();
             usersBar.getChildren().setAll(Collections.singletonList(usersNode));
 
-            UsersController usersController = usersLoader.getController();
+            this.usersController = usersLoader.getController();
             if (usersController != null) {
                 usersController.setCore(core);
                 usersController.refreshUsers();
             } else {
-                LOGGER.severe("❌ UsersController est null après le chargement de users.fxml");
+                LOGGER.severe("UsersController est null après le chargement de users.fxml");
             }
 
         } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "❌ Erreur lors du chargement de users.fxml", e);
+            LOGGER.log(Level.SEVERE, "Erreur lors du chargement de users.fxml", e);
         }
     }
 
     /**
-     * Méthode statique pour gérer les notifications depuis l’extérieur
+     * Appelé depuis la couche Data quand la liste des users change.
+     * Recharge juste la barre des utilisateurs.
      */
+    public void refreshUsersBar() {
+        if (usersController == null) {
+            LOGGER.warning("usersController est null dans refreshUsersBar(), rechargement de users.fxml...");
+            loadUsersBar();
+            return;
+        }
+        usersController.refreshUsers();
+    }
+
+    // ==================== NOTIFICATIONS ====================
+
     public static void handleNotif() {
         if (instance != null) {
             instance.toggleNotif();
         } else {
-            LOGGER.warning("⚠️ HomeViewController instance is null. Cannot handle notifications.");
+            LOGGER.warning("HomeViewController instance is null. Cannot handle notifications.");
         }
     }
 
@@ -107,16 +122,15 @@ public class HomeViewController {
 
         if (notifVisible) {
             notifPanel.toFront();
-            LOGGER.info("📨 Ouverture du panneau de notifications");
+            LOGGER.info("Ouverture du panneau de notifications");
             loadNotifications();
         } else {
-            LOGGER.info("📪 Fermeture du panneau de notifications");
+            LOGGER.info("Fermeture du panneau de notifications");
         }
     }
 
     private void loadNotifications() {
         notifContainer.getChildren().clear();
-        // Ici tu peux plugger de vraies notifications plus tard.
         addNotification("Nouvelle notification (placeholder)");
     }
 
@@ -132,11 +146,8 @@ public class HomeViewController {
         notifContainer.getChildren().add(box);
     }
 
-    /**
-     * Recharge les Kanbans à partir du modèle.
-     * Pour l'instant, aucun dummy n'est créé : les conteneurs sont simplement
-     * vidés en attendant l’intégration avec les vrais Kanbans.
-     */
+    // ==================== KANBANS ====================
+
     private void refreshKanbansFromModel() {
         if (createdKanbansContainer != null) {
             createdKanbansContainer.getChildren().clear();
@@ -150,9 +161,10 @@ public class HomeViewController {
 
         LOGGER.info("📋 Kanban containers cleared (no dummy Kanbans).");
 
-        // TODO : plus tard, parcourir core.getKanbansSnapshot() et distribuer
-        // les Kanbans dans les bons HBox selon leur type / relation.
+        // TODO: plus tard, remplir depuis core.getKanbansSnapshot()
     }
+
+    // ==================== NAVIGATION ====================
 
     @FXML
     private void handleCreateKanban() throws IOException {
