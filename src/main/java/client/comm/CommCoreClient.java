@@ -136,17 +136,22 @@ public class CommCoreClient {
         this.msgReceiver.start();
     }
 
-    public void disconnect() throws IOException {
-        if (in != null) in.close();
-        if (out != null) out.close();
-        if (socket != null) socket.close();
-        if (msgReceiver != null) msgReceiver.stop();
-        if (msgSender != null) msgSender.close();
-
-        socket = null;
-        out = null;
-        in = null;
-        msgReceiver = null;
+    public void disconnect() {
+        try {
+            if (msgReceiver != null) msgReceiver.stop();
+            if (socket != null && !socket.isClosed()) socket.close();
+        } catch (IOException e) {
+            java.util.logging.Logger.getLogger(CommCoreClient.class.getName())
+                    .log(java.util.logging.Level.WARNING, "Error while disconnecting", e);
+        } finally {
+            if (in != null) try { in.close(); } catch (IOException ignored) {}
+            if (out != null) try { out.close(); } catch (IOException ignored) {}
+            socket = null;
+            in = null;
+            out = null;
+            msgReceiver = null;
+            msgSender = null;
+        }
     }
     
     public void sendMessage(Object message) throws IOException {

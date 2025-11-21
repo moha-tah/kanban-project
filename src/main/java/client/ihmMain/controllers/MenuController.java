@@ -1,58 +1,76 @@
 package client.ihmMain.controllers;
 
+import java.io.File;
 import java.io.IOException;
-import java.util.logging.Logger;
-import java.util.logging.Level;
 
+import client.MainApp;
+import client.ihmMain.MainCore;
+import common.dataClasses.LightUser;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.fxml.FXMLLoader;
 import javafx.stage.Stage;
 
 public class MenuController {
 
-    @FXML private ImageView profilePic;
+    @FXML
+    private ImageView profilePic;
 
-    private static final Logger LOGGER = Logger.getLogger(MenuController.class.getName());
+    @FXML
+    private void initialize() {
+        MainCore core = MainApp.getCore();
+        if (core == null) return;
+
+        LightUser me = core.getMe();
+        if (me == null) return;
+
+        String avatarPath = me.getAvatar();   // tu viens d’ajouter ce champ dans LightUser
+
+        if (avatarPath == null || avatarPath.isBlank()) {
+            // on garde l’image par défaut définie dans menu.fxml
+            return;
+        }
+
+        try {
+            File file = new File(avatarPath);
+            if (!file.exists()) {
+                System.out.println("Fichier avatar introuvable: " + avatarPath);
+                return;
+            }
+
+            String url = file.toURI().toString();  // file:/...
+            profilePic.setImage(new Image(url, true));
+        } catch (Exception e) {
+            System.out.println("Impossible de charger l'avatar : " + avatarPath);
+            profilePic.setImage(null); // ou garder l’image par défaut
+        }
+    }
 
     @FXML
     private void handleProfileClick() throws IOException {
-        LOGGER.info("👤 Ouverture de la page Profil");
         switchScene("/profile.fxml", "Mon Profil", profilePic);
     }
 
     @FXML
-    private void handleHome() {
-        LOGGER.info("🏠 Déjà sur la page d'accueil.");
-    }
+    private void handleHome() {}
 
     @FXML
     private void handleNotif() {
-        LOGGER.info("🔔 Ouverture/Masquage des notifications");
         HomeViewController.handleNotif();
     }
 
     @FXML
-    private void handleLogout() {
-        LOGGER.warning("🚪 Déconnexion — à implémenter plus tard.");
-    }
+    private void handleLogout() {}
 
-    private void switchScene(String fxmlPath, String title, Node triggerNode) throws IOException {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
-            Parent root = loader.load();
-
-            Stage stage = (Stage) triggerNode.getScene().getWindow();
-            stage.setTitle(title);
-            stage.setScene(new Scene(root, 1280, 720));
-
-            LOGGER.info("🔄 Changement de scène vers : " + title);
-        } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "❌ Erreur lors du changement de scène vers " + title, e);
-            throw e;
-        }
+    private void switchScene(String fxmlPath, String title, Node triggerNode) throws IOException, IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+        Parent root = loader.load();
+        Stage stage = (Stage) triggerNode.getScene().getWindow();
+        stage.setTitle(title);
+        stage.setScene(new Scene(root, 1280, 720));
     }
 }

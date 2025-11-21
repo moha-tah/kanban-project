@@ -3,13 +3,19 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
 
-<HBox fx:id="userCardRoot"
-      xmlns="http://javafx.com/javafx/25"
+<HBox xmlns="http://javafx.com/javafx/25"
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="client.ihmMain.controllers.UserCardController"
-      style="-fx-background-color: transparent; -fx-padding: 5 0 5 0;"
-      spacing="10"> <!-- Ajoute un espacement de 10 pixels entre les éléments -->
+      spacing="10"
+      style="-fx-background-color: transparent; -fx-padding: 5 0 5 0;">
 
-    <ImageView fx:id="profilePic" fitHeight="38" fitWidth="38" />
-    <Label fx:id="usernameLabel" style="-fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold;" />
+    <!-- Avatar optionnel -->
+    <ImageView fx:id="avatarImageView"
+               fitWidth="32"
+               fitHeight="32" />
+
+    <!-- Username -->
+    <Label fx:id="nameLabel"
+           style="-fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold;" />
+
 </HBox>
