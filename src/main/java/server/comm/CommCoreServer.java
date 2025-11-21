@@ -107,6 +107,8 @@ public class CommCoreServer {
                             } catch (IOException e) {
                                 java.util.logging.Logger.getLogger(CommCoreServer.class.getName())
                                         .log(java.util.logging.Level.SEVERE, "SERVER: Erreur lors de l'envoi de la réponse.", e);
+                                // Client déconnecté, le retirer
+                                connectedClients.remove(finalMsgSender);
                             }
                         });
 
@@ -125,6 +127,11 @@ public class CommCoreServer {
                             .log(java.util.logging.Level.WARNING,
                                     "SERVER: Message inattendu reçu: {0}", obj);
                 }
+            }, () -> {
+                // Callback appelé quand le receiver s'arrête (client déconnecté)
+                connectedClients.remove(finalMsgSender);
+                java.util.logging.Logger.getLogger(CommCoreServer.class.getName())
+                        .log(java.util.logging.Level.INFO, "SERVER: Client déconnecté, retiré de la liste.");
             });
 
             msgReceiver.start();
@@ -199,13 +206,15 @@ class SrvMsgSender implements AutoCloseable {
 class SrvMsgReceiver implements Runnable, AutoCloseable {
     private final ObjectInputStream in;
     private final java.util.function.Consumer<Object> handler;
+    private final Runnable onDisconnect;
     private final java.util.concurrent.atomic.AtomicBoolean running =
             new java.util.concurrent.atomic.AtomicBoolean(false);
     private Thread worker;
 
-    SrvMsgReceiver(ObjectInputStream in, java.util.function.Consumer<Object> handler) {
+    SrvMsgReceiver(ObjectInputStream in, java.util.function.Consumer<Object> handler, Runnable onDisconnect) {
         this.in = in;
         this.handler = handler;
+        this.onDisconnect = onDisconnect;
     }
 
     public void start() {
@@ -234,9 +243,16 @@ class SrvMsgReceiver implements Runnable, AutoCloseable {
                 Object msg;
                 try {
                     msg = in.readObject();
-                } catch (IOException e) {
+                } catch (java.io.EOFException e) {
+                    // EOFException est normale quand le client ferme la connexion proprement
                     java.util.logging.Logger.getLogger(SrvMsgReceiver.class.getName())
-                            .log(java.util.logging.Level.SEVERE,
+                            .log(java.util.logging.Level.FINE,
+                                    "SrvMsgReceiver: Client déconnecté (EOF).");
+                    break;
+                } catch (IOException e) {
+                    // Autres erreurs I/O sont des vraies erreurs
+                    java.util.logging.Logger.getLogger(SrvMsgReceiver.class.getName())
+                            .log(java.util.logging.Level.WARNING,
                                     "SrvMsgReceiver: I/O error while reading message.", e);
                     break;
                 }
@@ -254,6 +270,15 @@ class SrvMsgReceiver implements Runnable, AutoCloseable {
                             "SrvMsgReceiver: Class not found while reading message.", e);
         } finally {
             running.set(false);
+            // Notifier que le client est déconnecté
+            if (onDisconnect != null) {
+                try {
+                    onDisconnect.run();
+                } catch (Exception e) {
+                    java.util.logging.Logger.getLogger(SrvMsgReceiver.class.getName())
+                            .log(java.util.logging.Level.WARNING, "SrvMsgReceiver: Erreur dans onDisconnect callback.", e);
+                }
+            }
         }
     }
 

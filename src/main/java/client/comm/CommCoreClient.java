@@ -88,6 +88,13 @@ public class CommCoreClient {
 
     public boolean connect_host_port(String host, int port) {
         try {
+            // Vérifier si on est déjà connecté au même host/port
+            if (socket != null && socket.isConnected() && !socket.isClosed() 
+                && this.serverAddress != null && this.serverAddress.equals(host) && this.serverPort == port) {
+                // Déjà connecté au bon serveur, pas besoin de reconnecter
+                return true;
+            }
+            
             disconnect(); // Tenter de déconnecter proprement l'ancienne connexion (si elle existe)
             this.serverAddress = host; // récupérer dynamiquement les host et port
             this.serverPort = port;
@@ -101,6 +108,7 @@ public class CommCoreClient {
     public void connect() throws IOException {
         socket = new Socket(serverAddress, serverPort);
         out = new ObjectOutputStream(socket.getOutputStream());
+        out.flush(); // IMPORTANT: Flush après création de ObjectOutputStream pour éviter deadlock
         in = new ObjectInputStream(socket.getInputStream());
         // initialize message helpers
         this.msgSender = new MsgSender(out);
@@ -119,9 +127,9 @@ public class CommCoreClient {
                         sendMessage(response.get());
                     }
                 } catch (Exception e) {
-                    // Convert checked exceptions to unchecked so the receiver can handle them,
-                    // or add proper logging/handling here as needed.
-                    throw new RuntimeException(e);
+                    // Log l'erreur mais ne tue pas le thread receiver
+                    java.util.logging.Logger.getLogger(CommCoreClient.class.getName())
+                            .log(java.util.logging.Level.SEVERE, "MsgReceiver: Exception in handler.", e);
                 }
             }
         });
