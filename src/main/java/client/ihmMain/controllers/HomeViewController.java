@@ -174,6 +174,22 @@ public class HomeViewController {
     private void switchScene(String fxmlPath, String title, Node triggerNode) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
         Parent root = loader.load();
+        // If opening the create-kanban view, open it as a dialog and pass MainCore to its controller
+        if (fxmlPath.toLowerCase().contains("createkanban")) {
+            Object controller = loader.getController();
+            if (controller instanceof CreateKanbanController createKanbanController) {
+                createKanbanController.setMainCore(core);
+            }
+
+            Stage dialog = new Stage();
+            dialog.initOwner((Stage) triggerNode.getScene().getWindow());
+            dialog.setTitle(title);
+            dialog.setScene(new Scene(root, 900, 600));
+            dialog.show();
+            LOGGER.info("🔁 Opened dialog: " + title);
+            return;
+        }
+
         Stage stage = (Stage) triggerNode.getScene().getWindow();
         stage.setTitle(title);
         stage.setScene(new Scene(root, 1280, 720));
