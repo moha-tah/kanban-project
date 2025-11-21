@@ -25,12 +25,8 @@ public class UsersController {
         this.core = core;
     }
 
-    /**
-     * Recharge la liste des utilisateurs connectés depuis MainCore
-     * et met à jour l'IHM.
-     */
     public void refreshUsers() {
-        LOGGER.info("👥 Refreshing users list...");
+        LOGGER.info("Refreshing users list...");
 
         if (core == null) {
             LOGGER.severe("MainCore n'est pas initialisé dans UsersController !");
@@ -53,16 +49,17 @@ public class UsersController {
         }
     }
 
-    /**
-     * Ajoute un utilisateur à la vue, à partir d'un LightUser du modèle.
-     */
     private void addUser(LightUser user) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/user_card.fxml"));
             Node userCard = loader.load();
 
             UserCardController controller = loader.getController();
-            controller.setUserData(user.getUsername(), "");
+
+            String avatarPath = user.getAvatar();   // plus besoin de instanceof
+            controller.setUserData(user.getUsername(), avatarPath);
+
+            controller.setUserData(user.getUsername(), avatarPath);
 
             usersContainer.getChildren().add(userCard);
             LOGGER.info("Added user to UI: " + user.getUsername());

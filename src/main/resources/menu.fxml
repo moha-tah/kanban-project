@@ -26,9 +26,11 @@
         <HBox alignment="CENTER_RIGHT" spacing="12">
                 <Button fx:id="notifButton" text="🔔" onAction="#handleNotif" style="-fx-background-color: transparent; -fx-font-size: 18px;" />
                 <Button fx:id="homeButton" text="🏠" onAction="#handleHome" style="-fx-background-color: transparent; -fx-font-size: 18px;" />
-                <ImageView fx:id="profilePic" fitHeight="35" fitWidth="35" preserveRatio="true" onMouseClicked="#handleProfileClick">
-                        <image><Image url="@profile_pic.png"/></image>
-                </ImageView>
+            <ImageView fx:id="profilePic"
+                       fitHeight="35"
+                       fitWidth="35"
+                       preserveRatio="true"
+                       onMouseClicked="#handleProfileClick" />
         </HBox>
 
     </HBox>

@@ -148,7 +148,7 @@ public class HomeViewController {
 
     // ==================== KANBANS ====================
 
-    private void refreshKanbansFromModel() {
+    public void refreshKanbansFromModel() {
         if (createdKanbansContainer != null) {
             createdKanbansContainer.getChildren().clear();
         }
@@ -159,9 +159,8 @@ public class HomeViewController {
             availableKanbansContainer.getChildren().clear();
         }
 
-        LOGGER.info("📋 Kanban containers cleared (no dummy Kanbans).");
-
-        // TODO: plus tard, remplir depuis core.getKanbansSnapshot()
+        LOGGER.info("Kanban containers cleared (no dummy Kanbans).");
+        // TODO : parcourir core.getKanbansSnapshot() et peupler les conteneurs.
     }
 
     // ==================== NAVIGATION ====================
