@@ -4,6 +4,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import client.ihmMain.MainCore;
+import common.dataClasses.Kanban;
 import common.dataClasses.User;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -13,6 +14,8 @@ import javafx.scene.layout.AnchorPane;
 public class KanbanCardController {
 
     private MainCore core;
+    private Kanban kanban;          //LE VRAI OBJET KANBAN BACKEND
+
     private static final Logger LOGGER = Logger.getLogger(KanbanCardController.class.getName());
 
     @FXML private AnchorPane cardRoot;
@@ -30,35 +33,51 @@ public class KanbanCardController {
     private String visibility;
     private String color;
 
-    public void setKanbanData(String title, User creator, int columns, String visibility, String color) {
-        this.title = title;
-        this.creator = creator;
-        this.columns = columns;
-        this.visibility = visibility;
-        this.color = color;
+    public void setMainCore(MainCore core) {
+    this.core = core;
+}
 
-        titleLabel.setText(title);
-        creatorLabel.setText("Creator: " + creator.getFirstName() + " " + creator.getLastName());
-        columnsLabel.setText("Columns: " + columns);
-        visibilityLabel.setText("Visibility: " + visibility);
 
-        cardRoot.setStyle("-fx-background-color: " + color + "; -fx-background-radius: 10; -fx-padding: 10;");
+    public void setKanbanData(Kanban kanban, String color) {
+    this.kanban = kanban;
+    this.color = color;
 
-        if (visibility.equalsIgnoreCase("private")) {
-            viewButton.setVisible(false);
-            requestButton.setVisible(true);
-        } else {
-            viewButton.setVisible(true);
-            requestButton.setVisible(false);
-        }
+    this.title = kanban.getTitle();
+    this.columns = kanban.getTaskColumn().size();
+    this.visibility = kanban.getVisibility();
+    this.creator = kanban.getCreator();
 
-        LOGGER.info("🔧 Kanban data initialized: " + title);
-    }
+    titleLabel.setText(title);
+    creatorLabel.setText("Creator: " + creator.getFirstName() + " " + creator.getLastName());
+    columnsLabel.setText("Columns: " + columns);
+    visibilityLabel.setText("Visibility: " + visibility);
+
+    cardRoot.setStyle("-fx-background-color: " + color + "; -fx-background-radius: 10;");
+
+    boolean isPrivate = visibility.equalsIgnoreCase("private");
+    requestButton.setVisible(isPrivate);
+    viewButton.setVisible(!isPrivate);
+}
+
+
 
     @FXML
     private void handleView() {
         LOGGER.info("[VIEW] Kanban: " + title);
+
+        if (core == null) {
+            LOGGER.severe(" MainCore is null in KanbanCardController!");
+            return;
+        }
+
+        if (core.getKanbanPort() == null) {
+            LOGGER.severe(" MainCallsKanban interface is null!");
+            return;
+        }
+
+        core.getKanbanPort().openCreateForm(kanban);   
     }
+
 
     @FXML
     private void requestPermission() {
@@ -69,4 +88,6 @@ public class KanbanCardController {
     private void handleDelete() {
         LOGGER.warning("[DELETE] Kanban: " + title);
     }
+    
+
 }
