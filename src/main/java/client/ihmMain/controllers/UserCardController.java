@@ -18,34 +18,42 @@ public class UserCardController {
     @FXML
     private ImageView avatarImageView;
 
+    // on réutilise profile_pic.png comme avatar par défaut
+    private static final String DEFAULT_AVATAR = "/profile_pic.png";
+
     public void setUserData(String username, String avatarPath) {
         nameLabel.setText(username);
 
-        if (avatarImageView == null) {
-            LOGGER.warning("avatarImageView est null (vérifie fx:id dans user_card.fxml)");
-            return;
-        }
+        Image avatar = loadAvatar(avatarPath);
+        avatarImageView.setImage(avatar);
+    }
 
-        // Pas d’avatar → on laisse vide
-        if (avatarPath == null || avatarPath.isBlank()) {
-            avatarImageView.setImage(null);
-            return;
-        }
-
+    private Image loadAvatar(String avatarPath) {
+        // 1) si un chemin fichier valide est fourni depuis le serveur
         try {
-            File file = new File(avatarPath);
-            if (!file.exists()) {
-                LOGGER.warning("Fichier avatar introuvable: " + avatarPath);
-                avatarImageView.setImage(null);
-                return;
+            if (avatarPath != null && !avatarPath.isBlank()) {
+                File f = new File(avatarPath);
+                if (f.exists()) {
+                    return new Image(f.toURI().toString(), true);
+                } else {
+                    LOGGER.warning("Avatar file not found: " + avatarPath);
+                }
             }
-
-            String url = file.toURI().toString();   // file:/Users/...
-            Image img = new Image(url, true);
-            avatarImageView.setImage(img);
         } catch (Exception e) {
-            LOGGER.warning("Impossible de charger l'image avatar: " + avatarPath);
-            avatarImageView.setImage(null);
+            LOGGER.warning("Error loading avatar '" + avatarPath + "': " + e.getMessage());
+        }
+
+        // 2) sinon, avatar par défaut dans les resources
+        try {
+            var url = getClass().getResource(DEFAULT_AVATAR);
+            if (url == null) {
+                LOGGER.warning("Default avatar resource not found: " + DEFAULT_AVATAR);
+                return null; // dans ce cas, on garde l’image définie par FXML (@profile_pic.png)
+            }
+            return new Image(url.toExternalForm(), true);
+        } catch (Exception e) {
+            LOGGER.warning("Error loading default avatar: " + e.getMessage());
+            return null;
         }
     }
 }
