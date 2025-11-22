@@ -20,34 +20,52 @@ public class MenuController {
     @FXML
     private ImageView profilePic;
 
+    // Ressource avatar par défaut
+    private static final String DEFAULT_AVATAR_RESOURCE = "/profile_pic.png";
+
     @FXML
     private void initialize() {
         MainCore core = MainApp.getCore();
-        if (core == null) return;
+        if (core == null || profilePic == null) return;
 
         LightUser me = core.getMe();
         if (me == null) return;
 
-        String avatarPath = me.getAvatar();   // tu viens d’ajouter ce champ dans LightUser
+        Image avatar = loadAvatar(me.getAvatar());
 
-        if (avatarPath == null || avatarPath.isBlank()) {
-            // on garde l’image par défaut définie dans menu.fxml
-            return;
-        }
+        // Définir l’image finale
+        profilePic.setImage(avatar);
+    }
 
-        try {
-            File file = new File(avatarPath);
-            if (!file.exists()) {
-                System.out.println("Fichier avatar introuvable: " + avatarPath);
-                return;
+    private Image loadAvatar(String avatarPath) {
+        if (avatarPath != null && !avatarPath.isBlank()) {
+            try {
+                if (avatarPath.startsWith("http") || avatarPath.startsWith("file:")) {
+                    return new Image(avatarPath, true);
+                }
+
+                // Fichier local classique
+                File f = new File(avatarPath);
+                if (f.exists()) {
+                    return new Image(f.toURI().toString(), true);
+                } else {
+                    System.out.println("Avatar introuvable : " + avatarPath);
+                }
+            } catch (Exception e) {
+                System.out.println("Erreur chargement avatar : " + e.getMessage());
+                // On continue pour charger l'avatar par défaut
             }
-
-            String url = file.toURI().toString();  // file:/...
-            profilePic.setImage(new Image(url, true));
-        } catch (Exception e) {
-            System.out.println("Impossible de charger l'avatar : " + avatarPath);
-            profilePic.setImage(null); // ou garder l’image par défaut
         }
+
+        // Avatar par défaut depuis les ressources
+        try {
+            var url = getClass().getResource(DEFAULT_AVATAR_RESOURCE);
+            if (url != null) {
+                return new Image(url.toExternalForm(), true);
+            }
+        } catch (Exception ignored) {}
+
+        return null;
     }
 
     @FXML
@@ -66,7 +84,7 @@ public class MenuController {
     @FXML
     private void handleLogout() {}
 
-    private void switchScene(String fxmlPath, String title, Node triggerNode) throws IOException, IOException {
+    private void switchScene(String fxmlPath, String title, Node triggerNode) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
         Parent root = loader.load();
         Stage stage = (Stage) triggerNode.getScene().getWindow();

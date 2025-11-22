@@ -185,13 +185,13 @@ public class HomeViewController {
             dialog.setTitle(title);
             dialog.setScene(new Scene(root, 900, 600));
             dialog.show();
-            LOGGER.info("🔁 Opened dialog: " + title);
+            LOGGER.info("Opened dialog: " + title);
             return;
         }
 
         Stage stage = (Stage) triggerNode.getScene().getWindow();
         stage.setTitle(title);
         stage.setScene(new Scene(root, 1280, 720));
-        LOGGER.info("🔁 Scene switched to: " + title);
+        LOGGER.info("Scene switched to: " + title);
     }
 }
