@@ -3,6 +3,7 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
 
+<?import javafx.scene.image.Image?>
 <HBox xmlns="http://javafx.com/javafx/25"
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="client.ihmMain.controllers.UserCardController"
@@ -12,8 +13,12 @@
     <!-- Avatar optionnel -->
     <ImageView fx:id="avatarImageView"
                fitWidth="32"
-               fitHeight="32" />
-
+               fitHeight="32"
+               preserveRatio="true">
+        <image>
+            <Image url="@profile_pic.png"/>
+        </image>
+    </ImageView>
     <!-- Username -->
     <Label fx:id="nameLabel"
            style="-fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold;" />
