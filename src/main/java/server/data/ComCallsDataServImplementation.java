@@ -25,7 +25,7 @@ public class ComCallsDataServImplementation implements CommCallsDataServer {
         Kanban myKanban = null;
         for (Kanban k : inUseKanbans) {
             LightKanban lightK = k.getLightKanban();
-            if (lightK.getId().equals(kanban.getId())) {
+            if (lightK.getId().equals(kanbanID)) {
                 myKanban = k;
                 break;
             }

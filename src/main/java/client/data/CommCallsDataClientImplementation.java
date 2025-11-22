@@ -12,9 +12,11 @@ import java.util.UUID;
 
 public class CommCallsDataClientImplementation implements ComCallsDataClient{
     private DataClientProvider provider;
+ 
 
+    @Override
     public void updateUserList(List<LightUser> users, List<LightKanban> kanbans){
-        provider.getMyModel().setMyLightKanbans(kanbans);
+        provider.getMyModel().setAvailableLightKanbans(kanbans);
         provider.getMyModel().setConnectedUsers(users);
     }
 
@@ -23,8 +25,13 @@ public class CommCallsDataClientImplementation implements ComCallsDataClient{
         ClientModel model = prov.getMyModel();
         return model.getConnectedUsers();
     }
+    @Override
+    public UUID askIdUser(){
+        return this.provider.getMyModel().getLocalUser().getId();
+    }
 
 
+    @Override
     public void send(Kanban kanban){
         //TODO
     }
@@ -44,17 +51,19 @@ public class CommCallsDataClientImplementation implements ComCallsDataClient{
     public void uploadKanbans(LightKanban kanban){
         // Publier les listes de kanbans mises à jour
         if (provider != null && provider.getMyModel() != null) {
-            List<LightKanban> kanbans = provider.getMyModel().getMyLightKanbans();
+            List<LightKanban> kanbans = provider.getMyModel().getAvailableLightKanbans();
             if (provider.getMainInterface() != null) {
                 provider.getMainInterface().publishKanbansList(kanbans);
             }
         }
     }
 
+    @Override
     public void addListModifiers(LightUser user, LightKanban kanban){
-        //TODO
+        provider.getMyModel().addKanban(kanban);
     }
 
+    @Override
     public boolean addAuthorizedUser(UUID kanbanId, UUID userId){
         //TODO
         return true;
@@ -66,12 +75,12 @@ public class CommCallsDataClientImplementation implements ComCallsDataClient{
         }
         
         ClientModel model = provider.getMyModel();
-        List<LightKanban> kanbans = model.getMyLightKanbans();
+        List<LightKanban> kanbans = model.getAvailableLightKanbans();
         
         // Initialiser la liste si elle est null
         if (kanbans == null) {
             kanbans = new ArrayList<>();
-            model.setMyLightKanbans(kanbans);
+            model.setAvailableLightKanbans(kanbans);
         }
         
         // Retirer le kanban s'il existe déjà (même ID) puis ajouter le nouveau
@@ -84,7 +93,7 @@ public class CommCallsDataClientImplementation implements ComCallsDataClient{
     }
 
     public void saveTempKanban(Kanban kanban){
-        //TODO
+        provider.getMyModel().setCurrentKanban(kanban);
     }
 
     public void addUserToList(LightUser user, List<LightKanban> kanbans){

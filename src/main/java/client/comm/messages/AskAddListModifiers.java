@@ -19,7 +19,7 @@ public class AskAddListModifiers extends Message {
     public Optional<Message> handle() {
         try {
             // LOGIQUE SERVEUR
-            var dataServer = server.ServerContext.getData();
+            var dataServer = this.getServerContext().getData();
             
             if (dataServer != null) {
                 // TO DO

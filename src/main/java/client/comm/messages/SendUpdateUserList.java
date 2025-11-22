@@ -21,10 +21,10 @@ public class SendUpdateUserList extends Message {
         try {
             // LOGIQUE CLIENT (Fig 17 bas)
             // Les clients déjà connectés ajoutent ce nouvel arrivant à leur liste
-            if (client.ClientContext.getData() != null) {
+            if (this.getClientContext().getData() != null) {
                 
                 // Appel de addUserToList(LightUser, List<LightKanban>) dans ComCallsDataClient
-                client.ClientContext.getData().addUserToList(this.newUser, this.newKanbans);
+                this.getClientContext().getData().addUserToList(this.newUser, this.newKanbans);
             }
         } catch (Throwable t) {
             // Ignoré sur le serveur

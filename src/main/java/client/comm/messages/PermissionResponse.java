@@ -28,7 +28,7 @@ public class PermissionResponse extends Message {
         // Executed on SERVER when owner responds
         System.out.println("[SERVER] PermissionResponse: user=" + requesterId + ", kanban=" + kanbanId + ", accepted=" + accepted);
         try {
-            var data = server.ServerContext.getData();
+            var data = this.getServerContext().getData();
             if (data != null && accepted) {
                 data.addAuthorizedUser(kanbanId, requesterId);
             }

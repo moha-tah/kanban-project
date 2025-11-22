@@ -1,60 +1,59 @@
 package client.ihmMain.controllers;
 
+import java.io.File;
+import java.util.logging.Logger;
+
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.HBox;
-import javafx.scene.shape.Circle;
-import javafx.stage.Stage;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import java.io.IOException;
-import javafx.fxml.FXMLLoader;
 
 public class UserCardController {
-    @FXML private HBox userCardRoot;
-    @FXML private ImageView profilePic;
-    @FXML private Label usernameLabel;
-    private String username;
+
+    private static final Logger LOGGER = Logger.getLogger(UserCardController.class.getName());
 
     @FXML
-    private void initialize() {
-        makeProfilePictureRound();
-        userCardRoot.setOnMouseClicked(event -> openProfile());
+    private Label nameLabel;
+
+    @FXML
+    private ImageView avatarImageView;
+
+    // on réutilise profile_pic.png comme avatar par défaut
+    private static final String DEFAULT_AVATAR = "/profile_pic.png";
+
+    public void setUserData(String username, String avatarPath) {
+        nameLabel.setText(username);
+
+        Image avatar = loadAvatar(avatarPath);
+        avatarImageView.setImage(avatar);
     }
 
-    public String getUserName() {
-        return username;
-    }
-
-    public void setUserData(String username, String imageUrl) {
-        this.username = username;
-        usernameLabel.setText(username);
+    private Image loadAvatar(String avatarPath) {
+        // 1) si un chemin fichier valide est fourni depuis le serveur
         try {
-            Image img = new Image(imageUrl, true);
-            profilePic.setImage(img);
+            if (avatarPath != null && !avatarPath.isBlank()) {
+                File f = new File(avatarPath);
+                if (f.exists()) {
+                    return new Image(f.toURI().toString(), true);
+                } else {
+                    LOGGER.warning("Avatar file not found: " + avatarPath);
+                }
+            }
         } catch (Exception e) {
-            System.err.println(" Erreur chargement image pour " + username);
+            LOGGER.warning("Error loading avatar '" + avatarPath + "': " + e.getMessage());
         }
-    }
 
-    private void makeProfilePictureRound() {
-        double radius = 19;
-        Circle clip = new Circle(radius, radius, radius);
-        profilePic.setClip(clip);
-    }
-
-    private void openProfile() {
-        System.out.println("👤 Ouverture du profil de : " + username);
+        // 2) sinon, avatar par défaut dans les resources
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/profile.fxml"));
-            Parent root = loader.load();
-            Stage stage = (Stage) userCardRoot.getScene().getWindow();
-            stage.setTitle("Profil de " + username);
-            stage.setScene(new Scene(root, 1280, 720));
-        } catch (IOException e) {
-            e.printStackTrace();
+            var url = getClass().getResource(DEFAULT_AVATAR);
+            if (url == null) {
+                LOGGER.warning("Default avatar resource not found: " + DEFAULT_AVATAR);
+                return null; // dans ce cas, on garde l’image définie par FXML (@profile_pic.png)
+            }
+            return new Image(url.toExternalForm(), true);
+        } catch (Exception e) {
+            LOGGER.warning("Error loading default avatar: " + e.getMessage());
+            return null;
         }
     }
 }

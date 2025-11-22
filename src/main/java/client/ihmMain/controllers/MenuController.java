@@ -1,58 +1,94 @@
 package client.ihmMain.controllers;
 
+import java.io.File;
 import java.io.IOException;
-import java.util.logging.Logger;
-import java.util.logging.Level;
 
+import client.MainApp;
+import client.ihmMain.MainCore;
+import common.dataClasses.LightUser;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.fxml.FXMLLoader;
 import javafx.stage.Stage;
 
 public class MenuController {
 
-    @FXML private ImageView profilePic;
+    @FXML
+    private ImageView profilePic;
 
-    private static final Logger LOGGER = Logger.getLogger(MenuController.class.getName());
+    // Ressource avatar par défaut
+    private static final String DEFAULT_AVATAR_RESOURCE = "/profile_pic.png";
+
+    @FXML
+    private void initialize() {
+        MainCore core = MainApp.getCore();
+        if (core == null || profilePic == null) return;
+
+        LightUser me = core.getMe();
+        if (me == null) return;
+
+        Image avatar = loadAvatar(me.getAvatar());
+
+        // Définir l’image finale
+        profilePic.setImage(avatar);
+    }
+
+    private Image loadAvatar(String avatarPath) {
+        if (avatarPath != null && !avatarPath.isBlank()) {
+            try {
+                if (avatarPath.startsWith("http") || avatarPath.startsWith("file:")) {
+                    return new Image(avatarPath, true);
+                }
+
+                // Fichier local classique
+                File f = new File(avatarPath);
+                if (f.exists()) {
+                    return new Image(f.toURI().toString(), true);
+                } else {
+                    System.out.println("Avatar introuvable : " + avatarPath);
+                }
+            } catch (Exception e) {
+                System.out.println("Erreur chargement avatar : " + e.getMessage());
+                // On continue pour charger l'avatar par défaut
+            }
+        }
+
+        // Avatar par défaut depuis les ressources
+        try {
+            var url = getClass().getResource(DEFAULT_AVATAR_RESOURCE);
+            if (url != null) {
+                return new Image(url.toExternalForm(), true);
+            }
+        } catch (Exception ignored) {}
+
+        return null;
+    }
 
     @FXML
     private void handleProfileClick() throws IOException {
-        LOGGER.info("👤 Ouverture de la page Profil");
         switchScene("/profile.fxml", "Mon Profil", profilePic);
     }
 
     @FXML
-    private void handleHome() {
-        LOGGER.info("🏠 Déjà sur la page d'accueil.");
-    }
+    private void handleHome() {}
 
     @FXML
     private void handleNotif() {
-        LOGGER.info("🔔 Ouverture/Masquage des notifications");
         HomeViewController.handleNotif();
     }
 
     @FXML
-    private void handleLogout() {
-        LOGGER.warning("🚪 Déconnexion — à implémenter plus tard.");
-    }
+    private void handleLogout() {}
 
     private void switchScene(String fxmlPath, String title, Node triggerNode) throws IOException {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
-            Parent root = loader.load();
-
-            Stage stage = (Stage) triggerNode.getScene().getWindow();
-            stage.setTitle(title);
-            stage.setScene(new Scene(root, 1280, 720));
-
-            LOGGER.info("🔄 Changement de scène vers : " + title);
-        } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "❌ Erreur lors du changement de scène vers " + title, e);
-            throw e;
-        }
+        FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+        Parent root = loader.load();
+        Stage stage = (Stage) triggerNode.getScene().getWindow();
+        stage.setTitle(title);
+        stage.setScene(new Scene(root, 1280, 720));
     }
 }

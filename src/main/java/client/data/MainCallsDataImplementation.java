@@ -40,7 +40,7 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
 
     @Override
     public List<LightKanban> getMyListLightKanbans(){
-        return provider.getMyModel().getMyLightKanbans();
+        return provider.getMyModel().getAvailableLightKanbans();
     }
 
     @Override

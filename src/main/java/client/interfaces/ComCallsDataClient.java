@@ -29,4 +29,6 @@ public interface ComCallsDataClient {
     void saveTempKanban(Kanban kanban);
 
     void addUserToList(LightUser user, List<LightKanban> kanbans);
+
+    UUID askIdUser();
 }
