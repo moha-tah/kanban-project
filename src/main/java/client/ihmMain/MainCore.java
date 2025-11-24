@@ -39,7 +39,6 @@ import client.ihmKanban.impl.MainCallsKanbanImpl;
 
 
 
-
 /**
  * Coeur IHM : orchestre les appels entre la UI et les couches DATA/COMM/KANBAN.
  */
@@ -149,6 +148,28 @@ public class MainCore {
 
     kanbanPort.openCreateForm(full);  //backend
 }
+
+    public void replaceUsers(List<LightUser> newUsers) {
+        users.clear();
+        if (newUsers != null) {
+            for (LightUser u : newUsers) {
+                if (u != null) {
+                    users.add(u);
+                }
+            }
+        }
+    }
+
+    public void replaceKanbans(List<LightKanban> newKanbans) {
+        kanbans.clear();
+        if (newKanbans != null) {
+            for (LightKanban k : newKanbans) {
+                if (k != null) {
+                    kanbans.add(k);
+                }
+            }
+        }
+    }
 
 
 

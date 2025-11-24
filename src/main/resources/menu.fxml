@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="720" prefWidth="1280"
+            xmlns="http://javafx.com/javafx/25"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="client.ihmMain.controllers.MenuController">
+
+
+    <HBox fx:id="topBar" alignment="CENTER_LEFT" prefHeight="60" spacing="15"
+          style="-fx-background-color: #E6DEE4; -fx-padding: 10; -fx-border-color: transparent transparent black transparent; -fx-border-width: 0 0 1 0;"
+          AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+
+        <ImageView fitHeight="35" fitWidth="35" preserveRatio="true">
+            <image><Image url="@logo.png"/></image>
+        </ImageView>
+
+        <Region HBox.hgrow="ALWAYS" />
+
+        <Button fx:id="logoutButton" text="Logout" onAction="#handleLogout"
+                style="-fx-background-color: #ff99cc; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 15; -fx-padding: 5 15;" />
+
+        <HBox alignment="CENTER_RIGHT" spacing="12">
+                <Button fx:id="notifButton" text="🔔" onAction="#handleNotif" style="-fx-background-color: transparent; -fx-font-size: 18px;" />
+                <Button fx:id="homeButton" text="🏠" onAction="#handleHome" style="-fx-background-color: transparent; -fx-font-size: 18px;" />
+            <ImageView fx:id="profilePic"
+                       fitHeight="35"
+                       fitWidth="35"
+                       preserveRatio="true"
+                       onMouseClicked="#handleProfileClick" />
+        </HBox>
+
+    </HBox>
+
+
+
+
+
+</AnchorPane>

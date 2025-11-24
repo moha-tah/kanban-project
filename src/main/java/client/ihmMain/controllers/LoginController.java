@@ -2,6 +2,7 @@ package client.ihmMain.controllers;
 
 import client.MainApp;
 import client.ihmMain.MainCore;
+import client.ihmMain.impl.dataCallsMainImpl;
 import client.interfaces.MainCallsDataClient;
 import client.interfaces.IhmMainCallsComm;
 import common.dataClasses.LightKanban;
@@ -11,6 +12,7 @@ import javafx.scene.control.*;
 
 import java.util.Collections;
 import java.util.List;
+import client.ihmMain.impl.*;
 
 import static client.ihmMain.utils.UiFormUtils.safe;
 import static client.ihmMain.utils.UiFormUtils.showError;

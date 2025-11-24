@@ -1,10 +1,15 @@
 package server;
+
 import server.interfaces.CommCallsDataServer;
 
-public class ServerContext {
+public final class ServerContext {
+
     private static CommCallsDataServer serverData;
 
-    public static void init(CommCallsDataServer data) {
+    private ServerContext() {
+    }
+
+    public static void setDataInterface(CommCallsDataServer data) {
         serverData = data;
     }
 

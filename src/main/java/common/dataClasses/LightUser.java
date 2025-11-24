@@ -6,11 +6,13 @@ public class LightUser implements Serializable {
     private static final long serialVersionUID = 1L;
     private UUID id;
     private String username;
+    private String avatar;
     
     // Constructeur
     public LightUser(String username) {
         this.id = UUID.randomUUID();
         this.username = username;
+        this.avatar = "";
     }
     
     // Constructeur avec ID
@@ -27,6 +29,8 @@ public class LightUser implements Serializable {
     public String getUsername() {
         return username;
     }
+
+    public String getAvatar() {return avatar;}
     
     // Setters
     public void setId(UUID id) {
@@ -36,6 +40,8 @@ public class LightUser implements Serializable {
     public void setUsername(String username) {
         this.username = username;
     }
+
+    public void setAvatar(String avatar) {this.avatar = avatar;}
     
     @Override
     public boolean equals(Object obj) {
