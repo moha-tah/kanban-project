@@ -1,6 +1,7 @@
 package server.data;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import common.dataClasses.Kanban;
 import common.dataClasses.LightKanban;
@@ -52,5 +53,14 @@ public class ServerModel {
     public void removeUserOnKanban(AssociationUsersOnKanban oldAssoc) {
         usersOnKanbans.remove(oldAssoc);
     }
-}
 
+    /**
+     * Retire un utilisateur de la liste des utilisateurs connectés.
+     * @param userId L'ID de l'utilisateur à retirer
+     */
+    public void removeConnectedUser(UUID userId) {
+        if (userId != null) {
+            connectedUsers.removeIf(user -> user.getId().equals(userId));
+        }
+    }
+}

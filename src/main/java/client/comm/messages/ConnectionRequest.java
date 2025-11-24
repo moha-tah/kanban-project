@@ -16,6 +16,10 @@ public class ConnectionRequest extends Message {
         this.kanbans = kanbans;
     }
 
+    public LightUser getUser() {
+        return user;
+    }
+
     @Override
     public Optional<Message> handle() {
         try {

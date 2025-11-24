@@ -57,7 +57,7 @@ public class ComCallsDataServImplementation implements CommCallsDataServer {
                 LightKanban lightK = k.getLightKanban();
                 AddAccess modifier = new AddAccess(lightK);
                 // A voir avec l'équipe si ajout d'un argument
-                modifier.execute(user);
+                modifier.execute();
                 break;
             }
         }  
@@ -75,7 +75,13 @@ public class ComCallsDataServImplementation implements CommCallsDataServer {
         List<LightKanban> updatedKanbansList = getKanbansList();
 
         if (updatedUsersList != null && user != null) {
-            updatedUsersList.add(user);
+            // Vérifier si l'utilisateur existe déjà (par ID) pour éviter les doublons
+            boolean userExists = updatedUsersList.stream()
+                    .anyMatch(u -> u.getId().equals(user.getId()));
+            
+            if (!userExists) {
+                updatedUsersList.add(user);
+            }
         }
 
         if (updatedKanbansList != null && kanbans != null && !kanbans.isEmpty()) {
