@@ -89,9 +89,23 @@ public class CreateKanbanController {
             return;
         }
 
-        // 1. Instanciation du Kanban
-        Kanban newKanban = new Kanban(UUID.randomUUID(), title);
-        newKanban.setVisibility(visibility);
+        // Get the current user as creator
+        User currentUser = null;
+        if (mainCore != null) {
+            var provider = mainCore.getDataClientProvider();
+            if (provider != null) {
+                var model = provider.getMyModel();
+                currentUser = model.getLocalUser();
+            }
+        }
+
+        if (currentUser == null) {
+            showAlert("Error", "Cannot create kanban: user not logged in.");
+            return;
+        }
+
+        // 1. Instanciation du Kanban with creator
+        Kanban newKanban = new Kanban(UUID.randomUUID(), title, visibility, currentUser);
 
         // 2. Configuration des colonnes
         int index = 1;
@@ -118,22 +132,14 @@ public class CreateKanbanController {
 
             // B. Liaison avec l'utilisateur et Sauvegarde du User
             try {
-                // On récupère le provider via MainCore (assurez-vous d'avoir ajouté le getter dans MainCore)
+                // Add kanban to the user's kanban list in memory
+                currentUser.addKanban(newKanban);
+
+                // Save the updated user to disk
                 var provider = mainCore.getDataClientProvider();
                 if (provider != null) {
-                    var model = provider.getMyModel();
-                    var currentUser = model.getLocalUser();
-
-                    if (currentUser != null) {
-                        // Ajouter le kanban à la liste de l'objet User en mémoire
-                        currentUser.addKanban(newKanban);
-
-                        //Sauvegarder l'utilisateur sur le disque
-                        // Cela appellera serializeUserToJson qui lira la liste mise à jour ci-dessus
-                        provider.getToMainImpl().saveUser();
-
-                        System.out.println("Utilisateur sauvegardé avec le nouveau Kanban ID.");
-                    }
+                    provider.getToMainImpl().saveUser();
+                    System.out.println("Utilisateur sauvegardé avec le nouveau Kanban ID.");
                 }
             } catch (Exception e) {
                 System.err.println("Erreur lors de la mise à jour de l'utilisateur : " + e.getMessage());

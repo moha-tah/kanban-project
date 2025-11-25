@@ -31,4 +31,18 @@ public class Column implements Serializable {
     public void setTitle(String title) { this.title = title; }
     public void setColor(String color) { this.color = color; }
     public void setNumber(int number) { this.number = number; }
+
+    // Override equals and hashCode for proper HashMap key behavior
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Column column = (Column) o;
+        return id != null ? id.equals(column.id) : column.id == null;
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
+    }
 }
