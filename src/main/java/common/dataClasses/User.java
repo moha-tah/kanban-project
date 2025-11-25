@@ -16,7 +16,6 @@ public class User extends LightUser {
         this.firstName = firstName;
         this.lastName = lastName;
         this.birthDate = birthDate;
-        // RETIRÉ : this.avatar = ""; (géré par le constructeur de LightUser)
         this.myKanban = new ArrayList<>();
     }
 
@@ -25,7 +24,6 @@ public class User extends LightUser {
         this.firstName = firstName;
         this.lastName = lastName;
         this.birthDate = birthDate;
-        // RETIRÉ : this.avatar = "";
         this.myKanban = new ArrayList<>();
     }
 
@@ -41,7 +39,6 @@ public class User extends LightUser {
     public void setBirthDate(LocalDate birthDate) { this.birthDate = birthDate; }
     public void setMyKanban(List<Kanban> myKanban) { this.myKanban = myKanban; }
 
-    // Méthodes métier restées identiques...
     public boolean canModifyProfile(LightUser currentUser) {
         return this.getId().equals(currentUser.getId());
     }
