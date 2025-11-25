@@ -1,5 +1,6 @@
 package server.data;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -54,34 +55,67 @@ public class ComCallsDataServImplementation implements CommCallsDataServer {
         return null ; //TODO V3
     }
 
-    @Override
-    public void askDeleteKanban(LightUser user, LightKanban kanban) {
-        
+    public ComCallsDataServImplementation() {}
+
+    public static ComCallsDataServImplementation newComCallsDataServImplementation() {
+        return new ComCallsDataServImplementation();
     }
 
     @Override
-    public void askAddListModifiers(LightUser user, LightKanban kanban) {
-        
-    }
+    public void addNewUser(LightUser user, List<LightKanban> clientKanbans) {
+        ServerModel model = myProvider.getModel();
 
-
-    @Override
-    public boolean addAuthorizedUser(UUID kanbanId, UUID userId) {
-        return Boolean.FALSE;
-    }
-
-    @Override
-    public void addNewUser(LightUser user, List<LightKanban> kanbans) {
-        List<LightUser> updatedUsersList = getUsersList();
-        List<LightKanban> updatedKanbansList = getKanbansList();
-
-        if (updatedUsersList != null && user != null) {
-            updatedUsersList.add(user);
+        // 1. Enregistrer l'utilisateur
+        List<LightUser> connectedUsers = model.getConnectedUsers();
+        boolean userExists = connectedUsers.stream().anyMatch(u -> u.getId().equals(user.getId()));
+        if (!userExists) {
+            connectedUsers.add(user);
         }
 
-        if (updatedKanbansList != null && kanbans != null && !kanbans.isEmpty()) {
-            updatedKanbansList.addAll(kanbans);
+        // 2. Enregistrer les Kanbans du client en mémoire serveur
+        if (clientKanbans != null && !clientKanbans.isEmpty()) {
+            List<Kanban> serverKanbans = model.getInUseKanbans();
+
+            for (LightKanban lk : clientKanbans) {
+                // On vérifie si on l'a déjà
+                boolean kExists = serverKanbans.stream().anyMatch(k -> k.getId().equals(lk.getId()));
+
+                if (!kExists) {
+                    // On stocke une version "coquille" du Kanban côté serveur
+                    // L'important est d'avoir l'ID et le Titre pour le diffuser aux autres
+                    Kanban newK = new Kanban(lk.getId(), lk.getTitle());
+                    serverKanbans.add(newK);
+                    System.out.println("SERVEUR: Kanban importé en mémoire : " + lk.getTitle() + " (" + lk.getId() + ")");
+                }
+            }
         }
+    }
+
+    @Override
+    public LightKanban saveKanban(Kanban kanban) {
+        ServerModel model = myProvider.getModel();
+        // Mise à jour ou Ajout
+        model.getInUseKanbans().removeIf(k -> k.getId().equals(kanban.getId()));
+        model.getInUseKanbans().add(kanban);
+
+        System.out.println("SERVEUR: Kanban sauvegardé. Total=" + model.getInUseKanbans().size());
+
+        // Note: le broadcast est déclenché par le MessageHandler via réflexion
+        return kanban.getLightKanban();
+    }
+
+    @Override
+    public List<LightKanban> getKanbansList() {
+        // Génération dynamique de la liste Light à partir de la mémoire
+        List<LightKanban> lights = new ArrayList<>();
+        List<Kanban> heavies = myProvider.getModel().getInUseKanbans();
+
+        if (heavies != null) {
+            for (Kanban k : heavies) {
+                lights.add(k.getLightKanban());
+            }
+        }
+        return lights;
     }
 
     @Override
@@ -89,32 +123,40 @@ public class ComCallsDataServImplementation implements CommCallsDataServer {
         return myProvider.getModel().getConnectedUsers();
     }
 
-    @Override
-    public List<LightKanban> getKanbansList() {
-        return myProvider.getModel().getInUseLightKanbans();
-    }
-
-    @Override
-    public LightKanban saveKanban(Kanban kanban) {
-        myProvider.getModel().getInUseKanbans().add(kanban);
-        return kanban.getLightKanban();
-    }
-
-    @Override
-    public List<LightUser> saveModifiedKanban(LightKanban kanban, Modification modification) {
-        return null; //TODO V3
-    }
-
-    @Override
-    public Kanban getKanban(LightKanban lightKanban, LightUser user) {
-        return null;//TODO V2
-    }
-
-    @Override
-    public void closeKanban(LightKanban lightKanban, LightUser user) {
+    // --- Autres méthodes (Stubs) ---
+    @Override 
+    public Kanban requestKanban(LightUser user, UUID kanbanID) { 
+        if (myProvider == null || myProvider.getModel() == null) {
+            System.err.println("SERVEUR: requestKanban - myProvider or model is null");
+            return null;
+        }
         
+        ServerModel model = myProvider.getModel();
+        List<Kanban> kanbans = model.getInUseKanbans();
+        
+        System.out.println("SERVEUR: Searching for Kanban ID " + kanbanID + " in " + kanbans.size() + " kanbans");
+        
+        // Search for the Kanban with the matching ID
+        for (Kanban k : kanbans) {
+            System.out.println("  - Checking Kanban: " + k.getTitle() + " (ID: " + k.getId() + ")");
+            if (k.getId().equals(kanbanID)) {
+                System.out.println("SERVEUR: Sending full Kanban to user " + user.getId() + ": " + k.getTitle());
+                return k;
+            }
+        }
+        
+        System.err.println("SERVEUR: Kanban not found with ID: " + kanbanID);
+        return null;
     }
     
+    @Override public List<Kanban> notifyLogout(UUID userId) { return null; }
+    @Override public void askDeleteKanban(LightUser user, LightKanban kanban) {}
+    @Override public void addListModifiers(LightUser user, LightKanban kanban) {}
+    @Override public boolean addAuthorizedUser(UUID kanbanId, UUID userId) { return false; }
+    @Override public List<LightUser> saveModifiedKanban(LightKanban kanban, Modification modification) { return null; }
+    @Override public Kanban getKanban(LightKanban lightKanban, LightUser user) { return null; }
+    @Override public void closeKanban(LightKanban lightKanban, LightUser user) {}
+
     public void setDataServProvider(DataServProvider provider) {
         this.myProvider = provider;
     }
@@ -123,7 +165,3 @@ public class ComCallsDataServImplementation implements CommCallsDataServer {
         return myProvider;
     }
 }
-
-
-
-

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import common.dataClasses.LightKanban;
 import common.dataClasses.LightUser;
+// RETIRÉ : import server.ServerContext;
 
 public class ConnectionRequest extends Message {
     private static final long serialVersionUID = 1L;
@@ -16,24 +17,33 @@ public class ConnectionRequest extends Message {
         this.kanbans = kanbans;
     }
 
+    public LightUser getUser() { return user; }
+
     @Override
     public Optional<Message> handle() {
         try {
-            // On appelle la méthode addNewUser de l'interface Serveur
-            if (this.getServerContext().getData() != null) {
+            // --- RÉFLEXION ---
+            Class<?> contextClass = Class.forName("server.ServerContext");
+            java.lang.reflect.Method getDataMethod = contextClass.getMethod("getData");
+            Object dataServerObj = getDataMethod.invoke(null);
 
-                this.getServerContext().getData().addNewUser(this.user, this.kanbans);
-                var users = this.getServerContext().getData().getUsersList();
-                var allKanbans = this.getServerContext().getData().getKanbansList();
+            if (dataServerObj != null) {
+                server.interfaces.CommCallsDataServer dataServer = (server.interfaces.CommCallsDataServer) dataServerObj;
+
+                // Le serveur enregistre l'utilisateur ET ses kanbans en mémoire
+                dataServer.addNewUser(this.user, this.kanbans);
+
+                var users = dataServer.getUsersList();
+                var allKanbans = dataServer.getKanbansList();
 
                 return Optional.of(new UpdateUsersAndKanbansListResponse(users, allKanbans));
-            }    
+            }
+        } catch (ClassNotFoundException e) {
+            // Normal côté client
         } catch (Throwable t) {
-            // Log error on server side
             java.util.logging.Logger.getLogger(ConnectionRequest.class.getName())
-                    .log(java.util.logging.Level.SEVERE, "Error handling connection request", t);
+                    .log(java.util.logging.Level.SEVERE, "Erreur traitement connection", t);
         }
-        
         return Optional.empty();
     }
 }
