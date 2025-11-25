@@ -1,14 +1,16 @@
 package client.ihmMain.controllers;
 
 import java.io.IOException;
-import java.util.Collections;
+import java.util.*;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
 import client.MainApp;
 import client.ihmMain.MainCore;
+import common.dataClasses.Kanban;
 import common.dataClasses.LightKanban;
-import common.dataClasses.LightUser;
+import common.dataClasses.User;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
@@ -23,7 +25,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import java.util.List;
 
 public class HomeViewController {
 
@@ -37,20 +38,14 @@ public class HomeViewController {
     @FXML private VBox notifContainer;
 
     private boolean notifVisible = false;
-
     private MainCore core;
-
-    // Référence vers le UsersController chargé depuis users.fxml
     private UsersController usersController;
-
-    // Singleton instance pour accès statique (depuis dataCallsMainImpl)
     private static HomeViewController instance;
+    private static final Logger LOGGER = Logger.getLogger(HomeViewController.class.getName());
 
     public static HomeViewController getInstance() {
         return instance;
     }
-
-    private static final Logger LOGGER = Logger.getLogger(HomeViewController.class.getName());
 
     @FXML
     private void initialize() {
@@ -62,23 +57,12 @@ public class HomeViewController {
             LOGGER.severe("MainCore est null dans HomeViewController !");
         }
 
-        // Charger users.fxml et injecter MainCore dans UsersController
         loadUsersBar();
-
-        // Charger les Kanbans à partir du modèle (sans dummy)
         refreshKanbansFromModel();
     }
 
-    /**
-     * Charge la barre des utilisateurs (users.fxml),
-     * stocke son controller, injecte MainCore et fait un premier refresh.
-     */
     private void loadUsersBar() {
-        if (usersBar == null) {
-            LOGGER.severe("usersBar est null dans HomeViewController !");
-            return;
-        }
-
+        if (usersBar == null) return;
         try {
             FXMLLoader usersLoader = new FXMLLoader(getClass().getResource("/users.fxml"));
             Node usersNode = usersLoader.load();
@@ -88,49 +72,31 @@ public class HomeViewController {
             if (usersController != null) {
                 usersController.setCore(core);
                 usersController.refreshUsers();
-            } else {
-                LOGGER.severe("UsersController est null après le chargement de users.fxml");
             }
-
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "Erreur lors du chargement de users.fxml", e);
         }
     }
 
-    /**
-     * Appelé depuis la couche Data quand la liste des users change.
-     * Recharge juste la barre des utilisateurs.
-     */
     public void refreshUsersBar() {
-        if (usersController == null) {
-            LOGGER.warning("usersController est null dans refreshUsersBar(), rechargement de users.fxml...");
-            loadUsersBar();
-            return;
+        if (usersController != null) {
+            usersController.refreshUsers();
         }
-        usersController.refreshUsers();
     }
 
     // ==================== NOTIFICATIONS ====================
 
     public static void handleNotif() {
-        if (instance != null) {
-            instance.toggleNotif();
-        } else {
-            LOGGER.warning("HomeViewController instance is null. Cannot handle notifications.");
-        }
+        if (instance != null) instance.toggleNotif();
     }
 
     private void toggleNotif() {
         notifVisible = !notifVisible;
         notifPanel.setVisible(notifVisible);
         notifPanel.setMouseTransparent(!notifVisible);
-
         if (notifVisible) {
             notifPanel.toFront();
-            LOGGER.info("Ouverture du panneau de notifications");
             loadNotifications();
-        } else {
-            LOGGER.info("Fermeture du panneau de notifications");
         }
     }
 
@@ -143,42 +109,55 @@ public class HomeViewController {
         HBox box = new HBox();
         box.setSpacing(10);
         box.setStyle("-fx-background-color: #f2f2f2; -fx-padding: 10; -fx-background-radius: 8;");
-
         Label msg = new Label(message);
         msg.setStyle("-fx-font-size: 14;");
-
         box.getChildren().add(msg);
         notifContainer.getChildren().add(box);
     }
 
-    // ==================== KANBANS ====================
+    // ==================== KANBANS (LOGIQUE CORRIGÉE) ====================
 
     public void refreshKanbansFromModel() {
-        // 1. Nettoyage des conteneurs
+        // On s'assure d'être sur le thread JavaFX pour modifier l'UI
+        if (!Platform.isFxApplicationThread()) {
+            Platform.runLater(this::refreshKanbansFromModel);
+            return;
+        }
+
+        // 1. Nettoyage des zones
         if (createdKanbansContainer != null) createdKanbansContainer.getChildren().clear();
         if (participateKanbansContainer != null) participateKanbansContainer.getChildren().clear();
         if (availableKanbansContainer != null) availableKanbansContainer.getChildren().clear();
 
         if (core == null) return;
 
-        // 2. Récupération des données depuis le Core
-        List<LightKanban> kanbans = core.getAvailableLightKanbans();
-        LightUser currentUser = core.getMe(); // Assurez-vous que core.getMe() est accessible
+        // 2. Récupérer la liste globale (broadcastée par le serveur)
+        List<LightKanban> allKanbans = core.getAvailableLightKanbans();
+        if (allKanbans == null || allKanbans.isEmpty()) return;
 
-        if (kanbans == null || kanbans.isEmpty()) {
-            LOGGER.info("Aucun kanban à afficher.");
-            return;
+        // 3. Récupérer les IDs des Kanbans que j'ai créés (depuis le modèle local User)
+        Set<UUID> myCreatedIds = new HashSet<>();
+        try {
+            // Accès au modèle lourd local
+            User me = core.getDataClientProvider().getMyModel().getLocalUser();
+            if (me != null && me.getMyKanban() != null) {
+                for (Kanban k : me.getMyKanban()) {
+                    myCreatedIds.add(k.getId());
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.warning("Impossible de récupérer la liste des kanbans de l'utilisateur : " + e.getMessage());
         }
 
-        LOGGER.info("Rafraîchissement de " + kanbans.size() + " kanbans.");
-
-        // 3. Création et tri des cartes
-        for (LightKanban k : kanbans) {
+        // 4. Tri et Affichage
+        for (LightKanban k : allKanbans) {
             VBox card = createKanbanCard(k);
-            // TODO: logique de créateur de kanban
 
-            // Pour l'instant, on ajoute tout dans "Available" pour s'assurer qu'ils s'affichent
-            if (availableKanbansContainer != null) {
+            if (myCreatedIds.contains(k.getId())) {
+                // C'est un Kanban que j'ai créé
+                createdKanbansContainer.getChildren().add(card);
+            } else {
+                // C'est un Kanban public ou partagé venant des autres
                 availableKanbansContainer.getChildren().add(card);
             }
         }
@@ -191,7 +170,6 @@ public class HomeViewController {
         card.setMinWidth(200);
         card.setMinHeight(120);
 
-        // Style CSS directement en Java pour l'exemple (bordures arrondies, ombre légère, fond blanc)
         card.setStyle(
                 "-fx-background-color: white;" +
                         "-fx-background-radius: 10;" +
@@ -201,20 +179,16 @@ public class HomeViewController {
         );
         card.setCursor(Cursor.HAND);
 
-        // Titre du Kanban
         Label titleLabel = new Label(kanban.getTitle());
         titleLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 14px; -fx-text-fill: #333;");
         titleLabel.setWrapText(true);
 
-        // ID ou Description courte (visuel)
         String shortId = kanban.getId().toString().substring(0, 8);
         Label idLabel = new Label("ID: " + shortId);
         idLabel.setStyle("-fx-font-size: 10px; -fx-text-fill: #888;");
 
-        // Ajout des éléments à la carte
         card.getChildren().addAll(titleLabel, idLabel);
 
-        // Gestion du clic
         card.setOnMouseClicked(event -> {
             LOGGER.info("Ouverture du Kanban : " + kanban.getTitle());
             if (core != null) {
@@ -222,7 +196,7 @@ public class HomeViewController {
             }
         });
 
-        // Effet de survol (optionnel)
+        // Effet visuel au survol
         card.setOnMouseEntered(e -> card.setStyle(card.getStyle() + "-fx-background-color: #f9f9f9;"));
         card.setOnMouseExited(e -> card.setStyle(card.getStyle().replace("-fx-background-color: #f9f9f9;", "-fx-background-color: white;")));
 
@@ -239,7 +213,7 @@ public class HomeViewController {
     private void switchScene(String fxmlPath, String title, Node triggerNode) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
         Parent root = loader.load();
-        // If opening the create-kanban view, open it as a dialog and pass MainCore to its controller
+
         if (fxmlPath.toLowerCase().contains("createkanban")) {
             Object controller = loader.getController();
             if (controller instanceof CreateKanbanController createKanbanController) {
@@ -251,13 +225,11 @@ public class HomeViewController {
             dialog.setTitle(title);
             dialog.setScene(new Scene(root, 900, 600));
             dialog.show();
-            LOGGER.info("Opened dialog: " + title);
             return;
         }
 
         Stage stage = (Stage) triggerNode.getScene().getWindow();
         stage.setTitle(title);
         stage.setScene(new Scene(root, 1280, 720));
-        LOGGER.info("Scene switched to: " + title);
     }
 }

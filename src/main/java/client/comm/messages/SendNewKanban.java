@@ -1,16 +1,15 @@
 package client.comm.messages;
 
 import java.util.Optional;
-
 import common.dataClasses.Kanban;
 import common.dataClasses.LightKanban;
-import server.ServerContext;
-import server.interfaces.CommCallsDataServer;
+// RETIRÉ : import server.ServerContext; (Cause du crash client)
+// RETIRÉ : import server.interfaces.CommCallsDataServer;
 
 public class SendNewKanban extends Message {
     private static final long serialVersionUID = 1L;
 
-    private final Kanban newKanban; // Le kanban complet créé par l'utilisateur
+    private final Kanban newKanban;
 
     public SendNewKanban(Kanban newKanban) {
         this.newKanban = newKanban;
@@ -18,27 +17,37 @@ public class SendNewKanban extends Message {
 
     @Override
     public Optional<Message> handle() {
-
         try {
-            // Accès direct au contexte serveur (méthode statique)
-            CommCallsDataServer dataServer = ServerContext.getData();
+            // On charge dynamiquement ServerContext car le Client ne connaît pas cette classe
+            Class<?> contextClass = Class.forName("server.ServerContext");
+            java.lang.reflect.Method getDataMethod = contextClass.getMethod("getData");
+            Object dataServerObj = getDataMethod.invoke(null);
 
-            if (dataServer != null) {
-                System.out.println("SERVEUR: Demande de création de Kanban reçue.");
+            if (dataServerObj != null) {
+                // On utilise l'interface via cast ou réflexion si le package server.interfaces est partagé
+                server.interfaces.CommCallsDataServer dataServer = (server.interfaces.CommCallsDataServer) dataServerObj;
 
+                System.out.println("SERVEUR: Réception nouveau Kanban : " + newKanban.getTitle());
                 LightKanban created = dataServer.saveKanban(newKanban);
 
                 if (created != null) {
-                    System.out.println("SERVEUR: Kanban créé (ID=" + created.getId() + ")");
+                    try {
+                        Class<?> commClass = Class.forName("server.comm.CommCoreServer");
+                        java.lang.reflect.Method triggerMethod = commClass.getMethod("triggerBroadcast");
+                        triggerMethod.invoke(null);
+                        System.out.println("SERVEUR: Broadcast déclenché après création.");
+                    } catch (Exception e) {
+                        System.err.println("SERVEUR: Impossible de déclencher le broadcast : " + e.getMessage());
+                    }
 
-                    // Message de retour vers le client
                     return Optional.of(new NotifyKanbanCreated(created));
                 }
             }
-
-        } catch (Throwable ignored) {
+        } catch (ClassNotFoundException e) {
+            // Normal : Le client n'a pas ServerContext, on ignore.
+        } catch (Throwable t) {
+            t.printStackTrace();
         }
-
         return Optional.empty();
     }
 }

@@ -24,6 +24,7 @@ public class CommCoreServer {
     private ServerSocket serverSocket;
     private boolean isRunning;
     private Thread serverThread;
+    private static CommCoreServer instance;
 
     // Liste thread-safe des clients connectés pour diffuser les mises à jour
     private final List<SrvMsgSender> connectedClients = new CopyOnWriteArrayList<>();
@@ -33,6 +34,14 @@ public class CommCoreServer {
 
     public CommCoreServer(int port) {
         this.port = port;
+        instance = this;
+    }
+
+    public static void triggerBroadcast() { // acces statique pour déclencher le broadcast
+        if (instance != null) {
+            System.out.println("SERVER: Broadcast manuel déclenché.");
+            instance.broadcastUsersAndKanbansUpdate();
+        }
     }
 
     /**
@@ -42,7 +51,7 @@ public class CommCoreServer {
         ServerContext.setDataInterface(dataInterface);
     }
 
-    /**
+    /*
      * Démarre le serveur dans un thread séparé.
      */
     public void start() throws IOException {

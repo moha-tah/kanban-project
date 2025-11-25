@@ -77,6 +77,7 @@ public class IhmMainCallsCommImp implements IhmMainCallsComm {
 
     @Override
     public void connectServer(LightUser user, List<LightKanban> kanbans) {
+        System.out.println("CLIENT: Envoi ConnectionRequest avec " + (kanbans != null ? kanbans.size() : 0) + " kanbans.");
 
         // 1. On encapsule les données dans le Message qu'on vient de créer
         ConnectionRequest msg = new ConnectionRequest(user, kanbans);

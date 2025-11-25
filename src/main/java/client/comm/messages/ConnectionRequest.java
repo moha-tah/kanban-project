@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import common.dataClasses.LightKanban;
 import common.dataClasses.LightUser;
-import server.ServerContext; // Assurez-vous d'avoir cet import
+// RETIRÉ : import server.ServerContext;
 
 public class ConnectionRequest extends Message {
     private static final long serialVersionUID = 1L;
@@ -17,17 +17,20 @@ public class ConnectionRequest extends Message {
         this.kanbans = kanbans;
     }
 
-    public LightUser getUser() {
-        return user;
-    }
+    public LightUser getUser() { return user; }
 
     @Override
     public Optional<Message> handle() {
         try {
-            // On stocke l'interface dans une variable pour alléger le code
-            var dataServer = ServerContext.getData();
+            // --- RÉFLEXION ---
+            Class<?> contextClass = Class.forName("server.ServerContext");
+            java.lang.reflect.Method getDataMethod = contextClass.getMethod("getData");
+            Object dataServerObj = getDataMethod.invoke(null);
 
-            if (dataServer != null) {
+            if (dataServerObj != null) {
+                server.interfaces.CommCallsDataServer dataServer = (server.interfaces.CommCallsDataServer) dataServerObj;
+
+                // Le serveur enregistre l'utilisateur ET ses kanbans en mémoire
                 dataServer.addNewUser(this.user, this.kanbans);
 
                 var users = dataServer.getUsersList();
@@ -35,11 +38,11 @@ public class ConnectionRequest extends Message {
 
                 return Optional.of(new UpdateUsersAndKanbansListResponse(users, allKanbans));
             }
+        } catch (ClassNotFoundException e) {
+            // Normal côté client
         } catch (Throwable t) {
-            java.util.logging.Logger.getLogger(ConnectionRequest.class.getName())
-                    .log(java.util.logging.Level.SEVERE, "Error handling connection request", t);
+            t.printStackTrace();
         }
-
         return Optional.empty();
     }
 }
