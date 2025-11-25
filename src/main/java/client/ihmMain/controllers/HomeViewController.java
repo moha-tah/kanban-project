@@ -7,8 +7,12 @@ import java.util.logging.Level;
 
 import client.MainApp;
 import client.ihmMain.MainCore;
+import common.dataClasses.LightKanban;
+import common.dataClasses.LightUser;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
+import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -19,6 +23,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import java.util.List;
 
 public class HomeViewController {
 
@@ -149,18 +154,79 @@ public class HomeViewController {
     // ==================== KANBANS ====================
 
     public void refreshKanbansFromModel() {
-        if (createdKanbansContainer != null) {
-            createdKanbansContainer.getChildren().clear();
-        }
-        if (participateKanbansContainer != null) {
-            participateKanbansContainer.getChildren().clear();
-        }
-        if (availableKanbansContainer != null) {
-            availableKanbansContainer.getChildren().clear();
+        // 1. Nettoyage des conteneurs
+        if (createdKanbansContainer != null) createdKanbansContainer.getChildren().clear();
+        if (participateKanbansContainer != null) participateKanbansContainer.getChildren().clear();
+        if (availableKanbansContainer != null) availableKanbansContainer.getChildren().clear();
+
+        if (core == null) return;
+
+        // 2. Récupération des données depuis le Core
+        List<LightKanban> kanbans = core.getAvailableLightKanbans();
+        LightUser currentUser = core.getMe(); // Assurez-vous que core.getMe() est accessible
+
+        if (kanbans == null || kanbans.isEmpty()) {
+            LOGGER.info("Aucun kanban à afficher.");
+            return;
         }
 
-        LOGGER.info("Kanban containers cleared (no dummy Kanbans).");
-        // TODO : parcourir core.getKanbansSnapshot() et peupler les conteneurs.
+        LOGGER.info("Rafraîchissement de " + kanbans.size() + " kanbans.");
+
+        // 3. Création et tri des cartes
+        for (LightKanban k : kanbans) {
+            VBox card = createKanbanCard(k);
+            // TODO: logique de créateur de kanban
+
+            // Pour l'instant, on ajoute tout dans "Available" pour s'assurer qu'ils s'affichent
+            if (availableKanbansContainer != null) {
+                availableKanbansContainer.getChildren().add(card);
+            }
+        }
+    }
+
+    private VBox createKanbanCard(LightKanban kanban) {
+        VBox card = new VBox(5);
+        card.setPadding(new Insets(15));
+        card.setPrefSize(200, 120);
+        card.setMinWidth(200);
+        card.setMinHeight(120);
+
+        // Style CSS directement en Java pour l'exemple (bordures arrondies, ombre légère, fond blanc)
+        card.setStyle(
+                "-fx-background-color: white;" +
+                        "-fx-background-radius: 10;" +
+                        "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);" +
+                        "-fx-border-color: #eee;" +
+                        "-fx-border-radius: 10;"
+        );
+        card.setCursor(Cursor.HAND);
+
+        // Titre du Kanban
+        Label titleLabel = new Label(kanban.getTitle());
+        titleLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 14px; -fx-text-fill: #333;");
+        titleLabel.setWrapText(true);
+
+        // ID ou Description courte (visuel)
+        String shortId = kanban.getId().toString().substring(0, 8);
+        Label idLabel = new Label("ID: " + shortId);
+        idLabel.setStyle("-fx-font-size: 10px; -fx-text-fill: #888;");
+
+        // Ajout des éléments à la carte
+        card.getChildren().addAll(titleLabel, idLabel);
+
+        // Gestion du clic
+        card.setOnMouseClicked(event -> {
+            LOGGER.info("Ouverture du Kanban : " + kanban.getTitle());
+            if (core != null) {
+                core.viewKanban(kanban.getId());
+            }
+        });
+
+        // Effet de survol (optionnel)
+        card.setOnMouseEntered(e -> card.setStyle(card.getStyle() + "-fx-background-color: #f9f9f9;"));
+        card.setOnMouseExited(e -> card.setStyle(card.getStyle().replace("-fx-background-color: #f9f9f9;", "-fx-background-color: white;")));
+
+        return card;
     }
 
     // ==================== NAVIGATION ====================
