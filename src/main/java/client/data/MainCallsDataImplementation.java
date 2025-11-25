@@ -160,6 +160,16 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
         if (user instanceof SecureUser secureUser) {
             json.append(",\"passwordHash\":\"").append(escapeJson(secureUser.getPassword())).append("\"");
         }
+        json.append(",\"kanbanIds\":[");
+        if (user.getMyKanban() != null && !user.getMyKanban().isEmpty()) {
+            for (int i = 0; i < user.getMyKanban().size(); i++) {
+                json.append("\"").append(user.getMyKanban().get(i).getId().toString()).append("\"");
+                if (i < user.getMyKanban().size() - 1) {
+                    json.append(",");
+                }
+            }
+        }
+        json.append("]");
 
         json.append("}");
         return json.toString();

@@ -1,8 +1,11 @@
 package client.comm.messages;
 
 import java.util.Optional;
+
 import common.dataClasses.Kanban;
 import common.dataClasses.LightKanban;
+import server.ServerContext;
+import server.interfaces.CommCallsDataServer;
 
 public class SendNewKanban extends Message {
     private static final long serialVersionUID = 1L;
@@ -15,27 +18,27 @@ public class SendNewKanban extends Message {
 
     @Override
     public Optional<Message> handle() {
+
         try {
-            // Accès au contexte serveur
-            var dataServer = this.getServerContext().getData();
-            
+            // Accès direct au contexte serveur (méthode statique)
+            CommCallsDataServer dataServer = ServerContext.getData();
+
             if (dataServer != null) {
                 System.out.println("SERVEUR: Demande de création de Kanban reçue.");
 
-                // Appel de saveKanban(Kanban) -> retourne LightKanban (avec l'UUID généré)
-                // Correspond à la flèche : CommServer -> DataServer : saveKanban
-                LightKanban createdLightKanban = dataServer.saveKanban(this.newKanban);
+                LightKanban created = dataServer.saveKanban(newKanban);
 
-                if (createdLightKanban != null) {
-                    System.out.println("SERVEUR: Kanban créé avec succès (ID: " + createdLightKanban.getId() + ")");
-                    
-                    // Correspond à la flèche retour : notifyKanbanCreated
-                    return Optional.of(new NotifyKanbanCreated(createdLightKanban));
+                if (created != null) {
+                    System.out.println("SERVEUR: Kanban créé (ID=" + created.getId() + ")");
+
+                    // Message de retour vers le client
+                    return Optional.of(new NotifyKanbanCreated(created));
                 }
             }
-        } catch (Throwable t) {
-            // Ignoré sur le client
+
+        } catch (Throwable ignored) {
         }
+
         return Optional.empty();
     }
 }
