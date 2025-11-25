@@ -23,4 +23,5 @@ public interface CommCallsDataServer {
     List<LightUser> saveModifiedKanban(LightKanban kanban, Modification modif);
     Kanban getKanban(LightKanban kanban, LightUser user);
     void closeKanban(LightKanban kaban, LightUser user);
+    List<LightKanban> getVisibleKanbansForUser(LightUser user);
 }

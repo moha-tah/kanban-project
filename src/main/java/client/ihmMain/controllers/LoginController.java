@@ -14,6 +14,8 @@ import javafx.scene.control.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static client.ihmMain.utils.UiFormUtils.safe;
 import static client.ihmMain.utils.UiFormUtils.showError;
@@ -27,6 +29,7 @@ public class LoginController {
     @FXML private Label errorLabel;
 
     private MainCore core;
+    private static final Logger LOGGER = Logger.getLogger(LoginController.class.getName());
 
     @FXML
     public void initialize() {
@@ -129,14 +132,13 @@ public class LoginController {
             List<LightKanban> list = new ArrayList<>();
             if (localUser != null && localUser.getMyKanban() != null) {
                 for (Kanban k : localUser.getMyKanban()) {
-                    list.add(k.getLightKanban());
+                    list.add(k);
                 }
             }
-            System.out.println("LOGIN: " + list.size() + " kanbans chargés localement.");
+            System.out.println("LOGIN: " + list.size() + " kanbans (complets) chargés pour envoi.");
             return list;
         } catch (Exception e) {
-            java.util.logging.Logger.getLogger(LoginController.class.getName())
-                    .log(java.util.logging.Level.SEVERE, "Erreur traitement login", e);
+            LOGGER.log(Level.SEVERE, "Erreur lors de l'extraction des kanbans locaux", e);
             return Collections.emptyList();
         }
     }

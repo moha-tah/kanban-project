@@ -7,20 +7,18 @@ import java.util.logging.Level;
 
 import client.MainApp;
 import client.ihmMain.MainCore;
+import client.data.KanbanCallsDataImplementation; // Import nécessaire pour lire le JSON
 import common.dataClasses.Kanban;
 import common.dataClasses.LightKanban;
 import common.dataClasses.User;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Insets;
-import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
-import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -84,8 +82,6 @@ public class HomeViewController {
         }
     }
 
-    // ==================== NOTIFICATIONS ====================
-
     public static void handleNotif() {
         if (instance != null) instance.toggleNotif();
     }
@@ -96,121 +92,132 @@ public class HomeViewController {
         notifPanel.setMouseTransparent(!notifVisible);
         if (notifVisible) {
             notifPanel.toFront();
-            loadNotifications();
+            // loadNotifications(); // À implémenter si besoin
         }
     }
 
-    private void loadNotifications() {
-        notifContainer.getChildren().clear();
-        addNotification("Nouvelle notification (placeholder)");
-    }
-
-    private void addNotification(String message) {
-        HBox box = new HBox();
-        box.setSpacing(10);
-        box.setStyle("-fx-background-color: #f2f2f2; -fx-padding: 10; -fx-background-radius: 8;");
-        Label msg = new Label(message);
-        msg.setStyle("-fx-font-size: 14;");
-        box.getChildren().add(msg);
-        notifContainer.getChildren().add(box);
-    }
-
-    // ==================== KANBANS (LOGIQUE CORRIGÉE) ====================
+    // ==================== KANBANS AVEC DESIGN FXML ====================
 
     public void refreshKanbansFromModel() {
-        // On s'assure d'être sur le thread JavaFX pour modifier l'UI
         if (!Platform.isFxApplicationThread()) {
             Platform.runLater(this::refreshKanbansFromModel);
             return;
         }
 
-        // 1. Nettoyage des zones
+        // 1. Nettoyage
         if (createdKanbansContainer != null) createdKanbansContainer.getChildren().clear();
         if (participateKanbansContainer != null) participateKanbansContainer.getChildren().clear();
         if (availableKanbansContainer != null) availableKanbansContainer.getChildren().clear();
 
         if (core == null) return;
 
-        // 2. Récupérer la liste globale (broadcastée par le serveur)
         List<LightKanban> allKanbans = core.getAvailableLightKanbans();
         if (allKanbans == null || allKanbans.isEmpty()) return;
 
-        // 3. Récupérer les IDs des Kanbans que j'ai créés (depuis le modèle local User)
-        Set<UUID> myCreatedIds = new HashSet<>();
+        // 2. Récupération de "Moi"
+        User me = null;
         try {
-            // Accès au modèle lourd local
-            User me = core.getDataClientProvider().getMyModel().getLocalUser();
-            LOGGER.info("DEBUG: User object: " + (me != null ? me.getUsername() : "NULL"));
-            if (me != null && me.getMyKanban() != null) {
-                LOGGER.info("DEBUG: User has " + me.getMyKanban().size() + " kanbans in myKanban list");
-                for (Kanban k : me.getMyKanban()) {
-                    myCreatedIds.add(k.getId());
-                    LOGGER.info("DEBUG: My created kanban ID: " + k.getId());
-                }
-            } else {
-                LOGGER.warning("DEBUG: User or User.myKanban is null!");
+            me = core.getDataClientProvider().getMyModel().getLocalUser();
+        } catch (Exception e) { /* ignore */ }
+
+        // 3. Création des cartes
+        for (LightKanban lk : allKanbans) {
+
+            // A. Chargement du JSON local (qui contient creatorId, visibility, columns...)
+            // Astuce: Si vous testez sur le même PC, le fichier existe pour les 2 clients !
+            Kanban details = KanbanCallsDataImplementation.loadKanbanFromJson(lk.getId());
+
+            // B. Fallback si pas de JSON (cas sur des PC différents sans partage de fichier)
+            if (details == null) {
+                details = new Kanban(lk.getId(), lk.getTitle(), "Public", null);
             }
-            LOGGER.info("DEBUG: Total my created kanbans: " + myCreatedIds.size());
-        } catch (Exception e) {
-            LOGGER.warning("Impossible de récupérer la liste des kanbans de l'utilisateur : " + e.getMessage());
-        }
 
-        // 4. Tri et Affichage
-        LOGGER.info("DEBUG: Processing " + allKanbans.size() + " kanbans");
-        for (LightKanban k : allKanbans) {
-            LOGGER.info("DEBUG: Checking kanban " + k.getId() + " - isMyCreated: " + myCreatedIds.contains(k.getId()));
-            VBox card = createKanbanCard(k);
+            // C. RÉPARATION DU CRÉATEUR (C'est ici que ça se joue)
+            // Le JSON a chargé creatorId mais creator est null (car transient)
+            if (details.getCreator() == null) {
+                if (isMyKanban(lk.getId(), me)) {
+                    // C'est moi
+                    details.setCreator(me);
+                } else {
+                    // C'est un autre : on essaie de trouver son nom via son ID
+                    UUID cId = details.getCreatorId();
+                    User foundCreator = findUserById(cId);
 
-            if (myCreatedIds.contains(k.getId())) {
-                // C'est un Kanban que j'ai créé
-                createdKanbansContainer.getChildren().add(card);
-                LOGGER.info("DEBUG: Added to CREATED");
-            } else {
-                // C'est un Kanban public ou partagé venant des autres
-                availableKanbansContainer.getChildren().add(card);
-                LOGGER.info("DEBUG: Added to AVAILABLE");
+                    if (foundCreator != null) {
+                        // On a trouvé l'utilisateur dans la liste des connectés !
+                        details.setCreator(foundCreator);
+                    } else {
+                        // On ne le connaît pas, on crée un User temporaire avec l'ID comme nom
+                        // pour éviter "Unknown" si possible, ou au moins afficher l'ID
+                        String name = (cId != null) ? "User " + cId.toString().substring(0, 5) : "Unknown";
+                        details.setCreator(new User(name, name, "", null));
+                    }
+                }
+            }
+
+            // D. Création visuelle
+            Node cardNode = createKanbanCardFromFXML(details);
+
+            if (cardNode != null) {
+                if (isMyKanban(lk.getId(), me)) {
+                    createdKanbansContainer.getChildren().add(cardNode);
+                } else {
+                    availableKanbansContainer.getChildren().add(cardNode);
+                }
             }
         }
     }
 
-    private VBox createKanbanCard(LightKanban kanban) {
-        VBox card = new VBox(5);
-        card.setPadding(new Insets(15));
-        card.setPrefSize(200, 120);
-        card.setMinWidth(200);
-        card.setMinHeight(120);
-
-        card.setStyle(
-                "-fx-background-color: white;" +
-                        "-fx-background-radius: 10;" +
-                        "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);" +
-                        "-fx-border-color: #eee;" +
-                        "-fx-border-radius: 10;"
-        );
-        card.setCursor(Cursor.HAND);
-
-        Label titleLabel = new Label(kanban.getTitle());
-        titleLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 14px; -fx-text-fill: #333;");
-        titleLabel.setWrapText(true);
-
-        String shortId = kanban.getId().toString().substring(0, 8);
-        Label idLabel = new Label("ID: " + shortId);
-        idLabel.setStyle("-fx-font-size: 10px; -fx-text-fill: #888;");
-
-        card.getChildren().addAll(titleLabel, idLabel);
-
-        card.setOnMouseClicked(event -> {
-            LOGGER.info("Ouverture du Kanban : " + kanban.getTitle());
-            if (core != null) {
-                core.viewKanban(kanban.getId());
+    private User findUserById(UUID id) {
+        if (id == null) return null;
+        // On regarde dans la liste des users connectés reçue du serveur
+        List<common.dataClasses.LightUser> users = core.getUsersSnapshot();
+        if (users != null) {
+            for (common.dataClasses.LightUser u : users) {
+                if (u.getId().equals(id)) {
+                    // On recrée un objet User compatible avec Kanban.setCreator
+                    // LightUser a username, on l'utilise pour firstName/lastName pour l'affichage
+                    return new User(u.getUsername(), u.getUsername(), "", null);
+                }
             }
-        });
+        }
+        return null;
+    }
 
-        // Effet visuel au survol
-        card.setOnMouseEntered(e -> card.setStyle(card.getStyle() + "-fx-background-color: #f9f9f9;"));
-        card.setOnMouseExited(e -> card.setStyle(card.getStyle().replace("-fx-background-color: #f9f9f9;", "-fx-background-color: white;")));
+    /**
+     * Charge le fichier kanban_card.fxml et initialise son contrôleur.
+     */
+    private Node createKanbanCardFromFXML(Kanban kanban) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/kanban_card.fxml"));
+            // Node est souvent un AnchorPane selon ton FXML
+            Node cardNode = loader.load();
 
-        return card;
+            KanbanCardController controller = loader.getController();
+            controller.setMainCore(core);
+
+            // Logique de couleur simple pour différencier visuellement
+            String color = "#FFFFFF"; // Blanc défaut
+            if (kanban.getVisibility() != null && kanban.getVisibility().equalsIgnoreCase("Private")) {
+                color = "#FFE5E5"; // Rouge très pâle pour Privé
+            } else {
+                color = "#E5FFE5"; // Vert très pâle pour Public
+            }
+
+            // Injection des données dans le contrôleur de la carte
+            controller.setKanbanData(kanban, color);
+
+            return cardNode;
+
+        } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, "Impossible de charger kanban_card.fxml pour " + kanban.getTitle(), e);
+            return null;
+        }
+    }
+
+    private boolean isMyKanban(UUID kanbanId, User me) {
+        if (me == null || me.getMyKanban() == null) return false;
+        return me.getMyKanban().stream().anyMatch(k -> k.getId().equals(kanbanId));
     }
 
     // ==================== NAVIGATION ====================
