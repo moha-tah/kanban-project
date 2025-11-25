@@ -121,31 +121,15 @@ public class ComCallsDataServImplementation implements CommCallsDataServer {
     }
 
     @Override
-    public List<LightKanban> getVisibleKanbansForUser(LightUser userId) {
+    public List<LightKanban> getVisibleKanbansForUser(LightUser user) {
+
         List<LightKanban> result = new ArrayList<>();
         server.data.ServerModel model = myProvider.getModel();
         List<Kanban> allKanbans = model.getInUseKanbans();
 
         if (allKanbans != null) {
-            for (Kanban k : allKanbans) {
-                boolean isCreator = false;
-
-                // Vérification Créateur (par ID)
-                if (userId != null && k.getCreatorId() != null) {
-                    isCreator = k.getCreatorId().equals(userId.getId());
-                } else if (userId != null && k.getCreator() != null) {
-                    isCreator = k.getCreator().getId().equals(userId.getId());
-                }
-
-                // Vérification Public
-                boolean isPublic = "Public".equalsIgnoreCase(k.getVisibility());
-
-                // LOGIQUE DE FILTRAGE :
-                // Je l'ajoute si je suis le créateur OU si c'est public
-                if (isCreator || isPublic) {
-                    result.add(k.getLightKanban());
-                }
-            }
+            // On ajoute tout simplement tous les kanbans connus du serveur
+            result.addAll(allKanbans);
         }
         return result;
     }

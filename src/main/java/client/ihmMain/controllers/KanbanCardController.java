@@ -38,26 +38,49 @@ public class KanbanCardController {
 }
 
 
-    public void setKanbanData(Kanban kanban, String color) {
-    this.kanban = kanban;
-    this.color = color;
+    // Ajoutez le paramètre boolean isMyKanban
+    public void setKanbanData(Kanban kanban, String color, boolean isMyKanban) {
+        this.kanban = kanban;
+        this.color = color;
 
-    this.title = kanban.getTitle();
-    this.columns = kanban.getTaskColumn().size();
-    this.visibility = kanban.getVisibility();
-    this.creator = kanban.getCreator();
+        this.title = kanban.getTitle();
+        // Gestion safe si columns ou creator sont null
+        this.columns = (kanban.getTaskColumn() != null) ? kanban.getTaskColumn().size() : 0;
+        this.visibility = (kanban.getVisibility() != null) ? kanban.getVisibility() : "Private";
 
-    titleLabel.setText(title);
-    creatorLabel.setText("Creator: " + creator.getFirstName() + " " + creator.getLastName());
-    columnsLabel.setText("Columns: " + columns);
-    visibilityLabel.setText("Visibility: " + visibility);
+        User c = kanban.getCreator();
+        String cName = (c != null) ? c.getFirstName() + " " + c.getLastName() : "Unknown";
 
-    cardRoot.setStyle("-fx-background-color: " + color + "; -fx-background-radius: 10;");
+        titleLabel.setText(title);
+        creatorLabel.setText("Creator: " + cName);
+        columnsLabel.setText("Columns: " + columns);
+        visibilityLabel.setText("Visibility: " + visibility);
 
-    boolean isPrivate = visibility.equalsIgnoreCase("private");
-    requestButton.setVisible(isPrivate);
-    viewButton.setVisible(!isPrivate);
-}
+        cardRoot.setStyle("-fx-background-color: " + color + "; -fx-background-radius: 10;");
+
+        // LOGIQUE DES BOUTONS
+        boolean isPrivate = visibility.equalsIgnoreCase("private");
+
+        if (isMyKanban) {
+            // CAS 1 : C'est à moi -> J'ai toujours accès, même si c'est privé
+            requestButton.setVisible(false);
+            viewButton.setVisible(true);
+            deleteButton.setVisible(true);
+        } else {
+            // CAS 2 : C'est pas à moi
+            deleteButton.setVisible(false); // Je ne peux pas supprimer celui des autres
+
+            if (isPrivate) {
+                // Privé -> Demander accès
+                requestButton.setVisible(true);
+                viewButton.setVisible(false);
+            } else {
+                // Public -> Voir
+                requestButton.setVisible(false);
+                viewButton.setVisible(true);
+            }
+        }
+    }
 
 
 

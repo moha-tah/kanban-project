@@ -7,7 +7,7 @@ import java.util.logging.Level;
 
 import client.MainApp;
 import client.ihmMain.MainCore;
-import client.data.KanbanCallsDataImplementation; // Import nécessaire pour lire le JSON
+import client.data.KanbanCallsDataImplementation;
 import common.dataClasses.Kanban;
 import common.dataClasses.LightKanban;
 import common.dataClasses.User;
@@ -82,6 +82,8 @@ public class HomeViewController {
         }
     }
 
+    // ==================== NOTIFICATIONS ====================
+
     public static void handleNotif() {
         if (instance != null) instance.toggleNotif();
     }
@@ -114,52 +116,65 @@ public class HomeViewController {
         List<LightKanban> allKanbans = core.getAvailableLightKanbans();
         if (allKanbans == null || allKanbans.isEmpty()) return;
 
-        // 2. Récupération de "Moi"
+        // 2. Récupération de l'utilisateur courant pour savoir "c'est à moi ?"
         User me = null;
         try {
             me = core.getDataClientProvider().getMyModel().getLocalUser();
-        } catch (Exception e) { /* ignore */ }
+        } catch (Exception e) {
+            LOGGER.warning("Impossible de récupérer l'utilisateur local.");
+        }
 
         // 3. Création des cartes
         for (LightKanban lk : allKanbans) {
 
-            // A. Chargement du JSON local (qui contient creatorId, visibility, columns...)
-            // Astuce: Si vous testez sur le même PC, le fichier existe pour les 2 clients !
-            Kanban details = KanbanCallsDataImplementation.loadKanbanFromJson(lk.getId());
+            // A. On essaie de charger les DETAILS depuis le JSON local ou depuis l'objet reçu si c'est un Kanban complet
+            Kanban details = null;
 
-            // B. Fallback si pas de JSON (cas sur des PC différents sans partage de fichier)
-            if (details == null) {
-                details = new Kanban(lk.getId(), lk.getTitle(), "Public", null);
+            // Essai chargement local
+            try {
+                details = KanbanCallsDataImplementation.loadKanbanFromJson(lk.getId());
+            } catch (Exception e) { /* ignore */ }
+
+            // Fallback : Si pas de JSON, on regarde si le serveur a envoyé un objet complet
+            if (details == null && lk instanceof Kanban) {
+                details = (Kanban) lk;
             }
 
-            // C. RÉPARATION DU CRÉATEUR (C'est ici que ça se joue)
-            // Le JSON a chargé creatorId mais creator est null (car transient)
+            // B. Si on n'a toujours rien (LightKanban simple d'un autre user)
+            if (details == null) {
+                // On crée une version minimale par défaut
+                // On suppose "Private" par sécurité si on ne sait pas
+                details = new Kanban(lk.getId(), lk.getTitle(), "Private", null);
+            }
+
+            // C. GESTION DU CRÉATEUR (Car le champ transient peut être null)
             if (details.getCreator() == null) {
                 if (isMyKanban(lk.getId(), me)) {
                     // C'est moi
                     details.setCreator(me);
                 } else {
-                    // C'est un autre : on essaie de trouver son nom via son ID
+                    // C'est un autre : on cherche son nom via son ID dans la liste des connectés
                     UUID cId = details.getCreatorId();
                     User foundCreator = findUserById(cId);
 
                     if (foundCreator != null) {
-                        // On a trouvé l'utilisateur dans la liste des connectés !
                         details.setCreator(foundCreator);
                     } else {
-                        // On ne le connaît pas, on crée un User temporaire avec l'ID comme nom
-                        // pour éviter "Unknown" si possible, ou au moins afficher l'ID
                         String name = (cId != null) ? "User " + cId.toString().substring(0, 5) : "Unknown";
                         details.setCreator(new User(name, name, "", null));
                     }
                 }
             }
 
-            // D. Création visuelle
-            Node cardNode = createKanbanCardFromFXML(details);
+            // D. Est-ce le mien ? (Important pour l'affichage des boutons)
+            boolean isMine = isMyKanban(lk.getId(), me);
+
+            // E. Chargement de la Carte FXML
+            Node cardNode = createKanbanCardFromFXML(details, isMine);
 
             if (cardNode != null) {
-                if (isMyKanban(lk.getId(), me)) {
+                // F. Logique de tri dans les colonnes
+                if (isMine) {
                     createdKanbansContainer.getChildren().add(cardNode);
                 } else {
                     availableKanbansContainer.getChildren().add(cardNode);
@@ -168,15 +183,15 @@ public class HomeViewController {
         }
     }
 
+    /**
+     * Cherche un utilisateur par son ID dans la liste des utilisateurs connus (connectés).
+     */
     private User findUserById(UUID id) {
         if (id == null) return null;
-        // On regarde dans la liste des users connectés reçue du serveur
         List<common.dataClasses.LightUser> users = core.getUsersSnapshot();
         if (users != null) {
             for (common.dataClasses.LightUser u : users) {
                 if (u.getId().equals(id)) {
-                    // On recrée un objet User compatible avec Kanban.setCreator
-                    // LightUser a username, on l'utilise pour firstName/lastName pour l'affichage
                     return new User(u.getUsername(), u.getUsername(), "", null);
                 }
             }
@@ -187,10 +202,9 @@ public class HomeViewController {
     /**
      * Charge le fichier kanban_card.fxml et initialise son contrôleur.
      */
-    private Node createKanbanCardFromFXML(Kanban kanban) {
+    private Node createKanbanCardFromFXML(Kanban kanban, boolean isMine) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/kanban_card.fxml"));
-            // Node est souvent un AnchorPane selon ton FXML
             Node cardNode = loader.load();
 
             KanbanCardController controller = loader.getController();
@@ -205,7 +219,7 @@ public class HomeViewController {
             }
 
             // Injection des données dans le contrôleur de la carte
-            controller.setKanbanData(kanban, color);
+            controller.setKanbanData(kanban, color, isMine);
 
             return cardNode;
 
