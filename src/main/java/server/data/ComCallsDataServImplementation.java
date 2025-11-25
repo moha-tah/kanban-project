@@ -82,7 +82,31 @@ public class ComCallsDataServImplementation implements CommCallsDataServer {
     }
 
     // --- Autres méthodes (Stubs) ---
-    @Override public Kanban requestKanban(LightUser user, UUID kanbanID) { return null; }
+    @Override 
+    public Kanban requestKanban(LightUser user, UUID kanbanID) { 
+        if (myProvider == null || myProvider.getModel() == null) {
+            System.err.println("SERVEUR: requestKanban - myProvider or model is null");
+            return null;
+        }
+        
+        ServerModel model = myProvider.getModel();
+        List<Kanban> kanbans = model.getInUseKanbans();
+        
+        System.out.println("SERVEUR: Searching for Kanban ID " + kanbanID + " in " + kanbans.size() + " kanbans");
+        
+        // Search for the Kanban with the matching ID
+        for (Kanban k : kanbans) {
+            System.out.println("  - Checking Kanban: " + k.getTitle() + " (ID: " + k.getId() + ")");
+            if (k.getId().equals(kanbanID)) {
+                System.out.println("SERVEUR: Sending full Kanban to user " + user.getId() + ": " + k.getTitle());
+                return k;
+            }
+        }
+        
+        System.err.println("SERVEUR: Kanban not found with ID: " + kanbanID);
+        return null;
+    }
+    
     @Override public List<Kanban> notifyLogout(UUID userId) { return null; }
     @Override public void askDeleteKanban(LightUser user, LightKanban kanban) {}
     @Override public void addListModifiers(LightUser user, LightKanban kanban) {}
