@@ -153,7 +153,6 @@ public class HomeViewController {
             LOGGER.info("DEBUG: Total my created kanbans: " + myCreatedIds.size());
         } catch (Exception e) {
             LOGGER.warning("Impossible de récupérer la liste des kanbans de l'utilisateur : " + e.getMessage());
-            e.printStackTrace();
         }
 
         // 4. Tri et Affichage
