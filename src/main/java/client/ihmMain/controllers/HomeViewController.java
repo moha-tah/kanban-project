@@ -140,25 +140,36 @@ public class HomeViewController {
         try {
             // Accès au modèle lourd local
             User me = core.getDataClientProvider().getMyModel().getLocalUser();
+            LOGGER.info("DEBUG: User object: " + (me != null ? me.getUsername() : "NULL"));
             if (me != null && me.getMyKanban() != null) {
+                LOGGER.info("DEBUG: User has " + me.getMyKanban().size() + " kanbans in myKanban list");
                 for (Kanban k : me.getMyKanban()) {
                     myCreatedIds.add(k.getId());
+                    LOGGER.info("DEBUG: My created kanban ID: " + k.getId());
                 }
+            } else {
+                LOGGER.warning("DEBUG: User or User.myKanban is null!");
             }
+            LOGGER.info("DEBUG: Total my created kanbans: " + myCreatedIds.size());
         } catch (Exception e) {
             LOGGER.warning("Impossible de récupérer la liste des kanbans de l'utilisateur : " + e.getMessage());
+            e.printStackTrace();
         }
 
         // 4. Tri et Affichage
+        LOGGER.info("DEBUG: Processing " + allKanbans.size() + " kanbans");
         for (LightKanban k : allKanbans) {
+            LOGGER.info("DEBUG: Checking kanban " + k.getId() + " - isMyCreated: " + myCreatedIds.contains(k.getId()));
             VBox card = createKanbanCard(k);
 
             if (myCreatedIds.contains(k.getId())) {
                 // C'est un Kanban que j'ai créé
                 createdKanbansContainer.getChildren().add(card);
+                LOGGER.info("DEBUG: Added to CREATED");
             } else {
                 // C'est un Kanban public ou partagé venant des autres
                 availableKanbansContainer.getChildren().add(card);
+                LOGGER.info("DEBUG: Added to AVAILABLE");
             }
         }
     }

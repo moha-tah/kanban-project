@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -14,9 +15,7 @@ import java.util.UUID;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
-import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
 import client.interfaces.DataCallsComm;
@@ -26,12 +25,9 @@ import common.dataClasses.Snapshot;
 import common.dataClasses.LightKanban;
 import common.dataClasses.User;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Instant;
-
-import java.lang.reflect.Type;
 
 public class KanbanCallsDataImplementation implements KanbanCallsDataClient {
 
@@ -70,7 +66,10 @@ public class KanbanCallsDataImplementation implements KanbanCallsDataClient {
             .registerTypeAdapter(Instant.class,
                     (JsonDeserializer<Instant>) (json, typeOfT, context) ->
                             Instant.parse(json.getAsString()))
-
+            
+            .enableComplexMapKeySerialization()  // Enable proper serialization of complex map keys like Column
+            .setPrettyPrinting()  // Format JSON for better readability
+            .serializeNulls()     // Include null fields in JSON
             .create();
 
     // Constructeur
@@ -114,16 +113,16 @@ public class KanbanCallsDataImplementation implements KanbanCallsDataClient {
         }
     }
 
-    // Sauvegarde locale JSON d’un Kanban complet
+    // Sauvegarde locale JSON d'un Kanban complet dans data/kanbans
     public static void saveKanbanAsJson(Kanban kanban) {
         try {
-            Path KANBAN_DIR = Paths.get(System.getProperty("user.home"), ".kanban", "kanbans");
-            Files.createDirectories(KANBAN_DIR);
-            Path file = KANBAN_DIR.resolve(kanban.getId().toString() + ".json");
+            Path kanbanDir = Paths.get("data", "kanbans");
+            Files.createDirectories(kanbanDir);
+            Path file = kanbanDir.resolve(kanban.getId().toString() + ".json");
 
             String kanbanJson = GSON.toJson(kanban);
 
-            Path tmp = KANBAN_DIR.resolve(kanban.getId().toString() + ".json.tmp");
+            Path tmp = kanbanDir.resolve(kanban.getId().toString() + ".json.tmp");
             Files.writeString(tmp, kanbanJson, StandardCharsets.UTF_8);
             Files.move(tmp, file,
                     java.nio.file.StandardCopyOption.REPLACE_EXISTING,
@@ -133,19 +132,50 @@ public class KanbanCallsDataImplementation implements KanbanCallsDataClient {
         }
     }
 
+    // Charge un Kanban depuis data/kanbans/{kanbanId}.json
     public static Kanban loadKanbanFromJson(UUID kanbanId) {
         try {
-            Path KANBAN_DIR = Paths.get(System.getProperty("user.home"), ".kanban", "kanbans");
-            Path file = KANBAN_DIR.resolve(kanbanId.toString() + ".json");
+            Path kanbanDir = Paths.get("data", "kanbans");
+            Path file = kanbanDir.resolve(kanbanId.toString() + ".json");
             if (Files.exists(file)) {
                 String kanbanJson = Files.readString(file, StandardCharsets.UTF_8);
-                return GSON.fromJson(kanbanJson, Kanban.class);
+                Kanban kanban = GSON.fromJson(kanbanJson, Kanban.class);
+                
+                // Note: creator field is transient, so it won't be loaded from JSON
+                // If needed, it should be reconstructed from creatorId by the caller
+                
+                return kanban;
             } else {
                 return null;
             }
         } catch (java.io.IOException e) {
             throw new RuntimeException("Failed to load kanban from JSON", e);
         }
+    }
+
+    /**
+     * Charge tous les kanbans d'un utilisateur basé sur la liste d'IDs
+     * Utilisé au démarrage de l'application pour charger les kanbans de l'utilisateur connecté
+     */
+    public static List<Kanban> loadUserKanbans(List<UUID> kanbanIds) {
+        List<Kanban> kanbans = new ArrayList<>();
+        if (kanbanIds == null || kanbanIds.isEmpty()) {
+            return kanbans;
+        }
+        
+        for (UUID kanbanId : kanbanIds) {
+            try {
+                Kanban kanban = loadKanbanFromJson(kanbanId);
+                if (kanban != null) {
+                    kanbans.add(kanban);
+                } else {
+                    System.err.println("Kanban not found for ID: " + kanbanId);
+                }
+            } catch (Exception e) {
+                System.err.println("Error loading kanban " + kanbanId + ": " + e.getMessage());
+            }
+        }
+        return kanbans;
     }
 
     public List<Snapshot> getListSnapshot() {

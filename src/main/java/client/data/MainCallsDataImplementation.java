@@ -243,6 +243,8 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
                         }
                     } catch (Exception e) {
                         System.err.println("Impossible de charger le kanban ID: " + cleanId);
+                        System.err.println("Raison: " + e.getMessage());
+                        e.printStackTrace();
                     }
                 }
             }
