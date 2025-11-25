@@ -135,7 +135,8 @@ public class LoginController {
             System.out.println("LOGIN: " + list.size() + " kanbans chargés localement.");
             return list;
         } catch (Exception e) {
-            e.printStackTrace();
+            java.util.logging.Logger.getLogger(LoginController.class.getName())
+                    .log(java.util.logging.Level.SEVERE, "Erreur traitement login", e);
             return Collections.emptyList();
         }
     }

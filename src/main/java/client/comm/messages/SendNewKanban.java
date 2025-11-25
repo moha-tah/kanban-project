@@ -46,7 +46,8 @@ public class SendNewKanban extends Message {
         } catch (ClassNotFoundException e) {
             // Normal : Le client n'a pas ServerContext, on ignore.
         } catch (Throwable t) {
-            t.printStackTrace();
+            java.util.logging.Logger.getLogger(SendNewKanban.class.getName())
+                    .log(java.util.logging.Level.SEVERE, "Erreur traitement SendNewKanban", t);
         }
         return Optional.empty();
     }

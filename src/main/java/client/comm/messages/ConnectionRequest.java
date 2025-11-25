@@ -41,7 +41,8 @@ public class ConnectionRequest extends Message {
         } catch (ClassNotFoundException e) {
             // Normal côté client
         } catch (Throwable t) {
-            t.printStackTrace();
+            java.util.logging.Logger.getLogger(ConnectionRequest.class.getName())
+                    .log(java.util.logging.Level.SEVERE, "Erreur traitement connection", t);
         }
         return Optional.empty();
     }

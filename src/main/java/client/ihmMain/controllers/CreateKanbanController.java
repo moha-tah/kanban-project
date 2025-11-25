@@ -125,10 +125,10 @@ public class CreateKanbanController {
                     var currentUser = model.getLocalUser();
 
                     if (currentUser != null) {
-                        // CRITIQUE : Ajouter le kanban à la liste de l'objet User en mémoire
+                        // Ajouter le kanban à la liste de l'objet User en mémoire
                         currentUser.addKanban(newKanban);
 
-                        // CRITIQUE : Sauvegarder l'utilisateur sur le disque
+                        //Sauvegarder l'utilisateur sur le disque
                         // Cela appellera serializeUserToJson qui lira la liste mise à jour ci-dessus
                         provider.getToMainImpl().saveUser();
 
@@ -137,7 +137,8 @@ public class CreateKanbanController {
                 }
             } catch (Exception e) {
                 System.err.println("Erreur lors de la mise à jour de l'utilisateur : " + e.getMessage());
-                e.printStackTrace();
+                java.util.logging.Logger.getLogger(CreateKanbanController.class.getName())
+                        .log(java.util.logging.Level.SEVERE, "Erreur traitement createKanban", e);
             }
 
             // C. Notification réseau
