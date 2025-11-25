@@ -1,4 +1,6 @@
 package common.dataClasses;
+import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 
 public class MoveTask extends Modification {
@@ -39,9 +41,41 @@ public class MoveTask extends Modification {
     
     @Override
     public boolean execute() {
-        // Logique pour exécuter le déplacement de tâche
-        // À implémenter selon les règles métier
-        return taskId != null && targetColumn != null;
+        LightKanban myLightKanban = getTargetKanban();
+        Kanban myKanban = getTheKanban(myLightKanban);
+        HashMap<Column, List<Task>> taskColumn = myKanban.getTaskColumn();
+        // Trouver la tâche et sa colonne source
+        Task movingTask = null;
+        Column sourceColumn = null;
+        for (Column col : taskColumn.keySet()) {
+            for (Task t : taskColumn.get(col)) {
+                if (t.getId().equals(taskId)) {
+                    movingTask = t;
+                    sourceColumn = col;
+                    break;
+                }
+            }
+            if (movingTask != null) break;
+        }
+        if (movingTask == null || sourceColumn == null) {
+            return false; // Pas de modification si la tâche ou la colonne n'est pas trouvée
+        }
+
+        // Trouver la colonne de destination
+        Column destinationColumn = null;
+        for (Column col : taskColumn.keySet()) {
+            if (col.getId().equals(targetColumn)) {
+                destinationColumn = col;
+                break;
+            }
+        }
+        if (destinationColumn == null) {
+            return false; // Destination column not found
+        }
+        User taskUser = getTheUser()
+        
+        myKanban.moveTask( taskUser ,movingTask, sourceColumn, destinationColumn);
+        return true;
     }
     
     @Override

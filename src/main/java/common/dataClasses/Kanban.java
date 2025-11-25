@@ -1,7 +1,7 @@
 package common.dataClasses;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.UUID;
 
 public class Kanban extends LightKanban {
@@ -77,6 +77,14 @@ public class Kanban extends LightKanban {
 
     public void setVisibility(String visibility) {
         this.visibility = visibility;
+    }
+
+    public void setMessages(List<Message> messages) {
+        this.messages = messages;
+    }
+
+    public void setTasks(List<Task> tasks) {
+        this.tasks = tasks;
     }
 
     // Méthodes métier

@@ -1,4 +1,5 @@
 package common.dataClasses;
+import java.util.List;
 import java.util.UUID;
 
 public class DeleteTask extends Modification {
@@ -28,8 +29,12 @@ public class DeleteTask extends Modification {
     
     @Override
     public boolean execute() {
-        // Logique pour exécuter la suppression de tâche
-        // À implémenter selon les règles métier
+        LightKanban myLightKanban = getTargetKanban();
+        Kanban myKanban = getTheKanban(myLightKanban);
+        List<Task> tasks = myKanban.getTasks();
+        tasks.removeIf(task -> task.getId().equals(taskId));
+        myKanban.setTasks(tasks);
+        setTheKanbanInDB(myKanban);
         return taskId != null;
     }
     
