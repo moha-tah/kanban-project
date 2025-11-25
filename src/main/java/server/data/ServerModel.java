@@ -1,6 +1,5 @@
 package server.data;
 import java.util.List;
-import java.util.UUID;
 import java.util.ArrayList;
 import common.dataClasses.Kanban;
 import common.dataClasses.LightUser;
