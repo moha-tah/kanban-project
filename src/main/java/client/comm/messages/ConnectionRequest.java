@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import common.dataClasses.LightKanban;
 import common.dataClasses.LightUser;
+import server.ServerContext; // Assurez-vous d'avoir cet import
 
 public class ConnectionRequest extends Message {
     private static final long serialVersionUID = 1L;
@@ -23,21 +24,22 @@ public class ConnectionRequest extends Message {
     @Override
     public Optional<Message> handle() {
         try {
-            // On appelle la méthode addNewUser de l'interface Serveur
-            if (this.getServerContext().getData() != null) {
+            // On stocke l'interface dans une variable pour alléger le code
+            var dataServer = ServerContext.getData();
 
-                this.getServerContext().getData().addNewUser(this.user, this.kanbans);
-                var users = this.getServerContext().getData().getUsersList();
-                var allKanbans = this.getServerContext().getData().getKanbansList();
+            if (dataServer != null) {
+                dataServer.addNewUser(this.user, this.kanbans);
+
+                var users = dataServer.getUsersList();
+                var allKanbans = dataServer.getKanbansList();
 
                 return Optional.of(new UpdateUsersAndKanbansListResponse(users, allKanbans));
-            }    
+            }
         } catch (Throwable t) {
-            // Log error on server side
             java.util.logging.Logger.getLogger(ConnectionRequest.class.getName())
                     .log(java.util.logging.Level.SEVERE, "Error handling connection request", t);
         }
-        
+
         return Optional.empty();
     }
 }
