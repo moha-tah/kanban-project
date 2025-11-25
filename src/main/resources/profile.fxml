@@ -71,6 +71,10 @@
     <VBox layoutX="50" layoutY="400" prefWidth="1100" spacing="20" style="-fx-background-color: white; -fx-background-radius: 20; -fx-padding: 40;">
         <Label style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #1f2937; -fx-border-color: #667eea; -fx-border-width: 0 0 0 4; -fx-border-insets: 0;" text="Kanbans Créés" />
         <GridPane fx:id="kanbansGrid" hgap="20" vgap="20" />
-        <Button layoutX="950" style="-fx-background-color: #1f2937; -fx-text-fill: white; -fx-background-radius: 25; -fx-padding: 15 40;" text="Back" />
-    </VBox>
+        <Button
+            layoutX="950"
+            style="-fx-background-color: #1f2937; -fx-text-fill: white; -fx-background-radius: 25; -fx-padding: 15 40;"
+            text="Back"
+            onAction="#handleBackClick" />
+</VBox>
 </AnchorPane>

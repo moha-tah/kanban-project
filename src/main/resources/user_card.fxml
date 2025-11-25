@@ -10,7 +10,7 @@
       spacing="10"
       style="-fx-background-color: transparent; -fx-padding: 5 0 5 0;">
 
-    <!-- Avatar optionnel -->
+    <!-- Avatar -->
     <ImageView fx:id="avatarImageView"
                fitWidth="32"
                fitHeight="32"
@@ -19,8 +19,15 @@
             <Image url="@profile_pic.png"/>
         </image>
     </ImageView>
+
     <!-- Username -->
     <Label fx:id="nameLabel"
            style="-fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold;" />
+
+    <!-- Bouton pour voir le profil -->
+    <Button fx:id="viewProfileButton"
+            text="👤" 
+            style="-fx-background-color: transparent; -fx-font-size: 16;"
+            onAction="#handleViewProfile" />
 
 </HBox>

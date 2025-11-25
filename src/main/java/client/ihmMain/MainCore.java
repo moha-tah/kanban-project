@@ -20,7 +20,6 @@ import client.data.MainCallsDataImplementation;
 import common.dataClasses.Kanban;
 import common.dataClasses.Task;*/
 import common.dataClasses.LightUser;
-import common.dataClasses.User;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -95,7 +94,6 @@ public class MainCore {
     // Accès état
     public void setMe(LightUser me) { this.me = me; }
     public LightUser getMe()        { return me; }
-    // public User getFullMe() {}
 
     public List<LightUser> getUsersSnapshot()     { return new ArrayList<>(users); }
     public List<LightKanban> getKanbansSnapshot() { return new ArrayList<>(kanbans); }
@@ -254,6 +252,4 @@ public class MainCore {
     public void showSignupView() { loadScene("/signup.fxml", "Sign up"); }
     public void showHomeView()   { loadScene("/home.fxml",   "Home"); }
     public void showLandingView() { loadScene("/landing.fxml", "Welcome");}
-    public void showProfileView() { loadScene("/profile.fxml", "Profile");}
 }
-
