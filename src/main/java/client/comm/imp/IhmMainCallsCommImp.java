@@ -4,6 +4,7 @@ import client.comm.CommCoreClient;
 import client.comm.messages.RequestPermission;
 import client.comm.messages.PermissionResponse;
 import client.comm.messages.NotifyDecision;
+import client.ihmMain.controllers.LoginController;
 import client.interfaces.IhmMainCallsComm;
 
 
@@ -15,6 +16,7 @@ import java.util.List;
 import client.comm.messages.ConnectionRequest;
 import client.comm.messages.AskAddListModifiers;
 import client.comm.messages.RequestKanban;
+import common.dataClasses.Kanban;
 import common.dataClasses.LightKanban;
 import common.dataClasses.LightUser;
 
@@ -77,6 +79,7 @@ public class IhmMainCallsCommImp implements IhmMainCallsComm {
 
     @Override
     public void connectServer(LightUser user, List<LightKanban> kanbans) {
+        System.out.println("CLIENT: Envoi ConnectionRequest avec " + (kanbans != null ? kanbans.size() : 0) + " kanbans.");
 
         // 1. On encapsule les données dans le Message qu'on vient de créer
         ConnectionRequest msg = new ConnectionRequest(user, kanbans);
@@ -124,6 +127,21 @@ public class IhmMainCallsCommImp implements IhmMainCallsComm {
 
     @Override
     public void askKanban(UUID LightKanbanId) {
+    }
+
+    @Override
+    public void sendNewKanban(Kanban kanban) {
+        try {
+            System.out.println("COMM: Envoi du nouveau Kanban " + kanban.getTitle());
+            client.comm.messages.SendNewKanban msg = new client.comm.messages.SendNewKanban(kanban);
+
+            if (commCore.getMsgSender() != null) {
+                commCore.sendMessage(msg);
+            }
+        } catch (Exception e) {
+            java.util.logging.Logger.getLogger(IhmMainCallsCommImp.class.getName())
+                    .log(java.util.logging.Level.SEVERE, "Erreur traitement login", e);
+        }
     }
 
     @Override

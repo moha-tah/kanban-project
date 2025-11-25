@@ -30,7 +30,7 @@ public class DataCallsCommImp implements DataCallsComm {
         // 2. Envoi via le Core
         try {
             if (commCore.getMsgSender() != null) {
-                commCore.sendMessage(msg);
+                commCore.getMsgSender().send(msg);
             }
         } catch (IOException e) {
             java.util.logging.Logger.getLogger(DataCallsCommImp.class.getName())
