@@ -15,6 +15,7 @@ import java.util.List;
 import client.comm.messages.ConnectionRequest;
 import client.comm.messages.AskAddListModifiers;
 import client.comm.messages.RequestKanban;
+import common.dataClasses.Kanban;
 import common.dataClasses.LightKanban;
 import common.dataClasses.LightUser;
 
@@ -125,6 +126,20 @@ public class IhmMainCallsCommImp implements IhmMainCallsComm {
 
     @Override
     public void askKanban(UUID LightKanbanId) {
+    }
+
+    @Override
+    public void sendNewKanban(Kanban kanban) {
+        try {
+            System.out.println("COMM: Envoi du nouveau Kanban " + kanban.getTitle());
+            client.comm.messages.SendNewKanban msg = new client.comm.messages.SendNewKanban(kanban);
+
+            if (commCore.getMsgSender() != null) {
+                commCore.sendMessage(msg);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

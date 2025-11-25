@@ -143,7 +143,7 @@ public class CreateKanbanController {
 
             // C. Notification réseau
             if (mainCore.getCommPort() != null) {
-                mainCore.getCommPort().notifyEditions(newKanban.getLightKanban());
+                mainCore.getCommPort().sendNewKanban(newKanban);
             }
         }
 
