@@ -129,14 +129,13 @@ public class LoginController {
             List<LightKanban> list = new ArrayList<>();
             if (localUser != null && localUser.getMyKanban() != null) {
                 for (Kanban k : localUser.getMyKanban()) {
-                    list.add(k.getLightKanban());
+                    list.add(k);
                 }
             }
-            System.out.println("LOGIN: " + list.size() + " kanbans chargés localement.");
+            System.out.println("LOGIN: " + list.size() + " kanbans (complets) chargés pour envoi.");
             return list;
         } catch (Exception e) {
-            java.util.logging.Logger.getLogger(LoginController.class.getName())
-                    .log(java.util.logging.Level.SEVERE, "Erreur traitement login", e);
+            e.printStackTrace();
             return Collections.emptyList();
         }
     }
