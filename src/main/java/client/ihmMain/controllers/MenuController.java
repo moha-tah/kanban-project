@@ -52,8 +52,27 @@ public class MenuController {
 
     @FXML
     private void handleProfileClick() throws IOException {
-        switchScene("/profile.fxml", "Mon Profil", profilePic);
+        // Charger le FXML
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/profile.fxml"));
+        Parent root = loader.load();
+
+        // Récupérer le controller
+        ProfileController controller = loader.getController();
+
+        // Injecter MainCore
+        controller.setCore(MainApp.getCore());  // récupère le Core global
+
+        // Optionnel : mettre directement l'utilisateur courant
+        if (MainApp.getCore() != null && MainApp.getCore().getMe() != null) {
+            controller.setUser(MainApp.getCore().getMe());
+        }
+
+        // Afficher la scène
+        Stage stage = (Stage) profilePic.getScene().getWindow();
+        stage.setTitle("Mon Profil");
+        stage.setScene(new Scene(root, 1280, 720));
     }
+
 
     @FXML
     private void handleHome() throws IOException {
