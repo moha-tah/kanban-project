@@ -1,4 +1,5 @@
 package client.interfaces;
+import common.dataClasses.Kanban;
 import common.dataClasses.LightKanban;
 import common.dataClasses.LightUser;
 import java.util.List;
@@ -9,6 +10,7 @@ public interface IhmMainCallsComm {
     void askListModifiers(UUID LightUserId);
     void sendPermissionRequest(UUID LightUserId, UUID LightKanbanId);
     void sendPermissionResponse(UUID LightUserId, UUID LightKanbanId, boolean accepted);
+    void sendNewKanban(Kanban kanban);
     boolean connect(String host, int port);
     void connectionRequest(LightUser LightUser, List<LightKanban> listKanbans);
     void notifyDecision(UUID LightUserId, UUID LightKanbanId, boolean accepted);

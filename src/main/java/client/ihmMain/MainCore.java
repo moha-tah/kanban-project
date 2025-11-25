@@ -14,6 +14,8 @@ import client.ihmMain.impl.commCallsMainImpl;
 import client.ihmMain.impl.kanbanCallsMainImpl;
 import common.dataClasses.Kanban;
 import common.dataClasses.LightKanban;
+import client.data.DataClientProvider;
+import client.data.MainCallsDataImplementation;
 /*import common.dataClasses.Column;
 import common.dataClasses.Kanban;
 import common.dataClasses.Task;*/
@@ -32,12 +34,6 @@ import java.util.List;
 import java.util.UUID;
 
 import client.ihmKanban.impl.MainCallsKanbanImpl;
-
-
-
-
-
-
 
 /**
  * Coeur IHM : orchestre les appels entre la UI et les couches DATA/COMM/KANBAN.
@@ -171,7 +167,20 @@ public class MainCore {
         }
     }
 
+    public DataClientProvider getDataClientProvider() {
+        if (dataPort instanceof MainCallsDataImplementation) {
+            return ((MainCallsDataImplementation) dataPort).getProvider();
+        }
+        System.err.println("[MainCore] dataPort n'est pas une instance de MainCallsDataImplementation");
+        return null;
+    }
 
+    /**
+     * Retourne la liste des Kanbans disponibles
+     */
+    public List<LightKanban> getAvailableLightKanbans() {
+        return new ArrayList<>(kanbans);
+    }
 
     public void launchMainWindow(Stage stage) {
         try {
