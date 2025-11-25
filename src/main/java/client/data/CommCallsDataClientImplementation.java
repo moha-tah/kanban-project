@@ -65,9 +65,18 @@ public class CommCallsDataClientImplementation implements ComCallsDataClient{
 
     @Override
     public boolean addAuthorizedUser(UUID kanbanId, UUID userId){
-        //TODO
-        return true;
+        if (provider == null || provider.getCommInterface() == null) {
+            return false;
+        }
+        try {
+            provider.getCommInterface().addAuthorizedUser(kanbanId, userId);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
+    
 
     public void addToListKanban(LightKanban kanban){
         if (provider == null || provider.getMyModel() == null || kanban == null) {

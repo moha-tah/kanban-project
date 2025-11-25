@@ -37,4 +37,13 @@ public class DataCallsCommImp implements DataCallsComm {
                     .log(java.util.logging.Level.SEVERE, "DataCallsCommImp: Echec envoi nouveau Kanban", e);
         }
     }
+
+    @Override
+    public void addAuthorizedUser(UUID kanbanId, UUID userId) {
+        try {
+            comm.sendMessage(Arrays.asList("addAuthorizedUser", kanbanId, userId));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }
