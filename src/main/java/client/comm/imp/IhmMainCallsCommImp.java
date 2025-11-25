@@ -4,6 +4,7 @@ import client.comm.CommCoreClient;
 import client.comm.messages.RequestPermission;
 import client.comm.messages.PermissionResponse;
 import client.comm.messages.NotifyDecision;
+import client.ihmMain.controllers.LoginController;
 import client.interfaces.IhmMainCallsComm;
 
 
@@ -138,7 +139,8 @@ public class IhmMainCallsCommImp implements IhmMainCallsComm {
                 commCore.sendMessage(msg);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            java.util.logging.Logger.getLogger(IhmMainCallsCommImp.class.getName())
+                    .log(java.util.logging.Level.SEVERE, "Erreur traitement login", e);
         }
     }
 
