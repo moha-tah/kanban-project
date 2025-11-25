@@ -1,5 +1,7 @@
 package client.comm.messages;
 import java.util.UUID;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 import common.dataClasses.Kanban;
 import common.dataClasses.LightKanban;
@@ -9,8 +11,9 @@ import java.util.Optional;
 
 public class RequestKanban extends Message {
 
-    private final LightKanban lightKanbanId; // ou LightKanban.id
-    private final LightUser lightUserId; // ou LightKanban.id
+    private static final Logger LOGGER = Logger.getLogger(RequestKanban.class.getName());
+    private final LightKanban lightKanbanId;
+    private final LightUser lightUserId;
 
     public RequestKanban(LightKanban kanbanId, LightUser userId) {
         this.lightKanbanId = kanbanId;
@@ -18,27 +21,30 @@ public class RequestKanban extends Message {
     }
     
     @Override
-    public Optional<Message> handle() {
+    public Optional<Message> handle() {        
         try {
-            // 1. Récupération de l'interface via le Contexte
-            // (On utilise le chemin complet ou l'import server.ServerContext)
             var dataServer = this.getServerContext().getData();
 
             if (dataServer != null) {
+                LOGGER.log(Level.FINE, "dataServer found, requesting Kanban...");
 
-                // 2. Appel de la méthode EXACTE de ton interface
                 Kanban fullKanban = dataServer.requestKanban(lightUserId, lightKanbanId.getId());
 
-                // 3. Si on a un résultat, on renvoie le message de réponse
                 if (fullKanban != null) {
+                    LOGGER.log(Level.FINE, "Full Kanban received from server: {0}", fullKanban.getTitle());
+                    LOGGER.log(Level.FINE, "Sending SendKanban response to client");
                     return Optional.of(new SendKanban(fullKanban));
+                } else {
+                    LOGGER.log(Level.WARNING, "dataServer.requestKanban returned null");
                 }
+            } else {
+                LOGGER.log(Level.WARNING, "dataServer is null");
             }
         } catch (NoClassDefFoundError | Exception e) {
-            // Ignore l'erreur si on est coté client (ServerContext n'existe pas)
-            // Ou log l'erreur si c'est un vrai problème serveur
+            LOGGER.log(Level.SEVERE, "Exception in handle: {0}", e.getMessage());
         }
         
+        LOGGER.log(Level.FINE, "Returning empty Optional");
         return Optional.empty();
     }
 

@@ -123,27 +123,33 @@ public class MainCore {
     public void viewKanban(UUID kanbanId) {
         System.out.println("[MainCore] Opening kanban " + kanbanId);
 
-        if (kanbanPort == null) {
-            System.err.println("[MainCore] ERROR: kanbanPort is null");
+        if (commPort == null) {
+            System.err.println("[MainCore] ERROR: commPort is null");
+            return;
+        }
+        
+        if (me == null) {
+            System.err.println("[MainCore] ERROR: user not logged in");
             return;
         }
 
-        // Récupérer la version complète du Kanban dans la liste locale
-        Kanban full = null;
+        // Rechercher le LightKanban dans la liste
+        LightKanban light = null;
         for (LightKanban lk : kanbans) {
-            if (lk.getId().equals(kanbanId) && lk instanceof Kanban k) {
-                full = k;
+            if (lk.getId().equals(kanbanId)) {
+                light = lk;
                 break;
             }
         }
 
-    if (full == null) { 
-        System.err.println("[MainCore] Kanban non trouvé ou pas la version complète");
-        return;
+        if (light != null) {
+            // Demander le Kanban complet via COMM
+            System.out.println("[MainCore] Requesting Kanban via COMM: " + light.getTitle());
+            commPort.getKanban(light, me);
+        } else {
+            System.err.println("[MainCore] Kanban non trouvé (ID: " + kanbanId + ")");
+        }
     }
-
-    kanbanPort.openCreateForm(full);  //backend
-}
 
     public void replaceUsers(List<LightUser> newUsers) {
         users.clear();
