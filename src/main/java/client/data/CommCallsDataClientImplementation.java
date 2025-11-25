@@ -77,7 +77,7 @@ public class CommCallsDataClientImplementation implements ComCallsDataClient{
         }
     }
     
-
+    Override
     public void addToListKanban(LightKanban kanban){
         if (provider == null || provider.getMyModel() == null || kanban == null) {
             return;
@@ -95,6 +95,11 @@ public class CommCallsDataClientImplementation implements ComCallsDataClient{
         // Retirer le kanban s'il existe déjà (même ID) puis ajouter le nouveau
         kanbans.removeIf(k -> k.getId().equals(kanban.getId()));
         kanbans.add(kanban);
+
+        // Publier la liste mise à jour à l'interface (comme dans uploadKanbans)
+        if (provider.getMainInterface() != null) {
+            provider.getMainInterface().publishKanbansList(kanbans);
+        }
     }
 
     public void saveModifiedKanban(Modification modification, LightKanban kanban){
