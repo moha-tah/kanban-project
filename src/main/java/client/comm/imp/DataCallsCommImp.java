@@ -41,9 +41,10 @@ public class DataCallsCommImp implements DataCallsComm {
     @Override
     public void addAuthorizedUser(UUID kanbanId, UUID userId) {
         try {
-            comm.sendMessage(Arrays.asList("addAuthorizedUser", kanbanId, userId));
+            commCore.sendMessage(java.util.Arrays.asList("addAuthorizedUser", kanbanId, userId));
         } catch (IOException e) {
-            e.printStackTrace();
+            java.util.logging.Logger.getLogger(DataCallsCommImp.class.getName())
+                    .log(java.util.logging.Level.SEVERE, "DataCallsCommImp: Echec envoi addAuthorizedUser", e);
         }
     }
 }
