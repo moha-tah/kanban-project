@@ -1,6 +1,8 @@
 package server.comm;
 
 import server.ServerContext;
+import server.data.ComCallsDataServImplementation;
+import server.data.ServerModel;
 import server.interfaces.CommCallsDataServer;
 
 import java.io.IOException;
@@ -10,6 +12,9 @@ import java.net.BindException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 
@@ -22,6 +27,9 @@ public class CommCoreServer {
 
     // Liste thread-safe des clients connectés pour diffuser les mises à jour
     private final List<SrvMsgSender> connectedClients = new CopyOnWriteArrayList<>();
+    
+    // Map pour associer chaque connexion client à l'utilisateur connecté
+    private final Map<SrvMsgSender, UUID> clientToUserMap = new ConcurrentHashMap<>();
 
     public CommCoreServer(int port) {
         this.port = port;
@@ -110,10 +118,16 @@ public class CommCoreServer {
                                         .log(java.util.logging.Level.SEVERE, "SERVER: Erreur lors de l'envoi de la réponse.", e);
                                 // Client déconnecté, le retirer
                                 connectedClients.remove(finalMsgSender);
+                                clientToUserMap.remove(finalMsgSender);
                             }
                         });
 
                         if (receivedMsg instanceof client.comm.messages.ConnectionRequest) {
+                            // Associer l'utilisateur à cette connexion
+                            client.comm.messages.ConnectionRequest connReq = (client.comm.messages.ConnectionRequest) receivedMsg;
+                            if (connReq.getUser() != null) {
+                                clientToUserMap.put(finalMsgSender, connReq.getUser().getId());
+                            }
                             broadcastUsersAndKanbansUpdate();
                         }
 
@@ -132,6 +146,25 @@ public class CommCoreServer {
                 // Callback appelé quand le receiver s'arrête (client déconnecté)
                 connectedClients.remove(finalMsgSender);
                 java.util.logging.Logger logger = java.util.logging.Logger.getLogger(CommCoreServer.class.getName());
+                
+                // Retirer l'utilisateur associé à cette connexion de la liste des utilisateurs connectés
+                UUID userId = clientToUserMap.remove(finalMsgSender);
+                if (userId != null) {
+                    try {
+                        CommCallsDataServer data = ServerContext.getData();
+                        if (data != null) {
+                            ServerModel model = ((ComCallsDataServImplementation) data).getDataServProvider().getModel();
+                            model.removeConnectedUser(userId);
+                            logger.log(java.util.logging.Level.INFO, "SERVER: Utilisateur {0} retiré de la liste des connectés.", userId);
+                            
+                            // Diffuser la mise à jour de la liste des utilisateurs
+                            broadcastUsersAndKanbansUpdate();
+                        }
+                    } catch (Exception e) {
+                        logger.log(java.util.logging.Level.WARNING, "SERVER: Erreur lors du retrait de l'utilisateur.", e);
+                    }
+                }
+                
                 logger.log(java.util.logging.Level.INFO, "SERVER: Client déconnecté, retiré de la liste.");
                 
                 // Afficher le nombre d'utilisateurs restants
@@ -188,6 +221,7 @@ public class CommCoreServer {
                     logger.log(java.util.logging.Level.WARNING,
                             "SERVER: Échec de l'envoi de la mise à jour à un client.", e);
                     connectedClients.remove(clientSender);
+                    clientToUserMap.remove(clientSender);
                 }
             }
 
