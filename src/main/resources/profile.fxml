@@ -55,7 +55,6 @@
                         <Label style="-fx-text-fill: #6b7280; -fx-font-size: 12px;" text="Collaborations" />
                     </VBox>
                 </HBox>
-                <Label fx:id="memberSince" style="-fx-text-fill: #6b7280; -fx-font-size: 14px;" />
             </VBox>
         </HBox>
 

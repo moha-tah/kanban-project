@@ -1,23 +1,15 @@
 package client.ihmMain.controllers;
 
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
-import common.dataClasses.User;
 import client.ihmMain.MainCore;
-import common.dataClasses.Kanban;
 import common.dataClasses.LightUser;
 
 
 import java.io.File;
-import java.io.IOException;
 import java.util.logging.Logger;
 
 public class ProfileDistantController {
@@ -37,8 +29,6 @@ public class ProfileDistantController {
     @FXML
     private Label collaborations;
 
-    @FXML
-    private Label memberSince;
 
     @FXML
     private GridPane kanbansGrid;
@@ -58,7 +48,6 @@ public class ProfileDistantController {
         profileUsername.setText("@" + currentUser.getUsername());
         // kanbansCreated.setText(String.valueOf(currentUser.getMyKanban().size()));
         collaborations.setText("0"); 
-        // memberSince.setText("📅 Membre depuis le " + currentUser.getBirthDate().toString());
 
         // Avatar
         Image avatarImg = loadAvatar(currentUser.getAvatar());

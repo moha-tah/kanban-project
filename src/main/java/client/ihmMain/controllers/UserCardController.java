@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.logging.Logger;
 
 import client.MainApp;
+import common.dataClasses.LightUser;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -24,10 +25,14 @@ public class UserCardController {
     @FXML
     private ImageView avatarImageView;
 
+    private String username;
+
+
     // on réutilise profile_pic.png comme avatar par défaut
     private static final String DEFAULT_AVATAR = "/profile_pic.png";
 
     public void setUserData(String username, String avatarPath) {
+        this.username = username;
         nameLabel.setText(username);
 
         Image avatar = loadAvatar(avatarPath);
@@ -65,24 +70,19 @@ public class UserCardController {
 
     @FXML
     private void handleProfileDistantClick() throws IOException {
-        // Charger le FXML
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/profile_distant.fxml"));
         Parent root = loader.load();
 
-        // Récupérer le controller
         ProfileDistantController controller = loader.getController();
+        controller.setCore(MainApp.getCore());
 
-        // Injecter MainCore
-        controller.setCore(MainApp.getCore());  // récupère le Core global
+        // on récupère l'utilisateur et on le passe au contrôleur
+        // LightUser user = MainApp.getCore().searchUserByUsername(username); // besoin d’une méthode pour ça
+        // controller.setUser(user);
 
-        // Optionnel : mettre directement l'utilisateur courant
-        if (MainApp.getCore() != null && MainApp.getCore().getMe() != null) {
-            controller.setUser(MainApp.getCore().getMe());
-        }
-
-        // Afficher la scène
         Stage stage = (Stage) avatarImageView.getScene().getWindow();
-        stage.setTitle("Mon Profil");
+        stage.setTitle("Profil Distant - " + nameLabel.getText());
         stage.setScene(new Scene(root, 1280, 720));
     }
+
 }
