@@ -63,8 +63,29 @@ public class ComCallsDataServImplementation implements CommCallsDataServer {
     }
 
     @Override
-    public List<Kanban> notifyLogout(LightUser userId) {
-        return null;
+    public List<Kanban> notifyLogout(LightUser user) {
+        if (user == null) return null;
+
+        ServerModel model = myProvider.getModel();
+        UUID userId = user.getId();
+
+        // 1. Supprimer l'utilisateur de la liste des connectés
+        model.getConnectedUsers().removeIf(u -> u.getId().equals(userId));
+
+        // 2. Supprimer les Kanbans créés par cet utilisateur
+        int initialSize = model.getInUseKanbans().size();
+
+        model.getInUseKanbans().removeIf(k ->
+                k.getCreatorId() != null && k.getCreatorId().equals(userId)
+        );
+
+        int removedCount = initialSize - model.getInUseKanbans().size();
+
+        System.out.println("SERVEUR: " + user.getUsername() + " déconnecté.");
+        System.out.println("SERVEUR: " + removedCount + " kanban(s) de cet utilisateur retiré(s) de la mémoire.");
+
+        // Le broadcast qui suit (dans LogoutMessage) enverra cette liste nettoyée aux autres clients
+        return model.getInUseKanbans();
     }
 
     // -------------------------------------------------------
