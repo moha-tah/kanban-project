@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane prefHeight="800" prefWidth="1280" style="-fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #667eea, #764ba2);" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.ihmMain.controllers.ProfileController">
+<AnchorPane prefHeight="800" prefWidth="1280" style="-fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #667eea, #764ba2);" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.ihmMain.controllers.ProfileDistantController">
 
     <!-- Header -->
     <HBox layoutX="0" layoutY="0" prefHeight="70" prefWidth="1280" spacing="20" style="-fx-background-color: white;">
@@ -55,15 +55,7 @@
                         <Label style="-fx-text-fill: #6b7280; -fx-font-size: 12px;" text="Collaborations" />
                     </VBox>
                 </HBox>
-                <Label fx:id="memberSince" style="-fx-text-fill: #6b7280; -fx-font-size: 14px;" />
             </VBox>
-        </HBox>
-
-        <!-- Profile Actions -->
-        <HBox alignment="CENTER_RIGHT" spacing="15">
-            <Button style="-fx-background-color: #667eea; -fx-text-fill: white; -fx-background-radius: 10;" text="EDIT PROFILE" />
-            <Button style="-fx-background-color: #667eea; -fx-text-fill: white; -fx-background-radius: 10;" text="EXPORT PROFILE" />
-            <Button style="-fx-background-color: #667eea; -fx-text-fill: white; -fx-background-radius: 10;" text="SEE SNAPSHOTS" />
         </HBox>
     </VBox>
 
