@@ -16,10 +16,10 @@ import java.util.logging.Logger;
 import client.comm.messages.ConnectionRequest;
 import client.comm.messages.AskAddListModifiers;
 import client.comm.messages.RequestKanban;
+import client.comm.messages.LogoutMessage; // Import ajouté
 import common.dataClasses.Kanban;
 import common.dataClasses.LightKanban;
 import common.dataClasses.LightUser;
-import javafx.scene.effect.Light;
 
 public class IhmMainCallsCommImp implements IhmMainCallsComm {
     private static final Logger LOGGER = Logger.getLogger(IhmMainCallsCommImp.class.getName());
@@ -30,8 +30,24 @@ public class IhmMainCallsCommImp implements IhmMainCallsComm {
     }
 
     @Override
-    public void logout(LightUser LightUserId) {
-        // Set a breakpoint here if you need to trace logout behavior
+    public void logout(LightUser user) {
+        if (user == null) return;
+
+        LOGGER.info(() -> "Sending logout request for user: " + user.getUsername());
+
+        // Création et envoi du message de déconnexion
+        LogoutMessage msg = new LogoutMessage(user);
+
+        try {
+            if (commCore.getMsgSender() != null) {
+                commCore.sendMessage(msg);
+
+                // Fermer la connexion socket proprement côté client
+                commCore.disconnect();
+            }
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING, "Error sending logout message", e);
+        }
     }
 
     @Override
