@@ -2,15 +2,16 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
-
 <?import javafx.scene.image.Image?>
+<?import javafx.scene.control.Button?>
+
 <HBox xmlns="http://javafx.com/javafx/25"
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="client.ihmMain.controllers.UserCardController"
       spacing="10"
+      alignment="CENTER"
       style="-fx-background-color: transparent; -fx-padding: 5 0 5 0;">
 
-    <!-- Avatar -->
     <ImageView fx:id="avatarImageView"
                fitWidth="32"
                fitHeight="32"
@@ -20,14 +21,14 @@
         </image>
     </ImageView>
 
-    <!-- Username -->
     <Label fx:id="nameLabel"
            style="-fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold;" />
 
-    <!-- Bouton pour voir le profil -->
     <Button fx:id="viewProfileButton"
-            text="👤" 
-            style="-fx-background-color: transparent; -fx-font-size: 16;"
-            onAction="#handleViewProfile" />
-
+            text="👤"
+            minHeight="32"
+            minWidth="32"
+            style="-fx-background-color: transparent; -fx-font-size: 16; -fx-padding: 0;"
+            onAction="#handleProfileDistantClick" />
 </HBox>
+
