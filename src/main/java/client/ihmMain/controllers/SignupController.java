@@ -127,16 +127,17 @@ public class SignupController {
 
             data.saveUser();
 
-            LightUser me = data.getMyLightUser();
-            if (me == null) { showError("Failed to retrieve new user profile."); return; }
+            // Si on retourne à la fenetre de longin, on ne set pas la liste de kanban et user
+            // LightUser me = data.getMyLightUser();
+            // if (me == null) { showError("Failed to retrieve new user profile."); return; }
 
-            List<LightKanban> myKanbans = data.getMyListLightKanbans();
-            if (myKanbans == null) myKanbans = Collections.emptyList();
+            // List<LightKanban> myKanbans = data.getMyListLightKanbans();
+            // if (myKanbans == null) myKanbans = Collections.emptyList();
 
-            core.setMe(me);
-            core.addKanbans(myKanbans);
+            // core.setMe(me);
+            // core.addKanbans(myKanbans);
 
-            if (comm != null) comm.connectServer(me, myKanbans);
+            // if (comm != null) comm.connectServer(me, myKanbans);
 
             navigateBackToLogin();
 

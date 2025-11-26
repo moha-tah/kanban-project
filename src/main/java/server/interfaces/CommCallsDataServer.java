@@ -14,8 +14,8 @@ public interface CommCallsDataServer {
     Kanban requestKanban(LightUser lightUser, UUID lightKanbId);
     List<Kanban> notifyLogout(UUID userId);
     void askDeleteKanban(LightUser user, LightKanban kanban);
-    void addListModifiers(LightUser user, LightKanban kanban);
-    boolean addAuthorizedUser(UUID kanbanId, UUID userId);
+    void askAddListModifiers(LightUser user, LightKanban kanban);
+    boolean addAuthorizedUser(LightKanban kanban, LightUser user);
     void addNewUser(LightUser user, List<LightKanban> kanbans);
     List<LightUser> getUsersList();
     List<LightKanban> getKanbansList();
