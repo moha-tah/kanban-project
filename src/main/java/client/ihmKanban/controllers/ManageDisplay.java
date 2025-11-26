@@ -20,7 +20,11 @@ import java.util.logging.Level;
 
 public class ManageDisplay {
 
+<<<<<<< HEAD
     private final kanbanCorps corps;
+=======
+    private final kanbanCorps corps; 
+>>>>>>> bf35d19 (fix)
 
     public ManageDisplay(kanbanCorps corps) {
         this.corps = corps;

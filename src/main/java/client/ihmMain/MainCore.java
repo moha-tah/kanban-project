@@ -170,6 +170,15 @@ public class MainCore {
         }
     }
 
+    public LightUser searchUserByUsername(String username) {
+        for (LightUser u : users) {
+            if (u.getUsername().equalsIgnoreCase(username)) {
+                return u;
+            }
+        }
+        return null;
+    }
+
     public DataClientProvider getDataClientProvider() {
         if (dataPort instanceof MainCallsDataImplementation mainCallsDataImplementation) {
             return mainCallsDataImplementation.getProvider();
