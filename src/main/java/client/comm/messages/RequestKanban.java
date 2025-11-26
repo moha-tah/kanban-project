@@ -28,7 +28,7 @@ public class RequestKanban extends Message {
             if (dataServer != null) {
                 LOGGER.log(Level.FINE, "dataServer found, requesting Kanban...");
 
-                Kanban fullKanban = dataServer.requestKanban(lightUserId, lightKanbanId.getId());
+                Kanban fullKanban = dataServer.requestKanban(lightUserId, lightKanbanId);
 
                 if (fullKanban != null) {
                     LOGGER.log(Level.FINE, "Full Kanban received from server: {0}", fullKanban.getTitle());

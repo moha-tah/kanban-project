@@ -2,6 +2,8 @@ package client.comm.imp;
 
 import client.comm.CommCoreClient;
 import client.interfaces.IhmKanbanCallsComm;
+import common.dataClasses.LightKanban;
+import common.dataClasses.LightUser;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -14,6 +16,6 @@ public class IhmKanbanCallsCommImp implements IhmKanbanCallsComm {
     }
 
     @Override
-    public void closingKanban(UUID LightKanbanId, UUID LightUserId) {
+    public void closingKanban(LightKanban LightKanbanId, LightUser LightUserId) {
     }
 }

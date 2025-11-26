@@ -63,7 +63,7 @@ public class ComCallsDataServImplementation implements CommCallsDataServer {
     }
 
     @Override
-    public List<Kanban> notifyLogout(UUID userId) {
+    public List<Kanban> notifyLogout(LightUser userId) {
         return null;
     }
 
@@ -94,12 +94,12 @@ public class ComCallsDataServImplementation implements CommCallsDataServer {
     }
 
     @Override
-    public Kanban requestKanban(LightUser user, UUID kanbanID) {
+    public Kanban requestKanban(LightUser user, LightKanban kanbanID) {
         if (myProvider == null || myProvider.getModel() == null) return null;
 
         ServerModel model = myProvider.getModel();
         for (Kanban k : model.getInUseKanbans()) {
-            if (k.getId().equals(kanbanID)) {
+            if (k.getId().equals(kanbanID.getId())) {
                 return k;
             }
         }
@@ -165,7 +165,7 @@ public class ComCallsDataServImplementation implements CommCallsDataServer {
 
     @Override
     public Kanban getKanban(LightKanban lightKanban, LightUser user) {
-        return requestKanban(user, lightKanban.getId());
+        return requestKanban(user, lightKanban);
     }
 
     @Override

@@ -1,5 +1,8 @@
 package client.comm.messages;
 
+import common.dataClasses.LightKanban;
+import common.dataClasses.LightUser;
+
 import java.util.Optional;
 import java.util.UUID;
 
@@ -7,10 +10,10 @@ import java.util.UUID;
 public class AskAddListModifiers extends Message {
     private static final long serialVersionUID = 1L;
 
-    private final UUID userToAdd;
-    private final UUID targetKanban;
+    private final LightUser userToAdd;
+    private final LightKanban targetKanban;
 
-    public AskAddListModifiers(UUID userToAdd, UUID targetKanban) {
+    public AskAddListModifiers(LightUser userToAdd, LightKanban targetKanban) {
         this.userToAdd = userToAdd;
         this.targetKanban = targetKanban;
     }

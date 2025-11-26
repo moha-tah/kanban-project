@@ -19,6 +19,7 @@ import client.comm.messages.RequestKanban;
 import common.dataClasses.Kanban;
 import common.dataClasses.LightKanban;
 import common.dataClasses.LightUser;
+import javafx.scene.effect.Light;
 
 public class IhmMainCallsCommImp implements IhmMainCallsComm {
     private static final Logger LOGGER = Logger.getLogger(IhmMainCallsCommImp.class.getName());
@@ -29,17 +30,17 @@ public class IhmMainCallsCommImp implements IhmMainCallsComm {
     }
 
     @Override
-    public void logout(UUID LightUserId) {
+    public void logout(LightUser LightUserId) {
         // Set a breakpoint here if you need to trace logout behavior
     }
 
     @Override
-    public void askListModifiers(UUID LightUserId) {
+    public void askListModifiers(LightUser LightUserId) {
         // Breakpoint suggestion: inspect LightUserId
     }
 
     @Override
-    public void askAddListModifiers(UUID userId, UUID kanbanId) {
+    public void askAddListModifiers(LightUser userId, LightKanban kanbanId) {
         LOGGER.fine(() -> "Sending AskAddListModifiers user=" + userId + " kanban=" + kanbanId);
         AskAddListModifiers msg = new AskAddListModifiers(userId, kanbanId);
         try {
@@ -119,7 +120,7 @@ public class IhmMainCallsCommImp implements IhmMainCallsComm {
     }
 
     @Override
-    public void askKanban(UUID LightKanbanId) {
+    public void askKanban(LightKanban LightKanbanId) {
         // Add implementation + breakpoint to trace request flow
     }
 

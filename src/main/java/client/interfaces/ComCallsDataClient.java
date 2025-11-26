@@ -18,7 +18,7 @@ public interface ComCallsDataClient {
 
     void addListModifiers(LightUser user, LightKanban kanban);
 
-    boolean addAuthorizedUser(UUID kanbanId, UUID userId);
+    boolean addAuthorizedUser(LightKanban kanbanId, LightUser userId);
 
     void updateUserList(List<LightUser> users, List<LightKanban> kanbans);
 
@@ -30,5 +30,5 @@ public interface ComCallsDataClient {
 
     void addUserToList(LightUser user, List<LightKanban> kanbans);
 
-    UUID askIdUser();
+    LightUser askIdUser();
 }
