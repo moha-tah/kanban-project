@@ -14,6 +14,8 @@ import client.ihmMain.impl.commCallsMainImpl;
 import client.ihmMain.impl.kanbanCallsMainImpl;
 import common.dataClasses.Kanban;
 import common.dataClasses.LightKanban;
+import client.data.DataClientProvider;
+import client.data.MainCallsDataImplementation;
 /*import common.dataClasses.Column;
 import common.dataClasses.Kanban;
 import common.dataClasses.Task;*/
@@ -32,12 +34,6 @@ import java.util.List;
 import java.util.UUID;
 
 import client.ihmKanban.impl.MainCallsKanbanImpl;
-
-
-
-
-
-
 
 /**
  * Coeur IHM : orchestre les appels entre la UI et les couches DATA/COMM/KANBAN.
@@ -127,27 +123,33 @@ public class MainCore {
     public void viewKanban(UUID kanbanId) {
         System.out.println("[MainCore] Opening kanban " + kanbanId);
 
-        if (kanbanPort == null) {
-            System.err.println("[MainCore] ERROR: kanbanPort is null");
+        if (commPort == null) {
+            System.err.println("[MainCore] ERROR: commPort is null");
+            return;
+        }
+        
+        if (me == null) {
+            System.err.println("[MainCore] ERROR: user not logged in");
             return;
         }
 
-        // Récupérer la version complète du Kanban dans la liste locale
-        Kanban full = null;
+        // Rechercher le LightKanban dans la liste
+        LightKanban light = null;
         for (LightKanban lk : kanbans) {
-            if (lk.getId().equals(kanbanId) && lk instanceof Kanban k) {
-                full = k;
+            if (lk.getId().equals(kanbanId)) {
+                light = lk;
                 break;
             }
         }
 
-    if (full == null) { 
-        System.err.println("[MainCore] Kanban non trouvé ou pas la version complète");
-        return;
+        if (light != null) {
+            // Demander le Kanban complet via COMM
+            System.out.println("[MainCore] Requesting Kanban via COMM: " + light.getTitle());
+            commPort.getKanban(light, me);
+        } else {
+            System.err.println("[MainCore] Kanban non trouvé (ID: " + kanbanId + ")");
+        }
     }
-
-    kanbanPort.openCreateForm(full);  //backend
-}
 
     public void replaceUsers(List<LightUser> newUsers) {
         users.clear();
@@ -171,7 +173,20 @@ public class MainCore {
         }
     }
 
+    public DataClientProvider getDataClientProvider() {
+        if (dataPort instanceof MainCallsDataImplementation) {
+            return ((MainCallsDataImplementation) dataPort).getProvider();
+        }
+        System.err.println("[MainCore] dataPort n'est pas une instance de MainCallsDataImplementation");
+        return null;
+    }
 
+    /**
+     * Retourne la liste des Kanbans disponibles
+     */
+    public List<LightKanban> getAvailableLightKanbans() {
+        return new ArrayList<>(kanbans);
+    }
 
     public void launchMainWindow(Stage stage) {
         try {

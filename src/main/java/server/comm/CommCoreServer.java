@@ -1,6 +1,9 @@
 package server.comm;
 
+import common.dataClasses.LightUser;
 import server.ServerContext;
+import server.data.ComCallsDataServImplementation;
+import server.data.ServerModel;
 import server.interfaces.CommCallsDataServer;
 
 import java.io.IOException;
@@ -10,6 +13,9 @@ import java.net.BindException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 
@@ -19,12 +25,24 @@ public class CommCoreServer {
     private ServerSocket serverSocket;
     private boolean isRunning;
     private Thread serverThread;
+    private static CommCoreServer instance;
 
     // Liste thread-safe des clients connectés pour diffuser les mises à jour
     private final List<SrvMsgSender> connectedClients = new CopyOnWriteArrayList<>();
+    
+    // Map pour associer chaque connexion client à l'utilisateur connecté
+    private final Map<SrvMsgSender, common.dataClasses.LightUser> clientToUserMap = new ConcurrentHashMap<>();
 
     public CommCoreServer(int port) {
         this.port = port;
+        instance = this;
+    }
+
+    public static void triggerBroadcast() { // acces statique pour déclencher le broadcast
+        if (instance != null) {
+            System.out.println("SERVER: Broadcast manuel déclenché.");
+            instance.broadcastUsersAndKanbansUpdate();
+        }
     }
 
     /**
@@ -34,7 +52,7 @@ public class CommCoreServer {
         ServerContext.setDataInterface(dataInterface);
     }
 
-    /**
+    /*
      * Démarre le serveur dans un thread séparé.
      */
     public void start() throws IOException {
@@ -110,10 +128,16 @@ public class CommCoreServer {
                                         .log(java.util.logging.Level.SEVERE, "SERVER: Erreur lors de l'envoi de la réponse.", e);
                                 // Client déconnecté, le retirer
                                 connectedClients.remove(finalMsgSender);
+                                clientToUserMap.remove(finalMsgSender);
                             }
                         });
 
                         if (receivedMsg instanceof client.comm.messages.ConnectionRequest) {
+                            // Associer l'utilisateur à cette connexion
+                            client.comm.messages.ConnectionRequest connReq = (client.comm.messages.ConnectionRequest) receivedMsg;
+                            if (connReq.getUser() != null) {
+                                clientToUserMap.put(finalMsgSender, connReq.getUser());
+                            }
                             broadcastUsersAndKanbansUpdate();
                         }
 
@@ -132,6 +156,25 @@ public class CommCoreServer {
                 // Callback appelé quand le receiver s'arrête (client déconnecté)
                 connectedClients.remove(finalMsgSender);
                 java.util.logging.Logger logger = java.util.logging.Logger.getLogger(CommCoreServer.class.getName());
+                
+                // Retirer l'utilisateur associé à cette connexion de la liste des utilisateurs connectés
+                LightUser userId = clientToUserMap.remove(finalMsgSender);
+                if (userId != null) {
+                    try {
+                        CommCallsDataServer data = ServerContext.getData();
+                        if (data != null) {
+                            ServerModel model = ((ComCallsDataServImplementation) data).getDataServProvider().getModel();
+                            model.removeConnectedUser(userId.getId());
+                            logger.log(java.util.logging.Level.INFO, "SERVER: Utilisateur {0} retiré de la liste des connectés.", userId);
+                            
+                            // Diffuser la mise à jour de la liste des utilisateurs
+                            broadcastUsersAndKanbansUpdate();
+                        }
+                    } catch (Exception e) {
+                        logger.log(java.util.logging.Level.WARNING, "SERVER: Erreur lors du retrait de l'utilisateur.", e);
+                    }
+                }
+                
                 logger.log(java.util.logging.Level.INFO, "SERVER: Client déconnecté, retiré de la liste.");
                 
                 // Afficher le nombre d'utilisateurs restants
@@ -168,55 +211,46 @@ public class CommCoreServer {
             }
 
             var users = data.getUsersList();
-            var kanbans = data.getKanbansList();
-
             java.util.logging.Logger logger = java.util.logging.Logger.getLogger(CommCoreServer.class.getName());
-            logger.log(Level.INFO, "SERVER: Creating broadcast message with {0} users for {1} clients", new Object[]{users.size(), connectedClients.size()});
 
-            // Créer un nouveau message pour chaque client pour éviter les problèmes de référence partagée
             for (SrvMsgSender clientSender : connectedClients) {
                 try {
-                    // Créer une nouvelle instance du message pour chaque client
+                    // 1. Récupération de l'objet User (Map<SrvMsgSender, LightUser>)
+                    common.dataClasses.LightUser currentUser = clientToUserMap.get(clientSender);
+
+                    java.util.List<common.dataClasses.LightKanban> visibleKanbans;
+
+                    if (currentUser != null) {
+                        // --- CORRECTION ICI : On passe l'objet LightUser directement ---
+                        visibleKanbans = data.getVisibleKanbansForUser(currentUser);
+                    } else {
+                        visibleKanbans = new java.util.ArrayList<>();
+                    }
+
+                    // 3. Création du message
                     client.comm.messages.UpdateUsersAndKanbansListResponse updateMsg =
                             new client.comm.messages.UpdateUsersAndKanbansListResponse(
-                                    new java.util.ArrayList<>(users), // Copie de la liste
-                                    new java.util.ArrayList<>(kanbans)); // Copie de la liste
-                    
-                    logger.log(Level.INFO, "SERVER: Sending broadcast to client with {0} users", updateMsg.getUsers().size());
+                                    new java.util.ArrayList<>(users),
+                                    new java.util.ArrayList<>(visibleKanbans));
+
                     clientSender.send(updateMsg);
+
+                    // Log
+                    String pseudo = (currentUser != null) ? currentUser.getUsername() : "Anonyme";
+                    logger.log(Level.INFO, "SERVER: Broadcast vers {0} -> {1} kanbans envoyés.",
+                            new Object[]{pseudo, visibleKanbans.size()});
+
                 } catch (IOException e) {
-                    logger.log(java.util.logging.Level.WARNING,
-                            "SERVER: Échec de l'envoi de la mise à jour à un client.", e);
                     connectedClients.remove(clientSender);
+                    clientToUserMap.remove(clientSender);
                 }
             }
-
-            // Afficher la liste des utilisateurs connectés
-            logger.log(java.util.logging.Level.INFO,
-                    "SERVER: Broadcast de {0} utilisateurs et {1} kanbans à {2} clients.",
-                    new Object[]{users.size(), kanbans.size(), connectedClients.size()});
-            
-            // Afficher les détails des utilisateurs connectés
-            if (!users.isEmpty()) {
-                StringBuilder userList = new StringBuilder("Utilisateurs connectés: ");
-                for (int i = 0; i < users.size(); i++) {
-                    common.dataClasses.LightUser user = users.get(i);
-                    userList.append(user.getUsername());
-                    if (i < users.size() - 1) {
-                        userList.append(", ");
-                    }
-                }
-                logger.log(Level.INFO, "SERVER: {0}", userList.toString());
-            } else {
-                logger.info("SERVER: Aucun utilisateur connecté.");
-            }
-
         } catch (Exception e) {
             java.util.logging.Logger.getLogger(CommCoreServer.class.getName())
-                    .log(java.util.logging.Level.SEVERE, "SERVER: Erreur lors du broadcast des listes.", e);
+                    .log(java.util.logging.Level.SEVERE, "SERVER: Erreur broadcast.", e);
         }
     }
-}
+
 
 class SrvMsgSender implements AutoCloseable {
     private final ObjectOutputStream out;
@@ -324,4 +358,5 @@ class SrvMsgReceiver implements Runnable, AutoCloseable {
             stop();
         }
     }
+}
 }

@@ -24,8 +24,8 @@ import client.ihmKanban.kanbanCorps;
 
 public class DisplayKanbanController implements Initializable {
 
-    private DisplayKanbanController() {
-        this.corps = null; // temporaire
+    public DisplayKanbanController() {
+        // Constructeur public requis par JavaFX FXML
     }
     
     private kanbanCorps corps;
