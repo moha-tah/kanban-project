@@ -55,11 +55,25 @@ public class KanbanCardController {
     cardRoot.setStyle("-fx-background-color: " + color + "; -fx-background-radius: 10;");
 
     boolean isPrivate = visibility.equalsIgnoreCase("private");
-    requestButton.setVisible(isPrivate);
-    viewButton.setVisible(!isPrivate);
+    if (isMyKanban()) {
+        requestButton.setVisible(false);
+        requestButton.setManaged(false);
+        viewButton.setVisible(true);
+    } else {
+        requestButton.setVisible(isPrivate);
+        requestButton.setManaged(isPrivate);
+        viewButton.setVisible(!isPrivate);
+        viewButton.setManaged(!isPrivate);
+    }
 }
 
-
+    private boolean isMyKanban() {
+        if (core == null || core.getMe() == null || kanban == null) {
+            LOGGER.log(Level.WARNING, "Cannot determine if Kanban is mine: core or current user or kanban is null");
+            return false;
+        }
+        return kanban.getCreator().getUsername().equals(core.getMe().getUsername());
+    }
 
     @FXML
     private void handleView() {
