@@ -33,6 +33,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 import client.ihmKanban.impl.MainCallsKanbanImpl;
 
@@ -57,7 +58,7 @@ public class MainCore {
         KanbanTest.getTaskColumn().get(done).add(t4);
     }*/
     
-
+    public static final Logger LOGGER = Logger.getLogger("MainCorps");
 
     // ---- Ports sortants (UI/Main -> autres couches) ----
     private MainCallsDataClient dataPort;
@@ -224,7 +225,7 @@ public class MainCore {
         try {
             URL fxmlUrl = MainApp.class.getResource(fxmlPath);
             if (fxmlUrl == null) {
-                System.err.println("FXML introuvable : " + fxmlPath);
+                LOGGER.info("FXML introuvable");
                 return;
             }
 
@@ -245,7 +246,7 @@ public class MainCore {
             stage.setScene(scene);
             stage.show();
         } catch (IOException e) {
-            System.err.println("Error while launching main window: " + e.getMessage());
+            LOGGER.info("Error while launching main window: " + e.getMessage());
         }
     }
 
@@ -286,4 +287,3 @@ public class MainCore {
     public void showHomeView()   { loadScene("/home.fxml",   "Home"); }
     public void showLandingView() { loadScene("/landing.fxml", "Welcome");}
 }
-
