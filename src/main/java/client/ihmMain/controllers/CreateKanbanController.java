@@ -10,6 +10,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import java.util.LinkedHashMap;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -89,7 +90,7 @@ public class CreateKanbanController {
             return;
         }
 
-        // Get the current user as creator
+        // Récupération de l'utilisateur
         User currentUser = null;
         if (mainCore != null) {
             var provider = mainCore.getDataClientProvider();
@@ -104,56 +105,59 @@ public class CreateKanbanController {
             return;
         }
 
-        // 1. Instanciation du Kanban with creator
+        // 1. Instanciation du Kanban
         Kanban newKanban = new Kanban(UUID.randomUUID(), title, visibility, currentUser);
 
-        // 2. Configuration des colonnes
+        // 2. Configuration des colonnes AVEC ORDRE GARANTI (1 -> 2 -> 3 -> 4)
+        // LinkedHashMap est OBLIGATOIRE pour conserver l'ordre d'insertion dans le JSON
+        java.util.LinkedHashMap<Column, List<Task>> orderedColumns = new java.util.LinkedHashMap<>();
+
+        // --- BOUCLE STANDARD (0 vers Fin) ---
+        // Comme votre liste 'columnInputs' est déjà ordonnée visuellement dans le FXML
+        // (To Do est en haut, Done en bas), on les parcourt dans l'ordre naturel.
         int index = 1;
         for (ColumnInput ci : columnInputs) {
             String colName = ci.nameField.getText().trim();
+
+            // On prend toutes les colonnes, même si le nom n'est pas changé (car vous avez des valeurs par défaut)
+            // Si le champ est vide, on l'ignore, sinon on l'ajoute.
             if (!colName.isEmpty()) {
                 Column col = new Column(colName, colorToHex(ci.colorPicker.getValue()), index++);
-                newKanban.getTaskColumn().put(col, new ArrayList<>());
+                orderedColumns.put(col, new ArrayList<>());
             }
         }
 
-        if (newKanban.getTaskColumn().isEmpty()) {
+        if (orderedColumns.isEmpty()) {
             showAlert("No columns", "Please define at least one column.");
             return;
         }
 
-        // 3. Sauvegarde physique du fichier Kanban (JSON)
-        // Cela crée le fichier UUID.json dans data/kanbans
+        newKanban.setTaskColumn(orderedColumns);
+
+        // 3. Sauvegarde
+        // GSON va écrire le JSON en suivant l'ordre de la LinkedHashMap (To do en premier)
         KanbanCallsDataImplementation.saveKanbanAsJson(newKanban);
 
         if (mainCore != null) {
-            // A. Mise à jour de l'affichage immédiat
             mainCore.addOrReplaceKanban(newKanban);
 
-            // B. Liaison avec l'utilisateur et Sauvegarde du User
             try {
-                // Add kanban to the user's kanban list in memory
                 currentUser.addKanban(newKanban);
-
-                // Save the updated user to disk
                 var provider = mainCore.getDataClientProvider();
                 if (provider != null) {
                     provider.getToMainImpl().saveUser();
                     System.out.println("Utilisateur sauvegardé avec le nouveau Kanban ID.");
                 }
             } catch (Exception e) {
-                System.err.println("Erreur lors de la mise à jour de l'utilisateur : " + e.getMessage());
                 java.util.logging.Logger.getLogger(CreateKanbanController.class.getName())
-                        .log(java.util.logging.Level.SEVERE, "Erreur traitement createKanban", e);
+                        .log(java.util.logging.Level.SEVERE, "Erreur sauvegarde user", e);
             }
 
-            // C. Notification réseau
             if (mainCore.getCommPort() != null) {
                 mainCore.getCommPort().sendNewKanban(newKanban);
             }
         }
 
-        // 4. Fermeture et rafraîchissement
         Stage stage = (Stage) createButton.getScene().getWindow();
         stage.close();
 
