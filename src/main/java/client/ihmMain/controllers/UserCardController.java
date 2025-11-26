@@ -1,12 +1,18 @@
 package client.ihmMain.controllers;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.logging.Logger;
 
+import client.MainApp;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.stage.Stage;
 
 public class UserCardController {
 
@@ -55,5 +61,28 @@ public class UserCardController {
             LOGGER.warning("Error loading default avatar: " + e.getMessage());
             return null;
         }
+    }
+
+    @FXML
+    private void handleProfileDistantClick() throws IOException {
+        // Charger le FXML
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/profile_distant.fxml"));
+        Parent root = loader.load();
+
+        // Récupérer le controller
+        ProfileDistantController controller = loader.getController();
+
+        // Injecter MainCore
+        controller.setCore(MainApp.getCore());  // récupère le Core global
+
+        // Optionnel : mettre directement l'utilisateur courant
+        if (MainApp.getCore() != null && MainApp.getCore().getMe() != null) {
+            controller.setUser(MainApp.getCore().getMe());
+        }
+
+        // Afficher la scène
+        Stage stage = (Stage) avatarImageView.getScene().getWindow();
+        stage.setTitle("Mon Profil");
+        stage.setScene(new Scene(root, 1280, 720));
     }
 }
