@@ -117,11 +117,9 @@ public class CreateKanbanController {
     }
 
     private boolean validateCurrentStep() {
-        if (currentStep == 1) {
-            if (projectNameField.getText().trim().isEmpty()) {
-                showAlert("Name Required", "Please enter a project name.");
-                return false;
-            }
+        if (currentStep == 1 && projectNameField.getText().trim().isEmpty()) {
+            showAlert("Name Required", "Please enter a project name.");
+            return false;
         }
         // Step 2 (Columns) is technically always valid since we have defaults,
         // but you could check if list is empty.
