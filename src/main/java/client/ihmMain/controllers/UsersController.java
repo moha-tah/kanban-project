@@ -25,29 +25,31 @@ public class UsersController {
         this.core = core;
     }
 
-    public void refreshUsers() {
-        LOGGER.info("Refreshing users list...");
+public void refreshUsers() {
+    LOGGER.info("Refreshing users list...");
 
-        if (core == null) {
-            LOGGER.severe("MainCore n'est pas initialisé dans UsersController !");
-            return;
-        }
-        if (usersContainer == null) {
-            LOGGER.severe("usersContainer est null dans UsersController !");
-            return;
-        }
+    if (core == null) {
+        LOGGER.severe("MainCore n'est pas initialisé dans UsersController !");
+        return;
+    }
+    if (usersContainer == null) {
+        LOGGER.severe("usersContainer est null dans UsersController !");
+        return;
+    }
 
-        usersContainer.getChildren().clear();
+    // On ne vide plus le titre, juste la liste
+    usersContainer.getChildren().clear();
 
-        List<LightUser> users = core.getUsersSnapshot();
-        LOGGER.info("Users from MainCore: " + users.size());
+    List<LightUser> users = core.getUsersSnapshot();
+    LOGGER.info("Users from MainCore: " + users.size());
 
-        for (LightUser user : users) {
-            if (user != null) {
-                addUser(user);
-            }
+    for (LightUser user : users) {
+        if (user != null) {
+            addUser(user);
         }
     }
+}
+
 
     private void addUser(LightUser user) {
         try {
