@@ -2,14 +2,19 @@ package client;
 
 import client.ihmKanban.kanbanCorps;
 import client.ihmMain.MainCore;
+
+import java.util.logging.Logger;
+
 import client.comm.CommCoreClient;
 import client.data.DataClientProvider;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
+
 public class MainApp extends Application {
     // Singleton pour accès global contrôlé => passer sonarqube check
     private static MainApp INSTANCE;
+    public static final Logger LOGGER = Logger.getLogger("MainApp");
 
     private MainCore          core;
     private CommCoreClient    comm;
@@ -20,10 +25,7 @@ public class MainApp extends Application {
         INSTANCE = this;
     }
 
-    private static final String DEFAULT_HOST = "127.0.0.1";
-    private static final int    DEFAULT_PORT = 8080;
-
-    public static MainCore getCore() {
+        public static MainCore getCore() {
         return INSTANCE != null ? INSTANCE.core : null;
     }
 
@@ -39,7 +41,7 @@ public class MainApp extends Application {
     public void start(Stage primaryStage) throws Exception {
         core       = new MainCore();
         data       = new DataClientProvider();
-        comm       = new CommCoreClient(DEFAULT_HOST, DEFAULT_PORT); // valeurs par défaut
+        comm       = new CommCoreClient(); // valeurs par défaut
         kanbanCore = new kanbanCorps();
 
         // -------- Câblage Main -> autres couches --------
@@ -60,12 +62,17 @@ public class MainApp extends Application {
         // Comm -> Kanban
         comm.setIhmKanbanInterface(kanbanCore.getCOMMService());
 
-
         // -------- Lancement de l'IHM --------
         core.launchMainWindow(primaryStage);
 
-        // Connexion réseau après lancement de la fenêtre
-        comm.connect();
+        // -------- Connexion réseau (optionnelle pour tests IHM) --------
+        try {
+            comm.connect();
+        } catch (Exception e) {
+            LOGGER.info("[MainApp] Impossible de se connecter au serveur (mode test UI/offline).");
+            e.printStackTrace();
+            // On ne relance PAS l'exception, pour laisser l'IHM tourner
+        }
     }
 
     public static void main(String[] args) {

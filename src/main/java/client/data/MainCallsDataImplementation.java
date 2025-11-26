@@ -8,14 +8,10 @@ import java.time.LocalDate;
 import java.util.*;
 
 import client.interfaces.MainCallsDataClient;
-import common.dataClasses.LightKanban;
-import common.dataClasses.LightUser;
-import common.dataClasses.User;
-import common.dataClasses.SecureUser;
+import common.dataClasses.*;
+
 import java.util.List;
 import java.util.UUID;
-
-
 
 public class MainCallsDataImplementation implements MainCallsDataClient {
     private DataClientProvider provider;
@@ -34,6 +30,7 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
         }
         return trimmed;
     }
+
     public MainCallsDataImplementation(DataClientProvider provider) {
         this.provider = provider;
     }
@@ -78,6 +75,7 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
         }
 
         try {
+            // 1. Charge l'utilisateur et ses Kanbans depuis le disque
             User user = loadUser(username);
             if (user == null) {
                 return false;
@@ -91,7 +89,18 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
             boolean isValid = secureUser.verifyPassword(password);
 
             if (isValid) {
+                // 2. Met à jour l'utilisateur dans le modèle
                 provider.getMyModel().setLocalUser(user);
+
+                // 3. AJOUT CRITIQUE : Met à jour la liste des LightKanbans dans le modèle
+                // Cela permet au LoginController de récupérer la liste via getMyListLightKanbans()
+                List<LightKanban> lights = new ArrayList<>();
+                if (user.getMyKanban() != null) {
+                    for (Kanban k : user.getMyKanban()) {
+                        lights.add(k.getLightKanban());
+                    }
+                }
+                provider.getMyModel().setAvailableLightKanbans(lights);
             }
 
             return isValid;
@@ -160,6 +169,16 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
         if (user instanceof SecureUser secureUser) {
             json.append(",\"passwordHash\":\"").append(escapeJson(secureUser.getPassword())).append("\"");
         }
+        json.append(",\"kanbanIds\":[");
+        if (user.getMyKanban() != null && !user.getMyKanban().isEmpty()) {
+            for (int i = 0; i < user.getMyKanban().size(); i++) {
+                json.append("\"").append(user.getMyKanban().get(i).getId().toString()).append("\"");
+                if (i < user.getMyKanban().size() - 1) {
+                    json.append(",");
+                }
+            }
+        }
+        json.append("]");
 
         json.append("}");
         return json.toString();
@@ -169,9 +188,7 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
     private User deserializeUserFromJson(String jsonContent) throws IOException {
         Map<String, String> fields = parseJsonObject(jsonContent);
 
-        if (fields.isEmpty()) {
-            return null;
-        }
+        if (fields.isEmpty()) return null;
 
         String idStr = fields.get("id");
         String username = fields.get("username");
@@ -180,6 +197,9 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
         String birthDateStr = fields.get("birthDate");
         String avatar = fields.get("avatar");
         String passwordHash = fields.get("passwordHash");
+
+        // Récupération de la liste brute des IDs
+        String kanbanIdsJson = fields.get("kanbanIds");
 
         if (username == null || firstName == null || lastName == null || birthDateStr == null) {
             throw new IOException("Champs manquants dans le JSON");
@@ -190,27 +210,48 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
 
         User user;
         if (passwordHash != null) {
-
             SecureUser secureUser = new SecureUser(id, username, firstName, lastName, birthDate, "temp");
             try {
                 java.lang.reflect.Field passwordField = SecureUser.class.getDeclaredField("password");
                 passwordField.setAccessible(true);
                 passwordField.set(secureUser, passwordHash);
             } catch (Exception e) {
-                throw new IOException("Erreur lors de la restauration du hash du mot de passe", e);
+                throw new IOException("Erreur hash", e);
             }
             user = secureUser;
         } else {
             user = new User(id, username, firstName, lastName, birthDate);
         }
 
-        if (avatar != null && !avatar.isEmpty()) {
-            user.setAvatar(avatar);
+        if (avatar != null && !avatar.isEmpty()) user.setAvatar(avatar);
+
+        // --- CHARGEMENT DES KANBANS ---
+        List<Kanban> userKanbans = new ArrayList<>();
+        if (kanbanIdsJson != null && kanbanIdsJson.length() > 2) { // > 2 car "[]" vide
+            String content = kanbanIdsJson.substring(1, kanbanIdsJson.length() - 1); // Retirer [ et ]
+            String[] ids = content.split(",");
+
+            for (String rawId : ids) {
+                String cleanId = stripQuotes(rawId);
+                if (cleanId != null && !cleanId.isBlank()) {
+                    try {
+                        UUID kId = UUID.fromString(cleanId);
+                        // Appel statique pour charger le fichier JSON du Kanban
+                        Kanban loadedK = KanbanCallsDataImplementation.loadKanbanFromJson(kId);
+                        if (loadedK != null) {
+                            userKanbans.add(loadedK);
+                        }
+                    } catch (Exception e) {
+                        System.err.println("Impossible de charger le kanban ID: " + cleanId);
+                        System.err.println("Raison: " + e.getMessage());
+                    }
+                }
+            }
         }
+        user.setMyKanban(userKanbans); // Associer la liste chargée à l'utilisateur
 
         return user;
     }
-
 
     private User loadUser(String username) {
         try {
@@ -328,13 +369,10 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
         return secureUser;
     }
 
-
-
     public DataClientProvider getProvider() {
         return this.provider;
     }
     public void setProvider(DataClientProvider provider) {
         this.provider = provider;
     }
-
 }

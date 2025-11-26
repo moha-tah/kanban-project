@@ -10,7 +10,8 @@ public class Kanban extends LightKanban {
     private List<Message> messages;
     private List<Task> tasks;
     private List<Column> columns;
-    private User creator; 
+    private transient User creator;  // transient = not serialized to JSON
+    private UUID creatorId;          // Only the ID is saved
     private String visibility; // public / private
     
 
@@ -20,6 +21,7 @@ public class Kanban extends LightKanban {
         this.taskColumn = new HashMap<>();
         this.visibility = visibility;
         this.creator = creator;
+        this.creatorId = creator != null ? creator.getId() : null;
     }
     
     // Constructeur avec ID et visibility
@@ -28,6 +30,7 @@ public class Kanban extends LightKanban {
         this.visibility = visibility;
         this.taskColumn = new HashMap<>();
         this.creator = creator;
+        this.creatorId = creator != null ? creator.getId() : null;
     }
 
     
@@ -62,6 +65,11 @@ public class Kanban extends LightKanban {
     public User getCreator() {
         return creator;
     }
+    
+    public UUID getCreatorId() {
+        return creatorId;
+    }
+    
     public String getVisibility() {
         return visibility;
     }
@@ -73,6 +81,11 @@ public class Kanban extends LightKanban {
 
     public void setCreator(User creator) {
         this.creator = creator;
+        this.creatorId = creator != null ? creator.getId() : null;
+    }
+    
+    public void setCreatorId(UUID creatorId) {
+        this.creatorId = creatorId;
     }
 
     public void setVisibility(String visibility) {

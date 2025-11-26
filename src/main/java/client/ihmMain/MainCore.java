@@ -14,6 +14,8 @@ import client.ihmMain.impl.commCallsMainImpl;
 import client.ihmMain.impl.kanbanCallsMainImpl;
 import common.dataClasses.Kanban;
 import common.dataClasses.LightKanban;
+import client.data.DataClientProvider;
+import client.data.MainCallsDataImplementation;
 /*import common.dataClasses.Column;
 import common.dataClasses.Kanban;
 import common.dataClasses.Task;*/
@@ -21,6 +23,7 @@ import common.dataClasses.LightUser;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.effect.Light;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 
@@ -30,14 +33,9 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 import client.ihmKanban.impl.MainCallsKanbanImpl;
-
-
-
-
-
-
 
 /**
  * Coeur IHM : orchestre les appels entre la UI et les couches DATA/COMM/KANBAN.
@@ -60,7 +58,7 @@ public class MainCore {
         KanbanTest.getTaskColumn().get(done).add(t4);
     }*/
     
-
+    public static final Logger LOGGER = Logger.getLogger("MainCorps");
 
     // ---- Ports sortants (UI/Main -> autres couches) ----
     private MainCallsDataClient dataPort;
@@ -127,27 +125,33 @@ public class MainCore {
     public void viewKanban(UUID kanbanId) {
         System.out.println("[MainCore] Opening kanban " + kanbanId);
 
-        if (kanbanPort == null) {
-            System.err.println("[MainCore] ERROR: kanbanPort is null");
+        if (commPort == null) {
+            System.err.println("[MainCore] ERROR: commPort is null");
+            return;
+        }
+        
+        if (me == null) {
+            System.err.println("[MainCore] ERROR: user not logged in");
             return;
         }
 
-        // Récupérer la version complète du Kanban dans la liste locale
-        Kanban full = null;
+        // Rechercher le LightKanban dans la liste
+        LightKanban light = null;
         for (LightKanban lk : kanbans) {
-            if (lk.getId().equals(kanbanId) && lk instanceof Kanban k) {
-                full = k;
+            if (lk.getId().equals(kanbanId)) {
+                light = lk;
                 break;
             }
         }
 
-    if (full == null) { 
-        System.err.println("[MainCore] Kanban non trouvé ou pas la version complète");
-        return;
+        if (light != null) {
+            // Demander le Kanban complet via COMM
+            System.out.println("[MainCore] Requesting Kanban via COMM: " + light.getTitle());
+            commPort.getKanban(light, me);
+        } else {
+            System.err.println("[MainCore] Kanban non trouvé (ID: " + kanbanId + ")");
+        }
     }
-
-    kanbanPort.openCreateForm(full);  //backend
-}
 
     public void replaceUsers(List<LightUser> newUsers) {
         users.clear();
@@ -171,7 +175,20 @@ public class MainCore {
         }
     }
 
+    public DataClientProvider getDataClientProvider() {
+        if (dataPort instanceof MainCallsDataImplementation) {
+            return ((MainCallsDataImplementation) dataPort).getProvider();
+        }
+        System.err.println("[MainCore] dataPort n'est pas une instance de MainCallsDataImplementation");
+        return null;
+    }
 
+    /**
+     * Retourne la liste des Kanbans disponibles
+     */
+    public List<LightKanban> getAvailableLightKanbans() {
+        return new ArrayList<>(kanbans);
+    }
 
     public void launchMainWindow(Stage stage) {
         try {
@@ -208,7 +225,7 @@ public class MainCore {
         try {
             URL fxmlUrl = MainApp.class.getResource(fxmlPath);
             if (fxmlUrl == null) {
-                System.err.println("FXML introuvable : " + fxmlPath);
+                LOGGER.info("FXML introuvable");
                 return;
             }
 
@@ -229,13 +246,44 @@ public class MainCore {
             stage.setScene(scene);
             stage.show();
         } catch (IOException e) {
-            System.err.println("Error while launching main window: " + e.getMessage());
+            LOGGER.info("Error while launching main window: " + e.getMessage());
         }
     }
+
+  
+
+    public void requestAccessToKanban(Kanban kanban) {
+        if (kanban == null || kanban.getId() == null) {
+            System.err.println("[MainCore] requestAccessToKanban: kanban invalide");
+            return;
+        }
+        if (me == null) {
+            System.err.println("[MainCore] ERROR: utilisateur non connecté");
+            return;
+        }
+        if (commPort == null) {
+            System.err.println("[MainCore] ERROR: commPort est null");
+            return;
+        }
+
+        System.out.println("[MainCore] sendPermissionRequest user=" + me + " kanban=" + kanban);
+
+        // Envoi au serveur
+        commPort.sendPermissionRequest(me, kanban);
+    }
+
+    public void sendPermissionResponse(LightUser requesterId, LightKanban kanbanId, boolean accepted) {
+        if (commPort != null) {
+            System.out.println("[MainCore] Sending permission response: " + accepted);
+            commPort.sendPermissionResponse(requesterId, kanbanId, accepted);
+        } else {
+            System.err.println("[MainCore] ERROR: commPort is null, cannot send response.");
+        }
+    }
+
 
     public void showLoginView()  { loadScene("/login.fxml",  "Login"); }
     public void showSignupView() { loadScene("/signup.fxml", "Sign up"); }
     public void showHomeView()   { loadScene("/home.fxml",   "Home"); }
     public void showLandingView() { loadScene("/landing.fxml", "Welcome");}
 }
-

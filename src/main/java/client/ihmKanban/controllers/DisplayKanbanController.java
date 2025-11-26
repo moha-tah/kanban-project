@@ -15,6 +15,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 import java.net.URL;
+import java.util.Comparator;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.UUID;
@@ -24,10 +25,10 @@ import client.ihmKanban.kanbanCorps;
 
 public class DisplayKanbanController implements Initializable {
 
-    private DisplayKanbanController() {
-        this.corps = null; // temporaire
+    public DisplayKanbanController() {
+        // Constructeur public requis par JavaFX FXML
     }
-    
+
     private kanbanCorps corps;
 
     public void setCore(kanbanCorps Kcorps) {
@@ -52,7 +53,7 @@ public class DisplayKanbanController implements Initializable {
         // on ne fait rien au chargement : on attend initBoard(...)
     }
 
-    
+
 
 
     /**
@@ -78,6 +79,8 @@ public class DisplayKanbanController implements Initializable {
         kanbanTitleLabel.setText(kanban.getTitle());
 
         columnsContainer.getChildren().clear();
+
+        columns.sort(Comparator.comparingInt(Column::getNumber));
 
         for (Column col : columns) {
             VBox columnNode = createColumnNode(col);
@@ -155,7 +158,7 @@ public class DisplayKanbanController implements Initializable {
     }
 
     // ---- Handlers basiques (tu pourras les relier à tes popups) ----
-    
+
     private void onColumnMenuClick(Column col/*, VBox columnNode*/) {
         col.getTitle();
     }
@@ -166,5 +169,5 @@ public class DisplayKanbanController implements Initializable {
 
     private void onStatusClick(Task task, Button statusBtn) {
         task.getTitle();
-    } 
+    }
 }

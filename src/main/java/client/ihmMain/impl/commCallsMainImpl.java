@@ -1,6 +1,7 @@
 package client.ihmMain.impl;
 
 import client.ihmMain.MainCore;
+import client.ihmMain.controllers.HomeViewController;
 import client.interfaces.CommClientCallsMain;
 import common.dataClasses.LightKanban;
 import common.dataClasses.LightUser;
@@ -17,16 +18,34 @@ public class commCallsMainImpl implements CommClientCallsMain {
     }
 
     @Override
-    public void displayDecision(LightUser user, LightKanban kanban, boolean decision) {
-        System.out.println("[Main->CommCB] decision=" + decision
-                + " user=" + user.getUsername()
-                + " kanban=" + kanban.getTitle());
+    public void displayPermissionRequest(LightUser user, LightKanban kanban) {
+        javafx.application.Platform.runLater(() -> {
+            if (HomeViewController.getInstance() != null) {
+                // Appel de la version "Jolie"
+                HomeViewController.getInstance().addRequestNotification(user, kanban);
+            }
+        });
     }
 
     @Override
-    public void displayPermissionRequest(LightUser user, LightKanban kanban) {
-        System.out.println("[Main->CommCB] permission request from " + user.getUsername()
-                + " for kanban " + kanban.getTitle());
+    public void displayDecision(LightUser user, LightKanban kanban, boolean decision) {
+        String decisionMaker = (user != null) ? user.getUsername() : "Le propriétaire";
+
+        System.out.println("[Main->CommCB] decision=" + decision
+                + " by=" + decisionMaker
+                + " kanban=" + kanban.getTitle());
+
+        javafx.application.Platform.runLater(() -> {
+            if (HomeViewController.getInstance() != null) {
+                String status = decision ? "ACCEPTÉE" : "REFUSÉE";
+                String msg = "Votre demande pour '" + kanban.getTitle() + "' a été " + status;
+                HomeViewController.getInstance().addNotification(msg);
+                HomeViewController.handleNotif();
+                if (decision) {
+                    HomeViewController.getInstance().refreshKanbansFromModel();
+                }
+            }
+        });
     }
 
     @Override

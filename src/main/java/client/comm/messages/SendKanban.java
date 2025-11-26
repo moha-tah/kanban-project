@@ -18,10 +18,15 @@ public class SendKanban extends Message {
         // Le message va chercher l'interface tout seul via la classe statique
         // Note : Il faut gérer le cas où on est sur le serveur (try/catch ou vérification)
         try {
-
-            this.getClientContext().getData().send(this.kanban);
+            System.out.println("[SendKanban] Received Kanban from server: " + kanban.getTitle() + " (ID: " + kanban.getId() + ")");
+            
+            // COMM appelle directement displayKanban sur IHM Kanban
+            this.getClientContext().getKanbanComm().displayKanban(this.kanban);
+            
+            System.out.println("[SendKanban] Kanban displayed via IHM Kanban");
         } catch (Throwable t) {
             // On ignore si on n'est pas sur le client
+            System.err.println("[SendKanban] Error or not on client: " + t.getMessage());
         }
         return Optional.empty();
     }
