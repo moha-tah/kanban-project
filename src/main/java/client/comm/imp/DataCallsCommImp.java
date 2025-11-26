@@ -7,6 +7,8 @@ import java.io.IOException;
 import client.comm.CommCoreClient;
 import client.interfaces.DataCallsComm;
 import common.dataClasses.Kanban;
+import common.dataClasses.LightKanban;
+import common.dataClasses.Modification;
 import client.comm.messages.SendNewKanban;
 
 public class DataCallsCommImp implements DataCallsComm {
@@ -38,13 +40,21 @@ public class DataCallsCommImp implements DataCallsComm {
         }
     }
 
+    // -- Modifier Kanban - Save in Servidor --
     @Override
-    public void addAuthorizedUser(UUID kanbanId, UUID userId) {
+    public void saveModifiedKanban(Modification modification, LightKanban kanban) {
+        System.out.println("COMM IMP: Sending modified Kanban to server...");
+        
+        MessageSaveModifiedKanban msg = new MessageSaveModifiedKanban(kanban, modification);
+        
         try {
-            commCore.sendMessage(java.util.Arrays.asList("addAuthorizedUser", kanbanId, userId));
+             if (commCore.getMsgSender() != null) {
+                 commCore.getMsgSender().send(msg);
+             }
         } catch (IOException e) {
             java.util.logging.Logger.getLogger(DataCallsCommImp.class.getName())
-                    .log(java.util.logging.Level.SEVERE, "DataCallsCommImp: Echec envoi addAuthorizedUser", e);
+                 .log(java.util.logging.Level.SEVERE, "DataCallsCommImp: Failed to send modified Kanban", e);
         }
     }
+
 }
