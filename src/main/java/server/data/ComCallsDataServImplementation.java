@@ -65,10 +65,6 @@ public class ComCallsDataServImplementation implements CommCallsDataServer {
     public void addNewUser(LightUser user, List<LightKanban> clientKanbans) {
         ServerModel model = myProvider.getModel();
 
-
-    @Override
-    public boolean addAuthorizedUser(LightKanban kanban, LightUser user) {
-        return myProvider.getModel().addAuthorizedUser(kanban, user);
         // 1. Enregistrer l'utilisateur
         List<LightUser> connectedUsers = model.getConnectedUsers();
         boolean userExists = connectedUsers.stream().anyMatch(u -> u.getId().equals(user.getId()));
