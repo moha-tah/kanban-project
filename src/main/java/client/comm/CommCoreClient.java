@@ -32,9 +32,7 @@ public class CommCoreClient {
     private final ClientContext clientContext;
 
 
-    public CommCoreClient(String serverAddress, int serverPort) {
-        this.serverAddress = serverAddress;
-        this.serverPort = serverPort;
+    public CommCoreClient() {
         this.ihmMainCallsComm = new IhmMainCallsCommImp(this);
         this.dataCallsComm = new DataCallsCommImp(this);
         this.ihmKanbanCallsComm = new IhmKanbanCallsCommImp(this);
