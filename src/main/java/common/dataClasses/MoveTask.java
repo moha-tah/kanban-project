@@ -42,29 +42,29 @@ public class MoveTask extends Modification {
     @Override
     public Kanban execute(Kanban targetKanban) {
         HashMap<Column, List<Task>> taskColumn = targetKanban.getTaskColumn();
-        // Trouver la tâche et sa colonne source
-        Task movingTask = null;
-        Column sourceColumn = null;
-        for (Column col : taskColumn.keySet()) {
-            for (Task t : taskColumn.get(col)) {
-                if (t.getId().equals(taskId)) {
-                    movingTask = t;
-                    sourceColumn = col;
-                    break;
-                }
-            }
-            if (movingTask != null) break;
+        Task taskToMove = null;
+        //Supprimer la valeur de l'ancienne colonne
+        for (Column col: taskColumn.keySet()) {
+            List<Task> taskList = taskColumn.get(col);
+            taskToMove = taskList.stream()
+                    .filter(task -> task.getId().equals(taskId))
+                    .findFirst()
+                    .orElse(null);
+            taskList.removeIf(task -> task.getId().equals(taskId));
+            taskColumn.put(col, taskList);
         }
-        // Trouver la colonne de destination
-        Column destinationColumn = null;
-        for (Column col : taskColumn.keySet()) {
-            if (col.getId().equals(targetColumn)) {
-                destinationColumn = col;
+        //Ajouter la valeur à la nouvelle colonne
+        for (Column col: taskColumn.keySet()){
+            if(col.getId().equals(targetColumn)){
+                List<Task> taskList = taskColumn.get(col);
+                if (taskToMove != null) {
+                    taskList.add(taskToMove);
+                }
+                taskColumn.put(col, taskList);
                 break;
             }
         }
-        
-        targetKanban.moveTask(movingTask, sourceColumn, destinationColumn);
+        targetKanban.setTaskColumn(taskColumn);   
         return targetKanban;
     }
     
