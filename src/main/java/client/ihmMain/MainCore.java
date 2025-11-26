@@ -241,7 +241,7 @@ public class MainCore {
             stage.setScene(scene);
             stage.show();
         } catch (IOException e) {
-            LOGGER.log(Level.INFO, "Error while  launching main window: {0}", e.getMessage());
+            LOGGER.log(Level.SEVERE, "Error while  launching main window: {0}", e.getMessage());
         }
     }
 

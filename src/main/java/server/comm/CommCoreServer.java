@@ -153,7 +153,7 @@ public class CommCoreServer {
                         });
 
                         if (receivedMsg instanceof client.comm.messages.ConnectionRequest connReq) {
-                                                        if (connReq.getUser() != null) {
+                            if (connReq.getUser() != null) {
                                 clientToUserMap.put(finalMsgSender, connReq.getUser());
                             }
                             broadcastUsersAndKanbansUpdate();

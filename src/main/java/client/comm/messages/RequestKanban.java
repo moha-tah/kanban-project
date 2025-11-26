@@ -23,7 +23,6 @@ public class RequestKanban extends Message {
     @Override
     public Optional<Message> handle() {        
         try {
-            this.getServerContext();
             var dataServer = ServerContext.getData();
 
             if (dataServer != null) {

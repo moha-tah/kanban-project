@@ -20,7 +20,6 @@ public class AskAddListModifiers extends Message {
     @Override
     public Optional<Message> handle() {
         try {
-            this.getServerContext();
             // LOGIQUE SERVEUR
             var dataServer = ServerContext.getData();
             

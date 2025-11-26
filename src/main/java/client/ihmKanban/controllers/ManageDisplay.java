@@ -62,7 +62,7 @@ public class ManageDisplay {
             stage.show();
 
         } catch (IOException | IllegalStateException e) {
-            corps.LOGGER.log(Level.INFO, "Erreur lors de l''ouverture de l''\u00e9cran Kanban : {0}", e.getMessage());
+            corps.LOGGER.log(Level.SEVERE, "Erreur lors de l''ouverture de l''\u00e9cran Kanban : {0}", e.getMessage());
         }
     }
 }
