@@ -1,4 +1,5 @@
 package common.dataClasses;
+import java.util.List;
 import java.util.UUID;
 
 public class CreateMessage extends Modification {
@@ -28,8 +29,9 @@ public class CreateMessage extends Modification {
     
     @Override
     public Kanban execute(Kanban targetKanban) {
-        // Logique pour exécuter la création de message
-        // À implémenter selon les règles métier
+        List<Message> messageList = targetKanban.getMessages();
+        messageList.add(message);
+        targetKanban.setMessages(messageList);
         return targetKanban;
     }
     

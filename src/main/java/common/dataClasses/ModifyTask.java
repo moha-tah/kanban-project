@@ -1,4 +1,5 @@
 package common.dataClasses;
+import java.util.List;
 import java.util.UUID;
 
 public class ModifyTask extends Modification {
@@ -28,8 +29,12 @@ public class ModifyTask extends Modification {
     
     @Override
     public Kanban execute(Kanban targetKanban) {
-        // Logique pour exécuter la modification de tâche
-        // À implémenter selon les règles métier
+        List<Task> taskList = targetKanban.getTasks();
+        //supprimer la tache avec le meme id
+        taskList.removeIf(t -> t.getId().equals(task.getId()));
+        //ajouter la tache modifiée
+        taskList.add(task);
+        targetKanban.setTasks(taskList);
         return targetKanban;
     }
     

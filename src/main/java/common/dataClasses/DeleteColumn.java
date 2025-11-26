@@ -1,4 +1,5 @@
 package common.dataClasses;
+import java.util.List;
 import java.util.UUID;
 
 public class DeleteColumn extends Modification {
@@ -28,8 +29,10 @@ public class DeleteColumn extends Modification {
     
     @Override
     public Kanban execute(Kanban targetKanban) {
-        // Logique pour exécuter la suppression de colonne
-        // À implémenter selon les règles métier
+        List<Column> columnList = targetKanban.getColumns();
+        //supprimer la colonne avec le meme id
+        columnList.removeIf(c -> c.getId().equals(columnId));
+        targetKanban.setColumns(columnList);
         return targetKanban;
     }
     

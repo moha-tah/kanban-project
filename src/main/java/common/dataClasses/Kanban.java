@@ -99,6 +99,10 @@ public class Kanban extends LightKanban {
     public void setTasks(List<Task> tasks) {
         this.tasks = tasks;
     }
+
+    public void setColumns(List<Column> columns) {
+        this.columns = columns;
+    }
    
    
     // Méthode utilitaire pour obtenir toutes les tâches d'une colonne
