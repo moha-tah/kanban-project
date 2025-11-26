@@ -1,89 +1,39 @@
-package server.data;
+package server.data; // <--- CRUCIAL
+
 import java.util.ArrayList;
 import java.util.List;
-import common.dataClasses.Access;
 import java.util.UUID;
-
 import common.dataClasses.Kanban;
 import common.dataClasses.LightKanban;
 import common.dataClasses.LightUser;
-import common.dataClasses.Role;
-
 
 public class ServerModel {
-    private List<Kanban> inUseKanbans;
+
     private List<LightUser> connectedUsers;
-    private List<AssociationUsersOnKanban> usersOnKanbans;
+    private List<Kanban> inUseKanbans;
 
     public ServerModel() {
-        this.inUseKanbans = new ArrayList<Kanban>();
-        this.connectedUsers = new ArrayList<LightUser>();
-        this.usersOnKanbans = new ArrayList<AssociationUsersOnKanban>();
+        this.connectedUsers = new ArrayList<>();
+        this.inUseKanbans = new ArrayList<>();
     }
 
-    public List<LightKanban> getInUseLightKanbans() {
-        ArrayList<LightKanban> myList = new  ArrayList<LightKanban>();
-        for (Kanban l:inUseKanbans) {
-            myList.add(l.getLightKanban());
-        }
-
-        return myList;
-    }
-    public List<Kanban> getInUseKanbans() {
-        return inUseKanbans;
-    }
     public List<LightUser> getConnectedUsers() {
         return connectedUsers;
     }
-    public void addInUseKanban(Kanban newKanban) {
-        if (newKanban != null && !inUseKanbans.contains(newKanban)) {
-            inUseKanbans.add(newKanban);
-        }
-    }
-    public void removeInUseKanban(Kanban oldKanban) {
-        inUseKanbans.remove(oldKanban);
-    }
-     public List<AssociationUsersOnKanban> getUsersOnKanbans() {
-        return usersOnKanbans;
-    }
-     public void addUserOnKanban(AssociationUsersOnKanban newAssoc) {
-        if (newAssoc != null && !usersOnKanbans.contains(newAssoc)) {
-            usersOnKanbans.add(newAssoc);
-        }
+
+    public void setConnectedUsers(List<LightUser> connectedUsers) {
+        this.connectedUsers = connectedUsers;
     }
 
-    public void removeUserOnKanban(AssociationUsersOnKanban oldAssoc) {
-        usersOnKanbans.remove(oldAssoc);
-    }
-    
-    public boolean addAuthorizedUser(LightKanban kanban, LightUser user) {
-
-        if (kanban == null || user == null) {
-        return false;
-        }
-        if (kanban.getAccessList() == null) {
-        kanban.setAccessList(new ArrayList<>());
-        }
-        List<Access> accessList = kanban.getAccessList();
-        for (Access a : accessList) {
-            if (a.getUser().getId().equals(user.getId())) {
-                return true; 
-            }
-        }
-        Access newAccess = new Access(user, Role.VIEWER);
-        accessList.add(newAccess);
-        return true;
+    public List<Kanban> getInUseKanbans() {
+        return inUseKanbans;
     }
 
-}
+    public void setInUseKanbans(List<Kanban> inUseKanbans) {
+        this.inUseKanbans = inUseKanbans;
+    }
 
-    /**
-     * Retire un utilisateur de la liste des utilisateurs connectés.
-     * @param userId L'ID de l'utilisateur à retirer
-     */
     public void removeConnectedUser(UUID userId) {
-        if (userId != null) {
-            connectedUsers.removeIf(user -> user.getId().equals(userId));
-        }
+        connectedUsers.removeIf(u -> u.getId().equals(userId));
     }
 }

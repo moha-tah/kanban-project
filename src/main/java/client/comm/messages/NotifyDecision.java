@@ -1,5 +1,8 @@
 package client.comm.messages;
 
+import common.dataClasses.LightKanban;
+import common.dataClasses.LightUser;
+
 import java.util.Optional;
 import java.util.UUID;
 
@@ -10,11 +13,11 @@ import java.util.UUID;
 public class NotifyDecision extends Message {
     private static final long serialVersionUID = 1L;
 
-    private final UUID requesterId;
-    private final UUID kanbanId;
+    private final LightUser requesterId;
+    private final LightKanban kanbanId;
     private final boolean accepted;
 
-    public NotifyDecision(UUID requesterId, UUID kanbanId, boolean accepted) {
+    public NotifyDecision(LightUser requesterId, LightKanban kanbanId, boolean accepted) {
         this.requesterId = requesterId;
         this.kanbanId = kanbanId;
         this.accepted = accepted;
@@ -22,8 +25,15 @@ public class NotifyDecision extends Message {
 
     @Override
     public Optional<Message> handle() {
-        // Executed on the side that receives the notification (here: typically client)
-        System.out.println("[CLIENT] NotifyDecision: user=" + requesterId + ", kanban=" + kanbanId + ", accepted=" + accepted);
+        // Côté CLIENT (Demandeur)
+        if (client.MainApp.getCore() != null) {
+            client.MainApp.getCore().getCOMMService().displayDecision(null, kanbanId, accepted);
+
+            javafx.application.Platform.runLater(() -> {
+
+                client.ihmMain.controllers.HomeViewController.getInstance().refreshKanbansFromModel();
+            });
+        }
         return Optional.empty();
     }
 }

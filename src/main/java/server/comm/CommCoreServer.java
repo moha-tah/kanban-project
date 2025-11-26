@@ -45,6 +45,26 @@ public class CommCoreServer {
         }
     }
 
+    public static boolean sendToUser(UUID targetUserId, Object message) {
+        if (instance == null) return false;
+
+        // On cherche le socket associé à cet utilisateur
+        for (Map.Entry<SrvMsgSender, common.dataClasses.LightUser> entry : instance.clientToUserMap.entrySet()) {
+            if (entry.getValue().getId().equals(targetUserId)) {
+                try {
+                    System.out.println("SERVER: Routage message vers " + entry.getValue().getUsername());
+                    entry.getKey().send(message);
+                    return true;
+                } catch (IOException e) {
+                    java.util.logging.Logger.getLogger(CommCoreServer.class.getName())
+                            .log(java.util.logging.Level.SEVERE, "SERVER: Erreur lors de l'envoi de la réponse.", e);
+                }
+            }
+        }
+        System.out.println("SERVER: Utilisateur cible " + targetUserId + " non trouvé ou déconnecté.");
+        return false;
+    }
+
     /**
      * Configure l'interface Data globale du serveur via ServerContext.
      */

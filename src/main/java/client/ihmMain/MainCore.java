@@ -23,6 +23,7 @@ import common.dataClasses.LightUser;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.effect.Light;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 
@@ -248,6 +249,38 @@ public class MainCore {
             LOGGER.info("Error while launching main window: " + e.getMessage());
         }
     }
+
+  
+
+    public void requestAccessToKanban(Kanban kanban) {
+        if (kanban == null || kanban.getId() == null) {
+            System.err.println("[MainCore] requestAccessToKanban: kanban invalide");
+            return;
+        }
+        if (me == null) {
+            System.err.println("[MainCore] ERROR: utilisateur non connecté");
+            return;
+        }
+        if (commPort == null) {
+            System.err.println("[MainCore] ERROR: commPort est null");
+            return;
+        }
+
+        System.out.println("[MainCore] sendPermissionRequest user=" + me + " kanban=" + kanban);
+
+        // Envoi au serveur
+        commPort.sendPermissionRequest(me, kanban);
+    }
+
+    public void sendPermissionResponse(LightUser requesterId, LightKanban kanbanId, boolean accepted) {
+        if (commPort != null) {
+            System.out.println("[MainCore] Sending permission response: " + accepted);
+            commPort.sendPermissionResponse(requesterId, kanbanId, accepted);
+        } else {
+            System.err.println("[MainCore] ERROR: commPort is null, cannot send response.");
+        }
+    }
+
 
     public void showLoginView()  { loadScene("/login.fxml",  "Login"); }
     public void showSignupView() { loadScene("/signup.fxml", "Sign up"); }

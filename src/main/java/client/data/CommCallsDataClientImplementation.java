@@ -77,7 +77,7 @@ public class CommCallsDataClientImplementation implements ComCallsDataClient{
         }
     }
     
-    Override
+    @Override
     public void addToListKanban(LightKanban kanban){
         if (provider == null || provider.getMyModel() == null || kanban == null) {
             return;
