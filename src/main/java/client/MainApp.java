@@ -65,7 +65,6 @@ public class MainApp extends Application {
         // Comm -> Kanban
         comm.setIhmKanbanInterface(kanbanCore.getCOMMService());
 
-
         // -------- Lancement de l'IHM --------
         core.launchMainWindow(primaryStage);
 
