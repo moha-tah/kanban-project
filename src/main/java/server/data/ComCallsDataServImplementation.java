@@ -8,10 +8,52 @@ import common.dataClasses.Kanban;
 import common.dataClasses.LightKanban;
 import common.dataClasses.LightUser;
 import common.dataClasses.Modification;
+import common.dataClasses.Access;
+import static common.dataClasses.Role;
 import server.interfaces.CommCallsDataServer;
 
+
 public class ComCallsDataServImplementation implements CommCallsDataServer {
-    private DataServProvider myProvider;
+  private DataServProvider myProvider;
+  public ComCallsDataServImplementation() {}
+  public static ComCallsDataServImplementation newComCallsDataServImplementation() {
+        return new ComCallsDataServImplementation();
+  }
+  @Override
+  public Kanban requestKanban(LightUser user, LightKanban kanban) {
+        ServerModel model = myProvider.getModel();
+        List<Kanban> inUseKanbans = model.getInUseKanbans();
+        Kanban myKanban = null;
+        for (Kanban k : inUseKanbans) {
+            LightKanban lightK = k.getLightKanban();
+            if (lightK.getId().equals(kanbanID)) {
+                myKanban = k;
+                break;
+            }
+    }
+        //doute sur la méthode, peut etre que les classes ont des problèmes d'implémentation (manque d'attributs ?)
+        Access accessList = myKanban.getAccessList()
+        Boolean hasAccess = false;
+        for (Access a : accessList) {
+            aUser = a.getUser();
+            aRole = a.getRole();
+            if (aUser.getId().equals(user.getId()) && (aRole.equals(VIEWER) || aRole.equals(MODIFIER))) {
+                hasAccess = true;
+                break;
+            }
+        }
+        if (hasAccess) {
+            return myKanban;
+        }
+        else{
+            return null;
+        }
+    }
+
+    @Override
+    public List<Kanban> notifyLogout(UUID userId) {
+        return null ; //TODO V3
+    }
 
     public ComCallsDataServImplementation() {}
 
