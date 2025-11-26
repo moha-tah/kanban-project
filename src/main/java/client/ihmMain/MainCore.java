@@ -224,7 +224,7 @@ public class MainCore {
         try {
             URL fxmlUrl = MainApp.class.getResource(fxmlPath);
             if (fxmlUrl == null) {
-                LOGGER.info("FXML introuvable : " + fxmlPath);
+                LOGGER.info("FXML introuvable");
                 return;
             }
 
