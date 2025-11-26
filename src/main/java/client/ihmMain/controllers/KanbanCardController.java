@@ -1,5 +1,4 @@
 package client.ihmMain.controllers;
-
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -86,7 +85,7 @@ public class KanbanCardController {
 
     @FXML
     private void handleView() {
-        LOGGER.info("[VIEW] Kanban: " + title);
+        LOGGER.log(Level.INFO, "[VIEW] Kanban: {0}", title);
 
         if (core == null) {
             LOGGER.severe(" MainCore is null in KanbanCardController!");
@@ -104,7 +103,7 @@ public class KanbanCardController {
 
     @FXML
     private void requestPermission() {
-        LOGGER.info("[REQUEST ACCESS] Kanban privé: " + title);
+        LOGGER.log(Level.INFO, "[REQUEST ACCESS] Kanban priv\u00e9: {0}", title);
 
         if (core == null) {
             LOGGER.severe("MainCore is null in KanbanCardController!");
@@ -121,7 +120,7 @@ public class KanbanCardController {
 
     @FXML
     private void handleDelete() {
-        LOGGER.warning("[DELETE] Kanban: " + title);
+        LOGGER.log(Level.WARNING, "[DELETE] Kanban: {0}", title);
     }
     
 

@@ -3,6 +3,8 @@ package client.comm.messages;
 import java.util.Optional;
 import java.util.UUID;
 
+import server.ServerContext;
+
 
 public class AskAddListModifiers extends Message {
     private static final long serialVersionUID = 1L;
@@ -18,8 +20,9 @@ public class AskAddListModifiers extends Message {
     @Override
     public Optional<Message> handle() {
         try {
+            this.getServerContext();
             // LOGIQUE SERVEUR
-            var dataServer = this.getServerContext().getData();
+            var dataServer = ServerContext.getData();
             
             if (dataServer != null) {
                 // TO DO
