@@ -87,6 +87,9 @@
                     </goals>
                     <configuration>
                         <mainClass>server.ServerApp</mainClass>
+                        <arguments>
+                            <argument>${exec.args}</argument>
+                        </arguments>
                     </configuration>
                 </execution>
             </executions>
