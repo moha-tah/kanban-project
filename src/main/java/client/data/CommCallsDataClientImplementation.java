@@ -72,8 +72,8 @@ public class CommCallsDataClientImplementation implements ComCallsDataClient{
             provider.getCommInterface().addAuthorizedUser(kanbanId, userId);
             return true;
         } catch (Exception e) {
-            java.util.logging.Logger.getLogger(CommCallsDataClientImplementation.class.getName())
-                .log(java.util.logging.Level.SEVERE, "Error while adding authorized user (kanbanId={0}, userId={1})", new Object[]{kanbanId, userId});
+            java.util.logging.Logger logger = java.util.logging.Logger.getLogger(CommCallsDataClientImplementation.class.getName());
+            logger.log(java.util.logging.Level.SEVERE, e, () -> String.format("Error while adding authorized user (kanbanId=%s, userId=%s)", kanbanId, userId));
             return false;
         }
     }
