@@ -20,9 +20,7 @@ import java.util.logging.Logger;
 
 public class ManageDisplay {
 
-    
-
-        private final kanbanCorps corps; 
+    private final kanbanCorps corps; 
 
     public ManageDisplay(kanbanCorps corps) {
         this.corps = corps;

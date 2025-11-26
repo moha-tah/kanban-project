@@ -76,9 +76,9 @@ public class UserCardController {
         ProfileDistantController controller = loader.getController();
         controller.setCore(MainApp.getCore());
 
-        // on récupère l'utilisateur et on le passe au contrôleur
-        // LightUser user = MainApp.getCore().searchUserByUsername(username); // besoin d’une méthode pour ça
-        // controller.setUser(user);
+        //on récupère l'utilisateur et on le passe au contrôleur
+        LightUser user = MainApp.getCore().searchUserByUsername(username); 
+        controller.setUser(user);
 
         Stage stage = (Stage) avatarImageView.getScene().getWindow();
         stage.setTitle("Profil Distant - " + nameLabel.getText());
