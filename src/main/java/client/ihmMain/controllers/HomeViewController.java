@@ -168,6 +168,21 @@ public class HomeViewController {
     private void handleDecision(common.dataClasses.LightUser requester, common.dataClasses.LightKanban kanban, boolean accepted) {
         if (core != null) {
             core.sendPermissionResponse(requester, kanban, accepted);
+            
+            // Si accepté, mettre à jour le kanban local (DATA) pour lier l'utilisateur au kanban
+            if (accepted) {
+                try {
+                    client.data.DataClientProvider provider = core.getDataClientProvider();
+                    if (provider != null) {
+                        client.interfaces.MainCallsDataClient dataClient = provider.getToMainImpl();
+                        if (dataClient != null) {
+                            dataClient.addAuthorizedUserToKanban(requester, kanban);
+                        }
+                    }
+                } catch (Exception e) {
+                    LOGGER.log(java.util.logging.Level.SEVERE, "Erreur lors de l'ajout de l'utilisateur au kanban", e);
+                }
+            }
         }
     }
 

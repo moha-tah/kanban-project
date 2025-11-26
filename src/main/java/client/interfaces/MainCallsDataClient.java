@@ -23,4 +23,6 @@ public interface MainCallsDataClient {
     LightUser sendCreateProfile(String login, String password, String name, String surname,
                                         int age, String avatar, String role, String permissions,
                                         String contacts, String kanbanList, String status);
+
+    void addAuthorizedUserToKanban(LightUser user, LightKanban kanban);
 }

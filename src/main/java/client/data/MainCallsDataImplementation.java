@@ -369,6 +369,58 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
         return secureUser;
     }
 
+    @Override
+    public void addAuthorizedUserToKanban(LightUser user, LightKanban kanban) {
+        if (user == null || kanban == null) {
+            System.err.println("addAuthorizedUserToKanban: user ou kanban est null");
+            return;
+        }
+
+        try {
+            // 1. Charger le kanban complet depuis le JSON
+            Kanban fullKanban = KanbanCallsDataImplementation.loadKanbanFromJson(kanban.getId());
+            
+            if (fullKanban == null) {
+                System.err.println("Kanban non trouvé pour l'ID: " + kanban.getId());
+                return;
+            }
+
+            // 2. Vérifier si l'utilisateur n'est pas déjà dans la accessList
+            if (fullKanban.getAccessList() == null) {
+                fullKanban.setAccessList(new ArrayList<>());
+            }
+
+            // Vérifier si l'utilisateur existe déjà
+            boolean userExists = fullKanban.getAccessList().stream()
+                    .anyMatch(access -> access.getUser() != null && access.getUser().getId().equals(user.getId()));
+
+            if (!userExists) {
+                // 3. Ajouter l'utilisateur à la accessList
+                Access newAccess = new Access(user, null);
+                fullKanban.getAccessList().add(newAccess);
+                
+                // 4. Sauvegarder le kanban mis à jour
+                KanbanCallsDataImplementation.saveKanbanAsJson(fullKanban);
+                
+                System.out.println("Utilisateur " + user.getUsername() + " ajouté au kanban " + fullKanban.getTitle());
+
+                // 5. Mettre à jour le kanban dans le modèle local si c'est le kanban actuel
+                ClientModel model = provider.getMyModel();
+                Kanban currentKanban = model.getCurrentKanban();
+                if (currentKanban != null && currentKanban.getId().equals(fullKanban.getId())) {
+                    // Mettre à jour le kanban actuel avec la nouvelle accessList
+                    currentKanban.setAccessList(fullKanban.getAccessList());
+                    model.setCurrentKanban(currentKanban);
+                }
+            } else {
+                System.out.println("Utilisateur " + user.getUsername() + " est déjà dans la accessList du kanban");
+            }
+        } catch (Exception e) {
+            System.err.println("Erreur lors de l'ajout de l'utilisateur au kanban: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
     public DataClientProvider getProvider() {
         return this.provider;
     }
