@@ -25,10 +25,7 @@ public class MainApp extends Application {
         INSTANCE = this;
     }
 
-    private static final String DEFAULT_HOST = "127.0.0.1";
-    private static final int    DEFAULT_PORT = 8080;
-
-    public static MainCore getCore() {
+        public static MainCore getCore() {
         return INSTANCE != null ? INSTANCE.core : null;
     }
 
@@ -44,7 +41,7 @@ public class MainApp extends Application {
     public void start(Stage primaryStage) throws Exception {
         core       = new MainCore();
         data       = new DataClientProvider();
-        comm       = new CommCoreClient(DEFAULT_HOST, DEFAULT_PORT); // valeurs par défaut
+        comm       = new CommCoreClient(); // valeurs par défaut
         kanbanCore = new kanbanCorps();
 
         // -------- Câblage Main -> autres couches --------
