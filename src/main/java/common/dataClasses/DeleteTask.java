@@ -28,7 +28,7 @@ public class DeleteTask extends Modification {
     }
     
     @Override
-    public boolean execute() {
+    public boolean execute(Kanban targetKanban) {
         LightKanban myLightKanban = getTargetKanban();
         Kanban myKanban = getTheKanban(myLightKanban);
         List<Task> tasks = myKanban.getTasks();

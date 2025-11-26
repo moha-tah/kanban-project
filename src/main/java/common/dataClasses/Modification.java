@@ -4,7 +4,6 @@ import java.util.UUID;
 
 public abstract class Modification {
     private UUID id;
-    private LightKanban targetKanban;
     
     // Constructeur
     public Modification() {
@@ -21,21 +20,16 @@ public abstract class Modification {
         return id;
     }
 
-    public LightKanban getTargetKanban() {
-        return targetKanban;
-    }
+
     
     // Setters
     public void setId(UUID id) {
         this.id = id;
     }
 
-    public void setTargetKanban(LightKanban targetKanban) {
-        this.targetKanban = targetKanban;
-    }
     
     // Méthode abstraite pour exécuter la modification
-    public abstract boolean execute();
+    public abstract boolean execute(Kanban targetKanban);
     
     // Méthode abstraite pour annuler la modification
     public abstract boolean undo();
