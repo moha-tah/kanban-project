@@ -8,10 +8,52 @@ import common.dataClasses.Kanban;
 import common.dataClasses.LightKanban;
 import common.dataClasses.LightUser;
 import common.dataClasses.Modification;
+import common.dataClasses.Access;
+import static common.dataClasses.Role;
 import server.interfaces.CommCallsDataServer;
 
+
 public class ComCallsDataServImplementation implements CommCallsDataServer {
-    private DataServProvider myProvider;
+  private DataServProvider myProvider;
+  public ComCallsDataServImplementation() {}
+  public static ComCallsDataServImplementation newComCallsDataServImplementation() {
+        return new ComCallsDataServImplementation();
+  }
+  @Override
+  public Kanban requestKanban(LightUser user, LightKanban kanban) {
+        ServerModel model = myProvider.getModel();
+        List<Kanban> inUseKanbans = model.getInUseKanbans();
+        Kanban myKanban = null;
+        for (Kanban k : inUseKanbans) {
+            LightKanban lightK = k.getLightKanban();
+            if (lightK.getId().equals(kanbanID)) {
+                myKanban = k;
+                break;
+            }
+    }
+        //doute sur la méthode, peut etre que les classes ont des problèmes d'implémentation (manque d'attributs ?)
+        Access accessList = myKanban.getAccessList()
+        Boolean hasAccess = false;
+        for (Access a : accessList) {
+            aUser = a.getUser();
+            aRole = a.getRole();
+            if (aUser.getId().equals(user.getId()) && (aRole.equals(VIEWER) || aRole.equals(MODIFIER))) {
+                hasAccess = true;
+                break;
+            }
+        }
+        if (hasAccess) {
+            return myKanban;
+        }
+        else{
+            return null;
+        }
+    }
+
+    @Override
+    public List<Kanban> notifyLogout(UUID userId) {
+        return null ; //TODO V3
+    }
 
     public ComCallsDataServImplementation() {}
 
@@ -23,27 +65,44 @@ public class ComCallsDataServImplementation implements CommCallsDataServer {
     public void addNewUser(LightUser user, List<LightKanban> clientKanbans) {
         ServerModel model = myProvider.getModel();
 
+
+    @Override
+    public boolean addAuthorizedUser(LightKanban kanban, LightUser user) {
+        return myProvider.getModel().addAuthorizedUser(kanban, user);
         // 1. Enregistrer l'utilisateur
         List<LightUser> connectedUsers = model.getConnectedUsers();
         boolean userExists = connectedUsers.stream().anyMatch(u -> u.getId().equals(user.getId()));
-        if (!userExists) {
-            connectedUsers.add(user);
-        }
+        if (!userExists) connectedUsers.add(user);
 
-        // 2. Enregistrer les Kanbans du client en mémoire serveur
+        // 2. Enregistrer les Kanbans
         if (clientKanbans != null && !clientKanbans.isEmpty()) {
             List<Kanban> serverKanbans = model.getInUseKanbans();
 
             for (LightKanban lk : clientKanbans) {
-                // On vérifie si on l'a déjà
                 boolean kExists = serverKanbans.stream().anyMatch(k -> k.getId().equals(lk.getId()));
 
                 if (!kExists) {
-                    // On stocke une version "coquille" du Kanban côté serveur
-                    // L'important est d'avoir l'ID et le Titre pour le diffuser aux autres
+                    // Création de la coquille serveur
                     Kanban newK = new Kanban(lk.getId(), lk.getTitle());
+
+                    // A. Définir le créateur (l'utilisateur qui se connecte)
+                    newK.setCreatorId(user.getId());
+                    if (user instanceof common.dataClasses.User) {
+                        newK.setCreator((common.dataClasses.User) user);
+                    }
+
+                    // B. RECUPÉRATION DE LA VISIBILITÉ (Polymorphisme)
+                    if (lk instanceof Kanban) {
+                        // Si l'objet reçu est un vrai Kanban complet, on prend sa visibilité !
+                        String vis = ((Kanban) lk).getVisibility();
+                        newK.setVisibility(vis);
+                        System.out.println("SERVEUR: Visibilité récupérée pour " + lk.getTitle() + " -> " + vis);
+                    } else {
+                        // Sinon (cas rare), par défaut Private
+                        newK.setVisibility("Private");
+                    }
+
                     serverKanbans.add(newK);
-                    System.out.println("SERVEUR: Kanban importé en mémoire : " + lk.getTitle() + " (" + lk.getId() + ")");
                 }
             }
         }
@@ -105,6 +164,36 @@ public class ComCallsDataServImplementation implements CommCallsDataServer {
         
         System.err.println("SERVEUR: Kanban not found with ID: " + kanbanID);
         return null;
+    }
+
+    @Override
+    public List<LightKanban> getVisibleKanbansForUser(LightUser userId) {
+        List<LightKanban> result = new ArrayList<>();
+        server.data.ServerModel model = myProvider.getModel();
+        List<Kanban> allKanbans = model.getInUseKanbans();
+
+        if (allKanbans != null) {
+            for (Kanban k : allKanbans) {
+                boolean isCreator = false;
+
+                // Vérification Créateur (par ID)
+                if (userId != null && k.getCreatorId() != null) {
+                    isCreator = k.getCreatorId().equals(userId.getId());
+                } else if (userId != null && k.getCreator() != null) {
+                    isCreator = k.getCreator().getId().equals(userId.getId());
+                }
+
+                // Vérification Public
+                boolean isPublic = "Public".equalsIgnoreCase(k.getVisibility());
+
+                // LOGIQUE DE FILTRAGE :
+                // Je l'ajoute si je suis le créateur OU si c'est public
+                if (isCreator || isPublic) {
+                    result.add(k.getLightKanban());
+                }
+            }
+        }
+        return result;
     }
     
     @Override public List<Kanban> notifyLogout(UUID userId) { return null; }
