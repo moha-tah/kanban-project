@@ -29,7 +29,7 @@ public abstract class Modification {
 
     
     // Méthode abstraite pour exécuter la modification
-    public abstract boolean execute(Kanban targetKanban);
+    public abstract Kanban execute(Kanban targetKanban);
     
     // Méthode abstraite pour annuler la modification
     public abstract boolean undo();

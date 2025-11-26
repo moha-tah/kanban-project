@@ -44,7 +44,12 @@ public class LightKanban implements Serializable {
     public void setAccessList(List<Access> accessList) {
         this.accessList = accessList;
     }
-    
+
+     public boolean canBeModifiedBy(LightUser user) {
+        // Logique pour vérifier si l'utilisateur peut modifier le kanban
+        // À implémenter selon les règles métier
+        return true; // Placeholder
+    }
 
 
 }

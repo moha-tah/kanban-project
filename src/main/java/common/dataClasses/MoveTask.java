@@ -40,10 +40,8 @@ public class MoveTask extends Modification {
     }
     
     @Override
-    public boolean execute() {
-        LightKanban myLightKanban = getTargetKanban();
-        Kanban myKanban = getTheKanban(myLightKanban);
-        HashMap<Column, List<Task>> taskColumn = myKanban.getTaskColumn();
+    public Kanban execute(Kanban targetKanban) {
+        HashMap<Column, List<Task>> taskColumn = targetKanban.getTaskColumn();
         // Trouver la tâche et sa colonne source
         Task movingTask = null;
         Column sourceColumn = null;
@@ -57,10 +55,6 @@ public class MoveTask extends Modification {
             }
             if (movingTask != null) break;
         }
-        if (movingTask == null || sourceColumn == null) {
-            return false; // Pas de modification si la tâche ou la colonne n'est pas trouvée
-        }
-
         // Trouver la colonne de destination
         Column destinationColumn = null;
         for (Column col : taskColumn.keySet()) {
@@ -69,13 +63,9 @@ public class MoveTask extends Modification {
                 break;
             }
         }
-        if (destinationColumn == null) {
-            return false; // Destination column not found
-        }
-        User taskUser = getTheUser()
         
-        myKanban.moveTask( taskUser ,movingTask, sourceColumn, destinationColumn);
-        return true;
+        targetKanban.moveTask(movingTask, sourceColumn, destinationColumn);
+        return targetKanban;
     }
     
     @Override

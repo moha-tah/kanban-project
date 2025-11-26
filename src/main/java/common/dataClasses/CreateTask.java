@@ -38,10 +38,10 @@ public class CreateTask extends Modification {
     }
     
     @Override
-    public boolean execute() {
+    public Kanban execute(Kanban targetKanban) {
         // Logique pour exécuter la création de tâche
         // À implémenter selon les règles métier
-        return newTask != null && targetColumn != null;
+        return targetKanban;
     }
     
     @Override

@@ -27,10 +27,10 @@ public class DeleteColumn extends Modification {
     }
     
     @Override
-    public boolean execute() {
+    public Kanban execute(Kanban targetKanban) {
         // Logique pour exécuter la suppression de colonne
         // À implémenter selon les règles métier
-        return columnId != null;
+        return targetKanban;
     }
     
     @Override

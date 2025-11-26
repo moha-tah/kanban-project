@@ -27,10 +27,10 @@ public class CreateMessage extends Modification {
     }
     
     @Override
-    public boolean execute() {
+    public Kanban execute(Kanban targetKanban) {
         // Logique pour exécuter la création de message
         // À implémenter selon les règles métier
-        return message != null;
+        return targetKanban;
     }
     
     @Override

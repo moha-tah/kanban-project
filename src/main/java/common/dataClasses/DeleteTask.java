@@ -28,14 +28,11 @@ public class DeleteTask extends Modification {
     }
     
     @Override
-    public boolean execute(Kanban targetKanban) {
-        LightKanban myLightKanban = getTargetKanban();
-        Kanban myKanban = getTheKanban(myLightKanban);
-        List<Task> tasks = myKanban.getTasks();
+    public Kanban execute(Kanban targetKanban) {
+        List<Task> tasks = targetKanban.getTasks();
         tasks.removeIf(task -> task.getId().equals(taskId));
-        myKanban.setTasks(tasks);
-        setTheKanbanInDB(myKanban);
-        return taskId != null;
+        targetKanban.setTasks(tasks);
+        return targetKanban;
     }
     
     @Override

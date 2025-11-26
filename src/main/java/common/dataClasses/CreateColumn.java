@@ -27,10 +27,10 @@ public class CreateColumn extends Modification {
     }
     
     @Override
-    public boolean execute() {
+    public Kanban execute(Kanban targetKanban) {
         // Logique pour exécuter la création de colonne
         // À implémenter selon les règles métier
-        return newColumn != null;
+        return targetKanban;
     }
     
     @Override

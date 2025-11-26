@@ -27,10 +27,10 @@ public class RemoveAccess extends Modification {
     }
     
     @Override
-    public boolean execute() {
+    public Kanban execute(Kanban targetKanban) {
         // Logique pour exécuter la suppression d'accès
         // À implémenter selon les règles métier
-        return lightKanban != null;
+        return targetKanban;
     }
     
     @Override

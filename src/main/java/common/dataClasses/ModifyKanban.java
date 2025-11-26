@@ -27,10 +27,10 @@ public class ModifyKanban extends Modification {
     }
     
     @Override
-    public boolean execute() {
+    public Kanban execute(Kanban targetKanban) {
         // Logique pour exécuter la modification de kanban
         // À implémenter selon les règles métier
-        return kanban != null;
+        return targetKanban;
     }
     
     @Override
