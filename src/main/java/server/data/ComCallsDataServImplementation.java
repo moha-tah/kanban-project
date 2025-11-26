@@ -133,11 +133,42 @@ public class ComCallsDataServImplementation implements CommCallsDataServer {
         }
         return result;
     }
+
+    @Override
+    public boolean addAuthorizedUser(UUID kanbanId, UUID userId) {
+        server.data.ServerModel model = myProvider.getModel();
+        List<Kanban> kanbans = model.getInUseKanbans();
+
+        for (Kanban k : kanbans) {
+            if (k.getId().equals(kanbanId)) {
+                // On vérifie si l'utilisateur existe
+                List<common.dataClasses.LightUser> users = model.getConnectedUsers();
+                common.dataClasses.LightUser userToAdd = users.stream()
+                        .filter(u -> u.getId().equals(userId))
+                        .findFirst()
+                        .orElse(null);
+
+                if (userToAdd != null) {
+                    // On crée un Access (si votre classe Access existe)
+                    // Sinon on ajoute simplement l'utilisateur à une liste d'accès dans Kanban
+                    if (k.getAccessList() == null) {
+                        k.setAccessList(new ArrayList<>());
+                    }
+                    // Ajout de l'accès
+                    k.getAccessList().add(new common.dataClasses.Access(userToAdd, null));
+
+                    // IMPORTANT : On ajoute aussi le kanban à la liste "myKanban" de l'utilisateur en mémoire serveur
+                    // si vous gérez la relation bidirectionnelle, sinon le filtre getVisibleKanbans le fera
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
     
     @Override public List<Kanban> notifyLogout(UUID userId) { return null; }
     @Override public void askDeleteKanban(LightUser user, LightKanban kanban) {}
     @Override public void addListModifiers(LightUser user, LightKanban kanban) {}
-    @Override public boolean addAuthorizedUser(UUID kanbanId, UUID userId) { return false; }
     @Override public List<LightUser> saveModifiedKanban(LightKanban kanban, Modification modification) { return null; }
     @Override public Kanban getKanban(LightKanban lightKanban, LightUser user) { return null; }
     @Override public void closeKanban(LightKanban lightKanban, LightUser user) {}

@@ -13,7 +13,7 @@ public interface IhmMainCallsComm {
     void sendNewKanban(Kanban kanban);
     boolean connect(String host, int port);
     void connectionRequest(LightUser LightUser, List<LightKanban> listKanbans);
-    void notifyDecision(UUID LightUserId, UUID LightKanbanId, boolean accepted);
+    void notifyDecision(LightUser LightUserId, LightKanban LightKanbanId, boolean accepted);
     void notifyEditions(LightKanban LightKanban);
     void askKanban(UUID LightKanbanId);
     void connectServer(LightUser user, List<LightKanban> kanbans);

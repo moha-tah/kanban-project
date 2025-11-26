@@ -2,10 +2,12 @@ package client.comm.messages;
 
 import java.util.Optional;
 import java.util.UUID;
+import java.util.logging.Level;
 
-/**
- * Réponse du propriétaire à une demande d'autorisation.
- */
+import client.comm.CommCoreClient;
+import common.dataClasses.LightKanban;
+import common.dataClasses.Kanban;
+
 public class PermissionResponse extends Message {
     private static final long serialVersionUID = 1L;
 
@@ -19,24 +21,41 @@ public class PermissionResponse extends Message {
         this.accepted = accepted;
     }
 
-    public UUID requesterId() { return requesterId; }
-    public UUID kanbanId() { return kanbanId; }
-    public boolean accepted() { return accepted; }
-
     @Override
     public Optional<Message> handle() {
-        // Executed on SERVER when owner responds
-        System.out.println("[SERVER] PermissionResponse: user=" + requesterId + ", kanban=" + kanbanId + ", accepted=" + accepted);
+        // Côté SERVEUR
         try {
-            var data = this.getServerContext().getData();
-            if (data != null && accepted) {
-                data.addAuthorizedUser(kanbanId, requesterId);
+            Class<?> contextClass = Class.forName("server.ServerContext");
+            java.lang.reflect.Method getDataMethod = contextClass.getMethod("getData");
+            Object dataServerObj = getDataMethod.invoke(null);
+
+            if (dataServerObj != null) {
+                server.interfaces.CommCallsDataServer dataServer = (server.interfaces.CommCallsDataServer) dataServerObj;
+
+                // 1. Si accepté, on met à jour les données serveur
+                if (accepted) {
+                    dataServer.addAuthorizedUser(kanbanId, requesterId);
+                    System.out.println("SERVER: Accès accordé pour " + requesterId + " sur " + kanbanId);
+                } else {
+                    System.out.println("SERVER: Accès refusé.");
+                }
+
+                // 2. On récupère le LightKanban (potentiellement mis à jour)
+                // Pour simplifier, on renvoie une coquille, le client fera la mise à jour locale
+                LightKanban k = new LightKanban(kanbanId, "Updated");
+
+                // 3. Notifier le demandeur (Requester)
+                Class<?> commClass = Class.forName("server.comm.CommCoreServer");
+                java.lang.reflect.Method sendMethod = commClass.getMethod("sendToUser", UUID.class, Object.class);
+
+                // On envoie NotifyDecision au demandeur
+                NotifyDecision msg = new NotifyDecision(null, k, accepted); // user null car c'est pour soi-même
+                sendMethod.invoke(null, requesterId, msg);
             }
         } catch (Throwable t) {
-            java.util.logging.Logger.getLogger(PermissionResponse.class.getName())
-                    .log(java.util.logging.Level.SEVERE, "PermissionResponse: erreur lors du traitement de la réponse.", t);
+            java.util.logging.Logger.getLogger(CommCoreClient.class.getName())
+                    .log(java.util.logging.Level.SEVERE, "MsgReceiver: Exception in handler.", t);
         }
-        // In a full implementation we would forward a NotifyDecision to the requester client here.
         return Optional.empty();
     }
 }

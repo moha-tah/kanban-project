@@ -72,8 +72,12 @@
         visible="false" mouseTransparent="true"
         style="-fx-background-color: white; -fx-border-color: #ccc; -fx-border-radius: 10; -fx-background-radius: 10; -fx-padding: 15;"
         AnchorPane.topAnchor="60" AnchorPane.rightAnchor="20">
-        <VBox fx:id="notifContainer" spacing="10">
+        <VBox spacing="10">
             <Label text="Notifications" style="-fx-font-size: 18; -fx-font-weight: bold;"/>
+
+            <ScrollPane fitToWidth="true" hbarPolicy="NEVER" style="-fx-background-color:transparent;">
+                <VBox fx:id="notifContainer" spacing="10"/>
+            </ScrollPane>
         </VBox>
     </Pane>
 </AnchorPane>

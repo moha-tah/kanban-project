@@ -251,12 +251,8 @@ public class MainCore {
   
 
     public void requestAccessToKanban(Kanban kanban) {
-        if (kanban == null) {
-            System.err.println("[MainCore] requestAccessToKanban: kanban est null");
-            return;
-        }
-        if (kanban.getId() == null) {
-            System.err.println("[MainCore] requestAccessToKanban: kanban.id est null");
+        if (kanban == null || kanban.getId() == null) {
+            System.err.println("[MainCore] requestAccessToKanban: kanban invalide");
             return;
         }
         if (me == null) {
@@ -268,11 +264,22 @@ public class MainCore {
             return;
         }
 
-        UUID userId   = me.getId();
+        UUID userId = me.getId();
         UUID kanbanId = kanban.getId();
 
         System.out.println("[MainCore] sendPermissionRequest user=" + userId + " kanban=" + kanbanId);
+
+        // Envoi au serveur
         commPort.sendPermissionRequest(userId, kanbanId);
+    }
+
+    public void sendPermissionResponse(UUID requesterId, UUID kanbanId, boolean accepted) {
+        if (commPort != null) {
+            System.out.println("[MainCore] Sending permission response: " + accepted);
+            commPort.sendPermissionResponse(requesterId, kanbanId, accepted);
+        } else {
+            System.err.println("[MainCore] ERROR: commPort is null, cannot send response.");
+        }
     }
 
 

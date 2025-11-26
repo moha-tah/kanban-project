@@ -103,7 +103,7 @@ public class IhmMainCallsCommImp implements IhmMainCallsComm {
     }
 
     @Override
-    public void notifyDecision(UUID LightUserId, UUID LightKanbanId, boolean accepted) {
+    public void notifyDecision(LightUser LightUserId, LightKanban LightKanbanId, boolean accepted) {
         try {
             NotifyDecision msg = new NotifyDecision(LightUserId, LightKanbanId, accepted);
             commCore.sendMessage(msg);
