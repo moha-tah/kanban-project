@@ -16,7 +16,7 @@ public interface MainCallsDataClient {
 
     List<LightKanban> getMyListLightKanbans();
 
-    void exportProfile(UUID lightUserId, String path);
+    void exportProfile(LightUser lightUserId, String path);
 
     void importMyProfile(String path);
 

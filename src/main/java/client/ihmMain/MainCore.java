@@ -113,7 +113,7 @@ public class MainCore {
 
     public void addUsers(List<LightUser> list) { for (var u : list) addUser(u); }
 
-    public void updateAllKanbansForUser(UUID userId) {
+    public void updateAllKanbansForUser(LightUser userId) {
         System.out.println("[MainCore] updateAllKanbansForUser: " + userId);
     }
 

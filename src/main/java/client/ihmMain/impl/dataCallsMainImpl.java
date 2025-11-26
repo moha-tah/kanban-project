@@ -20,7 +20,7 @@ public class dataCallsMainImpl implements DataClientCallsMain {
     }
 
     @Override
-    public void updateListsKanbansUsers(List<LightKanban> kanbansOfUserDisconnected, UUID userId) {
+    public void updateListsKanbansUsers(List<LightKanban> kanbansOfUserDisconnected, LightUser userId) {
         core.addKanbans(kanbansOfUserDisconnected);
         core.updateAllKanbansForUser(userId);
         System.out.println("[Main->DataCB] updateListsKanbansUsers for user=" + userId);
@@ -33,12 +33,12 @@ public class dataCallsMainImpl implements DataClientCallsMain {
     }
 
     @Override
-    public void addListModifiers(UUID kanbanId, UUID userId) {
+    public void addListModifiers(LightKanban kanbanId, LightUser userId) {
         System.out.println("[Main->DataCB] addListModifiers kanban=" + kanbanId + " user=" + userId);
     }
 
     @Override
-    public void uploadKanbans(UUID kanbanId) {
+    public void uploadKanbans(LightKanban kanbanId) {
         System.out.println("[Main->DataCB] uploadKanbans " + kanbanId);
     }
 

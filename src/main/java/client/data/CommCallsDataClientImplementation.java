@@ -8,7 +8,6 @@ import common.dataClasses.Modification;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class CommCallsDataClientImplementation implements ComCallsDataClient{
     private DataClientProvider provider;
@@ -26,8 +25,8 @@ public class CommCallsDataClientImplementation implements ComCallsDataClient{
         return model.getConnectedUsers();
     }
     @Override
-    public UUID askIdUser(){
-        return this.provider.getMyModel().getLocalUser().getId();
+    public LightUser askIdUser(){
+        return this.provider.getMyModel().getLocalUser();
     }
 
 
@@ -64,7 +63,7 @@ public class CommCallsDataClientImplementation implements ComCallsDataClient{
     }
 
     @Override
-    public boolean addAuthorizedUser(UUID kanbanId, UUID userId){
+    public boolean addAuthorizedUser(LightKanban kanbanId, LightUser userId){
         if (provider == null || provider.getCommInterface() == null) {
             return false;
         }
