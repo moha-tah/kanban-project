@@ -105,7 +105,19 @@ public class KanbanCardController {
     @FXML
     private void requestPermission() {
         LOGGER.info("[REQUEST ACCESS] Kanban privé: " + title);
+
+        if (core == null) {
+            LOGGER.severe("MainCore is null in KanbanCardController!");
+            return;
+        }
+        if (kanban == null) {
+            LOGGER.severe("Kanban is null in KanbanCardController!");
+            return;
+        }
+
+        core.requestAccessToKanban(kanban);
     }
+  
 
     @FXML
     private void handleDelete() {

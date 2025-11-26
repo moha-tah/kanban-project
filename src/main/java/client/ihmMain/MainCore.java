@@ -248,6 +248,34 @@ public class MainCore {
         }
     }
 
+  
+
+    public void requestAccessToKanban(Kanban kanban) {
+        if (kanban == null) {
+            System.err.println("[MainCore] requestAccessToKanban: kanban est null");
+            return;
+        }
+        if (kanban.getId() == null) {
+            System.err.println("[MainCore] requestAccessToKanban: kanban.id est null");
+            return;
+        }
+        if (me == null) {
+            System.err.println("[MainCore] ERROR: utilisateur non connecté");
+            return;
+        }
+        if (commPort == null) {
+            System.err.println("[MainCore] ERROR: commPort est null");
+            return;
+        }
+
+        UUID userId   = me.getId();
+        UUID kanbanId = kanban.getId();
+
+        System.out.println("[MainCore] sendPermissionRequest user=" + userId + " kanban=" + kanbanId);
+        commPort.sendPermissionRequest(userId, kanbanId);
+    }
+
+
     public void showLoginView()  { loadScene("/login.fxml",  "Login"); }
     public void showSignupView() { loadScene("/signup.fxml", "Sign up"); }
     public void showHomeView()   { loadScene("/home.fxml",   "Home"); }
