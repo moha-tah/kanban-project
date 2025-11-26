@@ -16,26 +16,21 @@ import common.dataClasses.Kanban;
 import common.dataClasses.LightKanban;
 import client.data.DataClientProvider;
 import client.data.MainCallsDataImplementation;
-/*import common.dataClasses.Column;
-import common.dataClasses.Kanban;
-import common.dataClasses.Task;*/
 import common.dataClasses.LightUser;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.effect.Light;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 
 import java.io.IOException;
 import java.net.URL;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import client.ihmKanban.impl.MainCallsKanbanImpl;
 
 /**
  * Coeur IHM : orchestre les appels entre la UI et les couches DATA/COMM/KANBAN.
@@ -176,8 +171,8 @@ public class MainCore {
     }
 
     public DataClientProvider getDataClientProvider() {
-        if (dataPort instanceof MainCallsDataImplementation) {
-            return ((MainCallsDataImplementation) dataPort).getProvider();
+        if (dataPort instanceof MainCallsDataImplementation mainCallsDataImplementation) {
+            return mainCallsDataImplementation.getProvider();
         }
         System.err.println("[MainCore] dataPort n'est pas une instance de MainCallsDataImplementation");
         return null;
@@ -215,7 +210,7 @@ public class MainCore {
             stage.show();
             System.out.println("[MainCore] Launched main window with FXML: " + first);
 
-        } catch (Exception e) {
+        } catch (IOException | IllegalStateException e) {
             System.err.println("Error while launching main window: " + e.getMessage());
             throw new RuntimeException("Impossible d’ouvrir la fenêtre Login", e);
         }
@@ -246,7 +241,7 @@ public class MainCore {
             stage.setScene(scene);
             stage.show();
         } catch (IOException e) {
-            LOGGER.info("Error while launching main window: " + e.getMessage());
+            LOGGER.log(Level.INFO, "Error while  launching main window: {0}", e.getMessage());
         }
     }
 

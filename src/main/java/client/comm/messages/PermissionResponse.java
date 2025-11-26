@@ -1,12 +1,11 @@
 package client.comm.messages;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.logging.Level;
 
 import client.comm.CommCoreClient;
 import common.dataClasses.LightKanban;
-import common.dataClasses.Kanban;
 import common.dataClasses.LightUser;
 
 public class PermissionResponse extends Message {
@@ -53,7 +52,7 @@ public class PermissionResponse extends Message {
                 NotifyDecision msg = new NotifyDecision(null, k, accepted); // user null car c'est pour soi-même
                 sendMethod.invoke(null, requesterId.getId(), msg);
             }
-        } catch (Throwable t) {
+        } catch (ClassNotFoundException | IllegalAccessException | NoSuchMethodException | InvocationTargetException t) {
             java.util.logging.Logger.getLogger(CommCoreClient.class.getName())
                     .log(java.util.logging.Level.SEVERE, "MsgReceiver: Exception in handler.", t);
         }

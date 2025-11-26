@@ -6,9 +6,6 @@ public final class ServerContext {
 
     private static CommCallsDataServer serverData;
 
-    private ServerContext() {
-    }
-
     public static void setDataInterface(CommCallsDataServer data) {
         serverData = data;
     }

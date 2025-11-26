@@ -71,7 +71,8 @@ public class CommCallsDataClientImplementation implements ComCallsDataClient{
             provider.getCommInterface().addAuthorizedUser(kanbanId, userId);
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            java.util.logging.Logger.getLogger(CommCallsDataClientImplementation.class.getName())
+                .log(java.util.logging.Level.SEVERE, "Error while adding authorized user (kanbanId=" + kanbanId + ", userId=" + userId + ")", e);
             return false;
         }
     }
@@ -101,14 +102,17 @@ public class CommCallsDataClientImplementation implements ComCallsDataClient{
         }
     }
 
+    @Override
     public void saveModifiedKanban(Modification modification, LightKanban kanban){
         //TODO
     }
 
+    @Override
     public void saveTempKanban(Kanban kanban){
         provider.getMyModel().setCurrentKanban(kanban);
     }
 
+    @Override
     public void addUserToList(LightUser user, List<LightKanban> kanbans){
         //TODO
     }

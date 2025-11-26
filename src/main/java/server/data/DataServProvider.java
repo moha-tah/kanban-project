@@ -1,7 +1,5 @@
 package server.data;
 
-import server.data.ServerModel;
-
 public class DataServProvider {
 
     private ComCallsDataServImplementation dataCallsComServ;
