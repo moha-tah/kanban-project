@@ -1,5 +1,6 @@
 package client.ihmMain.controllers;
 
+import client.comm.MsgReceiver;
 import client.data.KanbanCallsDataImplementation;
 import client.ihmMain.MainCore;
 import common.dataClasses.*;
@@ -173,7 +174,8 @@ public class CreateKanbanController {
                 currentUser.addKanban(newKanban);
                 mainCore.getDataClientProvider().getToMainImpl().saveUser();
             } catch (Exception e) {
-                e.printStackTrace();
+                java.util.logging.Logger.getLogger(CreateKanbanController.class.getName())
+                        .log(java.util.logging.Level.SEVERE, "MsgReceiver: Exception in handler.", e);
             }
 
             if (mainCore.getCommPort() != null) {
