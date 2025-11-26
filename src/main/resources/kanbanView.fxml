@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+
+<AnchorPane prefHeight="720" prefWidth="1280"
+            xmlns="http://javafx.com/javafx/25"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="client.ihmKanban.controllers.KanbanViewController">
+
+    <!-- ======= TOP MENU ======= -->
+    <fx:include source="/menu.fxml"
+                fx:id="menuBar"
+                AnchorPane.topAnchor="0.0"
+                AnchorPane.leftAnchor="0.0"
+                AnchorPane.rightAnchor="0.0"/>
+
+    <!-- ======= CONTENU PRINCIPAL ======= -->
+    <HBox AnchorPane.topAnchor="60.0"
+          AnchorPane.leftAnchor="0.0"
+          AnchorPane.rightAnchor="0.0"
+          AnchorPane.bottomAnchor="0.0">
+
+        <!-- Barre USERS à gauche -->
+        <VBox prefWidth="200"
+              style="-fx-background-color: linear-gradient(to bottom, #1a1a1a, #4b006e); -fx-padding: 16;">
+            <children>
+                <fx:include source="/users.fxml" fx:id="usersInclude"/>
+            </children>
+        </VBox>
+
+        <!-- Zone centrale : le board Kanban -->
+        <AnchorPane HBox.hgrow="ALWAYS">
+            <children>
+                <fx:include source="/displayKanban.fxml"
+                            fx:id="displayKanbanInclude"
+                            AnchorPane.topAnchor="0.0"
+                            AnchorPane.leftAnchor="0.0"
+                            AnchorPane.rightAnchor="0.0"
+                            AnchorPane.bottomAnchor="0.0"/>
+            </children>
+        </AnchorPane>
+
+    </HBox>
+
+</AnchorPane>

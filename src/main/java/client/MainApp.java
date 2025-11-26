@@ -60,12 +60,17 @@ public class MainApp extends Application {
         // Comm -> Kanban
         comm.setIhmKanbanInterface(kanbanCore.getCOMMService());
 
-
         // -------- Lancement de l'IHM --------
         core.launchMainWindow(primaryStage);
 
-        // Connexion réseau après lancement de la fenêtre
-        comm.connect();
+        // -------- Connexion réseau (optionnelle pour tests IHM) --------
+        try {
+            comm.connect();
+        } catch (Exception e) {
+            System.err.println("[MainApp] Impossible de se connecter au serveur (mode test UI/offline).");
+            e.printStackTrace();
+            // On ne relance PAS l'exception, pour laisser l'IHM tourner
+        }
     }
 
     public static void main(String[] args) {
