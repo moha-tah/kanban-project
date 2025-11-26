@@ -27,7 +27,7 @@ public class ManageDisplay {
         try {
             // Charger le "shell" kanban complet : menu + users + board
             URL fxmlUrl = MainApp.class.getResource("/kanbanView.fxml");
-            corps.LOGGER.info("DEBUG FXML kanbanView");
+            kanbanCorps.LOGGER.info("DEBUG FXML kanbanView");
 
             if (fxmlUrl == null) {
                 throw new IllegalStateException("kanbanView.fxml introuvable dans le classpath !");
