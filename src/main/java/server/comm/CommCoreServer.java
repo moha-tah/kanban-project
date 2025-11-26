@@ -123,7 +123,7 @@ public class CommCoreServer {
 
     @SuppressWarnings("resource")
     private void handleClientConnection(Socket socket) {
-        SrvMsgSender msgSender = null;
+        SrvMsgSender msgSender;
         try {
             ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
             out.flush();
@@ -152,10 +152,8 @@ public class CommCoreServer {
                             }
                         });
 
-                        if (receivedMsg instanceof client.comm.messages.ConnectionRequest) {
-                            // Associer l'utilisateur à cette connexion
-                            client.comm.messages.ConnectionRequest connReq = (client.comm.messages.ConnectionRequest) receivedMsg;
-                            if (connReq.getUser() != null) {
+                        if (receivedMsg instanceof client.comm.messages.ConnectionRequest connReq) {
+                                                        if (connReq.getUser() != null) {
                                 clientToUserMap.put(finalMsgSender, connReq.getUser());
                             }
                             broadcastUsersAndKanbansUpdate();

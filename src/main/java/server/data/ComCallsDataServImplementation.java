@@ -46,8 +46,8 @@ public class ComCallsDataServImplementation implements CommCallsDataServer {
                     newK.setCreatorId(user.getId());
 
                     // Récupération visibilité via instance check
-                    if (lk instanceof Kanban) {
-                        newK.setVisibility(((Kanban) lk).getVisibility());
+                    if (lk instanceof Kanban kanban) {
+                        newK.setVisibility(kanban.getVisibility());
                     } else {
                         newK.setVisibility("Private");
                     }

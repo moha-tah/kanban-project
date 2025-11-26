@@ -1,8 +1,10 @@
 package client.comm.messages;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.List;
+
 import common.dataClasses.LightKanban;
 import common.dataClasses.LightUser;
 import common.dataClasses.Kanban;
@@ -51,8 +53,6 @@ public class RequestPermission extends Message {
                     }
                 }
 
-                for (LightUser u : dataServer.getUsersList()) {
-                }
                 Class<?> implClass = dataServer.getClass();
                 java.lang.reflect.Method getProviderMethod = implClass.getMethod("getDataServProvider");
                 Object provider = getProviderMethod.invoke(dataServer);
@@ -85,7 +85,7 @@ public class RequestPermission extends Message {
                     System.err.println("[SERVER] Impossible de trouver le propriétaire ou le kanban.");
                 }
             }
-        } catch (Throwable t) {
+        } catch (ClassNotFoundException | IllegalAccessException | NoSuchMethodException | InvocationTargetException t) {
             java.util.logging.Logger.getLogger(NotifyPermissionRequest.class.getName())
                     .log(java.util.logging.Level.SEVERE, "MsgReceiver: Exception in handler.", t);
         }
