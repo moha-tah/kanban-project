@@ -23,6 +23,7 @@ import common.dataClasses.LightUser;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.effect.Light;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 
@@ -264,16 +265,13 @@ public class MainCore {
             return;
         }
 
-        UUID userId = me.getId();
-        UUID kanbanId = kanban.getId();
-
-        System.out.println("[MainCore] sendPermissionRequest user=" + userId + " kanban=" + kanbanId);
+        System.out.println("[MainCore] sendPermissionRequest user=" + me + " kanban=" + kanban);
 
         // Envoi au serveur
-        commPort.sendPermissionRequest(userId, kanbanId);
+        commPort.sendPermissionRequest(me, kanban);
     }
 
-    public void sendPermissionResponse(UUID requesterId, UUID kanbanId, boolean accepted) {
+    public void sendPermissionResponse(LightUser requesterId, LightKanban kanbanId, boolean accepted) {
         if (commPort != null) {
             System.out.println("[MainCore] Sending permission response: " + accepted);
             commPort.sendPermissionResponse(requesterId, kanbanId, accepted);

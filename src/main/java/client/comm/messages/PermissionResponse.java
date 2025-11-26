@@ -7,15 +7,16 @@ import java.util.logging.Level;
 import client.comm.CommCoreClient;
 import common.dataClasses.LightKanban;
 import common.dataClasses.Kanban;
+import common.dataClasses.LightUser;
 
 public class PermissionResponse extends Message {
     private static final long serialVersionUID = 1L;
 
-    private final UUID requesterId;
-    private final UUID kanbanId;
+    private final LightUser requesterId;
+    private final LightKanban kanbanId;
     private final boolean accepted;
 
-    public PermissionResponse(UUID requesterId, UUID kanbanId, boolean accepted) {
+    public PermissionResponse(LightUser requesterId, LightKanban kanbanId, boolean accepted) {
         this.requesterId = requesterId;
         this.kanbanId = kanbanId;
         this.accepted = accepted;
@@ -42,7 +43,7 @@ public class PermissionResponse extends Message {
 
                 // 2. On récupère le LightKanban (potentiellement mis à jour)
                 // Pour simplifier, on renvoie une coquille, le client fera la mise à jour locale
-                LightKanban k = new LightKanban(kanbanId, "Updated");
+                LightKanban k = new LightKanban(kanbanId.getId(), "Updated");
 
                 // 3. Notifier le demandeur (Requester)
                 Class<?> commClass = Class.forName("server.comm.CommCoreServer");
@@ -50,7 +51,7 @@ public class PermissionResponse extends Message {
 
                 // On envoie NotifyDecision au demandeur
                 NotifyDecision msg = new NotifyDecision(null, k, accepted); // user null car c'est pour soi-même
-                sendMethod.invoke(null, requesterId, msg);
+                sendMethod.invoke(null, requesterId.getId(), msg);
             }
         } catch (Throwable t) {
             java.util.logging.Logger.getLogger(CommCoreClient.class.getName())

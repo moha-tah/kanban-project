@@ -8,8 +8,8 @@ import java.util.UUID;
 public interface IhmMainCallsComm {
     void logout(UUID LightUserId);
     void askListModifiers(UUID LightUserId);
-    void sendPermissionRequest(UUID LightUserId, UUID LightKanbanId);
-    void sendPermissionResponse(UUID LightUserId, UUID LightKanbanId, boolean accepted);
+    void sendPermissionRequest(LightUser LightUserId, LightKanban LightKanbanId);
+    void sendPermissionResponse(LightUser LightUserId, LightKanban LightKanbanId, boolean accepted);
     void sendNewKanban(Kanban kanban);
     boolean connect(String host, int port);
     void connectionRequest(LightUser LightUser, List<LightKanban> listKanbans);

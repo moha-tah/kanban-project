@@ -55,9 +55,9 @@ public class IhmMainCallsCommImp implements IhmMainCallsComm {
     }
 
     @Override
-    public void sendPermissionRequest(UUID LightUserId, UUID LightKanbanId) {
+    public void sendPermissionRequest(LightUser LightUserId, LightKanban LightKanbanId) {
         try {
-            RequestPermission msg = new RequestPermission(LightUserId, LightKanbanId);
+            RequestPermission msg = new RequestPermission(LightUserId.getId(), LightKanbanId.getId());
             commCore.sendMessage(msg);
             LOGGER.fine(() -> "sendPermissionRequest user=" + LightUserId + " kanban=" + LightKanbanId);
         } catch (Exception e) {
@@ -66,7 +66,7 @@ public class IhmMainCallsCommImp implements IhmMainCallsComm {
     }
 
     @Override
-    public void sendPermissionResponse(UUID LightUserId, UUID LightKanbanId, boolean accepted) {
+    public void sendPermissionResponse(LightUser LightUserId, LightKanban LightKanbanId, boolean accepted) {
         try {
             PermissionResponse msg = new PermissionResponse(LightUserId, LightKanbanId, accepted);
             commCore.sendMessage(msg);

@@ -167,7 +167,7 @@ public class HomeViewController {
 
     private void handleDecision(common.dataClasses.LightUser requester, common.dataClasses.LightKanban kanban, boolean accepted) {
         if (core != null) {
-            core.sendPermissionResponse(requester.getId(), kanban.getId(), accepted);
+            core.sendPermissionResponse(requester, kanban, accepted);
         }
     }
 
