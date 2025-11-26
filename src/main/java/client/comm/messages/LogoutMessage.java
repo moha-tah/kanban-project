@@ -1,6 +1,8 @@
 package client.comm.messages;
 
 import java.util.Optional;
+
+import client.comm.MsgReceiver;
 import common.dataClasses.LightUser;
 
 public class LogoutMessage extends Message {
@@ -34,7 +36,8 @@ public class LogoutMessage extends Message {
             triggerMethod.invoke(null);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            java.util.logging.Logger.getLogger(LogoutMessage.class.getName())
+                    .log(java.util.logging.Level.INFO, "MsgReceiver: I/O error or stream closed.", e);
         }
         return Optional.empty();
     }
