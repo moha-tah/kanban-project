@@ -10,6 +10,8 @@ import client.interfaces.KanbanCallsMain;
 import client.interfaces.CommClientCallsMain;
 
 import client.ihmMain.impl.dataCallsMainImpl;
+import client.ihmMain.controllers.HomeViewController;
+import client.ihmMain.controllers.KanbanCardController;
 import client.ihmMain.impl.commCallsMainImpl;
 import client.ihmMain.impl.kanbanCallsMainImpl;
 import common.dataClasses.Kanban;
@@ -17,6 +19,7 @@ import common.dataClasses.LightKanban;
 import client.data.DataClientProvider;
 import client.data.MainCallsDataImplementation;
 import common.dataClasses.LightUser;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -26,7 +29,9 @@ import javafx.stage.Window;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -275,6 +280,26 @@ public class MainCore {
             System.err.println("[MainCore] ERROR: commPort is null, cannot send response.");
         }
     }
+
+    public void onPermissionResponse(LightKanban kanban, boolean accepted) {
+        Platform.runLater(() -> {
+            HomeViewController.getInstance().refreshKanbansFromModel();
+        });
+}
+    private Map<UUID, KanbanCardController> kanbanControllers = new HashMap<>();
+
+    public void registerKanbanCardController(UUID id, KanbanCardController controller) {
+        kanbanControllers.put(id, controller);
+    }
+
+    public void notifyKanbanPermission(UUID kanbanId, boolean accepted) {
+        KanbanCardController controller = kanbanControllers.get(kanbanId);
+        if (controller != null) {
+            controller.updatePermissionStatus(accepted);
+        }
+    }
+
+
 
 
     public void showLoginView()  { loadScene("/login.fxml",  "Login"); }

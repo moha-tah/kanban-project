@@ -390,7 +390,7 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
 
         try {
             // 1. Charger le kanban complet depuis le JSON
-            Kanban fullKanban = KanbanCallsDataImplementation.loadKanbanFromJson(kanban.getId());
+            Kanban fullKanban = KanbanCallsDataImplementation.loadKanbanFromJson(kanban);
             
             if (fullKanban == null) {
                 LOGGER.warning("Kanban non trouvé pour l'ID : " + kanban.getId());
