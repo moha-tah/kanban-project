@@ -1,16 +1,21 @@
 package client.comm.messages;
 
+import common.dataClasses.LightKanban;
+import common.dataClasses.LightUser;
+
 import java.util.Optional;
 import java.util.UUID;
+
+import server.ServerContext;
 
 
 public class AskAddListModifiers extends Message {
     private static final long serialVersionUID = 1L;
 
-    private final UUID userToAdd;
-    private final UUID targetKanban;
+    private final LightUser userToAdd;
+    private final LightKanban targetKanban;
 
-    public AskAddListModifiers(UUID userToAdd, UUID targetKanban) {
+    public AskAddListModifiers(LightUser userToAdd, LightKanban targetKanban) {
         this.userToAdd = userToAdd;
         this.targetKanban = targetKanban;
     }
@@ -18,8 +23,9 @@ public class AskAddListModifiers extends Message {
     @Override
     public Optional<Message> handle() {
         try {
+            this.getServerContext();
             // LOGIQUE SERVEUR
-            var dataServer = this.getServerContext().getData();
+            var dataServer = ServerContext.getData();
             
             if (dataServer != null) {
                 // TO DO

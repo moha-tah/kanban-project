@@ -10,10 +10,10 @@ Run the standalone server in a separate terminal:
 mvn exec:java@server
 ```
 
-Or with a custom port:
+Or with a custom port (use single quotes in PowerShell):
 
 ```powershell
-mvn exec:java@server -Dexec.args="9090"
+mvn exec:java@server '-Dexec.args=9090'
 ```
 
 The server will display:

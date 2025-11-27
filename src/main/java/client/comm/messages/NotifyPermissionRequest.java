@@ -1,8 +1,6 @@
 package client.comm.messages;
 
 import java.util.Optional;
-
-import client.comm.MsgReceiver;
 import common.dataClasses.LightKanban;
 import common.dataClasses.LightUser;
 

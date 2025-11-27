@@ -1,7 +1,10 @@
 package client.interfaces;
+import common.dataClasses.LightKanban;
+import common.dataClasses.LightUser;
+
 import java.util.UUID;
 
 public interface IhmKanbanCallsComm {
-    void closingKanban(UUID LightKanbanId, UUID LightUserId);
+    void closingKanban(LightKanban LightKanbanId, LightUser LightUserId);
 }
     

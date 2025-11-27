@@ -1,11 +1,11 @@
 package client.comm.messages;
-import java.util.UUID;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
 import common.dataClasses.Kanban;
 import common.dataClasses.LightKanban;
 import common.dataClasses.LightUser;
+import server.ServerContext;
 
 import java.util.Optional;
 
@@ -23,12 +23,13 @@ public class RequestKanban extends Message {
     @Override
     public Optional<Message> handle() {        
         try {
-            var dataServer = this.getServerContext().getData();
+            this.getServerContext();
+            var dataServer = ServerContext.getData();
 
             if (dataServer != null) {
                 LOGGER.log(Level.FINE, "dataServer found, requesting Kanban...");
 
-                Kanban fullKanban = dataServer.requestKanban(lightUserId, lightKanbanId.getId());
+                Kanban fullKanban = dataServer.requestKanban(lightUserId, lightKanbanId);
 
                 if (fullKanban != null) {
                     LOGGER.log(Level.FINE, "Full Kanban received from server: {0}", fullKanban.getTitle());

@@ -17,10 +17,7 @@ import javafx.stage.Stage;
 
 public class MenuController {
 
-    @FXML
-    private ImageView profilePic;
-
-    // Ressource avatar par défaut
+    @FXML private ImageView profilePic;
     private static final String DEFAULT_AVATAR_RESOURCE = "/profile_pic.png";
 
     @FXML
@@ -32,39 +29,24 @@ public class MenuController {
         if (me == null) return;
 
         Image avatar = loadAvatar(me.getAvatar());
-
-        // Définir l’image finale
         profilePic.setImage(avatar);
     }
 
     private Image loadAvatar(String avatarPath) {
+        // (Votre code existant pour charger l'avatar...)
         if (avatarPath != null && !avatarPath.isBlank()) {
             try {
                 if (avatarPath.startsWith("http") || avatarPath.startsWith("file:")) {
                     return new Image(avatarPath, true);
                 }
-
-                // Fichier local classique
                 File f = new File(avatarPath);
-                if (f.exists()) {
-                    return new Image(f.toURI().toString(), true);
-                } else {
-                    System.out.println("Avatar introuvable : " + avatarPath);
-                }
-            } catch (Exception e) {
-                System.out.println("Erreur chargement avatar : " + e.getMessage());
-                // On continue pour charger l'avatar par défaut
-            }
+                if (f.exists()) return new Image(f.toURI().toString(), true);
+            } catch (Exception ignored) {}
         }
-
-        // Avatar par défaut depuis les ressources
         try {
             var url = getClass().getResource(DEFAULT_AVATAR_RESOURCE);
-            if (url != null) {
-                return new Image(url.toExternalForm(), true);
-            }
+            if (url != null) return new Image(url.toExternalForm(), true);
         } catch (Exception ignored) {}
-
         return null;
     }
 
@@ -74,7 +56,9 @@ public class MenuController {
     }
 
     @FXML
-    private void handleHome() {}
+    private void handleHome() throws IOException {
+        if (MainApp.getCore() != null) MainApp.getCore().showHomeView();
+    }
 
     @FXML
     private void handleNotif() {
@@ -82,7 +66,32 @@ public class MenuController {
     }
 
     @FXML
-    private void handleLogout() {}
+    private void handleLogout() {
+        MainCore core = MainApp.getCore();
+        if (core == null) return;
+
+        LightUser me = core.getMe();
+        if (me != null) {
+            try {
+                if (core.getDataClientProvider() != null) {
+                    System.out.println("[CLIENT] Sauvegarde locale avant déconnexion...");
+                    core.getDataClientProvider().getToMainImpl().saveUser();
+                }
+            } catch (Exception e) {
+                System.err.println("Erreur sauvegarde logout : " + e.getMessage());
+            }
+
+            // 2. DIAGRAMME : logout() vers la couche comm
+            if (core.getCommPort() != null) {
+                System.out.println("[CLIENT] Envoi demande de déconnexion pour " + me.getUsername());
+                core.getCommPort().logout(me);
+            }
+        }
+
+        // 3. Nettoyer l'état local et revenir au Login
+        core.launchApp(); // Vide les listes et l'utilisateur courant
+        core.showLoginView();
+    }
 
     private void switchScene(String fxmlPath, String title, Node triggerNode) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));

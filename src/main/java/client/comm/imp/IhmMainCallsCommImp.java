@@ -16,6 +16,7 @@ import java.util.logging.Logger;
 import client.comm.messages.ConnectionRequest;
 import client.comm.messages.AskAddListModifiers;
 import client.comm.messages.RequestKanban;
+import client.comm.messages.LogoutMessage; // Import ajouté
 import common.dataClasses.Kanban;
 import common.dataClasses.LightKanban;
 import common.dataClasses.LightUser;
@@ -29,17 +30,33 @@ public class IhmMainCallsCommImp implements IhmMainCallsComm {
     }
 
     @Override
-    public void logout(UUID LightUserId) {
-        // Set a breakpoint here if you need to trace logout behavior
+    public void logout(LightUser user) {
+        if (user == null) return;
+
+        LOGGER.info(() -> "Sending logout request for user: " + user.getUsername());
+
+        // Création et envoi du message de déconnexion
+        LogoutMessage msg = new LogoutMessage(user);
+
+        try {
+            if (commCore.getMsgSender() != null) {
+                commCore.sendMessage(msg);
+
+                // Fermer la connexion socket proprement côté client
+                commCore.disconnect();
+            }
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING, "Error sending logout message", e);
+        }
     }
 
     @Override
-    public void askListModifiers(UUID LightUserId) {
+    public void askListModifiers(LightUser LightUserId) {
         // Breakpoint suggestion: inspect LightUserId
     }
 
     @Override
-    public void askAddListModifiers(UUID userId, UUID kanbanId) {
+    public void askAddListModifiers(LightUser userId, LightKanban kanbanId) {
         LOGGER.fine(() -> "Sending AskAddListModifiers user=" + userId + " kanban=" + kanbanId);
         AskAddListModifiers msg = new AskAddListModifiers(userId, kanbanId);
         try {
@@ -119,7 +136,7 @@ public class IhmMainCallsCommImp implements IhmMainCallsComm {
     }
 
     @Override
-    public void askKanban(UUID LightKanbanId) {
+    public void askKanban(LightKanban LightKanbanId) {
         // Add implementation + breakpoint to trace request flow
     }
 

@@ -238,9 +238,15 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
                 String cleanId = stripQuotes(rawId);
                 if (cleanId != null && !cleanId.isBlank()) {
                     try {
+                        // 1. Conversion de la String en UUID
                         UUID kId = UUID.fromString(cleanId);
-                        // Appel statique pour charger le fichier JSON du Kanban
-                        Kanban loadedK = KanbanCallsDataImplementation.loadKanbanFromJson(kId);
+
+                        // 2. Création d'un LightKanban temporaire pour passer l'ID
+                        LightKanban tempLight = new LightKanban(kId, "");
+
+                        // 3. Appel de la méthode avec le LightKanban
+                        Kanban loadedK = KanbanCallsDataImplementation.loadKanbanFromJson(tempLight);
+
                         if (loadedK != null) {
                             userKanbans.add(loadedK);
                         }
@@ -337,7 +343,7 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
 
 
     @Override
-    public void exportProfile(UUID lightUserId, String path){
+    public void exportProfile(LightUser lightUserId, String path){
         throw new UnsupportedOperationException("exportProfile not implemented yet");
     }
 

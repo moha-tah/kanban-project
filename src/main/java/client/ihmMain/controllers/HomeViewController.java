@@ -215,7 +215,7 @@ public class HomeViewController {
             // 1. Charger ou reconstruire le Kanban complet
             Kanban details = null;
             try {
-                details = KanbanCallsDataImplementation.loadKanbanFromJson(lk.getId());
+                details = KanbanCallsDataImplementation.loadKanbanFromJson(lk);
             } catch (Exception e) { /* ignore */ }
 
             // Fallback serveur

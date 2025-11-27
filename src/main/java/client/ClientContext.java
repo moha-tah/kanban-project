@@ -22,7 +22,7 @@ public class ClientContext {
     }
 
 
-    public static ComCallsDataClient getData() {
+    public ComCallsDataClient getData() {
         return dataInterface;
     }
 
