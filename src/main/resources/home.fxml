@@ -22,7 +22,7 @@
             AnchorPane.rightAnchor="0.0">
 
         <Pane fx:id="usersBar"
-              prefWidth="450"
+              prefWidth="200"
               style="-fx-background-color: linear-gradient(to bottom, #1a1a1a, #4b006e); -fx-padding: 16;"
               HBox.hgrow="NEVER" />
 
