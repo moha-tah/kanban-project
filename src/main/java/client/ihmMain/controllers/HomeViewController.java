@@ -352,7 +352,7 @@ public class HomeViewController {
     public void showHomeKanbanList() {
     try {
         // Recharger le contenu original (la liste des kanbans)
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/src/main/resources/homeKanbanCentral.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/homeKanbanCentral.fxml"));
         Node homeContent = loader.load();
         kanbanArea.setContent(homeContent);
 
