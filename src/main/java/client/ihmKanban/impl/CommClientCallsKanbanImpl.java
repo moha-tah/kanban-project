@@ -6,6 +6,8 @@ import common.dataClasses.LightKanban;
 import common.dataClasses.Modification;
 import client.ihmKanban.kanbanCorps;
 import javafx.application.Platform;
+import javafx.scene.control.ScrollPane;
+
 
 /** Impl des callbacks de la couche Communication vers la couche Kanban (IHM Kanban). */
 public class CommClientCallsKanbanImpl implements CommClientCallsKanban {
@@ -25,11 +27,11 @@ public class CommClientCallsKanbanImpl implements CommClientCallsKanban {
     }
     
     @Override
-    public void displayKanban(Kanban kanban) {
+    public void displayKanban(Kanban kanban, ScrollPane kanbanArea) {
         corps.LOGGER.info("[Comm->Kanban] displayKanban called for: " + kanban.getTitle());
         // Exécuter sur le thread JavaFX car appelé depuis MsgReceiver-thread
         Platform.runLater(() -> {
-            corps.displayKanban(kanban);
+            corps.displayKanban(kanban, kanbanArea);
         });
     }
 }

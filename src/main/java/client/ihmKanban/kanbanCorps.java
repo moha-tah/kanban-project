@@ -104,10 +104,9 @@ public class kanbanCorps {
     }
 
 
-    public void displayKanban(Kanban kanban)  { 
-        manageDisplay.openKanbanScreen(kanban); 
+    public void displayKanban(Kanban kanban, javafx.scene.control.ScrollPane kanbanArea) { { 
+        manageDisplay.openKanbanScreen(kanban, kanbanArea); 
     }
 
-
-
+    }
 }

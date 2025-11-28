@@ -5,6 +5,7 @@ import client.interfaces.CommClientCallsMain;
 import client.interfaces.MainCallsKanban;
 import common.dataClasses.Kanban;
 import common.dataClasses.LightUser;
+import javafx.scene.control.ScrollPane;
 
 public class MainCallsKanbanImpl implements MainCallsKanban {
     
@@ -23,8 +24,8 @@ public class MainCallsKanbanImpl implements MainCallsKanban {
     }
 
     @Override
-    public void openCreateForm(Kanban kanban){ 
-        corps.displayKanban(kanban); 
+    public void openCreateForm(Kanban kanban, ScrollPane kanbanArea) { 
+        corps.displayKanban(kanban, kanbanArea); 
         kanbanCorps.LOGGER.info("[MainCallsKanban] openCreateForm called");
 
     }

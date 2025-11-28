@@ -8,6 +8,6 @@ import common.dataClasses.Kanban;
 // MainCallsKanban
 public interface MainCallsKanban {
     void displaySnapshotList();
-    void openCreateForm(Kanban kanban);
+    void openCreateForm(Kanban kanban, javafx.scene.control.ScrollPane kanbanArea);
 
 }
