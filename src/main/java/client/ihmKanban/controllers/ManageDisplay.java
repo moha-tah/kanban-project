@@ -2,6 +2,7 @@ package client.ihmKanban.controllers;
 
 import client.MainApp;
 import client.ihmKanban.kanbanCorps;
+import client.ihmMain.controllers.HomeViewController;
 import common.dataClasses.Kanban;
 import common.dataClasses.Column;
 import common.dataClasses.CreateTask;
@@ -20,13 +21,27 @@ public class ManageDisplay {
 
     public ManageDisplay(kanbanCorps corps) {
         this.corps = corps;
+
     }
 
-    public void openKanbanScreen(Kanban kanban, javafx.scene.control.ScrollPane kanbanArea) {
+    // Référence au contrôleur de la vue principale qui appartient à IHM Main
+    private HomeViewController homeViewController;
+
+    public void setHomeViewController(HomeViewController homeViewController) {
+        this.homeViewController = homeViewController;
+    }
+
+    public HomeViewController getHomeViewController() {
+        return homeViewController;
+    }
+
+    public void openKanbanScreen(Kanban kanban, HomeViewController homeController) {
         try {
             // Charger le "shell" kanban complet : board
             URL fxmlUrl = MainApp.class.getResource("/kanbanView.fxml");
             kanbanCorps.LOGGER.info("DEBUG FXML kanbanView");
+
+            setHomeViewController(homeController);
 
 
             if (fxmlUrl == null) {
@@ -53,10 +68,10 @@ public class ManageDisplay {
 
             // Récupérer le contrôleur principal kanbanView.fxml
             KanbanViewController controller = loader.getController();
-            controller.initBoard(kanban, cols, taskCreations);
+            controller.initBoard(kanban, cols, taskCreations, this);
 
             // Afficher la fenêtre
-            kanbanArea.setContent(kanbanView);
+            homeController.getKanbanArea().setContent(kanbanView);
 
         } catch (Exception e) {
             corps.LOGGER.info("Erreur lors de l'ouverture de l'écran Kanban : " + e.getMessage());

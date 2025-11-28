@@ -20,6 +20,7 @@ import java.util.ResourceBundle;
 import java.util.UUID;
 
 import client.ihmKanban.kanbanCorps;
+import client.ihmMain.controllers.HomeViewController;
 
 
 public class DisplayKanbanController implements Initializable {
@@ -44,6 +45,7 @@ public class DisplayKanbanController implements Initializable {
     private LightKanban kanban;
     private List<Column> columns;
     private List<CreateTask> taskCreations;
+    private ManageDisplay manageDisplay;
 
 
 
@@ -60,11 +62,12 @@ public class DisplayKanbanController implements Initializable {
      */
     public void initBoard(LightKanban kanban,
                           List<Column> columns,
-                          List<CreateTask> taskCreations) {
+                          List<CreateTask> taskCreations, ManageDisplay manageDisplay) {
 
         this.kanban = kanban;
         this.columns = columns;
         this.taskCreations = taskCreations;
+        this.manageDisplay = manageDisplay;
 
         renderKanban();
     }
@@ -152,6 +155,11 @@ public class DisplayKanbanController implements Initializable {
 
         card.getChildren().addAll(topRow, title, desc, statusBtn);
         return card;
+    }
+
+    @FXML
+    private void handleBack() {
+        manageDisplay.getHomeViewController().showHomeKanbanList();
     }
 
     // ---- Handlers basiques (tu pourras les relier à tes popups) ----

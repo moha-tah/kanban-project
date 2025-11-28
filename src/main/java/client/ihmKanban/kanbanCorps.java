@@ -13,6 +13,7 @@ import client.interfaces.CommClientCallsKanban;
 import client.ihmKanban.impl.CommClientCallsKanbanImpl;
 import client.ihmKanban.impl.DataClientCallsKanbanImpl;
 import client.ihmKanban.impl.MainCallsKanbanImpl;
+import client.ihmMain.controllers.HomeViewController;
 import common.dataClasses.Kanban;
 import common.dataClasses.LightKanban;
 import common.dataClasses.LightUser;
@@ -104,8 +105,8 @@ public class kanbanCorps {
     }
 
 
-    public void displayKanban(Kanban kanban, javafx.scene.control.ScrollPane kanbanArea) { { 
-        manageDisplay.openKanbanScreen(kanban, kanbanArea); 
+    public void displayKanban(Kanban kanban, HomeViewController homeController) { { 
+        manageDisplay.openKanbanScreen(kanban, homeController); 
     }
 
     }

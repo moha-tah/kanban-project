@@ -327,22 +327,42 @@ public class HomeViewController {
 
     @FXML private ScrollPane kanbanArea; 
 
-public void displayKanban(Kanban kanban) {
+    public ScrollPane getKanbanArea() {
+        return kanbanArea;
+    }   
+
+    public void displayKanban(Kanban kanban) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/displayKanban.fxml"));
+            Parent kanbanView = loader.load();
+
+            DisplayKanbanController controller = loader.getController();
+            //controller.set(kanban);
+
+            // Remplacer le contenu central
+            kanbanArea.setContent(kanbanView);
+
+            core.getKanbanPort().openCreateForm(kanban,this); 
+
+        } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, "Impossible de charger displayKanban.fxml", e);
+        }
+    }
+
+    public void showHomeKanbanList() {
     try {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/displayKanban.fxml"));
-        Parent kanbanView = loader.load();
+        // Recharger le contenu original (la liste des kanbans)
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/src/main/resources/homeKanbanCentral.fxml"));
+        Node homeContent = loader.load();
+        kanbanArea.setContent(homeContent);
 
-        DisplayKanbanController controller = loader.getController();
-        //controller.set(kanban);
+        // Rafraîchir les données des kanbans
+        refreshKanbansFromModel();
 
-        // Remplacer le contenu central
-        kanbanArea.setContent(kanbanView);
-
-        core.getKanbanPort().openCreateForm(kanban,kanbanArea );
-
-    } catch (IOException e) {
-        LOGGER.log(Level.SEVERE, "Impossible de charger displayKanban.fxml", e);
+    } catch (Exception e) {
+        LOGGER.log(Level.SEVERE, "Impossible de charger homeKanbanCentral.fxml", e);
     }
 }
+
 
 }

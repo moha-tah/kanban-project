@@ -37,10 +37,10 @@ public class KanbanViewController implements Initializable {
 
     public void initBoard(LightKanban kanban,
                           List<Column> columns,
-                          List<CreateTask> taskCreations) {
+                          List<CreateTask> taskCreations, ManageDisplay manageDisplay) {
 
         if (displayKanbanIncludeController != null) {
-            displayKanbanIncludeController.initBoard(kanban, columns, taskCreations);
+            displayKanbanIncludeController.initBoard(kanban, columns, taskCreations,manageDisplay );
         }
     }
 }
