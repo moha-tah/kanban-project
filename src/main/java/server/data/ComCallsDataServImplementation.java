@@ -63,29 +63,53 @@ public class ComCallsDataServImplementation implements CommCallsDataServer {
     }
 
     @Override
-    public List<Kanban> notifyLogout(LightUser user) {
-        if (user == null) return null;
+    public List<Kanban> notifyLogout(LightUser lightUser) {
+        // Retourner une liste vide si l'utilisateur est null
+        if (lightUser == null) {
+            return new ArrayList<>();
+        }
 
         ServerModel model = myProvider.getModel();
-        UUID userId = user.getId();
+        UUID userId = lightUser.getId();
 
-        // 1. Supprimer l'utilisateur de la liste des connectés
-        model.getConnectedUsers().removeIf(u -> u.getId().equals(userId));
+        // 1. Supprimer l'utilisateur de la liste des utilisateurs connectés
+        boolean userRemoved = model.getConnectedUsers().removeIf(u -> u.getId().equals(userId));
+        
+        if (!userRemoved) {
+            System.out.println("SERVEUR: Utilisateur " + lightUser.getUsername() + " n'était pas dans la liste des connectés.");
+        }
 
-        // 2. Supprimer les Kanbans créés par cet utilisateur
+        // 2. Retirer l'utilisateur des listes d'accès des kanbans où il n'est pas le créateur
+        List<Kanban> affectedKanbans = new ArrayList<>();
+        for (Kanban kanban : model.getInUseKanbans()) {
+            if (kanban.getAccessList() != null) {
+                boolean removed = kanban.getAccessList().removeIf(access -> 
+                    access.getUser() != null && access.getUser().getId().equals(userId)
+                );
+                if (removed) {
+                    affectedKanbans.add(kanban);
+                }
+            }
+        }
+
+        // 3. Supprimer les Kanbans créés par cet utilisateur de la mémoire serveur
+        // (Les kanbans sont sauvegardés sur disque et seront rechargés à la reconnexion)
         int initialSize = model.getInUseKanbans().size();
-
         model.getInUseKanbans().removeIf(k ->
                 k.getCreatorId() != null && k.getCreatorId().equals(userId)
         );
-
         int removedCount = initialSize - model.getInUseKanbans().size();
 
-        System.out.println("SERVEUR: " + user.getUsername() + " déconnecté.");
-        System.out.println("SERVEUR: " + removedCount + " kanban(s) de cet utilisateur retiré(s) de la mémoire.");
+        // Logging
+        System.out.println("SERVEUR: " + lightUser.getUsername() + " déconnecté.");
+        System.out.println("SERVEUR: " + removedCount + " kanban(s) créé(s) par cet utilisateur retiré(s) de la mémoire.");
+        if (!affectedKanbans.isEmpty()) {
+            System.out.println("SERVEUR: " + affectedKanbans.size() + " kanban(s) affecté(s) (accès retiré).");
+        }
 
+        // Retourner la liste des kanbans restants en mémoire
         // Le broadcast qui suit (dans LogoutMessage) enverra cette liste nettoyée aux autres clients
-        return model.getInUseKanbans();
+        return new ArrayList<>(model.getInUseKanbans());
     }
 
     // -------------------------------------------------------
