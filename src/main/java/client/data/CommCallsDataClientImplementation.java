@@ -37,12 +37,32 @@ public class CommCallsDataClientImplementation implements ComCallsDataClient{
 
     @Override
     public void updateLists(LightUser user){
-        // Récupérer et publier les listes d'utilisateurs mises à jour
-        if (provider != null && provider.getMyModel() != null) {
-            List<LightUser> users = provider.getMyModel().getConnectedUsers();
-            if (provider.getMainInterface() != null) {
-                provider.getMainInterface().publishUsersList(users);
-            }
+        // Mise à jour des listes lors de la déconnexion d'un utilisateur
+        if (provider == null || provider.getMyModel() == null || user == null) {
+            return;
+        }
+        
+        ClientModel model = provider.getMyModel();
+        List<LightUser> users = model.getConnectedUsers();
+        
+        // Initialiser la liste si elle est null
+        if (users == null) {
+            users = new ArrayList<>();
+            model.setConnectedUsers(users);
+        }
+        
+        // Retirer l'utilisateur déconnecté de la liste (comparaison par ID)
+        boolean removed = users.removeIf(u -> u != null && u.getId().equals(user.getId()));
+        
+        if (removed) {
+            System.out.println("[Data] Utilisateur " + user.getUsername() + " retiré de la liste des connectés.");
+        } else {
+            System.out.println("[Data] Utilisateur " + user.getUsername() + " n'était pas dans la liste des connectés.");
+        }
+        
+        // Publier la liste mise à jour à l'interface
+        if (provider.getMainInterface() != null) {
+            provider.getMainInterface().publishUsersList(users);
         }
     }
 
