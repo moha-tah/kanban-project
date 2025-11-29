@@ -20,8 +20,6 @@ import java.util.ResourceBundle;
 import java.util.UUID;
 
 import client.ihmKanban.kanbanCorps;
-import client.ihmMain.controllers.HomeViewController;
-
 
 public class DisplayKanbanController implements Initializable {
 
@@ -159,7 +157,7 @@ public class DisplayKanbanController implements Initializable {
 
     @FXML
     private void handleBack() {
-        manageDisplay.getHomeViewController().showHomeKanbanList();
+        corps.getMainPort().goHomeView();
     }
 
     // ---- Handlers basiques (tu pourras les relier à tes popups) ----

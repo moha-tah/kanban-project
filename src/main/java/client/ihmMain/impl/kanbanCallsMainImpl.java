@@ -24,4 +24,10 @@ public class kanbanCallsMainImpl implements KanbanCallsMain {
     public void closingKanban(){
         core.onCloseKanban();
     }
+
+    @Override
+    public void goHomeView() {
+        core.showHomeView();
+    }
+
 }
