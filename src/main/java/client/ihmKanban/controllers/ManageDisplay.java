@@ -68,7 +68,9 @@ public class ManageDisplay {
 
             // Récupérer le contrôleur principal kanbanView.fxml
             KanbanViewController controller = loader.getController();
+            controller.setCore(corps);
             controller.initBoard(kanban, cols, taskCreations, this);
+            
 
             // Afficher la fenêtre
             homeController.getKanbanArea().setContent(kanbanView);

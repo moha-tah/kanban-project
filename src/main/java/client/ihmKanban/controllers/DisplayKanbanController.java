@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.UUID;
 
+import javax.print.attribute.standard.Copies;
+
 import client.ihmKanban.kanbanCorps;
 
 public class DisplayKanbanController implements Initializable {
@@ -31,6 +33,7 @@ public class DisplayKanbanController implements Initializable {
 
     public void setCore(kanbanCorps Kcorps) {
         this.corps = Kcorps;
+        corps.LOGGER.info("DisplayKanbanController: le Corps a été rajouté .");
     }
 
     @FXML
