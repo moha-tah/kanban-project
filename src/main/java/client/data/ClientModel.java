@@ -47,10 +47,6 @@ public class ClientModel {
         this.connectedUsers = connectedUsers;
     }
 
-    public void saveUser(LightUser currentUser) {
-        throw new UnsupportedOperationException("saveUser not implemented yet");
-    }
-
     public void addKanban(LightKanban lightKanban) {
         if (!availableLightKanbans.contains(lightKanban)) {
             availableLightKanbans.add(lightKanban);
