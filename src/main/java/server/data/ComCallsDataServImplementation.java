@@ -160,7 +160,22 @@ public class ComCallsDataServImplementation implements CommCallsDataServer {
 
     @Override
     public List<LightUser> saveModifiedKanban(LightKanban kanban, Modification modification) {
-        return null;
+        List<Kanban> inUseKanbans = myProvider.getModel().getInUseKanbans();
+        Kanban kanbanToUpdate = null;
+        List<LightUser> usersToNotify = new ArrayList<LightUser>();
+        for(Kanban kanbanInList : inUseKanbans){
+            if( kanbanInList.getId().equals(kanban.getId())){
+                kanbanToUpdate = kanbanInList;
+                break;
+            }
+        }
+        modification.execute(kanbanToUpdate);
+        List <Access> accesList = kanban.getAccessList();
+        for(Access acces: accesList){
+            LightUser user = acces.getUser();
+            usersToNotify.add(user);
+        }
+        return usersToNotify;
     }
 
     @Override
