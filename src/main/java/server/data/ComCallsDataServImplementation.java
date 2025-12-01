@@ -12,6 +12,7 @@ import common.dataClasses.Access; // Import nécessaire
 import server.interfaces.CommCallsDataServer;
 
 public class ComCallsDataServImplementation implements CommCallsDataServer {
+    private static final String SERVEUR_PREFIX = "SERVEUR: ";
     private DataServProvider myProvider;
 
     public ComCallsDataServImplementation() {}
@@ -76,7 +77,8 @@ public class ComCallsDataServImplementation implements CommCallsDataServer {
         boolean userRemoved = model.getConnectedUsers().removeIf(u -> u.getId().equals(userId));
         
         if (!userRemoved) {
-            System.out.println("SERVEUR: Utilisateur " + lightUser.getUsername() + " n'était pas dans la liste des connectés.");
+            java.util.logging.Logger.getLogger(ComCallsDataServImplementation.class.getName())
+                .info(SERVEUR_PREFIX + "Utilisateur " + lightUser.getUsername() + " n'était pas dans la liste des connectés.");
         }
 
         // 2. Retirer l'utilisateur des listes d'accès des kanbans où il n'est pas le créateur
@@ -101,10 +103,11 @@ public class ComCallsDataServImplementation implements CommCallsDataServer {
         int removedCount = initialSize - model.getInUseKanbans().size();
 
         // Logging
-        System.out.println("SERVEUR: " + lightUser.getUsername() + " déconnecté.");
-        System.out.println("SERVEUR: " + removedCount + " kanban(s) créé(s) par cet utilisateur retiré(s) de la mémoire.");
+        java.util.logging.Logger logger = java.util.logging.Logger.getLogger(ComCallsDataServImplementation.class.getName());
+        logger.info(SERVEUR_PREFIX + lightUser.getUsername() + " déconnecté.");
+        logger.info(SERVEUR_PREFIX + removedCount + " kanban(s) créé(s) par cet utilisateur retiré(s) de la mémoire.");
         if (!affectedKanbans.isEmpty()) {
-            System.out.println("SERVEUR: " + affectedKanbans.size() + " kanban(s) affecté(s) (accès retiré).");
+            logger.info(SERVEUR_PREFIX + affectedKanbans.size() + " kanban(s) affecté(s) (accès retiré).");
         }
 
         // Retourner la liste des kanbans restants en mémoire
