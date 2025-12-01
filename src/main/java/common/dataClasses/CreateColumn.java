@@ -1,5 +1,6 @@
 package common.dataClasses;
 import java.util.UUID;
+import java.util.List;
 
 public class CreateColumn extends Modification {
     private Column newColumn;
@@ -28,8 +29,9 @@ public class CreateColumn extends Modification {
     
     @Override
     public Kanban execute(Kanban targetKanban) {
-        // Logique pour exécuter la création de colonne
-        // À implémenter selon les règles métier
+        List<Column> columns = targetKanban.getColumns();
+        columns.add(newColumn);
+        targetKanban.setColumns(columns);
         return targetKanban;
     }
     

@@ -1,5 +1,6 @@
 package common.dataClasses;
 import java.util.UUID;
+import java.util.List;
 
 public class CreateTask extends Modification {
     private Task newTask;
@@ -39,8 +40,10 @@ public class CreateTask extends Modification {
     
     @Override
     public Kanban execute(Kanban targetKanban) {
-        // Logique pour exécuter la création de tâche
-        // À implémenter selon les règles métier
+        Column col = targetKanban.getColumnFromID(targetColumn);
+        List<Task> listTasks = targetKanban.getTasks();
+        listTasks.add(newTask);
+        targetKanban.modifyHashmap(listTasks, col);
         return targetKanban;
     }
     

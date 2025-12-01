@@ -29,9 +29,17 @@ public class DeleteTask extends Modification {
     
     @Override
     public Kanban execute(Kanban targetKanban) {
+        //enlever la tâche de la liste de tâches 
         List<Task> tasks = targetKanban.getTasks();
         tasks.removeIf(task -> task.getId().equals(taskId));
         targetKanban.setTasks(tasks);
+
+        //récupérer la colonne de la tâche
+        Column col = targetKanban.getColumnFromTask(taskId);
+
+        //mettre à jour le hashmap en enlevant la tâche pour sa colonne
+        targetKanban.modifyHashmap(tasks, col);
+
         return targetKanban;
     }
     

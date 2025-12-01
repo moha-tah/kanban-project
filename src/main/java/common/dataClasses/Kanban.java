@@ -3,6 +3,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
+import java.util.Map;
 
 public class Kanban extends LightKanban {
     private HashMap<Column, List<Task>> taskColumn;
@@ -73,6 +74,26 @@ public class Kanban extends LightKanban {
     public String getVisibility() {
         return visibility;
     }
+
+    public Column getColumnFromID(UUID columnId){
+        for (Column col : columns){
+            if (col.getId() == columnId){
+                return col;
+            }
+        }
+        return null;
+    }
+
+    public Column getColumnFromTask(UUID taskId){
+        for (Map.Entry<Column,List<Task>> entry : taskColumn.entrySet()){
+            for (Task task : entry.getValue()){
+                if (task.getId().equals(taskId)){
+                    return entry.getKey();
+                }
+            }
+        }
+        return null;
+    }
     
     // Setters
     public void setTaskColumn(HashMap<Column, List<Task>> taskColumn) {
@@ -103,7 +124,10 @@ public class Kanban extends LightKanban {
     public void setColumns(List<Column> columns) {
         this.columns = columns;
     }
-   
+    
+    public void modifyHashmap(List<Task> tasks, Column col){
+        taskColumn.put(col, tasks);
+    }
    
     // Méthode utilitaire pour obtenir toutes les tâches d'une colonne
     public List<Task> getTasksFromColumn(Column column) {
