@@ -10,15 +10,17 @@ public class LightKanban implements Serializable {
     private List<Access> accessList;
     
     // Constructeur
-    public LightKanban(String title) {
+    public LightKanban(String title, List<Access> accesList) {
         this.id = UUID.randomUUID();
         this.title = title;
+        this.accessList = accesList;
     }
     
     // Constructeur avec ID
-    public LightKanban(UUID id, String title) {
+    public LightKanban(UUID id, String title, List<Access> acces) {
         this.id = id;
         this.title = title;
+        this.accessList = acces;
     }
     
     // Getters

@@ -1,35 +1,42 @@
 package common.dataClasses;
+import java.util.List;
 import java.util.UUID;
 
 public class RemoveAccess extends Modification {
-    private LightKanban lightKanban;
+    private Access acces;
     
     // Constructeur
-    public RemoveAccess(LightKanban lightKanban) {
+    public RemoveAccess(Access acces) {
         super();
-        this.lightKanban = lightKanban;
+        this.acces = acces;
     }
     
     // Constructeur avec ID
-    public RemoveAccess(UUID id, LightKanban lightKanban) {
+    public RemoveAccess(UUID id, Access acces) {
         super(id);
-        this.lightKanban = lightKanban;
+        this.acces = acces;
     }
     
     // Getters
-    public LightKanban getLightKanban() {
-        return lightKanban;
+    public Access getAccess() {
+        return acces;
     }
     
     // Setters
-    public void setLightKanban(LightKanban lightKanban) {
-        this.lightKanban = lightKanban;
+    public void setLightKanban(Access acces) {
+        this.acces = acces;
     }
     
     @Override
     public Kanban execute(Kanban targetKanban) {
-        // Logique pour exécuter la suppression d'accès
-        // À implémenter selon les règles métier
+        LightKanban lightKanban = targetKanban.getLightKanban();
+
+        if(lightKanban.getAccessList().contains(acces)){
+            List<Access> accesLightKanban = lightKanban.getAccessList();
+            accesLightKanban.remove(acces);
+            lightKanban.setAccessList(accesLightKanban);
+        }
+
         return targetKanban;
     }
     
@@ -37,14 +44,14 @@ public class RemoveAccess extends Modification {
     public boolean undo() {
         // Logique pour annuler la suppression d'accès
         // À implémenter selon les règles métier
-        return lightKanban != null;
+        return acces != null;
     }
     
     @Override
     public String toString() {
         return "RemoveAccess{" +
                 "id=" + getId() +
-                ", lightKanban=" + (lightKanban != null ? lightKanban.getTitle() : "null") +
+                ", acces=" + (acces != null ? acces.getRole() : "null") +
                 '}';
     }
 }

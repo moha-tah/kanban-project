@@ -209,7 +209,7 @@ public class HomeViewController {
             }
             // Fallback défaut
             if (details == null) {
-                details = new Kanban(lk.getId(), lk.getTitle(), "Private", null);
+                details = new Kanban(lk.getId(), lk.getTitle(), null, "Private", null);
             }
 
             // 2. Réparer le créateur

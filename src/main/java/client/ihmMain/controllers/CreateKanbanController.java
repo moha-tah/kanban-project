@@ -146,7 +146,9 @@ public class CreateKanbanController {
         }
 
         // 1. Création Objet
-        Kanban newKanban = new Kanban(UUID.randomUUID(), title, visibility, currentUser);
+        List<Access> accessList = new ArrayList<>();
+        accessList.add(new Access(currentUser, Role.MODIFIER));
+        Kanban newKanban = new Kanban(UUID.randomUUID(), title, accessList, visibility, currentUser);
 
         // 2. Colonnes (LinkedHashMap pour l'ordre)
         LinkedHashMap<Column, List<Task>> orderedColumns = new LinkedHashMap<>();

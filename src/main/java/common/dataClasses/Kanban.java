@@ -17,8 +17,8 @@ public class Kanban extends LightKanban {
     
 
 // Constructeur sans ID et visibility
-    public Kanban(String title , String visibility, User creator) {
-        super(title);
+    public Kanban(String title, List<Access> accesList, String visibility, User creator) {
+        super(title, accesList);
         this.taskColumn = new HashMap<>();
         this.visibility = visibility;
         this.creator = creator;
@@ -26,8 +26,8 @@ public class Kanban extends LightKanban {
     }
     
     // Constructeur avec ID et visibility
-    public Kanban(UUID id, String title, String visibility, User creator) {
-        super(id, title);
+    public Kanban(UUID id, String title, List<Access> accesList, String visibility, User creator) {
+        super(id, title, accesList);
         this.visibility = visibility;
         this.taskColumn = new HashMap<>();
         this.creator = creator;
@@ -37,14 +37,14 @@ public class Kanban extends LightKanban {
     
 
     // Constructeur
-    public Kanban(String title) {
-        super(title);
+    public Kanban(String title, List<Access> accesList) {
+        super(title, accesList);
         this.taskColumn = new HashMap<>();
     }
     
     // Constructeur avec ID
-    public Kanban(UUID id, String title) {
-        super(id, title);
+    public Kanban(UUID id, String title, List<Access> accesList) {
+        super(id, title, accesList);
         this.taskColumn = new HashMap<>();
     }
     
@@ -141,7 +141,7 @@ public class Kanban extends LightKanban {
 
     // methode renvoie lightKanban a partir de Kanban
     public LightKanban getLightKanban() { 
-        return new LightKanban(this.getId(),this.getTitle());
+        return new LightKanban(this.getId(),this.getTitle(), this.getAccessList());
     }
 
 }

@@ -43,7 +43,7 @@ public class PermissionResponse extends Message {
 
                 // 2. On récupère le LightKanban (potentiellement mis à jour)
                 // Pour simplifier, on renvoie une coquille, le client fera la mise à jour locale
-                LightKanban k = new LightKanban(kanbanId.getId(), "Updated");
+                LightKanban k = new LightKanban(kanbanId.getId(), "Updated", kanbanId.getAccessList());
 
                 // 3. Notifier le demandeur (Requester)
                 Class<?> commClass = Class.forName("server.comm.CommCoreServer");

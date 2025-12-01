@@ -42,7 +42,7 @@ public class ComCallsDataServImplementation implements CommCallsDataServer {
                 boolean kExists = serverKanbans.stream().anyMatch(k -> k.getId().equals(lk.getId()));
 
                 if (!kExists) {
-                    Kanban newK = new Kanban(lk.getId(), lk.getTitle());
+                    Kanban newK = new Kanban(lk.getId(), lk.getTitle(), lk.getAccessList());
                     newK.setCreatorId(user.getId());
 
                     // Récupération visibilité via instance check

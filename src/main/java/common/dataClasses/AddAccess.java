@@ -1,35 +1,42 @@
 package common.dataClasses;
 import java.util.UUID;
+import java.util.List;
 
 public class AddAccess extends Modification {
-    private LightKanban lightKanban;
+    private Access acces;
     
     // Constructeur
-    public AddAccess(LightKanban lightKanban) {
+    public AddAccess(Access acces) {
         super();
-        this.lightKanban = lightKanban;
+        this.acces = acces;
     }
     
     // Constructeur avec ID
-    public AddAccess(UUID id, LightKanban lightKanban) {
+    public AddAccess(UUID id, Access acces) {
         super(id);
-        this.lightKanban = lightKanban;
+        this.acces = acces;
     }
     
     // Getters
-    public LightKanban getLightKanban() {
-        return lightKanban;
+    public Access getAcces() {
+        return acces;
     }
     
     // Setters
-    public void setLightKanban(LightKanban lightKanban) {
-        this.lightKanban = lightKanban;
+    public void setAcces(Access acces) {
+        this.acces = acces;
     }
     
     @Override
     public Kanban execute(Kanban targetKanban) {
-        // Logique pour exécuter l'ajout d'accès
-        // À implémenter selon les règles métier
+        LightKanban lightKanban = targetKanban.getLightKanban();
+
+        if(!lightKanban.getAccessList().contains(acces)){
+            List<Access> accesLightKanban = lightKanban.getAccessList();
+            accesLightKanban.add(acces);
+            lightKanban.setAccessList(accesLightKanban);
+        }
+        
         return targetKanban;
     }
     
@@ -37,14 +44,14 @@ public class AddAccess extends Modification {
     public boolean undo() {
         // Logique pour annuler l'ajout d'accès
         // À implémenter selon les règles métier
-        return lightKanban != null;
+        return acces != null;
     }
     
     @Override
     public String toString() {
         return "AddAccess{" +
                 "id=" + getId() +
-                ", lightKanban=" + (lightKanban != null ? lightKanban.getTitle() : "null") +
+                ", acces =" + (acces != null ? acces.getRole() : "null") +
                 '}';
     }
 }
