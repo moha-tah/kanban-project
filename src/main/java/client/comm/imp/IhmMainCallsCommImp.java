@@ -16,7 +16,7 @@ import java.util.logging.Logger;
 import client.comm.messages.ConnectionRequest;
 import client.comm.messages.AskAddListModifiers;
 import client.comm.messages.RequestKanban;
-import client.comm.messages.LogoutMessage; // Import ajouté
+import client.comm.messages.Logout; // Import ajouté
 import common.dataClasses.Kanban;
 import common.dataClasses.LightKanban;
 import common.dataClasses.LightUser;
@@ -31,22 +31,34 @@ public class IhmMainCallsCommImp implements IhmMainCallsComm {
 
     @Override
     public void logout(LightUser user) {
-        if (user == null) return;
+        if (user == null) {
+            LOGGER.warning("Tentative de déconnexion avec utilisateur null");
+            return;
+        }
 
         LOGGER.info(() -> "Sending logout request for user: " + user.getUsername());
 
-        // Création et envoi du message de déconnexion
-        LogoutMessage msg = new LogoutMessage(user);
-
         try {
+            // Création et envoi du message de déconnexion
+            Logout msg = new Logout(user);
+            
             if (commCore.getMsgSender() != null) {
                 commCore.sendMessage(msg);
-
-                // Fermer la connexion socket proprement côté client
-                commCore.disconnect();
+                LOGGER.info("Logout message sent successfully");
+            } else {
+                LOGGER.warning("Message sender not initialized");
             }
+
+            // Fermer la connexion socket proprement côté client
+            commCore.disconnect();
+            
+        } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, "Network error during logout", e);
+            // En cas d'erreur réseau, déconnexion locale
+            commCore.disconnect();
         } catch (Exception e) {
-            LOGGER.log(Level.WARNING, "Error sending logout message", e);
+            LOGGER.log(Level.SEVERE, "Unexpected error during logout", e);
+            commCore.disconnect();
         }
     }
 
