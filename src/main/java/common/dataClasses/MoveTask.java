@@ -6,6 +6,7 @@ import java.util.UUID;
 public class MoveTask extends Modification {
     private UUID taskId;
     private UUID targetColumn;
+    private UUID previousColumn = null;
     
     // Constructeur
     public MoveTask(UUID taskId, UUID targetColumn) {
@@ -29,6 +30,10 @@ public class MoveTask extends Modification {
     public UUID getTargetColumn() {
         return targetColumn;
     }
+
+    public UUID getPreviousColumn() {
+        return previousColumn;
+    }
     
     // Setters
     public void setTaskId(UUID taskId) {
@@ -38,10 +43,20 @@ public class MoveTask extends Modification {
     public void setTargetColumn(UUID targetColumn) {
         this.targetColumn = targetColumn;
     }
+
+    public void setPreviousColumn(UUID previousColumn) {
+        this.previousColumn = previousColumn;
+    }
     
     @Override
     public Kanban execute(Kanban targetKanban) {
         HashMap<Column, List<Task>> taskColumn = targetKanban.getTaskColumn();
+        this.previousColumn = taskColumn.entrySet().stream()
+                .filter(entry -> entry.getValue().stream()
+                        .anyMatch(task -> task.getId().equals(taskId)))
+                .map(entry -> entry.getKey().getId())
+                .findFirst()
+                .orElse(null);
         Task taskToMove = null;
         //Supprimer la valeur de l'ancienne colonne
         for (Column col: taskColumn.keySet()) {
@@ -69,10 +84,9 @@ public class MoveTask extends Modification {
     }
     
     @Override
-    public boolean undo() {
-        // Logique pour annuler le déplacement de tâche
-        // À implémenter selon les règles métier
-        return taskId != null && targetColumn != null;
+    public Kanban undo(Kanban targetKanban) {
+        MoveTask undoModification = new MoveTask(taskId, previousColumn);
+        return undoModification.execute(targetKanban);
     }
     
     @Override

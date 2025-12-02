@@ -4,6 +4,7 @@ import java.util.UUID;
 
 public class ModifyTask extends Modification {
     private Task task;
+    private Task previousTask = null;
     
     // Constructeur
     public ModifyTask(Task task) {
@@ -21,15 +22,24 @@ public class ModifyTask extends Modification {
     public Task getTask() {
         return task;
     }
-    
+    public Task getPreviousTask() {
+        return previousTask;
+    }
     // Setters
     public void setTask(Task task) {
         this.task = task;
+    }
+    public void setPreviousTask(Task previousTask) {
+        this.previousTask = previousTask;
     }
     
     @Override
     public Kanban execute(Kanban targetKanban) {
         List<Task> taskList = targetKanban.getTasks();
+        this.previousTask = taskList.stream()
+                .filter(t -> t.getId().equals(task.getId()))
+                .findFirst()
+                .orElse(null);
         //supprimer la tache avec le meme id
         taskList.removeIf(t -> t.getId().equals(task.getId()));
         //ajouter la tache modifiée
@@ -39,10 +49,9 @@ public class ModifyTask extends Modification {
     }
     
     @Override
-    public boolean undo() {
-        // Logique pour annuler la modification de tâche
-        // À implémenter selon les règles métier
-        return task != null;
+    public Kanban undo(Kanban targetKanban) {
+        ModifyTask undoModification = new ModifyTask(previousTask);
+        return undoModification.execute(targetKanban);
     }
     
     @Override

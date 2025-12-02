@@ -4,6 +4,7 @@ import java.util.UUID;
 
 public class DeleteTask extends Modification {
     private UUID taskId;
+    private Task previousTask = null;
     
     // Constructeur
     public DeleteTask(UUID taskId) {
@@ -21,16 +22,26 @@ public class DeleteTask extends Modification {
     public UUID getTaskId() {
         return taskId;
     }
+    public Task getPreviousTask() {
+        return previousTask;
+    }
     
     // Setters
     public void setTaskId(UUID taskId) {
         this.taskId = taskId;
+    }
+    public void setPreviousTask(Task previousTask) {
+        this.previousTask = previousTask;
     }
     
     @Override
     public Kanban execute(Kanban targetKanban) {
         //enlever la tâche de la liste de tâches 
         List<Task> tasks = targetKanban.getTasks();
+        this.previousTask = tasks.stream()
+                .filter(task -> task.getId().equals(taskId))
+                .findFirst()
+                .orElse(null);
         tasks.removeIf(task -> task.getId().equals(taskId));
         targetKanban.setTasks(tasks);
 
@@ -44,10 +55,9 @@ public class DeleteTask extends Modification {
     }
     
     @Override
-    public boolean undo() {
-        // Logique pour annuler la suppression de tâche
-        // À implémenter selon les règles métier
-        return taskId != null;
+    public Kanban undo(Kanban targetKanban) {
+        CreateTask undoModification = new CreateTask(previousTask, targetKanban.getColumnFromTask(previousTask.getId()).getId());
+        return undoModification.execute(targetKanban);
     }
     
     @Override

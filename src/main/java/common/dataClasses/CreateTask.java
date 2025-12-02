@@ -1,10 +1,11 @@
 package common.dataClasses;
-import java.util.UUID;
 import java.util.List;
+import java.util.UUID;
 
 public class CreateTask extends Modification {
     private Task newTask;
     private UUID targetColumn;
+    private UUID previousTaskId = null;
     
     // Constructeur
     public CreateTask(Task newTask, UUID targetColumn) {
@@ -28,6 +29,10 @@ public class CreateTask extends Modification {
     public UUID getTargetColumn() {
         return targetColumn;
     }
+
+    public UUID getPreviousTaskId() {
+        return previousTaskId;
+    }
     
     // Setters
     public void setNewTask(Task newTask) {
@@ -37,10 +42,15 @@ public class CreateTask extends Modification {
     public void setTargetColumn(UUID targetColumn) {
         this.targetColumn = targetColumn;
     }
+
+    public void setPreviousTaskId(UUID previousTaskId) {
+        this.previousTaskId = previousTaskId;
+    }
     
     @Override
     public Kanban execute(Kanban targetKanban) {
         Column col = targetKanban.getColumnFromID(targetColumn);
+        this.previousTaskId = newTask.getId();
         List<Task> listTasks = targetKanban.getTasks();
         listTasks.add(newTask);
         targetKanban.modifyHashmap(listTasks, col);
@@ -48,10 +58,9 @@ public class CreateTask extends Modification {
     }
     
     @Override
-    public boolean undo() {
-        // Logique pour annuler la création de tâche
-        // À implémenter selon les règles métier
-        return newTask != null && targetColumn != null;
+    public Kanban undo(Kanban targetKanban) {
+        DeleteTask undoModification = new DeleteTask(previousTaskId, targetColumn);
+        return undoModification.execute(targetKanban);
     }
     
     @Override

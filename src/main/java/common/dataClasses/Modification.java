@@ -32,7 +32,7 @@ public abstract class Modification {
     public abstract Kanban execute(Kanban targetKanban);
     
     // Méthode abstraite pour annuler la modification
-    public abstract boolean undo();
+    public abstract Kanban undo(Kanban targetKanban);
     
     @Override
     public boolean equals(Object obj) {

@@ -1,9 +1,10 @@
 package common.dataClasses;
-import java.util.UUID;
 import java.util.List;
+import java.util.UUID;
 
 public class AddAccess extends Modification {
     private Access acces;
+    private UUID previousAccessId = null;
     
     // Constructeur
     public AddAccess(Access acces) {
@@ -21,16 +22,22 @@ public class AddAccess extends Modification {
     public Access getAcces() {
         return acces;
     }
+    public UUID getPreviousAccessId() {
+        return previousAccessId;
+    }
     
     // Setters
     public void setAcces(Access acces) {
         this.acces = acces;
     }
+    public void setPreviousAccessId(UUID previousAccessId) {
+        this.previousAccessId = previousAccessId;
+    }
     
     @Override
     public Kanban execute(Kanban targetKanban) {
         LightKanban lightKanban = targetKanban.getLightKanban();
-
+        this.previousAccessId = acces.getId();
         if(!lightKanban.getAccessList().contains(acces)){
             List<Access> accesLightKanban = lightKanban.getAccessList();
             accesLightKanban.add(acces);
@@ -41,10 +48,9 @@ public class AddAccess extends Modification {
     }
     
     @Override
-    public boolean undo() {
-        // Logique pour annuler l'ajout d'accès
-        // À implémenter selon les règles métier
-        return acces != null;
+    public Kanban undo(Kanban targetKanban) {
+        DeleteAccess undoModification = new DeleteAccess(previousAccessId);
+        return undoModification.execute(targetKanban);
     }
     
     @Override
