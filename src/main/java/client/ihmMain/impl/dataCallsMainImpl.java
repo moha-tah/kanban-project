@@ -8,7 +8,6 @@ import common.dataClasses.LightUser;
 import javafx.application.Platform;
 
 import java.util.List;
-import java.util.UUID;
 
 /** Impl des callbacks de la couche Data vers Main. */
 public class dataCallsMainImpl implements DataClientCallsMain {

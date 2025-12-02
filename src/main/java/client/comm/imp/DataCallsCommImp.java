@@ -1,6 +1,5 @@
 package client.comm.imp;
 
-import java.util.UUID;
 import java.util.Objects;
 import java.io.IOException;
 

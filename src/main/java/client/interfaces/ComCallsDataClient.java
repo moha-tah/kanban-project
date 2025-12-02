@@ -6,7 +6,6 @@ import common.dataClasses.LightKanban;
 import common.dataClasses.Modification;
 
 import java.util.List;
-import java.util.UUID;
 
 public interface ComCallsDataClient {
 

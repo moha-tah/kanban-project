@@ -90,7 +90,7 @@ public class IhmMainCallsCommImp implements IhmMainCallsComm {
             RequestPermission msg = new RequestPermission(LightUserId.getId(), LightKanbanId.getId());
             commCore.sendMessage(msg);
             LOGGER.fine(() -> "sendPermissionRequest user=" + LightUserId + " kanban=" + LightKanbanId);
-        } catch (Exception e) {
+        } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "Error in sendPermissionRequest", e);
         }
     }
@@ -101,7 +101,7 @@ public class IhmMainCallsCommImp implements IhmMainCallsComm {
             PermissionResponse msg = new PermissionResponse(LightUserId, LightKanbanId, accepted);
             commCore.sendMessage(msg);
             LOGGER.fine(() -> "sendPermissionResponse user=" + LightUserId + " kanban=" + LightKanbanId + " accepted=" + accepted);
-        } catch (Exception e) {
+        } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "Error in sendPermissionResponse", e);
         }
     }
@@ -138,7 +138,7 @@ public class IhmMainCallsCommImp implements IhmMainCallsComm {
             NotifyDecision msg = new NotifyDecision(LightUserId, LightKanbanId, accepted);
             commCore.sendMessage(msg);
             LOGGER.fine(() -> "notifyDecision user=" + LightUserId + " kanban=" + LightKanbanId + " accepted=" + accepted);
-        } catch (Exception e) {
+        } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "Error in notifyDecision", e);
         }
     }
@@ -163,7 +163,7 @@ public class IhmMainCallsCommImp implements IhmMainCallsComm {
             } else {
                 LOGGER.warning("Message sender not initialized for SendNewKanban");
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "Error in sendNewKanban", e);
         }
     }
@@ -175,7 +175,7 @@ public class IhmMainCallsCommImp implements IhmMainCallsComm {
         try {
             commCore.sendMessage(msg);
             LOGGER.fine("RequestKanban sent");
-        } catch (Exception e) {
+        } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "Error in getKanban", e);
         }
     }

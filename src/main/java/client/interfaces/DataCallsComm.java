@@ -1,5 +1,4 @@
 package client.interfaces;
-import java.util.UUID;
 import common.dataClasses.Kanban;
 import common.dataClasses.LightKanban;
 import common.dataClasses.LightUser;
