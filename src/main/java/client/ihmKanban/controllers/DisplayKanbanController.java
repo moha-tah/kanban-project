@@ -29,12 +29,15 @@ import javafx.stage.Popup;
 
 import java.io.IOException;
 import java.net.URL;
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import common.dataClasses.ModifyTask;
 
 public class DisplayKanbanController implements Initializable {
 
@@ -66,6 +69,7 @@ public class DisplayKanbanController implements Initializable {
     private LightKanban kanban;
     private List<Column> columns;
     private List<CreateTask> taskCreations;
+    private ManageDisplay manageDisplay;
 
     // Popup courant (pour le fermer quand on en ouvre un autre)
     private Popup currentPopup;
@@ -82,13 +86,19 @@ public class DisplayKanbanController implements Initializable {
      */
     public void initBoard(LightKanban kanban,
                           List<Column> columns,
-                          List<CreateTask> taskCreations) {
+                          List<CreateTask> taskCreations, ManageDisplay manageDisplay) {
 
         this.kanban = kanban;
         this.columns = columns;
         this.taskCreations = taskCreations;
+        this.manageDisplay = manageDisplay;
 
         renderKanban();
+    }
+
+    @FXML
+    private void handleBack() {
+        corps.getMainPort().goHomeView();
     }
 
     // --------------------------------------------------------------------
@@ -410,6 +420,13 @@ public class DisplayKanbanController implements Initializable {
             System.out.println("ADD TASK '" + taskTitle + "' dans colonne : " + col.getTitle());
 
             // TODO : corps.createTaskInColumn(col, taskTitle, taskDesc);
+            LocalDate start = LocalDate.now();    
+            LocalDate end = LocalDate.now().plusDays(7);
+
+            Task tache = new Task(taskTitle, taskDesc, start, end);
+            ModifyTask modify = new ModifyTask(tache);
+            corps.getDataPort().getModified(modify.getId(), kanban.getId());
+            LOGGER.info("Nouvelle Task envoyé à data");
 
             popup.hide();
         });
@@ -638,8 +655,14 @@ public class DisplayKanbanController implements Initializable {
             } catch (Exception ex) {
                 LOGGER.warning("Impossible d'appeler task.setDescription(...) : adapte ce code à ta classe Task.");
             }
+            LocalDate start = LocalDate.now();    
+            LocalDate end = LocalDate.now().plusDays(7);
 
-            // TODO : corps.updateTask(task);
+            Task tache = new Task(newTitle, newDesc, start, end);
+            ModifyTask modify = new ModifyTask(tache);
+            corps.getDataPort().getModified(modify.getId(), kanban.getId());
+            LOGGER.info("Taskmodifié envoyé à data");
+
 
             renderKanban();
             popup.hide();

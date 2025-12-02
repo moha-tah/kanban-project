@@ -18,6 +18,19 @@
             <Label text="KANBAN :" style="-fx-font-weight: bold; -fx-font-size: 16;"/>
             <Label fx:id="kanbanTitleLabel" text="(titre)" style="-fx-font-size: 16;"/>
         </HBox>
+
+        <HBox spacing="10"
+          style="-fx-padding: 10; -fx-background-color: #f0f0f0;">
+
+        <Button text="⟵ Back"
+                fx:id="backButton"
+                onAction="#handleBack"
+                style="-fx-background-color: #ddd; -fx-font-weight: bold; -fx-padding: 5 12;"/>
+
+        <Label text="KANBAN :" style="-fx-font-weight: bold; -fx-font-size: 16;"/>
+        <Label fx:id="kanbanTitleLabel" text="(titre)" style="-fx-font-size: 16;"/>
+
+    </HBox>
     </top>
 
     <center>
@@ -57,6 +70,7 @@
                             -fx-font-weight: bold;
                         "/>
             </VBox>
+            
 
         </AnchorPane>
     </center>

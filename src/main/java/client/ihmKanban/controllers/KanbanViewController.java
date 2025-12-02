@@ -42,8 +42,9 @@ public class KanbanViewController implements Initializable {
                           List<CreateTask> taskCreations, ManageDisplay manageDisplay) {
 
         if (displayKanbanIncludeController != null) {
-            displayKanbanIncludeController.initBoard(kanban, columns, taskCreations,manageDisplay );
             displayKanbanIncludeController.setCore(corps);
+            displayKanbanIncludeController.initBoard(kanban, columns, taskCreations,manageDisplay );
+            
             
         }
     }
