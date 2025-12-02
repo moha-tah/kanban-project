@@ -60,7 +60,9 @@
 
         <!-- Profile Actions -->
         <HBox alignment="CENTER_RIGHT" spacing="15">
-            <Button style="-fx-background-color: #667eea; -fx-text-fill: white; -fx-background-radius: 10;" text="EDIT PROFILE" />
+            <Button style="-fx-background-color: #667eea; -fx-text-fill: white; -fx-background-radius: 10;"
+                    text="EDIT PROFILE"
+                    onAction="#handleEditProfileClick"/>
             <Button style="-fx-background-color: #667eea; -fx-text-fill: white; -fx-background-radius: 10;" text="EXPORT PROFILE" />
             <Button style="-fx-background-color: #667eea; -fx-text-fill: white; -fx-background-radius: 10;" text="SEE SNAPSHOTS" />
         </HBox>
