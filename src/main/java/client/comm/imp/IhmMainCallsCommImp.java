@@ -17,6 +17,7 @@ import client.comm.messages.ConnectionRequest;
 import client.comm.messages.AskAddListModifiers;
 import client.comm.messages.RequestKanban;
 import client.comm.messages.Logout; // Import ajouté
+import client.comm.messages.RequestModification;
 import common.dataClasses.Kanban;
 import common.dataClasses.LightKanban;
 import common.dataClasses.LightUser;
@@ -179,7 +180,29 @@ public class IhmMainCallsCommImp implements IhmMainCallsComm {
         }
     }
 
-    public void sendRequestModification(LightUser LightUser, UUID CardId, Object newStatus) {
-        // Breakpoint: inspect parameters to trace modification request
+    public void sendRequestModification(LightUser user, UUID cardId, Object newStatus) {
+        if (user == null || cardId == null || newStatus == null) {
+            LOGGER.warning("Paramètres invalides pour sendRequestModification");
+            return;
+        }
+
+        String status = newStatus.toString();
+        LOGGER.info(() -> "Envoi demande de modification carte " + cardId + " vers " + status + 
+                     " par " + user.getUsername());
+
+        try {
+            RequestModification msg = new RequestModification(user, cardId, status);
+            
+            if (commCore.getMsgSender() != null) {
+                commCore.sendMessage(msg);
+                LOGGER.fine("Demande de modification envoyée avec succès");
+            } else {
+                LOGGER.warning("Message sender non initialisé");
+            }
+        } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, "Erreur réseau lors de l'envoi de la modification", e);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Erreur inattendue lors de la modification", e);
+        }
     }
 }
