@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane prefHeight="800" prefWidth="1280" style="-fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #667eea, #764ba2);" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.ihmMain.controllers.ProfileDistantController">
+
+    <!-- Header -->
+    <HBox layoutX="0" layoutY="0" prefHeight="70" prefWidth="1280" spacing="20" style="-fx-background-color: white;">
+
+        <padding>
+                <Insets bottom="15" left="30" right="30" top="15" />
+        </padding>
+            <ImageView fx:id="logoImage" fitHeight="40" fitWidth="40">
+                    <image>
+                        <Image url="@logo.png" />
+                    </image>
+                </ImageView>
+      <Region prefHeight="40.0" prefWidth="859.0" />
+            <HBox alignment="CENTER_RIGHT" spacing="10" AnchorPane.rightAnchor="0.0">
+            <Button style="-fx-background-color: #e9d5ff; -fx-text-fill: #7c3aed; -fx-background-radius: 20;" text="Logout" />
+            <Button style="-fx-background-radius: 50%;" text="🔔" />
+            <Button style="-fx-background-radius: 50%;" text="🔍" />
+            <ImageView fx:id="avatarImage" fitHeight="40" fitWidth="40" style="-fx-background-color: #fbbf24; -fx-background-radius: 50%;" />
+        </HBox>
+    </HBox>
+
+    <!-- Profile Card -->
+    <VBox layoutX="50" layoutY="100" prefWidth="1100" spacing="20" style="-fx-background-color: white; -fx-background-radius: 20; -fx-padding: 40;">
+        <HBox spacing="30">
+            <!-- Avatar -->
+            <AnchorPane>
+                <ImageView fx:id="profileAvatar2" fitHeight="120" fitWidth="120" style="-fx-border-color: #667eea; -fx-border-width: 4; -fx-border-radius: 60;" />
+            </AnchorPane>
+
+            <!-- Profile Info -->
+            <VBox spacing="10">
+                <Label fx:id="profileName2" style="-fx-font-size: 28px; -fx-font-weight: bold;" />
+                <Label fx:id="profileUsername2" style="-fx-text-fill: #6b7280;" />
+                <HBox spacing="40">
+                    <VBox>
+                        <Label fx:id="kanbansCreated2" style="-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: #667eea;" />
+                        <Label style="-fx-text-fill: #6b7280; -fx-font-size: 12px;" text="Kanbans créés" />
+                    </VBox>
+                    <VBox>
+                        <Label fx:id="collaborations2" style="-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: #667eea;" />
+                        <Label style="-fx-text-fill: #6b7280; -fx-font-size: 12px;" text="Collaborations" />
+                    </VBox>
+                </HBox>
+            </VBox>
+        </HBox>
+    </VBox>
+
+    <!-- Kanbans Card -->
+    <VBox layoutX="50" layoutY="400" prefWidth="1100" spacing="20" style="-fx-background-color: white; -fx-background-radius: 20; -fx-padding: 40;">
+        <Label style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #1f2937; -fx-border-color: #667eea; -fx-border-width: 0 0 0 4; -fx-border-insets: 0;" text="Kanbans Créés" />
+        <GridPane fx:id="kanbansGrid2" hgap="20" vgap="20" />
+        <Button
+            layoutX="950"
+            style="-fx-background-color: #1f2937; -fx-text-fill: white; -fx-background-radius: 25; -fx-padding: 15 40;"
+            text="Back"
+            onAction="#handleBackClick" />
+</VBox>
+</AnchorPane>

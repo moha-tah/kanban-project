@@ -4,9 +4,9 @@ import common.dataClasses.Kanban;
 import common.dataClasses.LightUser;
 import common.dataClasses.LightKanban;
 import common.dataClasses.Modification;
+import common.dataClasses.User;
 
 import java.util.List;
-import java.util.UUID;
 
 public interface ComCallsDataClient {
 
@@ -18,7 +18,7 @@ public interface ComCallsDataClient {
 
     void addListModifiers(LightUser user, LightKanban kanban);
 
-    boolean addAuthorizedUser(UUID kanbanId, UUID userId);
+    boolean addAuthorizedUser(LightKanban kanbanId, LightUser userId);
 
     void updateUserList(List<LightUser> users, List<LightKanban> kanbans);
 
@@ -29,6 +29,6 @@ public interface ComCallsDataClient {
     void saveTempKanban(Kanban kanban);
 
     void addUserToList(LightUser user, List<LightKanban> kanbans);
-
-    UUID askIdUser();
+    LightUser askIdUser();
+    User getDistantProfile();
 }

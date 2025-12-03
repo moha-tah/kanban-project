@@ -1,40 +1,61 @@
 package client.ihmKanban.controllers;
 
+import java.io.IOException;
+
 import client.MainApp;
 import client.ihmKanban.kanbanCorps;
+import client.ihmMain.controllers.HomeViewController;
 import common.dataClasses.Kanban;
 import common.dataClasses.Column;
 import common.dataClasses.CreateTask;
 import common.dataClasses.Task;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
+
 
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
 public class ManageDisplay {
 
-    private final kanbanCorps corps;
+    private final kanbanCorps corps; 
 
     public ManageDisplay(kanbanCorps corps) {
         this.corps = corps;
+
     }
 
-    public void openKanbanScreen(Kanban kanban) {
+    // Référence au contrôleur de la vue principale qui appartient à IHM Main
+    private HomeViewController homeViewController;
+
+    public void setHomeViewController(HomeViewController homeViewController) {
+        this.homeViewController = homeViewController;
+    }
+
+    public HomeViewController getHomeViewController() {
+        return homeViewController;
+    }
+
+    public void openKanbanScreen(Kanban kanban, HomeViewController homeController) {
         try {
-            // Charger le "shell" kanban complet : menu + users + board
+            // Charger le "shell" kanban complet : board
             URL fxmlUrl = MainApp.class.getResource("/kanbanView.fxml");
             kanbanCorps.LOGGER.info("DEBUG FXML kanbanView");
+
+            setHomeViewController(homeController);
+
 
             if (fxmlUrl == null) {
                 throw new IllegalStateException("kanbanView.fxml introuvable dans le classpath !");
             }
 
+            
+            
             FXMLLoader loader = new FXMLLoader(fxmlUrl);
-            Parent root = loader.load();
+            //Parent root = loader.load();
+            Parent kanbanView = loader.load();
 
             // Récupérer les colonnes
             List<Column> cols = kanban.getAllColumns();
@@ -50,17 +71,15 @@ public class ManageDisplay {
 
             // Récupérer le contrôleur principal kanbanView.fxml
             KanbanViewController controller = loader.getController();
-            controller.initBoard(kanban, cols, taskCreations);
+            controller.setCore(corps);
+            controller.initBoard(kanban, cols, taskCreations, this);
+            
 
             // Afficher la fenêtre
-            Stage stage = new Stage();
-            stage.setTitle("Kanban - " + kanban.getTitle());
-            stage.setScene(new Scene(root, 1280, 720));
-            stage.show();
+            homeController.getKanbanArea().setContent(kanbanView);
 
-        } catch (Exception e) {
-            corps.LOGGER.info("Erreur lors de l'ouverture de l'écran Kanban : " + e.getMessage());
-            e.printStackTrace();
+        } catch (IOException | IllegalStateException e) {
+            corps.LOGGER.log(Level.INFO, "Erreur lors de l''ouverture de l''\u00e9cran Kanban : {0}", e.getMessage());
         }
     }
 }

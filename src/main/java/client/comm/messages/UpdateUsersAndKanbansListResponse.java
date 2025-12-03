@@ -4,13 +4,12 @@ import common.dataClasses.LightKanban;
 import common.dataClasses.LightUser;
 import client.interfaces.DataClientCallsMain;
 
-import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
 import javafx.application.Platform;
 
-public class UpdateUsersAndKanbansListResponse extends Message implements Serializable {
+public class UpdateUsersAndKanbansListResponse extends Message {
 
     private static final long serialVersionUID = 1L;
 
@@ -44,14 +43,14 @@ public class UpdateUsersAndKanbansListResponse extends Message implements Serial
                 logger.warning("UpdateUsersAndKanbansListResponse: ClientContext is null!");
                 return Optional.empty();
             }
-            if (client.ClientContext.getData() == null) {
+            if (ctx.getData() == null) {
                 logger.warning("UpdateUsersAndKanbansListResponse: Data interface is null!");
                 return Optional.empty();
             }
             
             logger.log(Level.INFO, "UpdateUsersAndKanbansListResponse: Updating model with {0} users", this.users.size());
             // Mettre à jour le modèle avec les listes reçues (peut être fait sur le thread réseau)
-            client.ClientContext.getData().updateUserList(this.users, this.kanbans);
+            ctx.getData().updateUserList(this.users, this.kanbans);
             
             // Notifier l'UI des changements via les méthodes existantes
             // IMPORTANT: Les modifications de l'UI JavaFX doivent être faites sur le thread JavaFX
@@ -59,7 +58,7 @@ public class UpdateUsersAndKanbansListResponse extends Message implements Serial
                 try {
                     logger.info("UpdateUsersAndKanbansListResponse: Updating UI on JavaFX thread");
                     // Appeler updateLists pour publier la liste complète des utilisateurs
-                    client.ClientContext.getData().updateLists(null); // null car on veut publier toute la liste
+                    ctx.getData().updateLists(null); // null car on veut publier toute la liste
                 } catch (Exception e) {
                     logger.log(java.util.logging.Level.SEVERE, "Error updating UI in Platform.runLater", e);
                 }

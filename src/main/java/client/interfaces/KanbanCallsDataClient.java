@@ -3,6 +3,8 @@ package client.interfaces;
 import common.dataClasses.*;
 import java.util.List;
 
+import common.dataClasses.Modification;
+
 public interface KanbanCallsDataClient {
     void saveSnapshot(Kanban kanban);
     List<Snapshot> getListSnapshot();

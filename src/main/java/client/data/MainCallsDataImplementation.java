@@ -16,6 +16,9 @@ import java.util.HashMap;
 
 public class MainCallsDataImplementation implements MainCallsDataClient {
     private DataClientProvider provider;
+    private static final java.util.logging.Logger LOGGER =
+        java.util.logging.Logger.getLogger(MainCallsDataImplementation.class.getName());
+
 
     private static final Path USERS_FILE = Path.of("data", "users.json");
     private static final Path USERS_DIR = Path.of("data", "users");
@@ -50,7 +53,7 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
     public void saveUser(){
         User user = provider.getMyModel().getLocalUser();
         if (user == null) {
-            System.err.println("Aucun utilisateur a sauvegarder");
+            LOGGER.warning("Aucun utilisateur à sauvegarder");
             return;
         }
 
@@ -65,7 +68,7 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
 
             Files.write(userFile, json.getBytes(StandardCharsets.UTF_8));
         } catch (IOException e) {
-            System.err.println("Erreur lors de la sauvegarde de l'utilisateur: " + e.getMessage());
+        LOGGER.log(java.util.logging.Level.SEVERE, "Erreur lors de la sauvegarde de l'utilisateur", e);
         }
     }
 
@@ -83,7 +86,7 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
             }
 
             if (!(user instanceof SecureUser secureUser)) {
-                System.err.println("L'utilisateur " + username + " n'est pas un SecureUser");
+                LOGGER.warning("L'utilisateur " + username + " n'est pas un SecureUser");
                 return false;
             }
 
@@ -106,7 +109,7 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
 
             return isValid;
         } catch (Exception e) {
-            System.err.println("Erreur lors de l'authentification de " + username + ": " + e.getMessage());
+        LOGGER.log(java.util.logging.Level.SEVERE, "Erreur lors de l'authentification de " + username, e);
             return false;
         }
     }
@@ -236,15 +239,21 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
                 String cleanId = stripQuotes(rawId);
                 if (cleanId != null && !cleanId.isBlank()) {
                     try {
+                        // 1. Conversion de la String en UUID
                         UUID kId = UUID.fromString(cleanId);
-                        // Appel statique pour charger le fichier JSON du Kanban
-                        Kanban loadedK = KanbanCallsDataImplementation.loadKanbanFromJson(kId);
+
+                        // 2. Création d'un LightKanban temporaire pour passer l'ID
+                        LightKanban tempLight = new LightKanban(kId, "");
+
+                        // 3. Appel de la méthode avec le LightKanban
+                        Kanban loadedK = KanbanCallsDataImplementation.loadKanbanFromJson(tempLight);
+
                         if (loadedK != null) {
                             userKanbans.add(loadedK);
                         }
                     } catch (Exception e) {
-                        System.err.println("Impossible de charger le kanban ID: " + cleanId);
-                        System.err.println("Raison: " + e.getMessage());
+                        LOGGER.warning("Impossible de charger le kanban ID: " + cleanId + " — " + e.getMessage());
+
                     }
                 }
             }
@@ -264,7 +273,8 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
             String content = new String(Files.readAllBytes(userFile), StandardCharsets.UTF_8).trim();
             return deserializeUserFromJson(content);
         } catch (Exception e) {
-            System.err.println("Erreur lors du chargement de l'utilisateur " + username + ": " + e.getMessage());
+            LOGGER.log(java.util.logging.Level.SEVERE, "Erreur lors du chargement de l'utilisateur " + username, e);
+
             return null;
         }
     }
@@ -334,7 +344,7 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
 
 
     @Override
-    public void exportProfile(UUID lightUserId, String path){
+    public void exportProfile(LightUser lightUserId, String path){
         throw new UnsupportedOperationException("exportProfile not implemented yet");
     }
 
@@ -364,11 +374,112 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
             users.put(login, secureUser.getPassword());
             writeMapToJson(USERS_FILE, users);
         } catch (IOException e) {
-            System.err.println("Erreur lors de la sauvegarde du hash du mot de passe: " + e.getMessage());
+            LOGGER.log(java.util.logging.Level.SEVERE, "Erreur lors de la sauvegarde du hash du mot de passe", e);
+
         }
 
         return secureUser;
     }
+
+    @Override
+    public void addAuthorizedUserToKanban(LightUser user, LightKanban kanban) {
+        if (user == null || kanban == null) {
+            LOGGER.warning("addAuthorizedUserToKanban : user ou kanban est null");
+
+            return;
+        }
+
+        try {
+            // 1. Charger le kanban complet depuis le JSON
+            Kanban fullKanban = KanbanCallsDataImplementation.loadKanbanFromJson(kanban);
+            
+            if (fullKanban == null) {
+                LOGGER.warning("Kanban non trouvé pour l'ID : " + kanban.getId());
+
+                return;
+            }
+
+            // 2. Vérifier si l'utilisateur n'est pas déjà dans la accessList
+            if (fullKanban.getAccessList() == null) {
+                fullKanban.setAccessList(new ArrayList<>());
+            }
+
+            // Vérifier si l'utilisateur existe déjà
+            boolean userExists = fullKanban.getAccessList().stream()
+                    .anyMatch(access -> access.getUser() != null && access.getUser().getId().equals(user.getId()));
+
+            if (!userExists) {
+                // 3. Ajouter l'utilisateur à la accessList
+                Access newAccess = new Access(user, null);
+                fullKanban.getAccessList().add(newAccess);
+                
+                // 4. Sauvegarder le kanban mis à jour
+                KanbanCallsDataImplementation.saveKanbanAsJson(fullKanban);
+                
+                LOGGER.info("Utilisateur " + user.getUsername() + " ajouté au kanban " + fullKanban.getTitle());
+
+                // 5. Mettre à jour le kanban dans le modèle local si c'est le kanban actuel
+                ClientModel model = provider.getMyModel();
+                Kanban currentKanban = model.getCurrentKanban();
+                if (currentKanban != null && currentKanban.getId().equals(fullKanban.getId())) {
+                    // Mettre à jour le kanban actuel avec la nouvelle accessList
+                    currentKanban.setAccessList(fullKanban.getAccessList());
+                    model.setCurrentKanban(currentKanban);
+                }
+            } else {
+                LOGGER.info("Utilisateur " + user.getUsername() + " est déjà dans la accessList du kanban");
+            }
+        } catch (Exception e) {
+            LOGGER.log(java.util.logging.Level.SEVERE, "Erreur lors de l'ajout de l'utilisateur au kanban", e);
+
+        }
+    }
+
+    public User getLocalUser () {
+        ClientModel myModel = provider.getMyModel();
+        User localUser = myModel.getLocalUser();
+        return localUser;
+    }
+
+    public Void modifyLocalUser (String newFirstName, String newLastName, LocalDate newBirthDate, String newAvatar, String newUsername) {
+        ClientModel myModel = provider.getMyModel();
+        User currentUser = myModel.getLocalUser();
+        if(newFirstName != null) {
+            currentUser.setFirstName(newFirstName);
+        }
+        if(newLastName != null) {
+            currentUser.setLastName(newLastName);
+        }
+        if(newBirthDate != null) {
+            currentUser.setBirthDate(newBirthDate);
+        }
+        if(newAvatar != null) {
+            currentUser.setAvatar(newAvatar);
+        }
+        if(newUsername != null) {
+            currentUser.setUsername(newUsername);
+        }
+        saveUser();
+        return null;
+    }
+
+    public void ModifyLocalUserFirstName(String newFirstName) {
+        modifyLocalUser(newFirstName, null, null, null, null);
+    }
+    public void ModifyLocalUserLastName(String newLastName) {
+        modifyLocalUser(null, newLastName, null, null, null);
+    }
+    public void ModifyLocalUserBirthDate(LocalDate newBirthDate) {
+        modifyLocalUser(null, null, newBirthDate, null, null);
+    }
+    public void ModifyLocalUserAvatar(String newAvatar) {
+        modifyLocalUser(null, null, null, newAvatar, null);
+    }
+    public void ModifyLocalUserUsername(String newUsername) {
+        modifyLocalUser(null, null, null, null, newUsername);
+    }
+    
+
 
     public DataClientProvider getProvider() {
         return this.provider;

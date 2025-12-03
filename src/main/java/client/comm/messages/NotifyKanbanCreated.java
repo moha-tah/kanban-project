@@ -6,7 +6,7 @@ import common.dataClasses.LightKanban;
 public class NotifyKanbanCreated extends Message {
     private static final long serialVersionUID = 1L;
 
-    private LightKanban lightKanban; // Le résultat (ID + Titre)
+    private final LightKanban lightKanban; // Le résultat (ID + Titre)
 
     public NotifyKanbanCreated(LightKanban lightKanban) {
         this.lightKanban = lightKanban;

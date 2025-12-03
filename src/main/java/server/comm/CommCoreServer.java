@@ -29,7 +29,7 @@ public class CommCoreServer {
 
     // Liste thread-safe des clients connectés pour diffuser les mises à jour
     private final List<SrvMsgSender> connectedClients = new CopyOnWriteArrayList<>();
-    
+
     // Map pour associer chaque connexion client à l'utilisateur connecté
     private final Map<SrvMsgSender, common.dataClasses.LightUser> clientToUserMap = new ConcurrentHashMap<>();
 
@@ -46,7 +46,8 @@ public class CommCoreServer {
     }
 
     public static boolean sendToUser(UUID targetUserId, Object message) {
-        if (instance == null) return false;
+        if (instance == null)
+            return false;
 
         // On cherche le socket associé à cet utilisateur
         for (Map.Entry<SrvMsgSender, common.dataClasses.LightUser> entry : instance.clientToUserMap.entrySet()) {
@@ -115,15 +116,19 @@ public class CommCoreServer {
             if (serverThread != null) {
                 serverThread.join(5000);
             }
-        } catch (IOException | InterruptedException e) {
+        } catch (IOException e) {
             java.util.logging.Logger.getLogger(CommCoreServer.class.getName())
                     .log(java.util.logging.Level.SEVERE, "SERVER: Erreur lors de l'arrêt du serveur.", e);
+        } catch (InterruptedException e) {
+            java.util.logging.Logger.getLogger(CommCoreServer.class.getName())
+                    .log(java.util.logging.Level.SEVERE, "SERVER: Erreur lors de l'arrêt du serveur.", e);
+            Thread.currentThread().interrupt();
         }
     }
 
     @SuppressWarnings("resource")
     private void handleClientConnection(Socket socket) {
-        SrvMsgSender msgSender = null;
+        SrvMsgSender msgSender;
         try {
             ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
             out.flush();
@@ -145,16 +150,15 @@ public class CommCoreServer {
                                 finalMsgSender.send(resp);
                             } catch (IOException e) {
                                 java.util.logging.Logger.getLogger(CommCoreServer.class.getName())
-                                        .log(java.util.logging.Level.SEVERE, "SERVER: Erreur lors de l'envoi de la réponse.", e);
+                                        .log(java.util.logging.Level.SEVERE,
+                                                "SERVER: Erreur lors de l'envoi de la réponse.", e);
                                 // Client déconnecté, le retirer
                                 connectedClients.remove(finalMsgSender);
                                 clientToUserMap.remove(finalMsgSender);
                             }
                         });
 
-                        if (receivedMsg instanceof client.comm.messages.ConnectionRequest) {
-                            // Associer l'utilisateur à cette connexion
-                            client.comm.messages.ConnectionRequest connReq = (client.comm.messages.ConnectionRequest) receivedMsg;
+                        if (receivedMsg instanceof client.comm.messages.ConnectionRequest connReq) {
                             if (connReq.getUser() != null) {
                                 clientToUserMap.put(finalMsgSender, connReq.getUser());
                             }
@@ -176,27 +180,31 @@ public class CommCoreServer {
                 // Callback appelé quand le receiver s'arrête (client déconnecté)
                 connectedClients.remove(finalMsgSender);
                 java.util.logging.Logger logger = java.util.logging.Logger.getLogger(CommCoreServer.class.getName());
-                
-                // Retirer l'utilisateur associé à cette connexion de la liste des utilisateurs connectés
+
+                // Retirer l'utilisateur associé à cette connexion de la liste des utilisateurs
+                // connectés
                 LightUser userId = clientToUserMap.remove(finalMsgSender);
                 if (userId != null) {
                     try {
                         CommCallsDataServer data = ServerContext.getData();
                         if (data != null) {
-                            ServerModel model = ((ComCallsDataServImplementation) data).getDataServProvider().getModel();
+                            ServerModel model = ((ComCallsDataServImplementation) data).getDataServProvider()
+                                    .getModel();
                             model.removeConnectedUser(userId.getId());
-                            logger.log(java.util.logging.Level.INFO, "SERVER: Utilisateur {0} retiré de la liste des connectés.", userId);
-                            
+                            logger.log(java.util.logging.Level.INFO,
+                                    "SERVER: Utilisateur {0} retiré de la liste des connectés.", userId);
+
                             // Diffuser la mise à jour de la liste des utilisateurs
                             broadcastUsersAndKanbansUpdate();
                         }
                     } catch (Exception e) {
-                        logger.log(java.util.logging.Level.WARNING, "SERVER: Erreur lors du retrait de l'utilisateur.", e);
+                        logger.log(java.util.logging.Level.WARNING, "SERVER: Erreur lors du retrait de l'utilisateur.",
+                                e);
                     }
                 }
-                
+
                 logger.log(java.util.logging.Level.INFO, "SERVER: Client déconnecté, retiré de la liste.");
-                
+
                 // Afficher le nombre d'utilisateurs restants
                 try {
                     CommCallsDataServer data = ServerContext.getData();
@@ -218,7 +226,8 @@ public class CommCoreServer {
     }
 
     /**
-     * Envoie les listes mises à jour d'utilisateurs et de kanbans à tous les clients connectés.
+     * Envoie les listes mises à jour d'utilisateurs et de kanbans à tous les
+     * clients connectés.
      */
     private void broadcastUsersAndKanbansUpdate() {
         try {
@@ -248,17 +257,16 @@ public class CommCoreServer {
                     }
 
                     // 3. Création du message
-                    client.comm.messages.UpdateUsersAndKanbansListResponse updateMsg =
-                            new client.comm.messages.UpdateUsersAndKanbansListResponse(
-                                    new java.util.ArrayList<>(users),
-                                    new java.util.ArrayList<>(visibleKanbans));
+                    client.comm.messages.UpdateUsersAndKanbansListResponse updateMsg = new client.comm.messages.UpdateUsersAndKanbansListResponse(
+                            new java.util.ArrayList<>(users),
+                            new java.util.ArrayList<>(visibleKanbans));
 
                     clientSender.send(updateMsg);
 
                     // Log
                     String pseudo = (currentUser != null) ? currentUser.getUsername() : "Anonyme";
                     logger.log(Level.INFO, "SERVER: Broadcast vers {0} -> {1} kanbans envoyés.",
-                            new Object[]{pseudo, visibleKanbans.size()});
+                            new Object[] { pseudo, visibleKanbans.size() });
 
                 } catch (IOException e) {
                     connectedClients.remove(clientSender);
@@ -271,112 +279,117 @@ public class CommCoreServer {
         }
     }
 
+    class SrvMsgSender implements AutoCloseable {
+        private final ObjectOutputStream out;
 
-class SrvMsgSender implements AutoCloseable {
-    private final ObjectOutputStream out;
+        SrvMsgSender(ObjectOutputStream out) {
+            this.out = out;
+        }
 
-    SrvMsgSender(ObjectOutputStream out) { this.out = out; }
+        public synchronized void send(Object message) throws IOException {
+            out.writeObject(message);
+            out.flush();
+        }
 
-    public synchronized void send(Object message) throws IOException {
-        out.writeObject(message);
-        out.flush();
-    }
-
-    @Override
-    public void close() throws IOException {
-        out.close();
-    }
-}
-
-class SrvMsgReceiver implements Runnable, AutoCloseable {
-    private final ObjectInputStream in;
-    private final java.util.function.Consumer<Object> handler;
-    private final Runnable onDisconnect;
-    private final java.util.concurrent.atomic.AtomicBoolean running =
-            new java.util.concurrent.atomic.AtomicBoolean(false);
-    private Thread worker;
-
-    SrvMsgReceiver(ObjectInputStream in, java.util.function.Consumer<Object> handler, Runnable onDisconnect) {
-        this.in = in;
-        this.handler = handler;
-        this.onDisconnect = onDisconnect;
-    }
-
-    public void start() {
-        if (running.compareAndSet(false, true)) {
-            worker = new Thread(this, "SrvMsgReceiver-thread");
-            worker.setDaemon(true);
-            worker.start();
+        @Override
+        public void close() throws IOException {
+            out.close();
         }
     }
 
-    public void stop() {
-        running.set(false);
-        if (worker != null && Thread.currentThread() != worker) {
-            try {
-                worker.join(2000);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
+    class SrvMsgReceiver implements Runnable, AutoCloseable {
+        private final ObjectInputStream in;
+        private final java.util.function.Consumer<Object> handler;
+        private final Runnable onDisconnect;
+        private final java.util.concurrent.atomic.AtomicBoolean running = new java.util.concurrent.atomic.AtomicBoolean(
+                false);
+        private Thread worker;
+
+        SrvMsgReceiver(ObjectInputStream in, java.util.function.Consumer<Object> handler, Runnable onDisconnect) {
+            this.in = in;
+            this.handler = handler;
+            this.onDisconnect = onDisconnect;
+        }
+
+        public void start() {
+            if (running.compareAndSet(false, true)) {
+                worker = new Thread(this, "SrvMsgReceiver-thread");
+                worker.setDaemon(true);
+                worker.start();
             }
         }
-    }
 
-    @Override
-    public void run() {
-        try {
-            while (running.get()) {
-                Object msg;
-                try {
-                    msg = in.readObject();
-                } catch (java.io.EOFException e) {
-                    // EOFException est normale quand le client ferme la connexion proprement
-                    java.util.logging.Logger.getLogger(SrvMsgReceiver.class.getName())
-                            .log(java.util.logging.Level.FINE,
-                                    "SrvMsgReceiver: Client déconnecté (EOF).");
-                    break;
-                } catch (IOException e) {
-                    // Traiter les SocketException (connection reset) comme une déconnexion normale
-                    java.util.logging.Logger logger = java.util.logging.Logger.getLogger(SrvMsgReceiver.class.getName());
-                    if (e instanceof java.net.SocketException) {
-                        // Connection reset / abort — log informatif sans stacktrace
-                        logger.log(java.util.logging.Level.INFO, "SrvMsgReceiver: I/O error while reading message: {0}", e.getMessage());
-                    } else {
-                        // Autres erreurs I/O gardent la stacktrace pour le débogage
-                        logger.log(java.util.logging.Level.WARNING, "SrvMsgReceiver: I/O error while reading message.", e);
-                    }
-                    break;
-                }
-                try {
-                    handler.accept(msg);
-                } catch (Throwable t) {
-                    java.util.logging.Logger.getLogger(SrvMsgReceiver.class.getName())
-                            .log(java.util.logging.Level.SEVERE,
-                                    "SrvMsgReceiver: Exception in handler.", t);
-                }
-            }
-        } catch (ClassNotFoundException e) {
-            java.util.logging.Logger.getLogger(SrvMsgReceiver.class.getName())
-                    .log(java.util.logging.Level.SEVERE,
-                            "SrvMsgReceiver: Class not found while reading message.", e);
-        } finally {
+        public void stop() {
             running.set(false);
-            // Notifier que le client est déconnecté
-            if (onDisconnect != null) {
+            if (worker != null && Thread.currentThread() != worker) {
                 try {
-                    onDisconnect.run();
-                } catch (Exception e) {
-                    java.util.logging.Logger.getLogger(SrvMsgReceiver.class.getName())
-                            .log(java.util.logging.Level.WARNING, "SrvMsgReceiver: Erreur dans onDisconnect callback.", e);
+                    worker.join(2000);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
                 }
             }
         }
-    }
 
-    @Override
-    public void close() throws IOException {
-        try (in) {
-            stop();
+        @Override
+        public void run() {
+            try {
+                while (running.get()) {
+                    Object msg;
+                    try {
+                        msg = in.readObject();
+                    } catch (java.io.EOFException e) {
+                        // EOFException est normale quand le client ferme la connexion proprement
+                        java.util.logging.Logger.getLogger(SrvMsgReceiver.class.getName())
+                                .log(java.util.logging.Level.FINE,
+                                        "SrvMsgReceiver: Client déconnecté (EOF).");
+                        break;
+                    } catch (IOException e) {
+                        // Traiter les SocketException (connection reset) comme une déconnexion normale
+                        java.util.logging.Logger logger = java.util.logging.Logger
+                                .getLogger(SrvMsgReceiver.class.getName());
+                        if (e instanceof java.net.SocketException) {
+                            // Connection reset / abort — log informatif sans stacktrace
+                            logger.log(java.util.logging.Level.INFO,
+                                    "SrvMsgReceiver: I/O error while reading message: {0}", e.getMessage());
+                        } else {
+                            // Autres erreurs I/O gardent la stacktrace pour le débogage
+                            logger.log(java.util.logging.Level.WARNING,
+                                    "SrvMsgReceiver: I/O error while reading message.", e);
+                        }
+                        break;
+                    }
+                    try {
+                        handler.accept(msg);
+                    } catch (Throwable t) {
+                        java.util.logging.Logger.getLogger(SrvMsgReceiver.class.getName())
+                                .log(java.util.logging.Level.SEVERE,
+                                        "SrvMsgReceiver: Exception in handler.", t);
+                    }
+                }
+            } catch (ClassNotFoundException e) {
+                java.util.logging.Logger.getLogger(SrvMsgReceiver.class.getName())
+                        .log(java.util.logging.Level.SEVERE,
+                                "SrvMsgReceiver: Class not found while reading message.", e);
+            } finally {
+                running.set(false);
+                // Notifier que le client est déconnecté
+                if (onDisconnect != null) {
+                    try {
+                        onDisconnect.run();
+                    } catch (Exception e) {
+                        java.util.logging.Logger.getLogger(SrvMsgReceiver.class.getName())
+                                .log(java.util.logging.Level.WARNING,
+                                        "SrvMsgReceiver: Erreur dans onDisconnect callback.", e);
+                    }
+                }
+            }
+        }
+
+        @Override
+        public void close() throws IOException {
+            try (in) {
+                stop();
+            }
         }
     }
-}
 }

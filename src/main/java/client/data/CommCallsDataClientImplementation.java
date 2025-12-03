@@ -6,10 +6,10 @@ import common.dataClasses.Kanban;
 import common.dataClasses.LightKanban;
 import common.dataClasses.LightUser;
 import common.dataClasses.Modification;
+import common.dataClasses.User;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class CommCallsDataClientImplementation implements ComCallsDataClient{
     private DataClientProvider provider;
@@ -27,8 +27,8 @@ public class CommCallsDataClientImplementation implements ComCallsDataClient{
         return model.getConnectedUsers();
     }
     @Override
-    public UUID askIdUser(){
-        return this.provider.getMyModel().getLocalUser().getId();
+    public LightUser askIdUser(){
+        return this.provider.getMyModel().getLocalUser();
     }
 
 
@@ -65,7 +65,7 @@ public class CommCallsDataClientImplementation implements ComCallsDataClient{
     }
 
     @Override
-    public boolean addAuthorizedUser(UUID kanbanId, UUID userId){
+    public boolean addAuthorizedUser(LightKanban kanbanId, LightUser userId){
         if (provider == null || provider.getCommInterface() == null) {
             return false;
         }
@@ -73,7 +73,8 @@ public class CommCallsDataClientImplementation implements ComCallsDataClient{
             provider.getCommInterface().addAuthorizedUser(kanbanId, userId);
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            java.util.logging.Logger.getLogger(CommCallsDataClientImplementation.class.getName())
+                .log(java.util.logging.Level.SEVERE, "Error while adding authorized user (kanbanId=" + kanbanId + ", userId=" + userId + ")", e);
             return false;
         }
     }
@@ -117,12 +118,32 @@ public class CommCallsDataClientImplementation implements ComCallsDataClient{
         }
     }
 
+    @Override
     public void saveTempKanban(Kanban kanban){
         provider.getMyModel().setCurrentKanban(kanban);
     }
 
+    @Override
     public void addUserToList(LightUser user, List<LightKanban> kanbans){
         //TODO
+    }
+    @Override
+    public User getDistantProfile(){
+        try {
+            if (this.provider == null || this.provider.getMyModel() == null) return null;
+            User local = this.provider.getMyModel().getLocalUser();
+            if (local == null) return null;
+            User copy = new User(local.getId(), local.getUsername(), local.getFirstName(), local.getLastName(), local.getBirthDate());
+            try {
+                if (local.getAvatar() != null && !local.getAvatar().isBlank()) copy.setAvatar(local.getAvatar());
+            } catch (Throwable ignored) {}
+            copy.setMyKanban(null);
+            return copy;
+        } catch (Exception e) {
+            java.util.logging.Logger.getLogger(CommCallsDataClientImplementation.class.getName())
+                    .log(java.util.logging.Level.WARNING, "getDistantProfile: error building profile", e);
+            return null;
+        }
     }
 
 

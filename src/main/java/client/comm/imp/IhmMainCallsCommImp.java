@@ -16,6 +16,8 @@ import java.util.logging.Logger;
 import client.comm.messages.ConnectionRequest;
 import client.comm.messages.AskAddListModifiers;
 import client.comm.messages.RequestKanban;
+import client.comm.messages.Logout; // Import ajouté
+import client.comm.messages.RequestModification;
 import common.dataClasses.Kanban;
 import common.dataClasses.LightKanban;
 import common.dataClasses.LightUser;
@@ -29,17 +31,45 @@ public class IhmMainCallsCommImp implements IhmMainCallsComm {
     }
 
     @Override
-    public void logout(UUID LightUserId) {
-        // Set a breakpoint here if you need to trace logout behavior
+    public void logout(LightUser user) {
+        if (user == null) {
+            LOGGER.warning("Tentative de déconnexion avec utilisateur null");
+            return;
+        }
+
+        LOGGER.info(() -> "Sending logout request for user: " + user.getUsername());
+
+        try {
+            // Création et envoi du message de déconnexion
+            Logout msg = new Logout(user);
+            
+            if (commCore.getMsgSender() != null) {
+                commCore.sendMessage(msg);
+                LOGGER.info("Logout message sent successfully");
+            } else {
+                LOGGER.warning("Message sender not initialized");
+            }
+
+            // Fermer la connexion socket proprement côté client
+            commCore.disconnect();
+            
+        } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, "Network error during logout", e);
+            // En cas d'erreur réseau, déconnexion locale
+            commCore.disconnect();
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Unexpected error during logout", e);
+            commCore.disconnect();
+        }
     }
 
     @Override
-    public void askListModifiers(UUID LightUserId) {
+    public void askListModifiers(LightUser LightUserId) {
         // Breakpoint suggestion: inspect LightUserId
     }
 
     @Override
-    public void askAddListModifiers(UUID userId, UUID kanbanId) {
+    public void askAddListModifiers(LightUser userId, LightKanban kanbanId) {
         LOGGER.fine(() -> "Sending AskAddListModifiers user=" + userId + " kanban=" + kanbanId);
         AskAddListModifiers msg = new AskAddListModifiers(userId, kanbanId);
         try {
@@ -60,7 +90,7 @@ public class IhmMainCallsCommImp implements IhmMainCallsComm {
             RequestPermission msg = new RequestPermission(LightUserId.getId(), LightKanbanId.getId());
             commCore.sendMessage(msg);
             LOGGER.fine(() -> "sendPermissionRequest user=" + LightUserId + " kanban=" + LightKanbanId);
-        } catch (Exception e) {
+        } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "Error in sendPermissionRequest", e);
         }
     }
@@ -71,7 +101,7 @@ public class IhmMainCallsCommImp implements IhmMainCallsComm {
             PermissionResponse msg = new PermissionResponse(LightUserId, LightKanbanId, accepted);
             commCore.sendMessage(msg);
             LOGGER.fine(() -> "sendPermissionResponse user=" + LightUserId + " kanban=" + LightKanbanId + " accepted=" + accepted);
-        } catch (Exception e) {
+        } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "Error in sendPermissionResponse", e);
         }
     }
@@ -108,7 +138,7 @@ public class IhmMainCallsCommImp implements IhmMainCallsComm {
             NotifyDecision msg = new NotifyDecision(LightUserId, LightKanbanId, accepted);
             commCore.sendMessage(msg);
             LOGGER.fine(() -> "notifyDecision user=" + LightUserId + " kanban=" + LightKanbanId + " accepted=" + accepted);
-        } catch (Exception e) {
+        } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "Error in notifyDecision", e);
         }
     }
@@ -119,7 +149,7 @@ public class IhmMainCallsCommImp implements IhmMainCallsComm {
     }
 
     @Override
-    public void askKanban(UUID LightKanbanId) {
+    public void askKanban(LightKanban LightKanbanId) {
         // Add implementation + breakpoint to trace request flow
     }
 
@@ -133,7 +163,7 @@ public class IhmMainCallsCommImp implements IhmMainCallsComm {
             } else {
                 LOGGER.warning("Message sender not initialized for SendNewKanban");
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "Error in sendNewKanban", e);
         }
     }
@@ -145,12 +175,33 @@ public class IhmMainCallsCommImp implements IhmMainCallsComm {
         try {
             commCore.sendMessage(msg);
             LOGGER.fine("RequestKanban sent");
-        } catch (Exception e) {
+        } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "Error in getKanban", e);
         }
     }
 
-    public void sendRequestModification(LightUser LightUser, UUID CardId, Object newStatus) {
-        // Breakpoint: inspect parameters to trace modification request
+    public void sendRequestModification(LightUser user, UUID cardId, String newStatus) {
+        if (user == null || cardId == null || newStatus == null) {
+            LOGGER.warning("Paramètres invalides pour sendRequestModification");
+            return;
+        }
+
+        LOGGER.info(() -> "Envoi demande de modification carte " + cardId + " vers " + newStatus + 
+                     " par " + user.getUsername());
+
+        try {
+            RequestModification msg = new RequestModification(user, cardId, newStatus);
+            
+            if (commCore.getMsgSender() != null) {
+                commCore.sendMessage(msg);
+                LOGGER.fine("Demande de modification envoyée avec succès");
+            } else {
+                LOGGER.warning("Message sender non initialisé");
+            }
+        } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, "Erreur réseau lors de l'envoi de la modification", e);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Erreur inattendue lors de la modification", e);
+        }
     }
 }
