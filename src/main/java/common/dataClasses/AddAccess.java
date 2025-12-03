@@ -3,32 +3,32 @@ import java.util.List;
 import java.util.UUID;
 
 public class AddAccess extends Modification {
-    private Access acces;
+    private Access access;
     private UUID previousAccessId = null;
     
     // Constructeur
-    public AddAccess(Access acces) {
+    public AddAccess(Access access) {
         super();
-        this.acces = acces;
+        this.access = access;
     }
     
     // Constructeur avec ID
-    public AddAccess(UUID id, Access acces) {
+    public AddAccess(UUID id, Access access) {
         super(id);
-        this.acces = acces;
+        this.access = access;
     }
     
     // Getters
-    public Access getAcces() {
-        return acces;
+    public Access getAccess() {
+        return access;
     }
     public UUID getPreviousAccessId() {
         return previousAccessId;
     }
     
     // Setters
-    public void setAcces(Access acces) {
-        this.acces = acces;
+    public void setAccess(Access access) {
+        this.access = access;
     }
     public void setPreviousAccessId(UUID previousAccessId) {
         this.previousAccessId = previousAccessId;
@@ -37,11 +37,11 @@ public class AddAccess extends Modification {
     @Override
     public Kanban execute(Kanban targetKanban) {
         LightKanban lightKanban = targetKanban.getLightKanban();
-        this.previousAccessId = acces.getId();
-        if(!lightKanban.getAccessList().contains(acces)){
-            List<Access> accesLightKanban = lightKanban.getAccessList();
-            accesLightKanban.add(acces);
-            lightKanban.setAccessList(accesLightKanban);
+        this.previousAccessId = access.getId();
+        if(lightKanban.getAccessList().stream().noneMatch(a -> a.getId().equals(access.getId()))){
+            List<Access> accessLightKanban = lightKanban.getAccessList();
+            accessLightKanban.add(access);
+            lightKanban.setAccessList(accessLightKanban);
         }
         
         return targetKanban;
@@ -57,7 +57,7 @@ public class AddAccess extends Modification {
     public String toString() {
         return "AddAccess{" +
                 "id=" + getId() +
-                ", acces =" + (acces != null ? acces.getRole() : "null") +
+                ", access =" + (access != null ? access.getRole() : "null") +
                 '}';
     }
 }

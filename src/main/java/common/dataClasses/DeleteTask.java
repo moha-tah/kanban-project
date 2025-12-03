@@ -56,6 +56,9 @@ public class DeleteTask extends Modification {
     
     @Override
     public Kanban undo(Kanban targetKanban) {
+        if (previousTask == null) {
+            throw new IllegalStateException("Cannot undo DeleteTask: previousTask is null (task may not have existed at deletion time).");
+        }
         CreateTask undoModification = new CreateTask(previousTask, targetKanban.getColumnFromTask(previousTask.getId()).getId());
         return undoModification.execute(targetKanban);
     }
