@@ -8,6 +8,9 @@ import common.dataClasses.Modification;
 public interface DataCallsComm {
     void askDeleteKanban(UUID LightKanbanId, UUID LightUserId);
     void sendKanban(Kanban Kanban); 
-    void saveModifiedKanban(Modification modification, LightKanban kanban);    
+    void saveModifiedKanban(Modification modification, LightKanban kanban);
+    
+       // Voir Profil Distant 
+    void getDistantProfile(UUID targetUserId);
 }
 

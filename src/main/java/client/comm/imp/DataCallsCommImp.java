@@ -10,7 +10,7 @@ import common.dataClasses.Kanban;
 import common.dataClasses.LightKanban;
 import common.dataClasses.Modification;
 
-// Mensagens de comunicação
+
 import client.comm.messages.SendNewKanban;
 import client.comm.messages.MessageSaveModifiedKanban;
 import client.comm.messages.MessageRequestProfile;
@@ -24,7 +24,7 @@ public class DataCallsCommImp implements DataCallsComm {
 
     @Override
     public void askDeleteKanban(UUID LightKanbanId, UUID LightUserId) {
-        // TODO V3 / V4
+        
     }
 
     @Override
