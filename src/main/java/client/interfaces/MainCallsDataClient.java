@@ -1,10 +1,12 @@
 package client.interfaces;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import common.dataClasses.LightUser;
 import common.dataClasses.User;
 import common.dataClasses.LightKanban;
+import common.dataClasses.User;
 
 public interface MainCallsDataClient {
 
@@ -26,5 +28,7 @@ public interface MainCallsDataClient {
 
     void addAuthorizedUserToKanban(LightUser user, LightKanban kanban);
 
-    User getLocalUser();
+    User getLocalUser ();
+
+    Void modifyLocalUser (String newFirstName, String newLastName, LocalDate newBirthDate, String newAvatar, String newUsername);
 }
