@@ -7,6 +7,7 @@ import common.dataClasses.LightKanban;
 import common.dataClasses.LightUser;
 import common.dataClasses.Modification;
 import common.dataClasses.User;
+import java.util.UUID;
 
 import java.util.ArrayList;
 import java.util.List;

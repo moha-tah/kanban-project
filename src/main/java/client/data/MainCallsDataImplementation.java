@@ -243,7 +243,7 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
                         UUID kId = UUID.fromString(cleanId);
 
                         // 2. Création d'un LightKanban temporaire pour passer l'ID
-                        LightKanban tempLight = new LightKanban(kId, "");
+                        LightKanban tempLight = new LightKanban(kId,null,null );
 
                         // 3. Appel de la méthode avec le LightKanban
                         Kanban loadedK = KanbanCallsDataImplementation.loadKanbanFromJson(tempLight);
