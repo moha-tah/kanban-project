@@ -27,9 +27,14 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Popup;
 
+
+import java.util.HashMap;
+import java.util.Map;
+
 import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -71,6 +76,9 @@ public class DisplayKanbanController implements Initializable {
 
     @FXML
     private Button addColumnButton;      // bouton + à droite
+
+    // Map : id de tâche -> liste des utilisateurs assignés à cette tâche
+    private final Map<UUID, List<LightUser>> taskUsers = new HashMap<>();
 
     // Données du modèle
     private LightKanban kanban;
@@ -690,148 +698,229 @@ public class DisplayKanbanController implements Initializable {
         );
 
         showPopupNearNode(popup, anchorNode);
+    
     }
+    /** 
+ * Popup permettant d'ajouter un utilisateur à une tâche.
+ * - Affiche tous les utilisateurs connectés
+ * - Pour chaque utilisateur, un bouton ADD permet de l'assigner à la tâche
+ * - L'assignation est mémorisée localement dans taskUsers (Map)
+ */
+private void showAddUserToTaskPopup(Task task, Node anchorNode) {
 
-    /** Popup ADD A USER (tous les users connectés) */
-    private void showAddUserToTaskPopup(Task task, Node anchorNode) {
-        Popup popup = createBasePopup();
-        VBox box = (VBox) popup.getContent().get(0);
-        box.setSpacing(10);
+    // Création du popup stylisé
+    Popup popup = createBasePopup();
+    VBox box = (VBox) popup.getContent().get(0);
+    box.setSpacing(10);
 
-        Label title = new Label("CONNECTED USERS");
-        title.setStyle("-fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold;");
-        box.getChildren().add(title);
+    // Titre du popup
+    Label title = new Label("CONNECTED USERS");
+    title.setStyle("-fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold;");
+    box.getChildren().add(title);
 
-        List<LightUser> users = null;
-        if (core != null) {
-            users = core.getUsersSnapshot();
-        } else {
-            LOGGER.warning("MainCore est null dans DisplayKanbanController, impossible de récupérer les users.");
-        }
+    // Liste des utilisateurs connectés (LightUser)
+    List<LightUser> users = (core != null) ? core.getUsersSnapshot() : null;
 
-        if (users == null || users.isEmpty()) {
-            Label empty = new Label("No connected users.");
-            empty.setStyle("-fx-text-fill: white;");
-            box.getChildren().add(empty);
-        } else {
-            for (LightUser user : users) {
-                try {
-                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/user_card.fxml"));
-                    Node userCard = loader.load();
-                    UserCardController controller = loader.getController();
-                    controller.setUserData(user.getUsername(), user.getAvatar());
+    // Aucun utilisateur connecté → afficher un message
+    if (users == null || users.isEmpty()) {
+        Label empty = new Label("No connected users.");
+        empty.setStyle("-fx-text-fill: white;");
+        box.getChildren().add(empty);
+    } 
+    else {
+        // Affichage d’une ligne par utilisateur
+        for (LightUser user : users) {
+            try {
+                // Charger la carte visuelle de l’utilisateur (avatar + nom)
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/user_card.fxml"));
+                Node userCard = loader.load();
 
-                    Button addBtn = new Button("ADD");
-                    addBtn.setStyle(
-                            "-fx-background-color: #ff8c1a;" +
-                                    "-fx-text-fill: black;" +
-                                    "-fx-font-weight: bold;" +
-                                    "-fx-background-radius: 20;" +
-                                    "-fx-padding: 2 10 2 10;"
+                UserCardController controller = loader.getController();
+                controller.setUserData(user.getUsername(), user.getAvatar());
+
+                // Bouton ADD → assigner user → tâche
+                Button addBtn = new Button("ADD");
+                addBtn.setStyle(
+                    "-fx-background-color: #ff8c1a;" +
+                    "-fx-text-fill: black;" +
+                    "-fx-font-weight: bold;" +
+                    "-fx-background-radius: 20;" +
+                    "-fx-padding: 2 10 2 10;"
+                );
+
+                addBtn.setOnAction(ev -> {
+
+                    System.out.println("ADD user " + user.getUsername()
+                            + " to task " + task.getTitle());
+
+                    /*
+                     * 🔹 Mémorisation locale :
+                     * On enregistre dans `taskUsers` que ce user appartient à cette tâche.
+                     * Cela sert à afficher ensuite les bons users dans SEE USERS.
+                     */
+                    List<LightUser> list = taskUsers.computeIfAbsent(
+                            task.getId(),
+                            id -> new ArrayList<>()
                     );
 
-                    addBtn.setOnAction(ev -> {
-                        System.out.println("ADD user " + user.getUsername() +
-                                " to task " + task.getTitle());
-                        // TODO : corps.assignUserToTask(task, user);
-                        popup.hide();
-                    });
+                    // Évite d’ajouter deux fois le même user
+                    boolean already = list.stream()
+                            .anyMatch(u -> u.getId().equals(user.getId()));
 
-                    HBox row = new HBox(10);
-                    row.setAlignment(Pos.CENTER_LEFT);
-                    HBox.setHgrow(userCard, Priority.ALWAYS);
+                    if (!already)
+                        list.add(user);
 
-                    row.getChildren().addAll(userCard, addBtn);
-                    box.getChildren().add(row);
+                    /*
+                     * 🔹 Communication backend
+                     * Si tu veux transmettre l’ajout au serveur, tu crées une classe dédiée :
+                     AssignUserToTask modify = new AssignUserToTask(task.getId(), user.getId());
+                     corps.getCommPort().sendRequestModification(corps.getMe(), modify);
+                     */
 
-                } catch (IOException ex) {
-                    LOGGER.log(Level.SEVERE,
-                            "Erreur lors du chargement de user_card.fxml pour le popup ADD USER", ex);
-                }
+                    // Fermeture du popup
+                    popup.hide();
+                });
+
+                // Une ligne = [ CarteUtilisateur ] [ Bouton ADD ]
+                HBox row = new HBox(10);
+                row.setAlignment(Pos.CENTER_LEFT);
+                HBox.setHgrow(userCard, Priority.ALWAYS);
+
+                row.getChildren().addAll(userCard, addBtn);
+                box.getChildren().add(row);
+
+            } catch (IOException ex) {
+                LOGGER.log(Level.SEVERE,
+                    "Erreur lors du chargement de user_card.fxml pour ADD USER popup", ex);
             }
         }
-
-        showPopupNearNode(popup, anchorNode);
     }
 
-    /** Popup SEE USERS : users de la tâche avec boutons View / Delete */
-    private void showTaskUsersPopup(Task task, Node anchorNode) {
-        Popup popup = createBasePopup();
-        VBox box = (VBox) popup.getContent().get(0);
-        box.setSpacing(10);
+    // Affichage du popup à côté du bouton
+    showPopupNearNode(popup, anchorNode);
+}
 
-        Label title = new Label("TASK USERS");
-        title.setStyle("-fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold;");
-        box.getChildren().add(title);
 
-        List<LightUser> users;
-        if (core != null) {
-            // TODO : remplacer par "users de la tâche"
-            users = core.getUsersSnapshot();
-        } else {
-            LOGGER.warning("MainCore est null dans DisplayKanbanController, impossible de récupérer les users.");
-            users = Collections.emptyList();
-        }
 
-        if (users.isEmpty()) {
-            Label empty = new Label("No users on this task.");
-            empty.setStyle("-fx-text-fill: white;");
-            box.getChildren().add(empty);
-        } else {
-            for (LightUser user : users) {
-                try {
-                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/user_card.fxml"));
-                    Node userCard = loader.load();
-                    UserCardController controller = loader.getController();
-                    controller.setUserData(user.getUsername(), user.getAvatar());
+    /**
+ * Popup SEE USERS :
+ * - Affiche uniquement les utilisateurs assignés à cette tâche
+ * - Pour chaque user : bouton View + bouton Delete
+ * View  → future page de profil
+ * Delete → désassigner l’utilisateur de la tâche
+ */
+private void showTaskUsersPopup(Task task, Node anchorNode) {
 
-                    Button viewBtn = new Button("View");
-                    viewBtn.setStyle(
-                            "-fx-background-color: #ff8c1a;" +
-                                    "-fx-text-fill: black;" +
-                                    "-fx-font-weight: bold;" +
-                                    "-fx-background-radius: 20;" +
-                                    "-fx-padding: 2 10 2 10;"
-                    );
+    // Création du popup
+    Popup popup = createBasePopup();
+    VBox box = (VBox) popup.getContent().get(0);
+    box.setSpacing(10);
 
-                    Button deleteBtn = new Button("Delete");
-                    deleteBtn.setStyle(
-                            "-fx-background-color: #ff6666;" +
-                                    "-fx-text-fill: white;" +
-                                    "-fx-font-weight: bold;" +
-                                    "-fx-background-radius: 20;" +
-                                    "-fx-padding: 2 10 2 10;"
-                    );
+    // Titre du popup
+    Label title = new Label("TASK USERS");
+    title.setStyle("-fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold;");
+    box.getChildren().add(title);
 
-                    viewBtn.setOnAction(ev -> {
-                        System.out.println("VIEW user " + user.getUsername() +
-                                " on task " + task.getTitle());
-                        // TODO : ouvrir une fiche détaillée
-                    });
+    /*
+     * 🔹 On récupère les utilisateurs réellement assignés à la tâche.
+     * Ceci a été alimenté précédemment dans showAddUserToTaskPopup.
+     */
+    List<LightUser> users = taskUsers.getOrDefault(
+        task.getId(),
+        Collections.emptyList()
+    );
 
-                    deleteBtn.setOnAction(ev -> {
-                        System.out.println("DELETE user " + user.getUsername() +
-                                " from task " + task.getTitle());
-                        // TODO : corps.unassignUserFromTask(task, user);
-                        popup.hide();
-                    });
+    // Aucun user dans cette tâche
+    if (users.isEmpty()) {
+        Label empty = new Label("No users on this task.");
+        empty.setStyle("-fx-text-fill: white;");
+        box.getChildren().add(empty);
+    } 
+    else {
+        // Affichage de chaque user assigné
+        for (LightUser user : users) {
+            try {
+                // Affiche avatar + userName
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/user_card.fxml"));
+                Node userCard = loader.load();
+                UserCardController controller = loader.getController();
+                controller.setUserData(user.getUsername(), user.getAvatar());
 
-                    HBox row = new HBox(10);
-                    row.setAlignment(Pos.CENTER_LEFT);
-                    HBox.setHgrow(userCard, Priority.ALWAYS);
+                // Button VIEW → afficher popup profil user
+                Button viewBtn = new Button("View");
+                viewBtn.setStyle(
+                    "-fx-background-color: #ff8c1a;" +
+                    "-fx-text-fill: black;" +
+                    "-fx-font-weight: bold;" +
+                    "-fx-background-radius: 20;" +
+                    "-fx-padding: 2 10 2 10;"
+                );
 
-                    row.getChildren().addAll(userCard, viewBtn, deleteBtn);
-                    box.getChildren().add(row);
+                viewBtn.setOnAction(ev -> {
+                    System.out.println("VIEW user " + user.getUsername()
+                            + " on task " + task.getTitle());
 
-                } catch (IOException ex) {
-                    LOGGER.log(Level.SEVERE,
-                            "Erreur lors du chargement de user_card.fxml pour le popup SEE USERS", ex);
-                }
+                    /*
+                     * 🔹 Ici tu peux appeler un popup de détails user :
+                     *     showViewUserPopup(user, anchorNode);
+                     *  
+                     * Si tu n'as pas encore implémenté showViewUserPopup, 
+                     * laisse simplement ce println.
+                     */
+                });
+
+                // Button DELETE → enlever le user de la tâche
+                Button deleteBtn = new Button("Delete");
+                deleteBtn.setStyle(
+                    "-fx-background-color: #ff6666;" +
+                    "-fx-text-fill: white;" +
+                    "-fx-font-weight: bold;" +
+                    "-fx-background-radius: 20;" +
+                    "-fx-padding: 2 10 2 10;"
+                );
+
+                deleteBtn.setOnAction(ev -> {
+                    System.out.println("DELETE user " + user.getUsername()
+                            + " from task " + task.getTitle());
+
+                    /*
+                     * 🔹 On enlève localement le user de cette tâche.
+                     * Cela met immédiatement à jour le SEE USERS.
+                     */
+                    List<LightUser> list = taskUsers.get(task.getId());
+                    if (list != null) {
+                        list.removeIf(u -> u.getId().equals(user.getId()));
+                    }
+
+                    /*
+                     * 🔹 Backend 
+                     UnassignUserFromTask modify = new UnassignUserFromTask(task.getId(), user.getId());
+                     corps.getCommPort().sendRequestModification(corps.getMe(), modify);
+                     */
+
+                    popup.hide();
+                });
+
+                // Ligne : [ CarteUser ] [ VIEW ] [ DELETE ]
+                HBox row = new HBox(10);
+                row.setAlignment(Pos.CENTER_LEFT);
+                HBox.setHgrow(userCard, Priority.ALWAYS);
+
+                row.getChildren().addAll(userCard, viewBtn, deleteBtn);
+                box.getChildren().add(row);
+
+            } catch (IOException ex) {
+                LOGGER.log(Level.SEVERE,
+                    "Erreur lors du chargement de user_card.fxml pour SEE USERS popup", ex);
             }
         }
-
-        showPopupNearNode(popup, anchorNode);
     }
+
+    // Affiche le popup à l’endroit du clic
+    showPopupNearNode(popup, anchorNode);
+}
+
+
 
     /** Menu statut : liste dynamique des vraies colonnes */
     private void onStatusClick(Task task, Button statusBtn) {
