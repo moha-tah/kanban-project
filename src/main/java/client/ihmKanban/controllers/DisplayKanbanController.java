@@ -476,8 +476,8 @@ public class DisplayKanbanController implements Initializable {
         switch (currentColor) {
             case "#5D8BF4", "BLUE" -> colorCombo.getSelectionModel().select("BLUE");
             case "GREEN" -> colorCombo.getSelectionModel().select("GREEN");
-            case "ORANGE" -> colorCombo.getSelectionModel().select("ORANGE");
-            case "RED" -> colorCombo.getSelectionModel().select("RED");
+            case "#FF8C1A", "ORANGE" -> colorCombo.getSelectionModel().select("ORANGE");
+            case "#FF6666", "RED" -> colorCombo.getSelectionModel().select("RED");
             case "PURPLE" -> colorCombo.getSelectionModel().select("PURPLE");
             default -> {
             }
