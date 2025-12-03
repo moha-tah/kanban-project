@@ -15,19 +15,20 @@ public class MessageResponseProfile extends Message {
     @Override
     public Optional<Message> handle() {
         try {
-            // Deliver profile to the UI
-            if (clientContext != null &&
-                clientContext.getMainInterface() != null) {
+            // Access client context through the getter (required!)
+            var ctx = getClientContext();
 
-                clientContext.getMainInterface().displayProfile(profile);
+            if (ctx != null && ctx.getMainInterface() != null) {
+                ctx.getMainInterface().displayProfile(profile);
             }
-        }
-        catch (Throwable t) {
+
+        } catch (Throwable t) {
             java.util.logging.Logger.getLogger(MessageResponseProfile.class.getName())
                 .log(java.util.logging.Level.SEVERE,
                      "Error handling MessageResponseProfile", t);
         }
 
-        return Optional.empty(); // no further messages
+        // No response message needed
+        return Optional.empty();
     }
 }
