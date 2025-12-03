@@ -1,7 +1,6 @@
 package server.comm;
 
 import common.dataClasses.LightUser;
-import server.ServerContext;
 import server.data.ComCallsDataServImplementation;
 import server.data.ServerModel;
 import server.interfaces.CommCallsDataServer;
@@ -26,6 +25,7 @@ public class CommCoreServer {
     private boolean isRunning;
     private Thread serverThread;
     private static CommCoreServer instance;
+    private CommCallsDataServer dataServer;
 
     // Liste thread-safe des clients connectés pour diffuser les mises à jour
     private final List<SrvMsgSender> connectedClients = new CopyOnWriteArrayList<>();
@@ -70,7 +70,7 @@ public class CommCoreServer {
      * Configure l'interface Data globale du serveur via ServerContext.
      */
     public void setDataInterface(CommCallsDataServer dataInterface) {
-        ServerContext.setDataInterface(dataInterface);
+        this.dataServer = dataInterface;
     }
 
     /*
@@ -186,9 +186,8 @@ public class CommCoreServer {
                 LightUser userId = clientToUserMap.remove(finalMsgSender);
                 if (userId != null) {
                     try {
-                        CommCallsDataServer data = ServerContext.getData();
-                        if (data != null) {
-                            ServerModel model = ((ComCallsDataServImplementation) data).getDataServProvider()
+                        if (dataServer != null) {
+                            ServerModel model = ((ComCallsDataServImplementation) dataServer).getDataServProvider()
                                     .getModel();
                             model.removeConnectedUser(userId.getId());
                             logger.log(java.util.logging.Level.INFO,
@@ -207,9 +206,8 @@ public class CommCoreServer {
 
                 // Afficher le nombre d'utilisateurs restants
                 try {
-                    CommCallsDataServer data = ServerContext.getData();
-                    if (data != null) {
-                        var users = data.getUsersList();
+                    if (dataServer != null) {
+                        var users = dataServer.getUsersList();
                         logger.log(Level.INFO, "SERVER: {0} utilisateur(s) connect\u00e9(s) restant(s).", users.size());
                     }
                 } catch (Exception e) {
@@ -231,15 +229,14 @@ public class CommCoreServer {
      */
     private void broadcastUsersAndKanbansUpdate() {
         try {
-            CommCallsDataServer data = ServerContext.getData();
-            if (data == null) {
+            if (dataServer == null) {
                 java.util.logging.Logger.getLogger(CommCoreServer.class.getName())
                         .log(java.util.logging.Level.SEVERE,
                                 "SERVER: Data interface is null in ServerContext, broadcast annulé.");
                 return;
             }
 
-            var users = data.getUsersList();
+            var users = dataServer.getUsersList();
             java.util.logging.Logger logger = java.util.logging.Logger.getLogger(CommCoreServer.class.getName());
 
             for (SrvMsgSender clientSender : connectedClients) {
@@ -251,7 +248,7 @@ public class CommCoreServer {
 
                     if (currentUser != null) {
                         // --- CORRECTION ICI : On passe l'objet LightUser directement ---
-                        visibleKanbans = data.getVisibleKanbansForUser(currentUser);
+                        visibleKanbans = dataServer.getVisibleKanbansForUser(currentUser);
                     } else {
                         visibleKanbans = new java.util.ArrayList<>();
                     }

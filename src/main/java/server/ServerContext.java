@@ -10,7 +10,7 @@ public final class ServerContext {
         serverData = data;
     }
 
-    public static CommCallsDataServer getData() {
+    public CommCallsDataServer getData() {
         return serverData;
     }
 }
