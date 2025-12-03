@@ -10,9 +10,6 @@ import java.util.*;
 import client.interfaces.MainCallsDataClient;
 import common.dataClasses.*;
 
-import java.util.List;
-import java.util.UUID;
-
 public class MainCallsDataImplementation implements MainCallsDataClient {
     private DataClientProvider provider;
     private static final java.util.logging.Logger LOGGER =
@@ -440,12 +437,45 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
         return localUser;
     }
 
-    public Void modifyLocalUser (User newProfile) {
+    public Void modifyLocalUser (String newFirstName, String newLastName, LocalDate newBirthDate, String newAvatar, String newUsername) {
         ClientModel myModel = provider.getMyModel();
-        myModel.setLocalUser(newProfile);
+        User currentUser = myModel.getLocalUser();
+        if(newFirstName != null) {
+            currentUser.setFirstName(newFirstName);
+        }
+        if(newLastName != null) {
+            currentUser.setLastName(newLastName);
+        }
+        if(newBirthDate != null) {
+            currentUser.setBirthDate(newBirthDate);
+        }
+        if(newAvatar != null) {
+            currentUser.setAvatar(newAvatar);
+        }
+        if(newUsername != null) {
+            currentUser.setUsername(newUsername);
+        }
         saveUser();
         return null;
     }
+
+    public void ModifyLocalUserFirstName(String newFirstName) {
+        modifyLocalUser(newFirstName, null, null, null, null);
+    }
+    public void ModifyLocalUserLastName(String newLastName) {
+        modifyLocalUser(null, newLastName, null, null, null);
+    }
+    public void ModifyLocalUserBirthDate(LocalDate newBirthDate) {
+        modifyLocalUser(null, null, newBirthDate, null, null);
+    }
+    public void ModifyLocalUserAvatar(String newAvatar) {
+        modifyLocalUser(null, null, null, newAvatar, null);
+    }
+    public void ModifyLocalUserUsername(String newUsername) {
+        modifyLocalUser(null, null, null, null, newUsername);
+    }
+    
+
 
     public DataClientProvider getProvider() {
         return this.provider;
