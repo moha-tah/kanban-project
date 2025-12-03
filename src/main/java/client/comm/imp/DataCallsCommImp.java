@@ -9,7 +9,11 @@ import client.interfaces.DataCallsComm;
 import common.dataClasses.Kanban;
 import common.dataClasses.LightKanban;
 import common.dataClasses.Modification;
+
+// Mensagens de comunicação
 import client.comm.messages.SendNewKanban;
+import client.comm.messages.MessageSaveModifiedKanban;
+import client.comm.messages.MessageRequestProfile;
 
 public class DataCallsCommImp implements DataCallsComm {
     private final CommCoreClient commCore;
@@ -20,6 +24,7 @@ public class DataCallsCommImp implements DataCallsComm {
 
     @Override
     public void askDeleteKanban(UUID LightKanbanId, UUID LightUserId) {
+        // TODO V3 / V4
     }
 
     @Override
@@ -40,40 +45,43 @@ public class DataCallsCommImp implements DataCallsComm {
         }
     }
 
-    // -- Modifier Kanban - Save in Servidor --
+    //  Modifier Kanban - Save in Server
+
     @Override
     public void saveModifiedKanban(Modification modification, LightKanban kanban) {
         System.out.println("COMM IMP: Sending modified Kanban to server...");
-        
+
         MessageSaveModifiedKanban msg = new MessageSaveModifiedKanban(kanban, modification);
-        
+
         try {
-             if (commCore.getMsgSender() != null) {
-                 commCore.getMsgSender().send(msg);
-             }
+            if (commCore.getMsgSender() != null) {
+                commCore.getMsgSender().send(msg);
+            }
         } catch (IOException e) {
             java.util.logging.Logger.getLogger(DataCallsCommImp.class.getName())
-                 .log(java.util.logging.Level.SEVERE, "DataCallsCommImp: Failed to send modified Kanban", e);
+                    .log(java.util.logging.Level.SEVERE, "DataCallsCommImp: Failed to send modified Kanban", e);
         }
     }
 
-}
-     
+    //  Voir Profil Distant
 
-     //Voir Profile Distant 
-     @Override
-     public void getDistantProfile(UUID targetUserId) {
-        UUID requesterId = commCore.getClientContext() .getLocalUser() .getId();
-        
+    @Override
+    public void getDistantProfile(UUID targetUserId) {
+        // Id loval user
+        UUID requesterId = commCore.getClientContext()
+                                   .getLocalUser()
+                                   .getId();
+
         MessageRequestProfile msg = new MessageRequestProfile(targetUserId, requesterId);
-        
+
         try {
-             if (commCore.getMsgSender() != null) {
+            if (commCore.getMsgSender() != null) {
                 commCore.getMsgSender().send(msg);
-             }
+            }
         } catch (IOException e) {
-        java.util.logging.Logger.getLogger(DataCallsCommImp.class.getName())
-            .log(java.util.logging.Level.SEVERE,
-                 "Failed to send distant profile request", e);
+            java.util.logging.Logger.getLogger(DataCallsCommImp.class.getName())
+                    .log(java.util.logging.Level.SEVERE,
+                         "Failed to send distant profile request", e);
+        }
     }
 }
