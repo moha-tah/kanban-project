@@ -58,18 +58,16 @@ public class ProfileDistantController {
             File f = new File(avPath);
             if (f.exists()) {
                 return new Image(f.toURI().toString(), true);
-            } else {
-                LOGGER.log(Level.WARNING, "Avatar file not found: {0}", avPath);
             }
         }
 
         var url = getClass().getResource(DEFAULT_AVATAR);
         if (url == null) {
-            LOGGER.warning("Default avatar resource not found: " + DEFAULT_AVATAR);
             return null; 
         }
         return new Image(url.toExternalForm(), true);
     }
+
 
     @FXML
     private void handleBackClick() {
