@@ -36,6 +36,17 @@ public class EditProfileController {
     @FXML
     private void initialize() {
         errorLabel.setVisible(false);
+        birthDatePicker.setDayCellFactory(picker -> new DateCell() {
+            @Override
+            public void updateItem(LocalDate date, boolean empty) {
+                super.updateItem(date, empty);
+
+                if (date != null && date.isAfter(LocalDate.now())) {
+                    setDisable(true);
+                    setStyle("-fx-background-color: #ffcdd2;");
+                }
+            }
+        });
     }
 
     // Injecte le core
@@ -116,11 +127,18 @@ public class EditProfileController {
             return;
         }
 
+
         // Récupération des valeurs
         String newFirstName = firstNameField.getText();
         String newLastName = lastNameField.getText();
         LocalDate newBirthDate = birthDatePicker.getValue();
         String newAvatar = (selectedImage != null) ? selectedImage.getAbsolutePath() : null;
+
+        if (newBirthDate != null && newBirthDate.isAfter(LocalDate.now())) {
+            errorLabel.setText("Birth date cannot be in the future.");
+            errorLabel.setVisible(true);
+            return;
+        }
 
         // Appel Data (la seule vraie source de vérité utilisateur)
         core.getDataPort().modifyLocalUser(
