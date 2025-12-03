@@ -427,12 +427,23 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
                 }
             } else {
                 LOGGER.info("Utilisateur " + user.getUsername() + " est déjà dans la accessList du kanban");
-
             }
         } catch (Exception e) {
             LOGGER.log(java.util.logging.Level.SEVERE, "Erreur lors de l'ajout de l'utilisateur au kanban", e);
 
         }
+    }
+
+    public User getLocalUser () {
+        ClientModel myModel = provider.getMyModel();
+        User localUser = myModel.getLocalUser();
+        return localUser;
+    }
+
+    public Void modifyLocalUser (User newProfile) {
+        ClientModel myModel = provider.getMyModel();
+        myModel.setLocalUser(newProfile);
+        return null;
     }
 
     public DataClientProvider getProvider() {
