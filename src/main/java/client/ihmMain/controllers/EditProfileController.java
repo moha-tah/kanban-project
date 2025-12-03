@@ -5,6 +5,9 @@ import client.ihmMain.MainCore;
 import client.interfaces.MainCallsDataClient;
 import common.dataClasses.User;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -12,6 +15,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.logging.Logger;
 
@@ -27,6 +31,9 @@ public class EditProfileController {
     private MainCore core;
     private User currentUser;
     private File selectedImage;
+    @FXML private ImageView profilePic;
+    private static final String DEFAULT_AVATAR_RESOURCE = "/profile_pic.png";
+
 
     private static final Logger LOGGER = Logger.getLogger(EditProfileController.class.getName());
 
@@ -155,6 +162,7 @@ public class EditProfileController {
     // -------------------------------------------------------------------------------------
     // ACTION : RETOUR
     // -------------------------------------------------------------------------------------
+
     @FXML
     private void onBackToProfile() {
         goBack();
@@ -162,18 +170,29 @@ public class EditProfileController {
 
     private void goBack() {
         try {
-            if (core == null)
-                core = MainApp.getCore();
+            // Charger le FXML Profil
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/profile.fxml"));
+            Parent root = loader.load();
 
-            if (core == null) {
-                LOGGER.warning("Impossible de revenir au profil : core est NULL.");
-                return;
+            // Récupérer son contrôleur
+            ProfileController controller = loader.getController();
+
+            // Injecter le core
+            MainCore core = MainApp.getCore();
+            controller.setCore(core);
+
+            // Injecter l’utilisateur courant (depuis Data, le vrai user complet)
+            if (core != null && core.getDataPort() != null) {
+                controller.setUser(core.getDataPort().getMyLightUser());
             }
 
-            core.showProfileView();
+            // Changer la scène
+            Stage stage = (Stage) profileImageView.getScene().getWindow();
+            stage.setTitle("Mon Profil");
+            stage.setScene(new Scene(root, 1280, 720));
 
         } catch (Exception e) {
-            LOGGER.warning("Error returning to profile: " + e.getMessage());
+            LOGGER.warning("Erreur lors du retour au profil : " + e.getMessage());
         }
     }
 }
