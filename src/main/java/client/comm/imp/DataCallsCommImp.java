@@ -1,6 +1,5 @@
 package client.comm.imp;
 
-import java.util.UUID;
 import java.util.Objects;
 import java.io.IOException;
 
@@ -8,6 +7,8 @@ import client.comm.CommCoreClient;
 import client.interfaces.DataCallsComm;
 import common.dataClasses.Kanban;
 import client.comm.messages.SendNewKanban;
+import common.dataClasses.LightKanban;
+import common.dataClasses.LightUser;
 
 public class DataCallsCommImp implements DataCallsComm {
     private final CommCoreClient commCore;
@@ -17,7 +18,7 @@ public class DataCallsCommImp implements DataCallsComm {
     }
 
     @Override
-    public void askDeleteKanban(UUID LightKanbanId, UUID LightUserId) {
+    public void askDeleteKanban(LightKanban LightKanbanId, LightUser LightUserId) {
     }
 
     @Override
@@ -39,7 +40,7 @@ public class DataCallsCommImp implements DataCallsComm {
     }
 
     @Override
-    public void addAuthorizedUser(UUID kanbanId, UUID userId) {
+    public void addAuthorizedUser(LightKanban kanbanId, LightUser userId) {
         try {
             commCore.sendMessage(java.util.Arrays.asList("addAuthorizedUser", kanbanId, userId));
         } catch (IOException e) {

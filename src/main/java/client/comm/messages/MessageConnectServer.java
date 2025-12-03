@@ -9,7 +9,6 @@ import client.interfaces.CommClientCallsMain;
 import common.dataClasses.LightKanban;
 import common.dataClasses.LightUser;
 import javafx.application.Platform;
-import client.comm.messages.MessageConnectionRequest;
 
 /**
  * Message envoyé par le serveur au client pour confirmer la connexion

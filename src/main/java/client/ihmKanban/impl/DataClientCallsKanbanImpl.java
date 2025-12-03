@@ -1,5 +1,7 @@
 package client.ihmKanban.impl;
 
+import java.util.logging.Level;
+
 import client.interfaces.DataClientCallsKanban;
 import common.dataClasses.Kanban;
 import client.ihmKanban.kanbanCorps;

@@ -1,14 +1,11 @@
 package client.comm.messages;
 
-import client.comm.CommCoreClient;
 import common.dataClasses.LightKanban;
 import common.dataClasses.LightUser;
-
-import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
 
-public class MessageConnectionRequest extends Message implements Serializable {
+public class MessageConnectionRequest extends Message {
 
     private final LightUser user;
     private final List<LightKanban> kanbans;

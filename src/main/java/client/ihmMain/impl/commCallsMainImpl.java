@@ -1,8 +1,10 @@
 package client.ihmMain.impl;
 
+import client.data.KanbanCallsDataImplementation;
 import client.ihmMain.MainCore;
 import client.ihmMain.controllers.HomeViewController;
 import client.interfaces.CommClientCallsMain;
+import common.dataClasses.Kanban;
 import common.dataClasses.LightKanban;
 import common.dataClasses.LightUser;
 
@@ -38,7 +40,10 @@ public class commCallsMainImpl implements CommClientCallsMain {
         javafx.application.Platform.runLater(() -> {
             if (HomeViewController.getInstance() != null) {
                 String status = decision ? "ACCEPTÉE" : "REFUSÉE";
-                String msg = "Votre demande pour '" + kanban.getTitle() + "' a été " + status;
+                Kanban full = KanbanCallsDataImplementation.loadKanbanFromJson(kanban);
+                String realTitle = (full != null) ? full.getTitle() : kanban.getTitle();
+
+                String msg = "Votre demande pour '" + realTitle + "' a été " + status;
                 HomeViewController.getInstance().addNotification(msg);
                 HomeViewController.handleNotif();
                 if (decision) {

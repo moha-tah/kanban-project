@@ -170,6 +170,21 @@ public class HomeViewController {
     private void handleDecision(common.dataClasses.LightUser requester, common.dataClasses.LightKanban kanban, boolean accepted) {
         if (core != null) {
             core.sendPermissionResponse(requester, kanban, accepted);
+            
+            // Si accepté, mettre à jour le kanban local (DATA) pour lier l'utilisateur au kanban
+            if (accepted) {
+                try {
+                    client.data.DataClientProvider provider = core.getDataClientProvider();
+                    if (provider != null) {
+                        client.interfaces.MainCallsDataClient dataClient = provider.getToMainImpl();
+                        if (dataClient != null) {
+                            dataClient.addAuthorizedUserToKanban(requester, kanban);
+                        }
+                    }
+                } catch (Exception e) {
+                    LOGGER.log(java.util.logging.Level.SEVERE, "Erreur lors de l'ajout de l'utilisateur au kanban", e);
+                }
+            }
         }
     }
 
@@ -202,7 +217,7 @@ public class HomeViewController {
             // 1. Charger ou reconstruire le Kanban complet
             Kanban details = null;
             try {
-                details = KanbanCallsDataImplementation.loadKanbanFromJson(lk.getId());
+                details = KanbanCallsDataImplementation.loadKanbanFromJson(lk);
             } catch (Exception e) { /* ignore */ }
 
             // Fallback serveur
@@ -226,6 +241,14 @@ public class HomeViewController {
                     } else {
                         String name = (cId != null) ? "User " + cId.toString().substring(0, 5) : "Unknown";
                         details.setCreator(new User(name, name, "", null));
+                        // Si le créateur n'est pas connecté → on ignore le Kanban
+                        if (!isMyKanban(lk.getId(), me)) {
+                            User creator = findUserById(details.getCreatorId());
+                            if (creator == null) {
+                                continue; // IGNORER le kanban
+                            }
+                        }
+
                     }
                 }
             }
@@ -242,7 +265,7 @@ public class HomeViewController {
             }
 
             // 4. Création et tri
-            Node cardNode = createKanbanCardFromFXML(details, isMine);
+            Node cardNode = createKanbanCardFromFXML(details, isMine, isParticipating);
 
             if (cardNode != null) {
                 if (isMine) {
@@ -269,7 +292,8 @@ public class HomeViewController {
         return null;
     }
 
-    private Node createKanbanCardFromFXML(Kanban kanban, boolean isMine) {
+    private Node createKanbanCardFromFXML(Kanban kanban, boolean isMine, boolean isParticipating)
+ {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/kanban_card.fxml"));
             Node cardNode = loader.load();
@@ -277,14 +301,21 @@ public class HomeViewController {
             KanbanCardController controller = loader.getController();
             controller.setMainCore(core);
 
-            String color = "#FFFFFF";
-            if (kanban.getVisibility() != null && kanban.getVisibility().equalsIgnoreCase("Private")) {
-                color = "#FFE5E5";
+            String color;
+
+            if (isMine) {
+                color = "#D8E9FF"; // bleu
+            } else if (isParticipating) {
+                color = "#EAD8FF"; // violet
             } else {
-                color = "#E5FFE5";
+                color = "#D9FFE3"; // vert
             }
 
-            controller.setKanbanData(kanban, color, isMine);
+
+            controller.setKanbanData(kanban, color, isMine, isParticipating);
+            core.registerKanbanCardController(kanban.getId(), controller);
+
+
             return cardNode;
 
         } catch (IOException e) {

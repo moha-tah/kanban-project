@@ -1,9 +1,10 @@
 package client.interfaces;
-import java.util.UUID;
 import common.dataClasses.Kanban;
+import common.dataClasses.LightKanban;
+import common.dataClasses.LightUser;
 
 public interface DataCallsComm {
-    void askDeleteKanban(UUID LightKanbanId, UUID LightUserId);
+    void askDeleteKanban(LightKanban LightKanbanId, LightUser LightUserId);
     void sendKanban(Kanban Kanban);   
-    void addAuthorizedUser(UUID kanbanId, UUID userId);  
+    void addAuthorizedUser(LightKanban kanbanId, LightUser userId);
 }

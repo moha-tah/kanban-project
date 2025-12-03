@@ -1,5 +1,7 @@
 package client.ihmKanban.impl;
 
+import java.util.logging.Level;
+
 import client.interfaces.CommClientCallsKanban;
 import common.dataClasses.Kanban;
 import common.dataClasses.LightKanban;
@@ -20,9 +22,7 @@ public class CommClientCallsKanbanImpl implements CommClientCallsKanban {
 
     @Override
     public void deliverNotification(LightKanban idKanban, Modification modification) {
-        corps.LOGGER.info("[Comm->kanban] notification reçue : "
-                + "kanban=" + idKanban
-                + " modification=" + modification);
+        corps.LOGGER.log(Level.INFO, "[Comm->kanban] notification re\u00e7ue : kanban={0} modification={1}", new Object[]{idKanban, modification});
 
     }
     

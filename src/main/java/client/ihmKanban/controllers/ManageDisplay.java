@@ -1,5 +1,7 @@
 package client.ihmKanban.controllers;
 
+import java.io.IOException;
+
 import client.MainApp;
 import client.ihmKanban.kanbanCorps;
 import client.ihmMain.controllers.HomeViewController;
@@ -14,6 +16,7 @@ import javafx.scene.Parent;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
 public class ManageDisplay {
 
@@ -75,9 +78,8 @@ public class ManageDisplay {
             // Afficher la fenêtre
             homeController.getKanbanArea().setContent(kanbanView);
 
-        } catch (Exception e) {
-            corps.LOGGER.info("Erreur lors de l'ouverture de l'écran Kanban : " + e.getMessage());
-            e.printStackTrace();
+        } catch (IOException | IllegalStateException e) {
+            corps.LOGGER.log(Level.INFO, "Erreur lors de l''ouverture de l''\u00e9cran Kanban : {0}", e.getMessage());
         }
     }
 }

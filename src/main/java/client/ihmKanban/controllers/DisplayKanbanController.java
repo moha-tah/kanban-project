@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.UUID;
@@ -115,6 +116,8 @@ public class DisplayKanbanController implements Initializable {
         kanbanTitleLabel.setText(kanban.getTitle());
 
         columnsContainer.getChildren().clear();
+
+        columns.sort(Comparator.comparingInt(Column::getNumber));
 
         for (Column col : columns) {
             VBox columnNode = createColumnNode(col);

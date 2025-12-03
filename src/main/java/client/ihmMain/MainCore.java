@@ -10,32 +10,32 @@ import client.interfaces.KanbanCallsMain;
 import client.interfaces.CommClientCallsMain;
 
 import client.ihmMain.impl.dataCallsMainImpl;
+import client.ihmMain.controllers.HomeViewController;
+import client.ihmMain.controllers.KanbanCardController;
 import client.ihmMain.impl.commCallsMainImpl;
 import client.ihmMain.impl.kanbanCallsMainImpl;
 import common.dataClasses.Kanban;
 import common.dataClasses.LightKanban;
 import client.data.DataClientProvider;
 import client.data.MainCallsDataImplementation;
-/*import common.dataClasses.Column;
-import common.dataClasses.Kanban;
-import common.dataClasses.Task;*/
 import common.dataClasses.LightUser;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.effect.Light;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 
 import java.io.IOException;
 import java.net.URL;
-import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import client.ihmKanban.impl.MainCallsKanbanImpl;
 
 /**
  * Coeur IHM : orchestre les appels entre la UI et les couches DATA/COMM/KANBAN.
@@ -103,7 +103,7 @@ public class MainCore {
 
     public void addUsers(List<LightUser> list) { for (var u : list) addUser(u); }
 
-    public void updateAllKanbansForUser(UUID userId) {
+    public void updateAllKanbansForUser(LightUser userId) {
         System.out.println("[MainCore] updateAllKanbansForUser: " + userId);
     }
 
@@ -161,8 +161,8 @@ public class MainCore {
     }
 
     public DataClientProvider getDataClientProvider() {
-        if (dataPort instanceof MainCallsDataImplementation) {
-            return ((MainCallsDataImplementation) dataPort).getProvider();
+        if (dataPort instanceof MainCallsDataImplementation mainCallsDataImplementation) {
+            return mainCallsDataImplementation.getProvider();
         }
         System.err.println("[MainCore] dataPort n'est pas une instance de MainCallsDataImplementation");
         return null;
@@ -196,7 +196,7 @@ public class MainCore {
             stage.show();
             System.out.println("[MainCore] Launched main window with FXML: " + first);
 
-        } catch (Exception e) {
+        } catch (IOException | IllegalStateException e) {
             System.err.println("Error while launching main window: " + e.getMessage());
             throw new RuntimeException("Impossible d’ouvrir la fenêtre Login", e);
         }
@@ -227,7 +227,7 @@ public class MainCore {
             stage.setScene(scene);
             stage.show();
         } catch (IOException e) {
-            LOGGER.info("Error while launching main window: " + e.getMessage());
+            LOGGER.log(Level.INFO, "Error while  launching main window: {0}", e.getMessage());
         }
     }
 
@@ -262,13 +262,25 @@ public class MainCore {
         }
     }
 
-    public void onCloseKanban() {//surment à retirer 
+    public void onPermissionResponse(LightKanban kanban, boolean accepted) {
+        Platform.runLater(() -> {
+            HomeViewController.getInstance().refreshKanbansFromModel();
+        });
+}
+    private Map<UUID, KanbanCardController> kanbanControllers = new HashMap<>();
 
-        // Logique de fermeture du Kanban pour revenir à l'écran principal
-        
-
-        LOGGER.info("[MainCore] Kanban closed by user.");
+    public void registerKanbanCardController(UUID id, KanbanCardController controller) {
+        kanbanControllers.put(id, controller);
     }
+
+    public void notifyKanbanPermission(UUID kanbanId, boolean accepted) {
+        KanbanCardController controller = kanbanControllers.get(kanbanId);
+        if (controller != null) {
+            controller.updatePermissionStatus(accepted);
+        }
+    }
+
+
 
 
     public void showLoginView()  { loadScene("/login.fxml",  "Login"); }

@@ -135,17 +135,19 @@ public class KanbanCallsDataImplementation implements KanbanCallsDataClient {
     }
 
     // Charge un Kanban depuis data/kanbans/{kanbanId}.json
-    public static Kanban loadKanbanFromJson(UUID kanbanId) {
+    public static Kanban loadKanbanFromJson(LightKanban lightKanban) {
         try {
             Path kanbanDir = Paths.get("data", "kanbans");
-            Path file = kanbanDir.resolve(kanbanId.toString() + ".json");
+
+            // Utilisation de l'ID contenu dans l'objet LightKanban pour le chemin du fichier
+            Path file = kanbanDir.resolve(lightKanban.getId().toString() + ".json");
+
             if (Files.exists(file)) {
                 String kanbanJson = Files.readString(file, StandardCharsets.UTF_8);
                 Kanban kanban = GSON.fromJson(kanbanJson, Kanban.class);
-                
-                // Note: creator field is transient, so it won't be loaded from JSON
-                // If needed, it should be reconstructed from creatorId by the caller
-                
+
+                // Note: le champ creator est transient, il sera null ici.
+
                 return kanban;
             } else {
                 return null;
@@ -159,22 +161,24 @@ public class KanbanCallsDataImplementation implements KanbanCallsDataClient {
      * Charge tous les kanbans d'un utilisateur basé sur la liste d'IDs
      * Utilisé au démarrage de l'application pour charger les kanbans de l'utilisateur connecté
      */
-    public static List<Kanban> loadUserKanbans(List<UUID> kanbanIds) {
+    public static List<Kanban> loadUserKanbans(List<LightKanban> lightKanbans) {
         List<Kanban> kanbans = new ArrayList<>();
-        if (kanbanIds == null || kanbanIds.isEmpty()) {
+
+        if (lightKanbans == null || lightKanbans.isEmpty()) {
             return kanbans;
         }
-        
-        for (UUID kanbanId : kanbanIds) {
+
+        for (LightKanban lightKanban : lightKanbans) {
             try {
-                Kanban kanban = loadKanbanFromJson(kanbanId);
+                Kanban kanban = loadKanbanFromJson(lightKanban);
+
                 if (kanban != null) {
                     kanbans.add(kanban);
                 } else {
-                    System.err.println("Kanban not found for ID: " + kanbanId);
+                    System.err.println("Kanban non trouvé pour l'ID: " + lightKanban.getId() + " (" + lightKanban.getTitle() + ")");
                 }
             } catch (Exception e) {
-                System.err.println("Error loading kanban " + kanbanId + ": " + e.getMessage());
+                System.err.println("Erreur lors du chargement du kanban " + lightKanban.getId() + ": " + e.getMessage());
             }
         }
         return kanbans;
