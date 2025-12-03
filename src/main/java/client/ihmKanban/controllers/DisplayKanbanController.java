@@ -309,23 +309,13 @@ public class DisplayKanbanController implements Initializable {
             String colorCode = "#5D8BF4"; // défaut BLUE
             if (colorName != null) {
                 switch (colorName) {
-                    case "BLUE":
-                        colorCode = "#5D8BF4";
-                        break;
-                    case "GREEN":
-                        colorCode = "#4CAF50";
-                        break;
-                    case "ORANGE":
-                        colorCode = "#ff8c1a";
-                        break;
-                    case "RED":
-                        colorCode = "#ff6666";
-                        break;
-                    case "PURPLE":
-                        colorCode = "#8a2be2";
-                        break;
-                    default:
-                        break;
+                    case "BLUE" -> colorCode = "#5D8BF4";
+                    case "GREEN" -> colorCode = "#4CAF50";
+                    case "ORANGE" -> colorCode = "#ff8c1a";
+                    case "RED" -> colorCode = "#ff6666";
+                    case "PURPLE" -> colorCode = "#8a2be2";
+                    default -> {
+                    }
                 }
             }
 
@@ -479,24 +469,13 @@ public class DisplayKanbanController implements Initializable {
 
         String currentColor = (col.getColor() != null) ? col.getColor().toUpperCase() : "";
         switch (currentColor) {
-            case "#5D8BF4":
-            case "BLUE":
-                colorCombo.getSelectionModel().select("BLUE");
-                break;
-            case "GREEN":
-                colorCombo.getSelectionModel().select("GREEN");
-                break;
-            case "ORANGE":
-                colorCombo.getSelectionModel().select("ORANGE");
-                break;
-            case "RED":
-                colorCombo.getSelectionModel().select("RED");
-                break;
-            case "PURPLE":
-                colorCombo.getSelectionModel().select("PURPLE");
-                break;
-            default:
-                break;
+            case "#5D8BF4", "BLUE" -> colorCombo.getSelectionModel().select("BLUE");
+            case "GREEN" -> colorCombo.getSelectionModel().select("GREEN");
+            case "ORANGE" -> colorCombo.getSelectionModel().select("ORANGE");
+            case "RED" -> colorCombo.getSelectionModel().select("RED");
+            case "PURPLE" -> colorCombo.getSelectionModel().select("PURPLE");
+            default -> {
+            }
         }
 
         Button editBtn = new Button("EDIT");
@@ -521,23 +500,13 @@ public class DisplayKanbanController implements Initializable {
             String newColorCode = col.getColor();
             if (newColorName != null) {
                 switch (newColorName) {
-                    case "BLUE":
-                        newColorCode = "#5D8BF4";
-                        break;
-                    case "GREEN":
-                        newColorCode = "#4CAF50";
-                        break;
-                    case "ORANGE":
-                        newColorCode = "#ff8c1a";
-                        break;
-                    case "RED":
-                        newColorCode = "#ff6666";
-                        break;
-                    case "PURPLE":
-                        newColorCode = "#8a2be2";
-                        break;
-                    default:
-                        break;
+                    case "BLUE" -> newColorCode = "#5D8BF4";
+                    case "GREEN" -> newColorCode = "#4CAF50";
+                    case "ORANGE" -> newColorCode = "#ff8c1a";
+                    case "RED" -> newColorCode = "#ff6666";
+                    case "PURPLE" -> newColorCode = "#8a2be2";
+                    default -> {
+                    }
                 }
             }
 

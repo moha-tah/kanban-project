@@ -1,7 +1,9 @@
 package client.comm.messages;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Optional;
+
 import common.dataClasses.LightKanban;
 import common.dataClasses.LightUser;
 // RETIRÉ : import server.ServerContext;
@@ -40,7 +42,7 @@ public class ConnectionRequest extends Message {
             }
         } catch (ClassNotFoundException e) {
             // Normal côté client
-        } catch (Throwable t) {
+        } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException t) {
             java.util.logging.Logger.getLogger(ConnectionRequest.class.getName())
                     .log(java.util.logging.Level.SEVERE, "Erreur traitement connection", t);
         }

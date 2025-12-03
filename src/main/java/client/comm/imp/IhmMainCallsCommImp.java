@@ -7,7 +7,6 @@ import client.comm.messages.NotifyDecision;
 import client.interfaces.IhmMainCallsComm;
 
 import java.util.Objects;
-import java.util.UUID;
 import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
@@ -21,6 +20,7 @@ import client.comm.messages.RequestModification;
 import common.dataClasses.Kanban;
 import common.dataClasses.LightKanban;
 import common.dataClasses.LightUser;
+import common.dataClasses.Modification;
 
 public class IhmMainCallsCommImp implements IhmMainCallsComm {
     private static final Logger LOGGER = Logger.getLogger(IhmMainCallsCommImp.class.getName());
@@ -143,10 +143,6 @@ public class IhmMainCallsCommImp implements IhmMainCallsComm {
         }
     }
 
-    @Override
-    public void notifyEditions(LightKanban LightKanban) {
-        // Place breakpoint to inspect LightKanban state before sending any edition notifications
-    }
 
     @Override
     public void askKanban(LightKanban LightKanbanId) {
@@ -180,17 +176,16 @@ public class IhmMainCallsCommImp implements IhmMainCallsComm {
         }
     }
 
-    public void sendRequestModification(LightUser user, UUID cardId, String newStatus) {
-        if (user == null || cardId == null || newStatus == null) {
+    public void sendRequestModification(LightUser user, Modification modification) {
+        if (user == null || modification == null) {
             LOGGER.warning("Paramètres invalides pour sendRequestModification");
             return;
         }
 
-        LOGGER.info(() -> "Envoi demande de modification carte " + cardId + " vers " + newStatus + 
-                     " par " + user.getUsername());
+        LOGGER.info(() -> "Envoi demande de modification carte " + modification.getId() + " vers " + modification.getTargetKanban() + " par " + user.getUsername());
 
         try {
-            RequestModification msg = new RequestModification(user, cardId, newStatus);
+            RequestModification msg = new RequestModification(user, modification);
             
             if (commCore.getMsgSender() != null) {
                 commCore.sendMessage(msg);

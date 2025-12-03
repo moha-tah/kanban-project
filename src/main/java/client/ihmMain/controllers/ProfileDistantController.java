@@ -7,8 +7,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import client.ihmMain.MainCore;
 import common.dataClasses.LightUser;
-import java.util.logging.Level;
-
 
 
 import java.io.File;
