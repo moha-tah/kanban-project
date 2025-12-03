@@ -4,8 +4,9 @@ import java.util.UUID;
 
 public abstract class Modification {
     private UUID id;
+    private LightKanban myKanban;
     
-    // Constructeur
+    // ConstructeurL
     public Modification() {
         this.id = UUID.randomUUID();
     }
