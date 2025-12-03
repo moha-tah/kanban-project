@@ -22,7 +22,7 @@ public class kanbanCallsMainImpl implements KanbanCallsMain {
 
     @Override
     public void closingKanban(){
-        //core.onCloseKanban();
+        // core.onCloseKanban();
     }
 
     @Override
@@ -30,4 +30,9 @@ public class kanbanCallsMainImpl implements KanbanCallsMain {
         core.showHomeView();
     }
 
+    @Override
+    public void goProfileView() {
+        core.showProfileView();
+    }
+    
 }
