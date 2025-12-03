@@ -122,9 +122,6 @@ public class ProfileController {
         controller.setCore(core);
 
         // Injecter l'utilisateur actuel
-        if (core != null && core.getMe() != null) {
-            controller.setUser(core.getMe());
-        }
 
         // Afficher la scène
         Stage stage = (Stage) profileAvatar.getScene().getWindow();
