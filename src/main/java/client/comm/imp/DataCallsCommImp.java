@@ -58,3 +58,22 @@ public class DataCallsCommImp implements DataCallsComm {
     }
 
 }
+     
+
+     //Voir Profile Distant 
+     @Override
+     public void getDistantProfile(UUID targetUserId) {
+        UUID requesterId = commCore.getClientContext() .getLocalUser() .getId();
+        
+        MessageRequestProfile msg = new MessageRequestProfile(targetUserId, requesterId);
+        
+        try {
+             if (commCore.getMsgSender() != null) {
+                commCore.getMsgSender().send(msg);
+             }
+        } catch (IOException e) {
+        java.util.logging.Logger.getLogger(DataCallsCommImp.class.getName())
+            .log(java.util.logging.Level.SEVERE,
+                 "Failed to send distant profile request", e);
+    }
+}
