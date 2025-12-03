@@ -335,7 +335,7 @@ public class DisplayKanbanController implements Initializable {
 
             Column col = new Column(colTitle, colorCode);
             CreateColumn modify = new CreateColumn(col);
-            corps.getDataPort().getModified((Modification) modify, kanban.getId());
+            corps.getCommPort().sendRequestModification(corps.getMe(), (Modification) modify);
             LOGGER.info("création d'un nouvelle colonne envoyé à data");
 
             // renderKanban();
@@ -381,7 +381,7 @@ public class DisplayKanbanController implements Initializable {
 
 
             DeleteColumn delete = new DeleteColumn(col.getId());
-            corps.getDataPort().getModified((Modification) delete, kanban.getId());
+            corps.getCommPort().sendRequestModification(corps.getMe(), (Modification) delete);
             LOGGER.info("suppression d'une colonne envoyée à data");
 
             popup.hide();
@@ -438,7 +438,7 @@ public class DisplayKanbanController implements Initializable {
 
             Task tache = new Task(taskTitle, taskDesc);
             CreateTask modify = new CreateTask(tache, col.getId());
-            corps.getDataPort().getModified((Modification) modify, kanban.getId());
+            corps.getCommPort().sendRequestModification(corps.getMe(), (Modification) modify);
             LOGGER.info("Nouvelle Task envoyée à data");
 
             popup.hide();
@@ -558,7 +558,7 @@ public class DisplayKanbanController implements Initializable {
 
 
             ModifyColumn modify = new ModifyColumn(col);
-            corps.getDataPort().getModified((Modification) modify, kanban.getId());
+            corps.getCommPort().sendRequestModification(corps.getMe(), (Modification) modify);
             LOGGER.info("création d'un nouvelle colonne envoyé à data");
 
 
@@ -606,7 +606,7 @@ public class DisplayKanbanController implements Initializable {
             System.out.println("DELETE TASK : " + task.getTitle());
 
             DeleteTask delete = new DeleteTask(task.getId());
-            corps.getDataPort().getModified((Modification) delete, kanban.getId());
+            corps.getCommPort().sendRequestModification(corps.getMe(), (Modification) delete);
             LOGGER.info("supprimer une tache envoyée à data");
 
             popup.hide();
@@ -683,7 +683,7 @@ public class DisplayKanbanController implements Initializable {
             LocalDate end = LocalDate.now().plusDays(7);
 
             ModifyTask modify = new ModifyTask(task);
-            corps.getDataPort().getModified((Modification)modify, kanban.getId());
+            corps.getCommPort().sendRequestModification(corps.getMe(), (Modification) modify);
             LOGGER.info("Taskmodifié envoyé à data");
 
 

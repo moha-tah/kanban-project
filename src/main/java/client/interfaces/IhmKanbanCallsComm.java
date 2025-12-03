@@ -1,8 +1,8 @@
 package client.interfaces;
 import common.dataClasses.LightKanban;
 import common.dataClasses.LightUser;
+import common.dataClasses.Modification;
 
-import java.util.UUID;
 
 import common.dataClasses.Modification;
 
