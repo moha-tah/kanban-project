@@ -13,6 +13,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import java.io.IOException;
+import java.util.logging.Level;
+
 
 
 import java.io.File;
@@ -52,7 +54,7 @@ public class ProfileController {
         // Infos utilisateur
         profileName.setText(currentUser.getUsername());
         profileUsername.setText("@" + currentUser.getUsername());
-        // kanbansCreated.setText(String.valueOf(currentUser.getMyKanban().size()));
+
         collaborations.setText("0"); 
 
         // Avatar
@@ -61,26 +63,6 @@ public class ProfileController {
 
         // Afficher les Kanbans
         kanbansGrid.getChildren().clear();
-        int row = 0, col = 0;
-    //     for (Kanban k : currentUser.getMyKanban()) {
-    //         VBox card = new VBox(10);
-    //         card.setStyle("-fx-background-color: linear-gradient(#6ee7b7, #3b82f6); -fx-padding: 25; -fx-background-radius: 15;");
-
-    //         Label title = new Label(k.getTitle());
-    //         title.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
-
-    //         Label info = new Label("Creator: ");
-    //         info.setStyle("-fx-font-size: 13px;");
-
-    //         card.getChildren().addAll(title, info);
-
-    //         kanbansGrid.add(card, col, row);
-    //         col++;
-    //         if (col > 2) {
-    //             col = 0;
-    //             row++;
-    //         }
-    //     }
     }
 
     private Image loadAvatar(String avatarPath) {
@@ -91,7 +73,7 @@ public class ProfileController {
                 if (f.exists()) {
                     return new Image(f.toURI().toString(), true);
                 } else {
-                    LOGGER.warning("Avatar file not found: " + avatarPath);
+                    LOGGER.log(Level.WARNING, "Avatar file not found: {0}", avatarPath);
                 }
             }
         } catch (Exception e) {
