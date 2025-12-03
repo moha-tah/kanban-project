@@ -8,6 +8,7 @@ import common.dataClasses.Modification;
 // DataCallsKanban
 public interface DataClientCallsKanban {
     void displayKanban(Kanban kanban);
+    void updateKanban(Kanban kanban);
 }
 
 

@@ -47,4 +47,5 @@ public class DataCallsCommImp implements DataCallsComm {
                     .log(java.util.logging.Level.SEVERE, "DataCallsCommImp: Echec envoi addAuthorizedUser", e);
         }
     }
+
 }

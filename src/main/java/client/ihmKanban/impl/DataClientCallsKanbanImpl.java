@@ -21,6 +21,10 @@ public class DataClientCallsKanbanImpl implements DataClientCallsKanban {
                 + "kanban=" + kanban);
 
     }
+
+    @Override
+    public void updateKanban(Kanban kanban) {
+    }
 }
 
 

@@ -24,7 +24,7 @@ public interface ComCallsDataClient {
 
     void addToListKanban(LightKanban kanban);
 
-    void saveModifiedKanban(Modification modification, LightKanban kanban);
+    void saveModifiedKanban(Modification modification);
 
     void saveTempKanban(Kanban kanban);
 
