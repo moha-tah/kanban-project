@@ -74,12 +74,11 @@ public class ProfileDistantController {
             LOGGER.warning("Error loading avatar '" + avatarPath + "': " + e.getMessage());
         }
 
-        // 2) sinon, avatar par défaut dans les resources
         try {
             var url = getClass().getResource(DEFAULT_AVATAR);
             if (url == null) {
                 LOGGER.warning("Default avatar resource not found: " + DEFAULT_AVATAR);
-                return null; // dans ce cas, on garde l’image définie par FXML (@profile_pic.png)
+                return null;
             }
             return new Image(url.toExternalForm(), true);
         } catch (Exception e) {
