@@ -4,7 +4,6 @@ import common.dataClasses.LightKanban;
 import common.dataClasses.LightUser;
 
 import java.util.Optional;
-import java.util.UUID;
 
 /**
  * Notification envoyée au demandeur pour l'informer de la décision.

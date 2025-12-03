@@ -1,11 +1,8 @@
 package client.ihmKanban;
 
-import client.MainApp;
 import client.interfaces.KanbanCallsDataClient;
 import client.interfaces.KanbanCallsMain;
-import client.interfaces.MainCallsDataClient;
 import client.interfaces.IhmKanbanCallsComm;
-import client.interfaces.IhmMainCallsComm;
 import client.interfaces.DataClientCallsKanban;
 import client.interfaces.MainCallsKanban;
 import client.interfaces.CommClientCallsKanban;
@@ -13,24 +10,18 @@ import client.interfaces.CommClientCallsKanban;
 import client.ihmKanban.impl.CommClientCallsKanbanImpl;
 import client.ihmKanban.impl.DataClientCallsKanbanImpl;
 import client.ihmKanban.impl.MainCallsKanbanImpl;
+import client.ihmMain.controllers.HomeViewController;
 import common.dataClasses.Kanban;
 import common.dataClasses.LightKanban;
 import common.dataClasses.LightUser;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
-import javafx.stage.Window;
 
-import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.logging.Logger;
+import java.util.logging.Level;
 
-import client.ihmKanban.controllers.DisplayKanbanController;
 import client.ihmKanban.controllers.ManageDisplay;
+
 import java.util.logging.Logger;
 
 
@@ -86,7 +77,7 @@ public class kanbanCorps {
     }
 
     
-    private ManageDisplay manageDisplay = new ManageDisplay( this);
+    private final ManageDisplay manageDisplay = new ManageDisplay( this);
 
 
     public static final Logger LOGGER = Logger.getLogger("Kanban Corps");
@@ -100,14 +91,13 @@ public class kanbanCorps {
     public void addUsers(List<LightUser> list) { for (var u : list) addUser(u); }
 
     public void updateAllKanbansForUser(UUID userId) {
-        LOGGER.info("[MainCore] updateAllKanbansForUser: " + userId);
+        LOGGER.log(Level.INFO, "[MainCore] updateAllKanbansForUser: {0}", userId);
     }
 
 
-    public void displayKanban(Kanban kanban)  { 
-        manageDisplay.openKanbanScreen(kanban); 
+    public void displayKanban(Kanban kanban, HomeViewController homeController) { { 
+        manageDisplay.openKanbanScreen(kanban, homeController); 
     }
 
-
-
+    }
 }

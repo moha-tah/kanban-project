@@ -46,8 +46,8 @@ public class ComCallsDataServImplementation implements CommCallsDataServer {
                     newK.setCreatorId(user.getId());
 
                     // Récupération visibilité via instance check
-                    if (lk instanceof Kanban) {
-                        newK.setVisibility(((Kanban) lk).getVisibility());
+                    if (lk instanceof Kanban kanban) {
+                        newK.setVisibility(kanban.getVisibility());
                     } else {
                         newK.setVisibility("Private");
                     }
@@ -63,8 +63,29 @@ public class ComCallsDataServImplementation implements CommCallsDataServer {
     }
 
     @Override
-    public List<Kanban> notifyLogout(UUID userId) {
-        return null;
+    public List<Kanban> notifyLogout(LightUser user) {
+        if (user == null) return null;
+
+        ServerModel model = myProvider.getModel();
+        UUID userId = user.getId();
+
+        // 1. Supprimer l'utilisateur de la liste des connectés
+        model.getConnectedUsers().removeIf(u -> u.getId().equals(userId));
+
+        // 2. Supprimer les Kanbans créés par cet utilisateur
+        int initialSize = model.getInUseKanbans().size();
+
+        model.getInUseKanbans().removeIf(k ->
+                k.getCreatorId() != null && k.getCreatorId().equals(userId)
+        );
+
+        int removedCount = initialSize - model.getInUseKanbans().size();
+
+        System.out.println("SERVEUR: " + user.getUsername() + " déconnecté.");
+        System.out.println("SERVEUR: " + removedCount + " kanban(s) de cet utilisateur retiré(s) de la mémoire.");
+
+        // Le broadcast qui suit (dans LogoutMessage) enverra cette liste nettoyée aux autres clients
+        return model.getInUseKanbans();
     }
 
     // -------------------------------------------------------
@@ -94,12 +115,12 @@ public class ComCallsDataServImplementation implements CommCallsDataServer {
     }
 
     @Override
-    public Kanban requestKanban(LightUser user, UUID kanbanID) {
+    public Kanban requestKanban(LightUser user, LightKanban kanbanID) {
         if (myProvider == null || myProvider.getModel() == null) return null;
 
         ServerModel model = myProvider.getModel();
         for (Kanban k : model.getInUseKanbans()) {
-            if (k.getId().equals(kanbanID)) {
+            if (k.getId().equals(kanbanID.getId())) {
                 return k;
             }
         }
@@ -180,7 +201,7 @@ public class ComCallsDataServImplementation implements CommCallsDataServer {
 
     @Override
     public Kanban getKanban(LightKanban lightKanban, LightUser user) {
-        return requestKanban(user, lightKanban.getId());
+        return requestKanban(user, lightKanban);
     }
 
     @Override

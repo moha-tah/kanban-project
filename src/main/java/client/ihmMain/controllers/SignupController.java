@@ -4,8 +4,6 @@ import client.MainApp;
 import client.ihmMain.MainCore;
 import client.interfaces.MainCallsDataClient;
 import client.interfaces.IhmMainCallsComm;
-import common.dataClasses.LightKanban;
-import common.dataClasses.LightUser;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -16,8 +14,6 @@ import javafx.stage.FileChooser;
 import java.io.File;
 import java.time.LocalDate;
 import javafx.scene.control.DateCell;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * Gère le scénario d’inscription (Sign Up).

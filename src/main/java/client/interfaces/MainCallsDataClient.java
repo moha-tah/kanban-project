@@ -1,7 +1,6 @@
 package client.interfaces;
 
 import java.util.List;
-import java.util.UUID;
 
 import common.dataClasses.LightUser;
 import common.dataClasses.LightKanban;
@@ -16,11 +15,13 @@ public interface MainCallsDataClient {
 
     List<LightKanban> getMyListLightKanbans();
 
-    void exportProfile(UUID lightUserId, String path);
+    void exportProfile(LightUser lightUserId, String path);
 
     void importMyProfile(String path);
 
     LightUser sendCreateProfile(String login, String password, String name, String surname,
                                         int age, String avatar, String role, String permissions,
                                         String contacts, String kanbanList, String status);
+
+    void addAuthorizedUserToKanban(LightUser user, LightKanban kanban);
 }

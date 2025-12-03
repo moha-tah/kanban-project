@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import common.dataClasses.Kanban;
-import common.dataClasses.LightKanban;
 import common.dataClasses.LightUser;
 
 public class ServerModel {

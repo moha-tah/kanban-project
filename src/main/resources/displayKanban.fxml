@@ -2,8 +2,11 @@
 
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
 
 <BorderPane xmlns="http://javafx.com/javafx/17"
             xmlns:fx="http://javafx.com/fxml/1"
@@ -15,14 +18,61 @@
             <Label text="KANBAN :" style="-fx-font-weight: bold; -fx-font-size: 16;"/>
             <Label fx:id="kanbanTitleLabel" text="(titre)" style="-fx-font-size: 16;"/>
         </HBox>
+
+        <HBox spacing="10"
+          style="-fx-padding: 10; -fx-background-color: #f0f0f0;">
+
+        <Button text="⟵ Back"
+                fx:id="backButton"
+                onAction="#handleBack"
+                style="-fx-background-color: #ddd; -fx-font-weight: bold; -fx-padding: 5 12;"/>
+
+        <Label text="KANBAN :" style="-fx-font-weight: bold; -fx-font-size: 16;"/>
+        <Label fx:id="kanbanTitleLabel" text="(titre)" style="-fx-font-size: 16;"/>
+
+    </HBox>
     </top>
 
     <center>
-        <ScrollPane fitToHeight="true" hbarPolicy="ALWAYS" vbarPolicy="NEVER">
-            <content>
-                <HBox fx:id="columnsContainer" spacing="15" style="-fx-padding: 15;"/>
-            </content>
-        </ScrollPane>
+        <AnchorPane>
+
+            <!-- BOARD -->
+            <ScrollPane fitToHeight="true"
+                        hbarPolicy="ALWAYS"
+                        vbarPolicy="NEVER"
+                        AnchorPane.topAnchor="0.0"
+                        AnchorPane.leftAnchor="0.0"
+                        AnchorPane.rightAnchor="0.0"
+                        AnchorPane.bottomAnchor="0.0">
+                <content>
+                    <HBox fx:id="columnsContainer"
+                          spacing="15"
+                          style="-fx-padding: 15;"/>
+                </content>
+            </ScrollPane>
+
+            <!-- BOUTON + À DROITE CENTRÉ VERTICALLEMENT -->
+            <VBox alignment="CENTER"
+                  AnchorPane.rightAnchor="20.0"
+                  AnchorPane.topAnchor="0.0"
+                  AnchorPane.bottomAnchor="0.0">
+
+                <Button fx:id="addColumnButton"
+                        text="+"
+                        onAction="#onAddColumnButtonClick"
+                        prefWidth="55"
+                        prefHeight="55"
+                        style="
+                            -fx-font-size: 28px;
+                            -fx-background-radius: 28;
+                            -fx-background-color: #ff8c1a;
+                            -fx-text-fill: white;
+                            -fx-font-weight: bold;
+                        "/>
+            </VBox>
+            
+
+        </AnchorPane>
     </center>
 
 </BorderPane>

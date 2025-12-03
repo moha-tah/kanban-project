@@ -19,7 +19,7 @@ public class MainApp extends Application {
     private MainCore          core;
     private CommCoreClient    comm;
     private DataClientProvider data;
-    private kanbanCorps       kanbanCore;
+    private kanbanCorps       kanban;
 
     public MainApp() {
         INSTANCE = this;
@@ -37,22 +37,30 @@ public class MainApp extends Application {
         return INSTANCE != null ? INSTANCE.data : null;
     }
 
+    public static kanbanCorps getKanbanCore() {
+        return INSTANCE != null ? INSTANCE.kanban : null;
+    }
+
     @Override
     public void start(Stage primaryStage) throws Exception {
         core       = new MainCore();
         data       = new DataClientProvider();
         comm       = new CommCoreClient(); // valeurs par défaut
-        kanbanCore = new kanbanCorps();
+        kanban = new kanbanCorps();
 
         // -------- Câblage Main -> autres couches --------
         core.setDataPort(data.getToMainImpl());
         core.setCommPort(comm.getIhmMainCallsComm());
-        core.setKanbanPort(kanbanCore.getMAINService());
+        core.setKanbanPort(kanban.getMAINService());
+
+        kanban.setMainPort(core.getKANBANService());
+        kanban.setCommPort(comm.getIhmKanbanCallsComm());
+        kanban.setDataPort(data.getToKabanImpl());
 
         // -------- Câblage Data -> autres couches --------
         data.setMainInterface(core.getDATService());
         data.setCommInterface(comm.getDataCallsComm());
-        data.setKanbanInterface(kanbanCore.getDATService());
+        data.setKanbanInterface(kanban.getDATService());
 
         // -------- Câblage Comm -> autres couches --------
         // Comm -> Data
@@ -60,7 +68,7 @@ public class MainApp extends Application {
         // Comm -> Main
         comm.setIhmMainInterface(core.getCOMMService());
         // Comm -> Kanban
-        comm.setIhmKanbanInterface(kanbanCore.getCOMMService());
+        comm.setIhmKanbanInterface(kanban.getCOMMService());
 
         // -------- Lancement de l'IHM --------
         core.launchMainWindow(primaryStage);
