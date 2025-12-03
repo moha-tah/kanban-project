@@ -180,18 +180,17 @@ public class IhmMainCallsCommImp implements IhmMainCallsComm {
         }
     }
 
-    public void sendRequestModification(LightUser user, UUID cardId, Object newStatus) {
+    public void sendRequestModification(LightUser user, UUID cardId, String newStatus) {
         if (user == null || cardId == null || newStatus == null) {
             LOGGER.warning("Paramètres invalides pour sendRequestModification");
             return;
         }
 
-        String status = newStatus.toString();
-        LOGGER.info(() -> "Envoi demande de modification carte " + cardId + " vers " + status + 
+        LOGGER.info(() -> "Envoi demande de modification carte " + cardId + " vers " + newStatus + 
                      " par " + user.getUsername());
 
         try {
-            RequestModification msg = new RequestModification(user, cardId, status);
+            RequestModification msg = new RequestModification(user, cardId, newStatus);
             
             if (commCore.getMsgSender() != null) {
                 commCore.sendMessage(msg);
