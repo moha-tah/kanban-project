@@ -38,6 +38,12 @@ public class ManageDisplay {
         return homeViewController;
     }
 
+    public void refreshKanban(Kanban kanban) {
+
+        this.openKanbanScreen(kanban, homeViewController);
+        corps.LOGGER.info("[Kanban] Refresh kanban : " + "kanban=" + kanban);
+    }
+
     public void openKanbanScreen(Kanban kanban, HomeViewController homeController) {
         try {
             // Charger le "shell" kanban complet : board

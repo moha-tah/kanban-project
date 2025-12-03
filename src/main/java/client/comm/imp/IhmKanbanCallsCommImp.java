@@ -12,6 +12,8 @@ import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import common.dataClasses.Modification;
+
 public class IhmKanbanCallsCommImp implements IhmKanbanCallsComm {
     private static final Logger LOGGER = Logger.getLogger(IhmKanbanCallsCommImp.class.getName());
     private final CommCoreClient comm;
@@ -26,14 +28,14 @@ public class IhmKanbanCallsCommImp implements IhmKanbanCallsComm {
     }
 
     @Override
-    public void sendRequestModification(LightUser user, UUID cardId, String newStatus) {
+    public void sendRequestModification(LightUser user,Modification myModification ) {
         if (user == null || cardId == null || newStatus == null) {
             LOGGER.warning("Paramètres invalides pour sendRequestModification");
             return;
         }
 
-        LOGGER.info(() -> "Envoi demande de modification carte " + cardId + " vers " + newStatus + 
-                     " par " + user.getUsername());
+        /*LOGGER.info(() -> "Envoi demande de modification carte " + cardId + " vers " + newStatus + 
+                     " par " + user.getUsername());*/
 
         try {
             RequestModification msg = new RequestModification(user, cardId, newStatus);
