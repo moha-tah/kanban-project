@@ -113,7 +113,6 @@ public class ProfileController {
             LOGGER.info("Navigation vers home.fxml réussie.");
         } catch (Exception e) {
             LOGGER.severe("Erreur lors de la navigation vers home.fxml : " + e.getMessage());
-            e.printStackTrace();
         }
     }
 

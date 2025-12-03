@@ -97,7 +97,6 @@ public class ProfileDistantController {
             LOGGER.info("Navigation vers home_fxml.fxml réussie.");
         } catch (Exception e) {
             LOGGER.severe("Erreur lors de la navigation vers home_fxml.fxml : " + e.getMessage());
-            e.printStackTrace();
         }
     }
 
