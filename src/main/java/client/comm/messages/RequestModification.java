@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Optional;
 import common.dataClasses.LightUser;
 import common.dataClasses.Modification;
-import server.ServerContext;
 import server.comm.CommCoreServer;
 
 /**
