@@ -105,8 +105,7 @@ public class EditProfileController {
         // On prépare juste l’appel
         if (core.getDataPort() != null) {
             try {
-                //core.getDataPort().updateUser(me); 
-                // TODO : à implémenter côté Data
+                //core.getDataPort().updateUser(me); --- IGNORE ---
             } catch (Exception e) {
                 LOGGER.warning("Data port updateUser not implemented yet.");
             }
