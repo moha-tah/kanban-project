@@ -42,21 +42,6 @@ import java.util.logging.Logger;
  */
 public class MainCore {
 
-    // ---- Exemple de Kanban pour tests de la V2 surment plus pertinant pour la suite----
-    /*
-    Kanban KanbanTest = new Kanban("Projet IHM Kanban"); 
-    Column todo = new Column("To Do", "#FFAAAA", 1); Column doing = new Column("Doing", "#FFD580", 2); Column done = new Column("Done", "#AAFFAA", 3);
-    Task t1 = new Task("Créer interface JavaFX", "description", LocalDate.now(), LocalDate.now().plusDays(2));
-    Task t2 = new Task("Implémenter DisplayKanban", "description", LocalDate.now(), LocalDate.now().plusDays(3));
-    Task t3 = new Task("Créer classes métier", "description", LocalDate.now(), LocalDate.now().plusDays(4));
-    Task t4 = new Task("Tester le mouvement des tâches", "description", LocalDate.now(), LocalDate.now().plusDays(5));
-    
-    {
-        KanbanTest.getTaskColumn().put(todo, new ArrayList<>()); KanbanTest.getTaskColumn().put(doing, new ArrayList<>()); KanbanTest.getTaskColumn().put(done, new ArrayList<>());
-        KanbanTest.getTaskColumn().get(todo).add(t1); KanbanTest.getTaskColumn().get(todo).add(t2);
-        KanbanTest.getTaskColumn().get(doing).add(t3);
-        KanbanTest.getTaskColumn().get(done).add(t4);
-    }*/
     
     public static final Logger LOGGER = Logger.getLogger("MainCorps");
 
@@ -193,10 +178,6 @@ public class MainCore {
     public void launchMainWindow(Stage stage) {
         try {
 
-            /* 
-            kanbanCorps core = new kanbanCorps();
-            MainCallsKanban mainCalls = new MainCallsKanbanImpl(core);
-            mainCalls.openCreateForm(KanbanTest);*/
             
             
             final String first = "/landing.fxml";
