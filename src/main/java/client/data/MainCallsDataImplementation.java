@@ -437,28 +437,46 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
         return localUser;
     }
 
-    public Void modifyLocalUser (String newFirstName, String newLastName, LocalDate newBirthDate, String newAvatar, String newUsername) {
+    public Void modifyLocalUser(String newFirstName, String newLastName, LocalDate newBirthDate,
+                                String newAvatar, String newUsername) {
+
         ClientModel myModel = provider.getMyModel();
         User currentUser = myModel.getLocalUser();
-        if(newFirstName != null) {
-            currentUser.setFirstName(newFirstName);
+        if (currentUser == null) return null;
+
+        String oldUsername = currentUser.getUsername();
+
+        // ✏️ Mise à jour des champs
+        if(newFirstName != null) currentUser.setFirstName(newFirstName);
+        if(newLastName != null) currentUser.setLastName(newLastName);
+        if(newBirthDate != null) currentUser.setBirthDate(newBirthDate);
+        if(newAvatar != null) currentUser.setAvatar(newAvatar);
+        if(newUsername != null) currentUser.setUsername(newUsername);
+
+        // 🔥 Renommage du fichier si le nom change
+        if (newUsername != null && !newUsername.equals(oldUsername)) {
+            renameUserFile(oldUsername, newUsername);
         }
-        if(newLastName != null) {
-            currentUser.setLastName(newLastName);
-        }
-        if(newBirthDate != null) {
-            currentUser.setBirthDate(newBirthDate);
-        }
-        if(newAvatar != null) {
-            currentUser.setAvatar(newAvatar);
-        }
-        if(newUsername != null) {
-            currentUser.setUsername(newUsername);
-        }
-        saveUser();
+
+        saveUser(); // sauvegarde dans le *nouveau* fichier
+
         return null;
     }
 
+    private void renameUserFile(String oldUsername, String newUsername) {
+        try {
+            Path oldFile = USERS_DIR.resolve(oldUsername + ".json");
+            Path newFile = USERS_DIR.resolve(newUsername + ".json");
+
+            if (Files.exists(oldFile)) {
+                Files.move(oldFile, newFile);
+                LOGGER.info("Fichier utilisateur renommé : " + oldFile + " → " + newFile);
+            }
+
+        } catch (IOException e) {
+            LOGGER.log(java.util.logging.Level.SEVERE, "Erreur lors du renommage du fichier utilisateur", e);
+        }
+    }
     public void ModifyLocalUserFirstName(String newFirstName) {
         modifyLocalUser(newFirstName, null, null, null, null);
     }
