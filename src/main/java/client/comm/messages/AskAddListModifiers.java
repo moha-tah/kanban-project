@@ -4,7 +4,6 @@ import common.dataClasses.LightKanban;
 import common.dataClasses.LightUser;
 
 import java.util.Optional;
-import java.util.UUID;
 
 import server.ServerContext;
 
