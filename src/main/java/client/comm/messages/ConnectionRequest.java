@@ -45,6 +45,9 @@ public class ConnectionRequest extends Message {
         } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException t) {
             java.util.logging.Logger.getLogger(ConnectionRequest.class.getName())
                     .log(java.util.logging.Level.SEVERE, "Erreur traitement connection", t);
+        } catch (Exception e) {
+            java.util.logging.Logger.getLogger(ConnectionRequest.class.getName())
+                    .log(java.util.logging.Level.SEVERE, "Unexpected error during connection handling", e);
         }
         return Optional.empty();
     }
