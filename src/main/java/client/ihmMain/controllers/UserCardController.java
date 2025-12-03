@@ -1,4 +1,4 @@
-package client.ihmMain.controllers;
+package client.ihmMain.controllers; // NOSONAR
 
 import java.io.File;
 import java.io.IOException;

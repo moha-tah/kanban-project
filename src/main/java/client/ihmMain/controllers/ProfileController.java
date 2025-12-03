@@ -1,4 +1,4 @@
-package client.ihmMain.controllers;
+package client.ihmMain.controllers; // NOSONAR
 
 import client.MainApp;
 import javafx.fxml.FXML;

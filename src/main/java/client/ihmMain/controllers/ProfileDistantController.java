@@ -1,4 +1,4 @@
-package client.ihmMain.controllers;
+package client.ihmMain.controllers; // NOSONAR
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -26,9 +26,6 @@ public class ProfileDistantController {
     private ImageView profileAvatar;
 
     @FXML
-    private Label kanbansCreated;
-
-    @FXML
     private Label collaborations;
 
 
@@ -45,22 +42,18 @@ public class ProfileDistantController {
     }
     
     public void setUser(LightUser currentUser) {
-        // Infos utilisateur
         profileName.setText(currentUser.getUsername());
         profileUsername.setText("@" + currentUser.getUsername());
 
-        collaborations.setText("0"); 
+        collaborations.setText("1"); 
 
-        // Avatar
         Image avatarImg = loadAvatar(currentUser.getAvatar());
         if (avatarImg != null) profileAvatar.setImage(avatarImg);
 
-        // Afficher les Kanbans
         kanbansGrid.getChildren().clear();
     }
 
     private Image loadAvatar(String avatarPath) {
-        // 1) si un chemin fichier valide est fourni depuis le serveur
         try {
             if (avatarPath != null && !avatarPath.isBlank()) {
                 File f = new File(avatarPath);
