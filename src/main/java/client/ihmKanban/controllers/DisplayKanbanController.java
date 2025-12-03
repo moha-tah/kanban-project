@@ -61,6 +61,7 @@ public class DisplayKanbanController implements Initializable {
 
     // Core principal (pour récupérer les users connectés / snapshot)
     private MainCore core;
+    private Task taskCopy;
 
     @FXML
     private Label kanbanTitleLabel;      // label en haut : titre du kanban
@@ -614,7 +615,9 @@ public class DisplayKanbanController implements Initializable {
         copyTask.setOnAction(e -> {
             System.out.println("COPY TASK : " + task.getTitle());
 
-            // TODO : corps.copyTask(task);
+            taskCopy = task; 
+
+
             popup.hide();
         });
 
@@ -844,6 +847,7 @@ public class DisplayKanbanController implements Initializable {
         Popup popup = createBasePopup();
         VBox box = (VBox) popup.getContent().get(0);
 
+        //modifier pour que le kanban prenne en compte le nombre de colonne dans le kanban et adapte les status en fonction
         Button toDo = createMenuButton("TO DO", "#5D8BF4", "white");
         Button doing = createMenuButton("DOING", "#ffb347", "black");
         Button toReview = createMenuButton("TO REVIEW", "#ff6666", "white");

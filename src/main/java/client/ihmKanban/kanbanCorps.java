@@ -100,4 +100,8 @@ public class kanbanCorps {
     }
 
     }
+
+    public void updateKanban(Kanban kanban) {
+        manageDisplay.refreshKanban(kanban);
+    }
 }
