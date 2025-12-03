@@ -1,4 +1,4 @@
-package client.ihmMain.controllers; // NOSONAR
+package client.ihmMain.controllers; 
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -17,20 +17,20 @@ import java.util.logging.Logger;
 public class ProfileDistantController {
 
     @FXML
-    private Label profileName;
+    private Label profileName2;
 
     @FXML
-    private Label profileUsername;
+    private Label profileUsername2;
 
     @FXML
-    private ImageView profileAvatar;
+    private ImageView profileAvatar2;
 
     @FXML
-    private Label collaborations;
+    private Label collaborations2;
 
 
     @FXML
-    private GridPane kanbansGrid;
+    private GridPane kanbansGrid2;
 
     private MainCore core;
 
@@ -42,15 +42,15 @@ public class ProfileDistantController {
     }
     
     public void setUser(LightUser currentUser) {
-        profileName.setText(currentUser.getUsername());
-        profileUsername.setText("@" + currentUser.getUsername());
+        profileName2.setText(currentUser.getUsername());
+        profileUsername2.setText("@" + currentUser.getUsername());
 
-        collaborations.setText("1"); 
+        collaborations2.setText("1");
 
         Image avatarImg = loadAvatar(currentUser.getAvatar());
-        if (avatarImg != null) profileAvatar.setImage(avatarImg);
+        if (avatarImg != null) profileAvatar2.setImage(avatarImg);
 
-        kanbansGrid.getChildren().clear();
+        kanbansGrid2.getChildren().clear();
     }
 
     private Image loadAvatar(String avatarPath) {

@@ -1,4 +1,4 @@
-package client.ihmMain.controllers; // NOSONAR
+package client.ihmMain.controllers; 
 
 import client.MainApp;
 import javafx.fxml.FXML;
@@ -55,40 +55,32 @@ public class ProfileController {
         collaborations.setText("0"); 
 
         // Avatar
-        Image avatarImg = loadAvatar(currentUser.getAvatar());
+        Image avatarImg = loadAvatarProfile(currentUser.getAvatar());
         if (avatarImg != null) profileAvatar.setImage(avatarImg);
 
         // Afficher les Kanbans
         kanbansGrid.getChildren().clear();
     }
 
-    private Image loadAvatar(String avatarPath) {
+   private Image loadAvatarProfile(String avPath) {
         // 1) si un chemin fichier valide est fourni depuis le serveur
-        try {
-            if (avatarPath != null && !avatarPath.isBlank()) {
-                File f = new File(avatarPath);
-                if (f.exists()) {
-                    return new Image(f.toURI().toString(), true);
-                } else {
-                    LOGGER.log(Level.WARNING, "Avatar file not found: {0}", avatarPath);
-                }
+        if (avPath != null && !avPath.isBlank()) {
+            File f = new File(avPath);
+            if (f.exists()) {
+                return new Image(f.toURI().toString(), true);
+            } else {
+                LOGGER.log(Level.WARNING, "Avatar file not found: {0}", avPath);
             }
-        } catch (Exception e) {
-            LOGGER.warning("Error loading avatar '" + avatarPath + "': " + e.getMessage());
         }
 
-        try {
-            var url = getClass().getResource(DEFAULT_AVATAR);
-            if (url == null) {
-                LOGGER.warning("Default avatar resource not found: " + DEFAULT_AVATAR);
-                return null; 
-            }
-            return new Image(url.toExternalForm(), true);
-        } catch (Exception e) {
-            LOGGER.warning("Error loading default avatar: " + e.getMessage());
-            return null;
+        var url = getClass().getResource(DEFAULT_AVATAR);
+        if (url == null) {
+            LOGGER.warning("Default avatar resource not found: " + DEFAULT_AVATAR);
+            return null; 
         }
+        return new Image(url.toExternalForm(), true);
     }
+
 
     @FXML
     private void handleBackClick() {

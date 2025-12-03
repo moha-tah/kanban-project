@@ -38,20 +38,20 @@
         <HBox spacing="30">
             <!-- Avatar -->
             <AnchorPane>
-                <ImageView fx:id="profileAvatar" fitHeight="120" fitWidth="120" style="-fx-border-color: #667eea; -fx-border-width: 4; -fx-border-radius: 60;" />
+                <ImageView fx:id="profileAvatar2" fitHeight="120" fitWidth="120" style="-fx-border-color: #667eea; -fx-border-width: 4; -fx-border-radius: 60;" />
             </AnchorPane>
 
             <!-- Profile Info -->
             <VBox spacing="10">
-                <Label fx:id="profileName" style="-fx-font-size: 28px; -fx-font-weight: bold;" />
-                <Label fx:id="profileUsername" style="-fx-text-fill: #6b7280;" />
+                <Label fx:id="profileName2" style="-fx-font-size: 28px; -fx-font-weight: bold;" />
+                <Label fx:id="profileUsername2" style="-fx-text-fill: #6b7280;" />
                 <HBox spacing="40">
                     <VBox>
-                        <Label fx:id="kanbansCreated" style="-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: #667eea;" />
+                        <Label fx:id="kanbansCreated2" style="-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: #667eea;" />
                         <Label style="-fx-text-fill: #6b7280; -fx-font-size: 12px;" text="Kanbans créés" />
                     </VBox>
                     <VBox>
-                        <Label fx:id="collaborations" style="-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: #667eea;" />
+                        <Label fx:id="collaborations2" style="-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: #667eea;" />
                         <Label style="-fx-text-fill: #6b7280; -fx-font-size: 12px;" text="Collaborations" />
                     </VBox>
                 </HBox>
@@ -62,7 +62,7 @@
     <!-- Kanbans Card -->
     <VBox layoutX="50" layoutY="400" prefWidth="1100" spacing="20" style="-fx-background-color: white; -fx-background-radius: 20; -fx-padding: 40;">
         <Label style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #1f2937; -fx-border-color: #667eea; -fx-border-width: 0 0 0 4; -fx-border-insets: 0;" text="Kanbans Créés" />
-        <GridPane fx:id="kanbansGrid" hgap="20" vgap="20" />
+        <GridPane fx:id="kanbansGrid2" hgap="20" vgap="20" />
         <Button
             layoutX="950"
             style="-fx-background-color: #1f2937; -fx-text-fill: white; -fx-background-radius: 25; -fx-padding: 15 40;"
