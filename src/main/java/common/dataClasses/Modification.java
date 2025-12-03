@@ -21,11 +21,19 @@ public abstract class Modification {
         return id;
     }
 
+    public LightKanban getMyKanban() {
+        return myKanban;
+    }
+
 
     
     // Setters
     public void setId(UUID id) {
         this.id = id;
+    }
+
+    public void setMyKanban(LightKanban myKanban) {
+        this.myKanban = myKanban;
     }
 
     

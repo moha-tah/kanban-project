@@ -1,6 +1,7 @@
 package client.data;
 
 import client.interfaces.ComCallsDataClient;
+import client.interfaces.DataClientCallsKanban;
 import common.dataClasses.Kanban;
 import common.dataClasses.LightKanban;
 import common.dataClasses.LightUser;
@@ -102,8 +103,18 @@ public class CommCallsDataClientImplementation implements ComCallsDataClient{
         }
     }
 
-    public void saveModifiedKanban(Modification modification, LightKanban kanban){
-        //TODO
+    public void saveModifiedKanban(Modification modification){
+        ClientModel model = provider.getMyModel();
+        Kanban kanban = model.getCurrentKanban();
+        UUID modificationInitialTargetId = modification.getMyKanban().getId();
+        UUID currentKanbanId = kanban.getId();
+        if(modificationInitialTargetId.equals(currentKanbanId)  ){
+            modification.execute(kanban);
+            model.setCurrentKanban(kanban);
+            provider.setMyModel(model);
+            DataClientCallsKanban kanbanAccess = provider.getKanbanInterface();
+            kanbanAccess.updateKanban(kanban);
+        }
     }
 
     public void saveTempKanban(Kanban kanban){
@@ -113,6 +124,7 @@ public class CommCallsDataClientImplementation implements ComCallsDataClient{
     public void addUserToList(LightUser user, List<LightKanban> kanbans){
         //TODO
     }
+
 
     //Constructeur
     public CommCallsDataClientImplementation(DataClientProvider provider) {

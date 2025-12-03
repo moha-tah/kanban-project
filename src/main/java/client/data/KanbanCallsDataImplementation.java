@@ -19,6 +19,7 @@ import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializer;
 
 import client.interfaces.DataCallsComm;
+import client.interfaces.DataClientCallsKanban;
 import client.interfaces.KanbanCallsDataClient;
 import common.dataClasses.* ;
 
@@ -282,9 +283,9 @@ public class KanbanCallsDataImplementation implements KanbanCallsDataClient {
         // TODO
     }
 
-    public void getModified(Modification modification, LightKanban lkanban) {
-        // TODO
-    }
+
+
+
 
     // getters / setters
     public DataClientProvider getProvider() {
