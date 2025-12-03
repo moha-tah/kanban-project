@@ -26,7 +26,7 @@ public class RequestModification extends Message {
     public Optional<Message> handle() {
         try {
             System.out.println("[SERVER] Reçu demande de modification de carte " + modification.getId() + 
-                " vers status " + modification.getTargetKanban() + " par " + 
+                " pour le kanban \"" + modification.getTargetKanban().getTitle() + "\" par " + 
                 (user != null ? user.getUsername() : "Inconnu"));
 
             // Récupération du contexte serveur et du data server
