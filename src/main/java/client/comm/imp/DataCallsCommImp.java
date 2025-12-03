@@ -67,7 +67,7 @@ public class DataCallsCommImp implements DataCallsComm {
 
     @Override
     public void getDistantProfile(UUID targetUserId) {
-        // Id loval user
+        // Id local user
         UUID requesterId = commCore.getClientContext()
                                    .getLocalUser()
                                    .getId();
