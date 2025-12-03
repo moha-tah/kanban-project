@@ -10,7 +10,7 @@ public class NotifyEdition extends Message {
     private static final long serialVersionUID = 1L;
 
     private final LightKanban kanban;
-    private Modification modification;
+    private final Modification modification;
 
     public NotifyEdition(LightKanban kanban, Modification modification) {
         this.kanban = kanban;
