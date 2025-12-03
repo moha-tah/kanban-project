@@ -61,7 +61,6 @@ public class DisplayKanbanController implements Initializable {
 
     // Core principal (pour récupérer les users connectés / snapshot)
     private MainCore core;
-    private Task taskCopy;
 
     @FXML
     private Label kanbanTitleLabel;      // label en haut : titre du kanban
@@ -335,7 +334,7 @@ public class DisplayKanbanController implements Initializable {
 
             Column col = new Column(colTitle, colorCode);
             CreateColumn modify = new CreateColumn(col);
-            corps.getCommPort().sendRequestModification(corps.getMe(), (Modification) modify);
+            corps.getDataPort().getModified((Modification) modify, kanban.getId());
             LOGGER.info("création d'un nouvelle colonne envoyé à data");
 
             // renderKanban();
@@ -381,7 +380,7 @@ public class DisplayKanbanController implements Initializable {
 
 
             DeleteColumn delete = new DeleteColumn(col.getId());
-            corps.getCommPort().sendRequestModification(corps.getMe(), (Modification) delete);
+            corps.getDataPort().getModified((Modification) delete, kanban.getId());
             LOGGER.info("suppression d'une colonne envoyée à data");
 
             popup.hide();
@@ -438,7 +437,7 @@ public class DisplayKanbanController implements Initializable {
 
             Task tache = new Task(taskTitle, taskDesc);
             CreateTask modify = new CreateTask(tache, col.getId());
-            corps.getCommPort().sendRequestModification(corps.getMe(), (Modification) modify);
+            corps.getDataPort().getModified((Modification) modify, kanban.getId());
             LOGGER.info("Nouvelle Task envoyée à data");
 
             popup.hide();
@@ -558,7 +557,7 @@ public class DisplayKanbanController implements Initializable {
 
 
             ModifyColumn modify = new ModifyColumn(col);
-            corps.getCommPort().sendRequestModification(corps.getMe(), (Modification) modify);
+            corps.getDataPort().getModified((Modification) modify, kanban.getId());
             LOGGER.info("création d'un nouvelle colonne envoyé à data");
 
 
@@ -606,7 +605,7 @@ public class DisplayKanbanController implements Initializable {
             System.out.println("DELETE TASK : " + task.getTitle());
 
             DeleteTask delete = new DeleteTask(task.getId());
-            corps.getCommPort().sendRequestModification(corps.getMe(), (Modification) delete);
+            corps.getDataPort().getModified((Modification) delete, kanban.getId());
             LOGGER.info("supprimer une tache envoyée à data");
 
             popup.hide();
@@ -615,9 +614,7 @@ public class DisplayKanbanController implements Initializable {
         copyTask.setOnAction(e -> {
             System.out.println("COPY TASK : " + task.getTitle());
 
-            taskCopy = task; 
-
-
+            // TODO : corps.copyTask(task);
             popup.hide();
         });
 
@@ -683,7 +680,7 @@ public class DisplayKanbanController implements Initializable {
             LocalDate end = LocalDate.now().plusDays(7);
 
             ModifyTask modify = new ModifyTask(task);
-            corps.getCommPort().sendRequestModification(corps.getMe(), (Modification) modify);
+            corps.getDataPort().getModified((Modification)modify, kanban.getId());
             LOGGER.info("Taskmodifié envoyé à data");
 
 
@@ -842,43 +839,50 @@ public class DisplayKanbanController implements Initializable {
         showPopupNearNode(popup, anchorNode);
     }
 
-    /** Menu statut : TO DO / DOING / TO REVIEW / DONE */
+ /** Menu statut : liste dynamique des vraies colonnes */
     private void onStatusClick(Task task, Button statusBtn) {
         Popup popup = createBasePopup();
         VBox box = (VBox) popup.getContent().get(0);
+        box.setSpacing(6);
 
-        //modifier pour que le kanban prenne en compte le nombre de colonne dans le kanban et adapte les status en fonction
-        Button toDo = createMenuButton("TO DO", "#5D8BF4", "white");
-        Button doing = createMenuButton("DOING", "#ffb347", "black");
-        Button toReview = createMenuButton("TO REVIEW", "#ff6666", "white");
-        Button done = createMenuButton("DONE", "#66cc66", "black");
+        // Si aucune colonne disponible, on affiche un message
+        if (columns == null || columns.isEmpty()) {
+            Label empty = new Label("No columns available.");
+            empty.setStyle("-fx-text-fill: white;");
+            box.getChildren().add(empty);
+            showPopupNearNode(popup, statusBtn);
+            return;
+        }
 
-        toDo.setOnAction(e -> {
-            System.out.println("Status TO DO pour : " + task.getTitle());
-            statusBtn.setText("TO DO ▼");
-            // TODO : corps.updateStatus(task, ...);
-            popup.hide();
-        });
+        // Pour chaque colonne existante, on crée un bouton dans le menu
+        for (Column col : columns) {
+            String bgColor = (col.getColor() != null && !col.getColor().isBlank())
+                    ? col.getColor()
+                    : "#5D8BF4";
 
-        doing.setOnAction(e -> {
-            System.out.println("Status DOING pour : " + task.getTitle());
-            statusBtn.setText("DOING ▼");
-            popup.hide();
-        });
+            Button colBtn = createMenuButton(col.getTitle(), bgColor, "white");
 
-        toReview.setOnAction(e -> {
-            System.out.println("Status TO REVIEW pour : " + task.getTitle());
-            statusBtn.setText("TO REVIEW ▼");
-            popup.hide();
-        });
+            colBtn.setOnAction(e -> {
+                System.out.println("Change status of task '" + task.getTitle()
+                        + "' to column '" + col.getTitle() + "'");
 
-        done.setOnAction(e -> {
-            System.out.println("Status DONE pour : " + task.getTitle());
-            statusBtn.setText("DONE ▼");
-            popup.hide();
-        });
+                // Visuellement, on met le titre de la colonne sur le bouton status
+                statusBtn.setText(col.getTitle() + " ▼");
 
-        box.getChildren().addAll(toDo, doing, toReview, done);
+                // TODO : ici, brancher la logique métier pour déplacer la tâche
+                // vers la colonne 'col' côté serveur / modèle.
+                //
+                // Par exemple (à adapter à ton modèle) :
+                // MoveTask move = new MoveTask(task.getId(), col.getId());
+                // corps.getDataPort().getModified((Modification) move, kanban.getId());
+
+                popup.hide();
+            });
+
+            box.getChildren().add(colBtn);
+        }
+
         showPopupNearNode(popup, statusBtn);
     }
+}
 }
