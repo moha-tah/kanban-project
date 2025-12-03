@@ -61,8 +61,6 @@ public void refreshUsers() {
             String avatarPath = user.getAvatar();   // plus besoin de instanceof
             controller.setUserData(user.getUsername(), avatarPath);
 
-            controller.setUserData(user.getUsername(), avatarPath);
-
             usersContainer.getChildren().add(userCard);
             LOGGER.info("Added user to UI: " + user.getUsername());
 
@@ -71,4 +69,6 @@ public void refreshUsers() {
                     "Erreur lors du chargement de user_card.fxml pour l'utilisateur : " + user.getUsername(), e);
         }
     }
+
+    
 }

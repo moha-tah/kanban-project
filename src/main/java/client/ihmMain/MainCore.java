@@ -160,6 +160,15 @@ public class MainCore {
         }
     }
 
+    public LightUser searchUserByUsername(String username) {
+        for (LightUser u : users) {
+            if (u.getUsername().equalsIgnoreCase(username)) {
+                return u;
+            }
+        }
+        return null;
+    }
+
     public DataClientProvider getDataClientProvider() {
         if (dataPort instanceof MainCallsDataImplementation mainCallsDataImplementation) {
             return mainCallsDataImplementation.getProvider();
@@ -283,8 +292,11 @@ public class MainCore {
 
 
 
+
     public void showLoginView()  { loadScene("/login.fxml",  "Login"); }
     public void showSignupView() { loadScene("/signup.fxml", "Sign up"); }
     public void showHomeView()   { loadScene("/home.fxml",   "Home"); }
     public void showLandingView() { loadScene("/landing.fxml", "Welcome");}
+    public void showEditProfileView() { loadScene("/editProfile.fxml", "EditProfile");}
+    public void showProfileView() { loadScene("/profile.fxml", "Profile");}
 }
