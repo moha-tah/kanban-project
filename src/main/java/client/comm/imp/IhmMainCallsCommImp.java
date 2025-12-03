@@ -182,7 +182,7 @@ public class IhmMainCallsCommImp implements IhmMainCallsComm {
             return;
         }
 
-        LOGGER.info(() -> "Envoi demande de modification carte " + modification.getId() + " vers " + modification.getTargetKanban() + " par " + user.getUsername());
+        LOGGER.info(() -> "Envoi demande de modification carte " + modification.getId() + " vers " + modification.getTargetKanban().getTitle() + " par " + user.getUsername());
 
         try {
             RequestModification msg = new RequestModification(user, modification);
