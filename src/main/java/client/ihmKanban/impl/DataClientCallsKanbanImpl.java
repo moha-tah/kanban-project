@@ -5,6 +5,8 @@ import java.util.logging.Level;
 import client.interfaces.DataClientCallsKanban;
 import common.dataClasses.Kanban;
 import client.ihmKanban.kanbanCorps;
+import client.ihmMain.controllers.HomeViewController;
+
 
 /** Impl des callbacks de la couche Communication vers la couche Kanban (IHM Kanban). */
 public class DataClientCallsKanbanImpl implements DataClientCallsKanban {
@@ -16,9 +18,10 @@ public class DataClientCallsKanbanImpl implements DataClientCallsKanban {
     }
 
     @Override
-    public void displayKanban(Kanban kanban) {
-        corps.displayKanban(kanban); 
-        corps.LOGGER.log(Level.INFO, "[Data->kanban] Display kanban : kanban={0}", kanban);
+    public void displayKanban(Kanban kanban, HomeViewController homeController ) {
+        corps.displayKanban(kanban, homeController); 
+        corps.LOGGER.info("[Data->kanban] Display kanban : "
+                + "kanban=" + kanban);
 
     }
 }

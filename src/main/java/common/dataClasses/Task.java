@@ -25,6 +25,12 @@ public class Task implements Serializable {
         this.startDate = startDate;
         this.endDate = endDate;
     }
+    public Task(String title, String description) {
+        this.id = UUID.randomUUID();
+        this.title = title;
+        this.description = description;
+
+    }
 
     // Getters
     public UUID getId() { return id; }

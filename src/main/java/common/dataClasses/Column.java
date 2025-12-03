@@ -19,6 +19,11 @@ public class Column implements Serializable {
         this.color = color;
         this.number = number;
     }
+    public Column(String title, String color) {
+        this.id = UUID.randomUUID();
+        this.title = title;
+        this.color = color;
+    }
 
     // Getters
     public UUID getId() { return id; }
