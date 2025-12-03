@@ -15,7 +15,7 @@ public class RequestModification extends Message {
     private static final long serialVersionUID = 1L;
 
     private final LightUser user;
-    private final Modification modification;
+    private Modification modification;
 
     public RequestModification(LightUser user, Modification modification) {
         this.user = user;

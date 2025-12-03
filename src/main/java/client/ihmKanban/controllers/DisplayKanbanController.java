@@ -48,6 +48,10 @@ import common.dataClasses.Modification;
 public class DisplayKanbanController implements Initializable {
 
     private static final Logger LOGGER = Logger.getLogger(DisplayKanbanController.class.getName());
+    
+    // Color constants
+    private static final String ORANGE_COLOR = "#ff8c1a";
+    private static final String RED_COLOR = "#ff6666";
 
     public DisplayKanbanController() {
         // Constructeur public requis par JavaFX FXML
@@ -262,6 +266,7 @@ public class DisplayKanbanController implements Initializable {
      * Popup ADD COLUMN : COLUMN NAME + COLOR + bouton ADD
      */
     private void showAddColumnPopup(Node anchorNode) {
+        
         Popup popup = createBasePopup();
         VBox box = (VBox) popup.getContent().get(0);
         box.setSpacing(10);
@@ -311,8 +316,8 @@ public class DisplayKanbanController implements Initializable {
                 switch (colorName) {
                     case "BLUE" -> colorCode = "#5D8BF4";
                     case "GREEN" -> colorCode = "#4CAF50";
-                    case "ORANGE" -> colorCode = "#ff8c1a";
-                    case "RED" -> colorCode = "#ff6666";
+                    case "ORANGE" -> colorCode = ORANGE_COLOR;
+                    case "RED" -> colorCode = RED_COLOR;
                     case "PURPLE" -> colorCode = "#8a2be2";
                     default -> {
                     }
@@ -351,9 +356,9 @@ public class DisplayKanbanController implements Initializable {
         Popup popup = createBasePopup();
         VBox box = (VBox) popup.getContent().get(0);
 
-        Button addTask = createMenuButton("ADD TASK", "#ff8c1a", "black");
+        Button addTask = createMenuButton("ADD TASK", ORANGE_COLOR, "black");
         Button editCol  = createMenuButton("EDIT COLUMN", "#c0c0ff", "black");
-        Button deleteCol = createMenuButton("DELETE COLUMN", "#ff6666", "black");
+        Button deleteCol = createMenuButton("DELETE COLUMN", RED_COLOR, "black");
 
         addTask.setOnAction(e -> {
             popup.hide();
@@ -502,8 +507,8 @@ public class DisplayKanbanController implements Initializable {
                 switch (newColorName) {
                     case "BLUE" -> newColorCode = "#5D8BF4";
                     case "GREEN" -> newColorCode = "#4CAF50";
-                    case "ORANGE" -> newColorCode = "#ff8c1a";
-                    case "RED" -> newColorCode = "#ff6666";
+                    case "ORANGE" -> newColorCode = ORANGE_COLOR;
+                    case "RED" -> newColorCode = RED_COLOR;
                     case "PURPLE" -> newColorCode = "#8a2be2";
                     default -> {
                     }
@@ -549,10 +554,10 @@ public class DisplayKanbanController implements Initializable {
         Popup popup = createBasePopup();
         VBox box = (VBox) popup.getContent().get(0);
 
-        Button addUser = createMenuButton("ADD A USER", "#ff8c1a", "black");
+        Button addUser = createMenuButton("ADD A USER", ORANGE_COLOR, "black");
         Button seeUsers = createMenuButton("SEE USERS", "#c0c0ff", "black");
         Button editTask = createMenuButton("EDIT TASK", "#d0d0d0", "black");
-        Button deleteTask = createMenuButton("DELETE TASK", "#ff6666", "black");
+        Button deleteTask = createMenuButton("DELETE TASK", RED_COLOR, "black");
         Button copyTask = createMenuButton("COPY TASK", "#bbbbff", "black");
 
         addUser.setOnAction(e -> {
@@ -698,7 +703,7 @@ public class DisplayKanbanController implements Initializable {
 
                     Button addBtn = new Button("ADD");
                     addBtn.setStyle(
-                            "-fx-background-color: #ff8c1a;" +
+                            "-fx-background-color: " + ORANGE_COLOR + ";" +
                                     "-fx-text-fill: black;" +
                                     "-fx-font-weight: bold;" +
                                     "-fx-background-radius: 20;" +
@@ -762,7 +767,7 @@ public class DisplayKanbanController implements Initializable {
 
                     Button viewBtn = new Button("View");
                     viewBtn.setStyle(
-                            "-fx-background-color: #ff8c1a;" +
+                            "-fx-background-color: " + ORANGE_COLOR + ";" +
                                     "-fx-text-fill: black;" +
                                     "-fx-font-weight: bold;" +
                                     "-fx-background-radius: 20;" +
@@ -771,7 +776,7 @@ public class DisplayKanbanController implements Initializable {
 
                     Button deleteBtn = new Button("Delete");
                     deleteBtn.setStyle(
-                            "-fx-background-color: #ff6666;" +
+                            "-fx-background-color: " + RED_COLOR + ";" +
                                     "-fx-text-fill: white;" +
                                     "-fx-font-weight: bold;" +
                                     "-fx-background-radius: 20;" +
@@ -815,7 +820,7 @@ public class DisplayKanbanController implements Initializable {
 
         Button toDo = createMenuButton("TO DO", "#5D8BF4", "white");
         Button doing = createMenuButton("DOING", "#ffb347", "black");
-        Button toReview = createMenuButton("TO REVIEW", "#ff6666", "white");
+        Button toReview = createMenuButton("TO REVIEW", RED_COLOR, "white");
         Button done = createMenuButton("DONE", "#66cc66", "black");
 
         toDo.setOnAction(e -> {
