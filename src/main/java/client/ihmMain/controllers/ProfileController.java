@@ -2,6 +2,7 @@ package client.ihmMain.controllers;
 
 import client.MainApp;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
@@ -14,6 +15,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import java.io.IOException;
 import java.util.List;
@@ -43,6 +45,7 @@ public class ProfileController {
     private GridPane kanbansGrid;
 
     private MainCore core;
+    private LightUser currentUser;
 
     private static final String DEFAULT_AVATAR = "/profile_pic.png";
     private static final Logger LOGGER = Logger.getLogger(ProfileController.class.getName());
@@ -81,6 +84,8 @@ public class ProfileController {
     }
     
     public void setUser(LightUser currentUser) {
+
+        this.currentUser = currentUser;
 
         User me = core.getDataPort().getLocalUser();
         List<Kanban> kanbans = me.getMyKanban();
@@ -180,4 +185,42 @@ public class ProfileController {
         stage.show();
     }
 
+    @FXML
+    private void handleExportProfile() {
+        if (core == null) return;
+
+        // 1. Configurer le sélecteur de fichier
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Exporter mon profil");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("JSON Files", "*.json"));
+
+        // Nom par défaut
+        if (currentUser != null) {
+            fileChooser.setInitialFileName(currentUser.getUsername() + "_backup.json");
+        }
+
+        // 2. Ouvrir la fenêtre de dialogue
+        Stage stage = (Stage) profileAvatar.getScene().getWindow();
+        File file = fileChooser.showSaveDialog(stage);
+
+        if (file != null) {
+            try {
+                // 3. Appel à la couche Data
+                core.getDataPort().exportProfile(currentUser, file.getAbsolutePath());
+
+                // Feedback
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Export réussi");
+                alert.setHeaderText(null);
+                alert.setContentText("Votre profil a été exporté vers :\n" + file.getName());
+                alert.showAndWait();
+
+            } catch (Exception e) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Erreur Export");
+                alert.setContentText("Impossible d'exporter le profil : " + e.getMessage());
+                alert.showAndWait();
+            }
+        }
+    }
 }
