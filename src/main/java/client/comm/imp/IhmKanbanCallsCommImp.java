@@ -33,7 +33,7 @@ public class IhmKanbanCallsCommImp implements IhmKanbanCallsComm {
             return;
         }
 
-        LOGGER.log(Level.INFO, "Envoi demande de modification carte {0} vers {1} par {2}", new Object[]{modification.getId(), modification.getTargetKanban(), user.getUsername()});
+        LOGGER.log(Level.INFO, "Envoi demande de modification carte {0} vers {1} par {2}", new Object[]{modification.getId(), modification.getTargetKanban().getTitle(), user.getUsername()});
 
         try {
             RequestModification msg = new RequestModification(user, modification);
