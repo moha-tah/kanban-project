@@ -61,7 +61,9 @@
             <Button style="-fx-background-color: #667eea; -fx-text-fill: white; -fx-background-radius: 10;"
                     text="EDIT PROFILE"
                     onAction="#handleEditProfileClick"/>
-            <Button style="-fx-background-color: #667eea; -fx-text-fill: white; -fx-background-radius: 10;" text="EXPORT PROFILE" />
+            <Button style="-fx-background-color: #667eea; -fx-text-fill: white; -fx-background-radius: 10;"
+                    text="EXPORT PROFILE"
+                    onAction="#handleExportProfile" />
             <Button style="-fx-background-color: #667eea; -fx-text-fill: white; -fx-background-radius: 10;" text="SEE SNAPSHOTS" />
         </HBox>
     </VBox>
