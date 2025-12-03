@@ -106,6 +106,15 @@ public class ComCallsDataServImplementation implements CommCallsDataServer {
         System.err.println("SERVEUR: Kanban not found with ID: " + kanbanID);
         return null;
     }
+
+    @Override
+    public LightUser getUserProfile(UUID userId) {
+        if (myProvider == null || myProvider.getModel() == null) {
+            return null;
+        }
+            return myProvider.getModel() .getConnectedUsers() .stream() .filter(u -> u.getId().equals(userId)) .findFirst() .orElse(null);
+    }
+
     
     @Override public List<Kanban> notifyLogout(UUID userId) { return null; }
     @Override public void askDeleteKanban(LightUser user, LightKanban kanban) {}
