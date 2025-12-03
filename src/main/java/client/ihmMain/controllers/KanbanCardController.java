@@ -125,8 +125,10 @@ public class KanbanCardController {
             LOGGER.severe(" MainCallsKanban interface is null!");
             return;
         }
+        
 
-        core.getKanbanPort().openCreateForm(kanban);   
+        //core.getKanbanPort().openCreateForm(kanban);  //A changer  
+        HomeViewController.getInstance().displayKanban(this.kanban); //cela la mis à la place 
     }
 
 

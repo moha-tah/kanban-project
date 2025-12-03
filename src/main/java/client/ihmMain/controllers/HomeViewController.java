@@ -8,6 +8,7 @@ import java.util.logging.Level;
 import client.MainApp;
 import client.ihmMain.MainCore;
 import client.data.KanbanCallsDataImplementation;
+import client.ihmKanban.controllers.DisplayKanbanController;
 import common.dataClasses.Kanban;
 import common.dataClasses.LightKanban;
 import common.dataClasses.User;
@@ -20,6 +21,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -353,4 +355,45 @@ public class HomeViewController {
         stage.setTitle(title);
         stage.setScene(new Scene(root, 1280, 720));
     }
+
+    @FXML private ScrollPane kanbanArea; 
+
+    public ScrollPane getKanbanArea() {
+        return kanbanArea;
+    }   
+
+    public void displayKanban(Kanban kanban) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/displayKanban.fxml"));
+            Parent kanbanView = loader.load();
+
+            DisplayKanbanController controller = loader.getController();
+            //controller.set(kanban);
+
+            // Remplacer le contenu central
+            kanbanArea.setContent(kanbanView);
+
+            core.getKanbanPort().openCreateForm(kanban,this); 
+
+        } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, "Impossible de charger displayKanban.fxml", e);
+        }
+    }
+
+    public void showHomeKanbanList() {
+    try {
+        // Recharger le contenu original (la liste des kanbans)
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/homeKanbanCentral.fxml"));
+        Node homeContent = loader.load();
+        kanbanArea.setContent(homeContent);
+
+        // Rafraîchir les données des kanbans
+        refreshKanbansFromModel();
+
+    } catch (Exception e) {
+        LOGGER.log(Level.SEVERE, "Impossible de charger homeKanbanCentral.fxml", e);
+    }
+}
+
+
 }
