@@ -38,6 +38,8 @@ public class ProfileController {
     @FXML
     private Label collaborations;
 
+    @FXML
+    private Label kanbansCreated;
 
     @FXML
     private GridPane kanbansGrid;
@@ -87,6 +89,7 @@ public class ProfileController {
 
         profileName.setText(me.getUsername());
         profileUsername.setText("@" + me.getUsername());
+        kanbansCreated.setText(String.valueOf(kanbans.size()));
 
         collaborations.setText("0"); 
 
