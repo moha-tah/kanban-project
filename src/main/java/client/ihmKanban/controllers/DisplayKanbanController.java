@@ -37,7 +37,12 @@ import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import common.dataClasses.CreateColumn;
+import common.dataClasses.DeleteColumn;
+import common.dataClasses.DeleteTask;
+import common.dataClasses.ModifyColumn;
 import common.dataClasses.ModifyTask;
+import common.dataClasses.Modification;
 
 public class DisplayKanbanController implements Initializable {
 
@@ -323,10 +328,12 @@ public class DisplayKanbanController implements Initializable {
 
             System.out.println("ADD COLUMN '" + colTitle + "' with color " + colorCode);
 
-            // TODO : logique métier pour créer la colonne dans ton modèle
-            // Exemple (à adapter à ta classe Column / corps) :
-            // Column newCol = corps.createColumn(colTitle, colorCode);
-            // columns.add(newCol);
+
+            Column col = new Column(colTitle, colorCode);
+            CreateColumn modify = new CreateColumn(col);
+            corps.getDataPort().getModified((Modification) modify, kanban.getId());
+            LOGGER.info("création d'un nouvelle colonne envoyé à data");
+
             // renderKanban();
 
             popup.hide();
@@ -367,7 +374,12 @@ public class DisplayKanbanController implements Initializable {
 
         deleteCol.setOnAction(e -> {
             System.out.println("DELETE COLUMN : " + col.getTitle());
-            // TODO : corps.deleteColumn(col);
+
+
+            DeleteColumn delete = new DeleteColumn(col.getId());
+            corps.getDataPort().getModified((Modification) delete, kanban.getId());
+            LOGGER.info("suppression d'une colonne envoyée à data");
+
             popup.hide();
         });
 
@@ -419,14 +431,11 @@ public class DisplayKanbanController implements Initializable {
 
             System.out.println("ADD TASK '" + taskTitle + "' dans colonne : " + col.getTitle());
 
-            // TODO : corps.createTaskInColumn(col, taskTitle, taskDesc);
-            LocalDate start = LocalDate.now();    
-            LocalDate end = LocalDate.now().plusDays(7);
 
-            Task tache = new Task(taskTitle, taskDesc, start, end);
-            ModifyTask modify = new ModifyTask(tache);
-            corps.getDataPort().getModified(modify.getId(), kanban.getId());
-            LOGGER.info("Nouvelle Task envoyé à data");
+            Task tache = new Task(taskTitle, taskDesc);
+            CreateTask modify = new CreateTask(tache, col.getId());
+            corps.getDataPort().getModified((Modification) modify, kanban.getId());
+            LOGGER.info("Nouvelle Task envoyée à data");
 
             popup.hide();
         });
@@ -543,7 +552,11 @@ public class DisplayKanbanController implements Initializable {
                 LOGGER.warning("Impossible d'appeler col.setColor(...) : adapte ce code à ta classe Column.");
             }
 
-            // TODO : corps.updateColumn(col);
+
+            ModifyColumn modify = new ModifyColumn(col);
+            corps.getDataPort().getModified((Modification) modify, kanban.getId());
+            LOGGER.info("création d'un nouvelle colonne envoyé à data");
+
 
             renderKanban();
             popup.hide();
@@ -587,12 +600,17 @@ public class DisplayKanbanController implements Initializable {
 
         deleteTask.setOnAction(e -> {
             System.out.println("DELETE TASK : " + task.getTitle());
-            // TODO : corps.deleteTask(task);
+
+            DeleteTask delete = new DeleteTask(task.getId());
+            corps.getDataPort().getModified((Modification) delete, kanban.getId());
+            LOGGER.info("supprimer une tache envoyée à data");
+
             popup.hide();
         });
 
         copyTask.setOnAction(e -> {
             System.out.println("COPY TASK : " + task.getTitle());
+
             // TODO : corps.copyTask(task);
             popup.hide();
         });
@@ -658,9 +676,8 @@ public class DisplayKanbanController implements Initializable {
             LocalDate start = LocalDate.now();    
             LocalDate end = LocalDate.now().plusDays(7);
 
-            Task tache = new Task(newTitle, newDesc, start, end);
-            ModifyTask modify = new ModifyTask(tache);
-            corps.getDataPort().getModified(modify.getId(), kanban.getId());
+            ModifyTask modify = new ModifyTask(task);
+            corps.getDataPort().getModified((Modification)modify, kanban.getId());
             LOGGER.info("Taskmodifié envoyé à data");
 
 

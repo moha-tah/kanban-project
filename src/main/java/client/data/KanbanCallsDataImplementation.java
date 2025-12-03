@@ -29,6 +29,8 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Instant;
 
+import common.dataClasses.Modification;
+
 public class KanbanCallsDataImplementation implements KanbanCallsDataClient {
 
     private DataClientProvider provider;
@@ -285,7 +287,7 @@ public class KanbanCallsDataImplementation implements KanbanCallsDataClient {
         // TODO
     }
 
-    public void getModified(UUID modificationID, UUID kanbanID) {
+    public void getModified(Modification modifi, UUID kanbanID) {
         // TODO
     }
 
