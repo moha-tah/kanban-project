@@ -6,6 +6,7 @@ import java.io.IOException;
 import client.comm.CommCoreClient;
 import client.interfaces.DataCallsComm;
 import common.dataClasses.Kanban;
+import client.comm.messages.AskDeleteKanban;
 import client.comm.messages.SendNewKanban;
 import common.dataClasses.LightKanban;
 import common.dataClasses.LightUser;
@@ -19,6 +20,21 @@ public class DataCallsCommImp implements DataCallsComm {
 
     @Override
     public void askDeleteKanban(LightKanban LightKanbanId, LightUser LightUserId) {
+        System.out.println("COMM IMP: Envoi de la demande de suppression du Kanban : " +
+                (LightKanbanId != null ? LightKanbanId.getTitle() : "Inconnu"));
+
+        AskDeleteKanban msg = new AskDeleteKanban(LightUserId, LightKanbanId);
+
+        // Envoi via le Core
+        try {
+            if (commCore.getMsgSender() != null) {
+                commCore.getMsgSender().send(msg);
+            }
+        } catch (IOException e) {
+            java.util.logging.Logger.getLogger(DataCallsCommImp.class.getName())
+                    .log(java.util.logging.Level.SEVERE,
+                            "DataCallsCommImp: Échec de l'envoi de la demande de suppression", e);
+        }
     }
 
     @Override

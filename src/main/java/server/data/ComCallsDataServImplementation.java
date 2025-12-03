@@ -14,7 +14,8 @@ import server.interfaces.CommCallsDataServer;
 public class ComCallsDataServImplementation implements CommCallsDataServer {
     private DataServProvider myProvider;
 
-    public ComCallsDataServImplementation() {}
+    public ComCallsDataServImplementation() {
+    }
 
     public static ComCallsDataServImplementation newComCallsDataServImplementation() {
         return new ComCallsDataServImplementation();
@@ -64,7 +65,8 @@ public class ComCallsDataServImplementation implements CommCallsDataServer {
 
     @Override
     public List<Kanban> notifyLogout(LightUser user) {
-        if (user == null) return null;
+        if (user == null)
+            return null;
 
         ServerModel model = myProvider.getModel();
         UUID userId = user.getId();
@@ -75,16 +77,15 @@ public class ComCallsDataServImplementation implements CommCallsDataServer {
         // 2. Supprimer les Kanbans créés par cet utilisateur
         int initialSize = model.getInUseKanbans().size();
 
-        model.getInUseKanbans().removeIf(k ->
-                k.getCreatorId() != null && k.getCreatorId().equals(userId)
-        );
+        model.getInUseKanbans().removeIf(k -> k.getCreatorId() != null && k.getCreatorId().equals(userId));
 
         int removedCount = initialSize - model.getInUseKanbans().size();
 
         System.out.println("SERVEUR: " + user.getUsername() + " déconnecté.");
         System.out.println("SERVEUR: " + removedCount + " kanban(s) de cet utilisateur retiré(s) de la mémoire.");
 
-        // Le broadcast qui suit (dans LogoutMessage) enverra cette liste nettoyée aux autres clients
+        // Le broadcast qui suit (dans LogoutMessage) enverra cette liste nettoyée aux
+        // autres clients
         return model.getInUseKanbans();
     }
 
@@ -116,7 +117,8 @@ public class ComCallsDataServImplementation implements CommCallsDataServer {
 
     @Override
     public Kanban requestKanban(LightUser user, LightKanban kanbanID) {
-        if (myProvider == null || myProvider.getModel() == null) return null;
+        if (myProvider == null || myProvider.getModel() == null)
+            return null;
 
         ServerModel model = myProvider.getModel();
         for (Kanban k : model.getInUseKanbans()) {
@@ -164,14 +166,46 @@ public class ComCallsDataServImplementation implements CommCallsDataServer {
         return false;
     }
 
+    @Override
+    public void askDeleteKanban(LightUser user, LightKanban kanban) {
+        // Validation des paramètres
+        if (user == null || kanban == null) {
+            System.err.println("SERVEUR: Paramètres invalides pour la suppression (user ou kanban null)");
+            return;
+        }
+
+        ServerModel model = myProvider.getModel();
+
+        // Recherche du kanban dans le modèle
+        Kanban targetKanban = model.getInUseKanbans().stream()
+                .filter(k -> k.getId().equals(kanban.getId()))
+                .findFirst()
+                .orElse(null);
+
+        // Vérification de l'existence
+        if (targetKanban == null) {
+            System.err.println("SERVEUR: Kanban introuvable avec l'ID : " + kanban.getId());
+            return;
+        }
+
+        // Vérification que l'utilisateur est le créateur
+        if (targetKanban.getCreatorId() == null ||
+                !targetKanban.getCreatorId().equals(user.getId())) {
+            System.err.println("SERVEUR: L'utilisateur " + user.getUsername() +
+                    " (ID: " + user.getId() + ") n'est pas autorisé à supprimer le kanban " +
+                    targetKanban.getTitle() + " (créateur: " + targetKanban.getCreatorId() + ")");
+            return;
+        }
+
+        // Suppression du kanban
+        model.getInUseKanbans().removeIf(k -> k.getId().equals(kanban.getId()));
+        System.out.println("SERVEUR: Kanban supprimé avec succès : " + targetKanban.getTitle() +
+                " par l'utilisateur " + user.getUsername());
+    }
+
     // -------------------------------------------------------
     // MÉTHODES MANQUANTES (Correction de "must implement abstract method")
     // -------------------------------------------------------
-
-    @Override
-    public void askDeleteKanban(LightUser user, LightKanban kanban) {
-        // TODO : Implémenter la suppression
-    }
 
     // C'était la méthode manquante qui causait l'erreur ligne 14
     @Override
