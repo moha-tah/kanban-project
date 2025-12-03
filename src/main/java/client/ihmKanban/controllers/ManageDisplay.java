@@ -52,13 +52,10 @@ public class ManageDisplay {
 
             setHomeViewController(homeController);
 
-
             if (fxmlUrl == null) {
                 throw new IllegalStateException("kanbanView.fxml introuvable dans le classpath !");
             }
 
-            
-            
             FXMLLoader loader = new FXMLLoader(fxmlUrl);
             //Parent root = loader.load();
             Parent kanbanView = loader.load();
@@ -83,6 +80,48 @@ public class ManageDisplay {
 
             // Afficher la fenêtre
             homeController.getKanbanArea().setContent(kanbanView);
+
+        } catch (IOException | IllegalStateException e) {
+            corps.LOGGER.log(Level.INFO, "Erreur lors de l''ouverture de l''\u00e9cran Kanban : {0}", e.getMessage());
+        }
+    }
+
+
+    public void openKanbanScreenFromProfile(Kanban kanban, client.ihmMain.controllers.ProfileViewController profileController) {
+        try {
+            // Charger le "shell" kanban complet : board
+            URL fxmlUrl = MainApp.class.getResource("/kanbanView.fxml");
+            kanbanCorps.LOGGER.info("DEBUG FXML kanbanView");
+            
+            setHomeViewController(null);
+
+            if (fxmlUrl == null) {
+                throw new IllegalStateException("kanbanView.fxml introuvable dans le classpath !");
+            }
+            
+            FXMLLoader loader = new FXMLLoader(fxmlUrl);
+            //Parent root = loader.load();
+            Parent kanbanView = loader.load();
+
+            // Récupérer les colonnes
+            List<Column> cols = kanban.getAllColumns();
+
+            // Construire la liste des CreateTask
+            List<CreateTask> taskCreations = new ArrayList<>();
+            for (Column col : cols) {
+                List<Task> tasks = kanban.getTasksFromColumn(col);
+                for (Task t : tasks) {
+                    taskCreations.add(new CreateTask(t, col.getId()));
+                }
+            }
+
+            // Récupérer le contrôleur principal kanbanView.fxml
+            KanbanViewController controller = loader.getController();
+            controller.setCore(corps);
+            controller.initBoard(kanban, cols, taskCreations, this);
+            
+            // Afficher la fenêtre
+            profileController.getKanbanArea().setContent(kanbanView);
 
         } catch (IOException | IllegalStateException e) {
             corps.LOGGER.log(Level.INFO, "Erreur lors de l''ouverture de l''\u00e9cran Kanban : {0}", e.getMessage());
