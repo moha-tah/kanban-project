@@ -29,16 +29,16 @@ public class IhmKanbanCallsCommImp implements IhmKanbanCallsComm {
 
     @Override
     public void sendRequestModification(LightUser user,Modification myModification ) {
-        if (user == null || cardId == null || newStatus == null) {
+        if (user == null || myModification == null ) {
             LOGGER.warning("Paramètres invalides pour sendRequestModification");
             return;
         }
 
         /*LOGGER.info(() -> "Envoi demande de modification carte " + cardId + " vers " + newStatus + 
-                     " par " + user.getUsername());*/
+                     " par " + user.getUsername());
 
         try {
-            RequestModification msg = new RequestModification(user, cardId, newStatus);
+            RequestModification msg = new RequestModification(user, myModification);
             
             if (comm.getMsgSender() != null) {
                 comm.sendMessage(msg);
@@ -50,6 +50,6 @@ public class IhmKanbanCallsCommImp implements IhmKanbanCallsComm {
             LOGGER.log(Level.SEVERE, "Erreur réseau lors de l'envoi de la modification", e);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Erreur inattendue lors de la modification", e);
-        }
+        }*/
     }
 }
