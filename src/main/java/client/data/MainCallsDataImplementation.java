@@ -443,6 +443,7 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
     public Void modifyLocalUser (User newProfile) {
         ClientModel myModel = provider.getMyModel();
         myModel.setLocalUser(newProfile);
+        saveUser();
         return null;
     }
 
