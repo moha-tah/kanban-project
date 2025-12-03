@@ -52,6 +52,7 @@ public class DisplayKanbanController implements Initializable {
     // Color constants
     private static final String ORANGE_COLOR = "#ff8c1a";
     private static final String RED_COLOR = "#ff6666";
+    private static final String BLACK_COLOR = "black";
 
     public DisplayKanbanController() {
         // Constructeur public requis par JavaFX FXML
@@ -356,9 +357,9 @@ public class DisplayKanbanController implements Initializable {
         Popup popup = createBasePopup();
         VBox box = (VBox) popup.getContent().get(0);
 
-        Button addTask = createMenuButton("ADD TASK", ORANGE_COLOR, "black");
-        Button editCol  = createMenuButton("EDIT COLUMN", "#c0c0ff", "black");
-        Button deleteCol = createMenuButton("DELETE COLUMN", RED_COLOR, "black");
+        Button addTask = createMenuButton("ADD TASK", ORANGE_COLOR, BLACK_COLOR);
+        Button editCol  = createMenuButton("EDIT COLUMN", "#c0c0ff", BLACK_COLOR);
+        Button deleteCol = createMenuButton("DELETE COLUMN", RED_COLOR, BLACK_COLOR);
 
         addTask.setOnAction(e -> {
             popup.hide();
@@ -554,11 +555,11 @@ public class DisplayKanbanController implements Initializable {
         Popup popup = createBasePopup();
         VBox box = (VBox) popup.getContent().get(0);
 
-        Button addUser = createMenuButton("ADD A USER", ORANGE_COLOR, "black");
-        Button seeUsers = createMenuButton("SEE USERS", "#c0c0ff", "black");
-        Button editTask = createMenuButton("EDIT TASK", "#d0d0d0", "black");
-        Button deleteTask = createMenuButton("DELETE TASK", RED_COLOR, "black");
-        Button copyTask = createMenuButton("COPY TASK", "#bbbbff", "black");
+        Button addUser = createMenuButton("ADD A USER", ORANGE_COLOR, BLACK_COLOR);
+        Button seeUsers = createMenuButton("SEE USERS", "#c0c0ff", BLACK_COLOR);
+        Button editTask = createMenuButton("EDIT TASK", "#d0d0d0", BLACK_COLOR);
+        Button deleteTask = createMenuButton("DELETE TASK", RED_COLOR, BLACK_COLOR);
+        Button copyTask = createMenuButton("COPY TASK", "#bbbbff", BLACK_COLOR);
 
         addUser.setOnAction(e -> {
             popup.hide();
@@ -704,7 +705,7 @@ public class DisplayKanbanController implements Initializable {
                     Button addBtn = new Button("ADD");
                     addBtn.setStyle(
                             "-fx-background-color: " + ORANGE_COLOR + ";" +
-                                    "-fx-text-fill: black;" +
+                                    "-fx-text-fill: " + BLACK_COLOR + ";" +
                                     "-fx-font-weight: bold;" +
                                     "-fx-background-radius: 20;" +
                                     "-fx-padding: 2 10 2 10;"
@@ -768,7 +769,7 @@ public class DisplayKanbanController implements Initializable {
                     Button viewBtn = new Button("View");
                     viewBtn.setStyle(
                             "-fx-background-color: " + ORANGE_COLOR + ";" +
-                                    "-fx-text-fill: black;" +
+                                    "-fx-text-fill: " + BLACK_COLOR + ";" +
                                     "-fx-font-weight: bold;" +
                                     "-fx-background-radius: 20;" +
                                     "-fx-padding: 2 10 2 10;"
@@ -819,9 +820,9 @@ public class DisplayKanbanController implements Initializable {
         VBox box = (VBox) popup.getContent().get(0);
 
         Button toDo = createMenuButton("TO DO", "#5D8BF4", "white");
-        Button doing = createMenuButton("DOING", "#ffb347", "black");
+        Button doing = createMenuButton("DOING", "#ffb347", BLACK_COLOR);
         Button toReview = createMenuButton("TO REVIEW", RED_COLOR, "white");
-        Button done = createMenuButton("DONE", "#66cc66", "black");
+        Button done = createMenuButton("DONE", "#66cc66", BLACK_COLOR);
 
         toDo.setOnAction(e -> {
             System.out.println("Status TO DO pour : " + task.getTitle());
