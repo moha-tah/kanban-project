@@ -3,18 +3,22 @@ package client.ihmMain.controllers;
 import client.MainApp;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import client.ihmMain.MainCore;
+import common.dataClasses.Kanban;
 import common.dataClasses.LightUser;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import java.io.IOException;
+import java.util.List;
 import java.util.logging.Level;
-
+import common.dataClasses.User;
 
 
 import java.io.File;
@@ -46,11 +50,43 @@ public class ProfileController {
     public void setCore(MainCore core) {
         this.core = core;
     }
+
+    @FXML private ScrollPane kanbanArea; 
+
+    public ScrollPane getKanbanArea() {
+        return kanbanArea;
+    }  
+
+    private Node showKanban(Kanban kanban)
+    {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/kanban_card.fxml"));
+            Node cardNode = loader.load();
+
+            KanbanCardController controller = loader.getController();
+            controller.setMainCore(core);
+
+            String color = "#D8E9FF"; // bleu
+
+            controller.setKanbanData(kanban, color, true, true);
+            core.registerKanbanCardController(kanban.getId(), controller);
+
+
+            return cardNode;
+
+        } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, "Impossible de charger kanban_card.fxml", e);
+            return null;
+        }
+    }
     
     public void setUser(LightUser currentUser) {
-        // Infos utilisateur
-        profileName.setText(currentUser.getUsername());
-        profileUsername.setText("@" + currentUser.getUsername());
+
+        User me = core.getDataPort().getLocalUser();
+        List<Kanban> kanbans = me.getMyKanban();
+
+        profileName.setText(me.getUsername());
+        profileUsername.setText("@" + me.getUsername());
 
         collaborations.setText("0"); 
 
@@ -60,6 +96,20 @@ public class ProfileController {
 
         // Afficher les Kanbans
         kanbansGrid.getChildren().clear();
+
+        int row = 0, col = 0;
+        for (Kanban k : kanbans) {
+            Node kanbanCard = showKanban(k);
+            if (kanbanCard != null) {
+                kanbansGrid.add(kanbanCard, col, row);
+                col++;
+                if (col >= 3) { 
+                    col = 0;
+                    row++;
+                }
+            }
+        }
+        
     }
 
    private Image loadAvatarProfile(String avPath) {

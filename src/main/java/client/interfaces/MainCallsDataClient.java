@@ -3,6 +3,7 @@ package client.interfaces;
 import java.util.List;
 
 import common.dataClasses.LightUser;
+import common.dataClasses.User;
 import common.dataClasses.LightKanban;
 
 public interface MainCallsDataClient {
@@ -24,4 +25,6 @@ public interface MainCallsDataClient {
                                         String contacts, String kanbanList, String status);
 
     void addAuthorizedUserToKanban(LightUser user, LightKanban kanban);
+
+    User getLocalUser();
 }

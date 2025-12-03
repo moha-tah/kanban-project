@@ -30,4 +30,9 @@ public class kanbanCallsMainImpl implements KanbanCallsMain {
         core.showHomeView();
     }
 
+    @Override
+    public void goProfileView() {
+        core.showProfileView();
+    }
+    
 }
