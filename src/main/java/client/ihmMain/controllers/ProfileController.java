@@ -36,7 +36,7 @@ public class ProfileController {
     private ImageView profileAvatar;
 
     @FXML
-    private Label collaborations;
+    private Label profileBirthdate;
 
     @FXML
     private Label kanbansCreated;
@@ -87,11 +87,10 @@ public class ProfileController {
         User me = core.getDataPort().getLocalUser();
         List<Kanban> kanbans = me.getMyKanban();
 
-        profileName.setText(me.getUsername());
+        profileName.setText(me.getFullName());
         profileUsername.setText("@" + me.getUsername());
         kanbansCreated.setText(String.valueOf(kanbans.size()));
-
-        collaborations.setText("0"); 
+        profileBirthdate.setText(me.getBirthDate().toString());
 
         // Avatar
         Image avatarImg = loadAvatarProfile(currentUser.getAvatar());

@@ -7,13 +7,14 @@
 <HBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="client.ihmMain.controllers.UserCardController"
       alignment="CENTER_LEFT" spacing="10"
-      prefWidth="280"
-      style="-fx-background-color: rgba(255, 255, 255, 0.1); -fx-background-radius: 8; -fx-padding: 8;">
+      prefWidth="280">
 
     <ImageView fx:id="avatarImageView" fitHeight="32" fitWidth="32" pickOnBounds="true" preserveRatio="true"/>
 
     <Label fx:id="nameLabel" text="Username"
            style="-fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold;"
            wrapText="true" maxWidth="Infinity" HBox.hgrow="ALWAYS"/>
+
+    <!-- Ajouter pour voir profile distant -->
 
 </HBox>
