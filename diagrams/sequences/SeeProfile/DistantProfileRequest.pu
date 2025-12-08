@@ -1,0 +1,15 @@
+@startuml
+title Distant Profile Request (UUID Retrieval Only)
+
+actor AppRequester as AppRequester
+participant "CommServ" as CommServ
+actor "AppOwner" as AppOwner
+
+
+AppOwner ->> CommServ : DistProfileAnswer(Requester, RequestedUser)
+
+CommServ ->>  AppRequester : ForwardProfileAnswer(Requester, RequestedUser)
+
+
+
+@enduml
