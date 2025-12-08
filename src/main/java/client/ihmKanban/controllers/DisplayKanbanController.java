@@ -57,15 +57,14 @@ public class DisplayKanbanController implements Initializable {
 
     private static final Logger LOGGER = Logger.getLogger(DisplayKanbanController.class.getName());
     public static final String WHITE_TEXT = "-fx-text-fill: white;";
+    private static kanbanCorps corps;
 
     public DisplayKanbanController() {
         // Constructeur public requis par JavaFX FXML
     }
 
-    private kanbanCorps corps;
-
     public void setCore(kanbanCorps Kcorps) {
-        this.corps = Kcorps;
+        corps = Kcorps;
     }
 
     // Core principal (pour récupérer les users connectés / snapshot)
