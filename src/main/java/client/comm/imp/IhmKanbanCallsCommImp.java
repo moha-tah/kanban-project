@@ -34,8 +34,7 @@ public class IhmKanbanCallsCommImp implements IhmKanbanCallsComm {
             return;
         }
 
-        /*LOGGER.info(() -> "Envoi demande de modification carte " + cardId + " vers " + newStatus + 
-                     " par " + user.getUsername());*/
+        LOGGER.info(() -> "Envoi demande de modification carte " + cardId + " vers " + newStatus + " par " + user.getUsername());
 
         try {
             RequestModification msg = new RequestModification(user, cardId, newStatus);

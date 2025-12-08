@@ -51,9 +51,12 @@ import common.dataClasses.ModifyTask;
 import common.dataClasses.Modification;
 import common.dataClasses.MoveTask;
 
+
+
 public class DisplayKanbanController implements Initializable {
 
     private static final Logger LOGGER = Logger.getLogger(DisplayKanbanController.class.getName());
+    public static final String WHITE_TEXT = "-fx-text-fill: white;";
 
     public DisplayKanbanController() {
         // Constructeur public requis par JavaFX FXML
@@ -310,7 +313,7 @@ public class DisplayKanbanController implements Initializable {
             String colorName = colorCombo.getSelectionModel().getSelectedItem();
 
             if (colTitle.isEmpty()) {
-                System.out.println("COLUMN NAME vide, aucune colonne créée.");
+                corps.LOGGER.info("COLUMN NAME vide, aucune colonne créée.");
                 return;
             }
 
@@ -338,7 +341,7 @@ public class DisplayKanbanController implements Initializable {
                 }
             }
 
-            System.out.println("ADD COLUMN '" + colTitle + "' with color " + colorCode);
+            corps.LOGGER.info("ADD COLUMN '" + colTitle + "' with color " + colorCode);
 
 
             Column col = new Column(colTitle, colorCode);
@@ -385,7 +388,7 @@ public class DisplayKanbanController implements Initializable {
         });
 
         deleteCol.setOnAction(e -> {
-            System.out.println("DELETE COLUMN : " + col.getTitle());
+            corps.LOGGER.info("DELETE COLUMN : " + col.getTitle());
 
 
             DeleteColumn delete = new DeleteColumn(col.getId());
@@ -437,11 +440,11 @@ public class DisplayKanbanController implements Initializable {
             String taskDesc  = descArea.getText() != null ? descArea.getText().trim() : "";
 
             if (taskTitle.isEmpty()) {
-                System.out.println("Le titre de la tâche est vide, rien créé.");
+                corps.LOGGER.info("Le titre de la tâche est vide, rien créé.");
                 return;
             }
 
-            System.out.println("ADD TASK '" + taskTitle + "' dans colonne : " + col.getTitle());
+            corps.LOGGER.info("ADD TASK '" + taskTitle + "' dans colonne : " + col.getTitle());
 
 
             Task tache = new Task(taskTitle, taskDesc);
@@ -523,7 +526,7 @@ public class DisplayKanbanController implements Initializable {
             String newColorName = colorCombo.getSelectionModel().getSelectedItem();
 
             if (newTitle.isEmpty()) {
-                System.out.println("Titre de colonne vide : on ne modifie pas.");
+                corps.LOGGER.info("Titre de colonne vide : on ne modifie pas.");
                 return;
             }
 
@@ -550,7 +553,7 @@ public class DisplayKanbanController implements Initializable {
                 }
             }
 
-            System.out.println("EDIT COLUMN '" + col.getTitle() + "' -> '" +
+            corps.LOGGER.info("EDIT COLUMN '" + col.getTitle() + "' -> '" +
                     newTitle + "', color=" + newColorCode);
 
             try {
@@ -610,7 +613,7 @@ public class DisplayKanbanController implements Initializable {
         });
 
         deleteTask.setOnAction(e -> {
-            System.out.println("DELETE TASK : " + task.getTitle());
+            corps.LOGGER.info("DELETE TASK : " + task.getTitle());
 
             DeleteTask delete = new DeleteTask(task.getId());
             corps.getCommPort().sendRequestModification(corps.getMe(), (Modification) delete);
@@ -662,11 +665,11 @@ public class DisplayKanbanController implements Initializable {
             String newDesc  = descArea.getText() != null ? descArea.getText().trim() : "";
 
             if (newTitle.isEmpty()) {
-                System.out.println("Titre vide : on ne modifie pas la tâche.");
+                corps.LOGGER.info("Titre vide : on ne modifie pas la tâche.");
                 return;
             }
 
-            System.out.println("EDIT TASK '" + task.getTitle() + "' -> '" + newTitle + "'");
+            corps.LOGGER.info("EDIT TASK '" + task.getTitle() + "' -> '" + newTitle + "'");
 
             try {
                 task.setTitle(newTitle);
@@ -724,7 +727,7 @@ private void showAddUserToTaskPopup(Task task, Node anchorNode) {
     // Aucun utilisateur connecté → afficher un message
     if (users == null || users.isEmpty()) {
         Label empty = new Label("No connected users.");
-        empty.setStyle("-fx-text-fill: white;");
+        empty.setStyle(WHITE_TEXT);
         box.getChildren().add(empty);
     } 
     else {
@@ -750,14 +753,10 @@ private void showAddUserToTaskPopup(Task task, Node anchorNode) {
 
                 addBtn.setOnAction(ev -> {
 
-                    System.out.println("ADD user " + user.getUsername()
+                    corps.LOGGER.info("ADD user " + user.getUsername()
                             + " to task " + task.getTitle());
 
-                    /*
-                     * 🔹 Mémorisation locale :
-                     * On enregistre dans `taskUsers` que ce user appartient à cette tâche.
-                     * Cela sert à afficher ensuite les bons users dans SEE USERS.
-                     */
+
                     List<LightUser> list = taskUsers.computeIfAbsent(
                             task.getId(),
                             id -> new ArrayList<>()
@@ -769,13 +768,8 @@ private void showAddUserToTaskPopup(Task task, Node anchorNode) {
 
                     if (!already)
                         list.add(user);
-
-                    /*
-                     * 🔹 Communication backend
-                     * Si tu veux transmettre l’ajout au serveur, tu crées une classe dédiée :
-                     AssignUserToTask modify = new AssignUserToTask(task.getId(), user.getId());
-                     corps.getCommPort().sendRequestModification(corps.getMe(), modify);
-                     */
+                    //AssignUserToTask modify = new AssignUserToTask(task.getId(), user.getId());
+                    //corps.getCommPort().sendRequestModification(corps.getMe(), modify);
 
                     // Fermeture du popup
                     popup.hide();
@@ -802,13 +796,6 @@ private void showAddUserToTaskPopup(Task task, Node anchorNode) {
 
 
 
-    /**
- * Popup SEE USERS :
- * - Affiche uniquement les utilisateurs assignés à cette tâche
- * - Pour chaque user : bouton View + bouton Delete
- * View  → future page de profil
- * Delete → désassigner l’utilisateur de la tâche
- */
 private void showTaskUsersPopup(Task task, Node anchorNode) {
 
     // Création du popup
@@ -821,10 +808,6 @@ private void showTaskUsersPopup(Task task, Node anchorNode) {
     title.setStyle("-fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold;");
     box.getChildren().add(title);
 
-    /*
-     * 🔹 On récupère les utilisateurs réellement assignés à la tâche.
-     * Ceci a été alimenté précédemment dans showAddUserToTaskPopup.
-     */
     List<LightUser> users = taskUsers.getOrDefault(
         task.getId(),
         Collections.emptyList()
@@ -833,7 +816,7 @@ private void showTaskUsersPopup(Task task, Node anchorNode) {
     // Aucun user dans cette tâche
     if (users.isEmpty()) {
         Label empty = new Label("No users on this task.");
-        empty.setStyle("-fx-text-fill: white;");
+        empty.setStyle(WHITE_TEXT);
         box.getChildren().add(empty);
     } 
     else {
@@ -857,16 +840,12 @@ private void showTaskUsersPopup(Task task, Node anchorNode) {
                 );
 
                 viewBtn.setOnAction(ev -> {
-                    System.out.println("VIEW user " + user.getUsername()
+                    corps.LOGGER.info("VIEW user " + user.getUsername()
                             + " on task " + task.getTitle());
 
-                    /*
-                     * 🔹 Ici tu peux appeler un popup de détails user :
-                     *     showViewUserPopup(user, anchorNode);
-                     *  
-                     * Si tu n'as pas encore implémenté showViewUserPopup, 
-                     * laisse simplement ce println.
-                     */
+
+                    //showViewUserPopup(user, anchorNode);
+
                 });
 
                 // Button DELETE → enlever le user de la tâche
@@ -880,7 +859,7 @@ private void showTaskUsersPopup(Task task, Node anchorNode) {
                 );
 
                 deleteBtn.setOnAction(ev -> {
-                    System.out.println("DELETE user " + user.getUsername()
+                    corps.LOGGER.info("DELETE user " + user.getUsername()
                             + " from task " + task.getTitle());
 
                     /*
@@ -892,11 +871,9 @@ private void showTaskUsersPopup(Task task, Node anchorNode) {
                         list.removeIf(u -> u.getId().equals(user.getId()));
                     }
 
-                    /*
-                     * 🔹 Backend 
-                     UnassignUserFromTask modify = new UnassignUserFromTask(task.getId(), user.getId());
-                     corps.getCommPort().sendRequestModification(corps.getMe(), modify);
-                     */
+                    //UnassignUserFromTask modify = new UnassignUserFromTask(task.getId(), user.getId());
+                    //corps.getCommPort().sendRequestModification(corps.getMe(), modify);
+
 
                     popup.hide();
                 });
@@ -931,7 +908,7 @@ private void showTaskUsersPopup(Task task, Node anchorNode) {
         // Si aucune colonne disponible, on affiche un message
         if (columns == null || columns.isEmpty()) {
             Label empty = new Label("No columns available.");
-            empty.setStyle("-fx-text-fill: white;");
+            empty.setStyle(WHITE_TEXT);
             box.getChildren().add(empty);
             showPopupNearNode(popup, statusBtn);
             return;
@@ -946,7 +923,7 @@ private void showTaskUsersPopup(Task task, Node anchorNode) {
             Button colBtn = createMenuButton(col.getTitle(), bgColor, "white");
 
             colBtn.setOnAction(e -> {
-                System.out.println("Change status of task '" + task.getTitle()
+                corps.LOGGER.info("Change status of task '" + task.getTitle()
                         + "' to column '" + col.getTitle() + "'");
 
                 // Visuellement, on met le titre de la colonne sur le bouton status
