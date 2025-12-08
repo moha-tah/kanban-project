@@ -8,6 +8,8 @@ import javafx.scene.layout.GridPane;
 import client.ihmMain.MainCore;
 import common.dataClasses.LightUser;
 import java.util.logging.Level;
+import common.dataClasses.User;
+
 
 
 
@@ -42,6 +44,8 @@ public class ProfileDistantController {
     }
     
     public void setUser(LightUser currentUser) {
+        core.getCommPort().requestDistantProfile(core.getMe(), currentUser.getId());
+
         profileName2.setText(currentUser.getUsername());
         profileUsername2.setText("@" + currentUser.getUsername());
 
