@@ -34,8 +34,7 @@ public class IhmKanbanCallsCommImp implements IhmKanbanCallsComm {
             return;
         }
 
-        /*LOGGER.info(() -> "Envoi demande de modification carte " + cardId + " vers " + newStatus + 
-                     " par " + user.getUsername());
+        LOGGER.info(() -> "Envoi demande de modification carte " + cardId + " vers " + newStatus + " par " + user.getUsername());
 
         try {
             RequestModification msg = new RequestModification(user, myModification);
@@ -50,6 +49,6 @@ public class IhmKanbanCallsCommImp implements IhmKanbanCallsComm {
             LOGGER.log(Level.SEVERE, "Erreur réseau lors de l'envoi de la modification", e);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Erreur inattendue lors de la modification", e);
-        }*/
+        }
     }
 }
