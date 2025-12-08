@@ -180,6 +180,21 @@ public class IhmMainCallsCommImp implements IhmMainCallsComm {
         }
     }
 
+    @Override
+    public void requestDistantProfile(LightUser requester, java.util.UUID requestedUserId) {
+        if (requester == null || requestedUserId == null) {
+            LOGGER.warning("Invalid parameters for requestDistantProfile");
+            return;
+        }
+        try {
+            client.comm.messages.DistProfileRequest msg = new client.comm.messages.DistProfileRequest(requester.getId(), requestedUserId);
+            commCore.sendMessage(msg);
+            LOGGER.info(() -> "DistProfileRequest sent: requester=" + requester.getUsername() + ", target=" + requestedUserId);
+        } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, "Network error during requestDistantProfile", e);
+        }
+    }
+
     public void sendRequestModification(LightUser user, UUID cardId, String newStatus) {
         if (user == null || cardId == null || newStatus == null) {
             LOGGER.warning("Paramètres invalides pour sendRequestModification");
