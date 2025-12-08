@@ -1,5 +1,9 @@
 package client.ihmMain.impl;
 
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import client.comm.messages.Message;
 import client.data.KanbanCallsDataImplementation;
 import client.ihmMain.MainCore;
@@ -12,12 +16,6 @@ import common.dataClasses.LightUser;
 import common.dataClasses.User;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
-
-import java.util.logging.Logger;
-import java.util.logging.Level;
-
-
-import java.util.List;
 
 /** Impl des callbacks de la couche Comm vers Main. */
 public class commCallsMainImpl implements CommClientCallsMain {
