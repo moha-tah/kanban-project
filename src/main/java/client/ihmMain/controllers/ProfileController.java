@@ -117,6 +117,7 @@ public class ProfileController {
             }
         }
         
+        
     }
 
    private Image loadAvatarProfile(String avPath) {
