@@ -41,7 +41,7 @@ public class ManageDisplay {
     public void refreshKanban(Kanban kanban) {
 
         this.openKanbanScreen(kanban, homeViewController);
-        corps.LOGGER.info("[Kanban] Refresh kanban : " + "kanban=" + kanban);
+        corps.LOGGER.info("[Kanban] Refresh kanban : ");
     }
 
     public void openKanbanScreen(Kanban kanban, HomeViewController homeController) {
@@ -100,7 +100,6 @@ public class ManageDisplay {
             }
             
             FXMLLoader loader = new FXMLLoader(fxmlUrl);
-            //Parent root = loader.load();
             Parent kanbanView = loader.load();
 
             // Récupérer les colonnes
