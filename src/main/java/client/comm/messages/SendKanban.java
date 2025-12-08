@@ -21,7 +21,7 @@ public class SendKanban extends Message {
             System.out.println("[SendKanban] Received Kanban from server: " + kanban.getTitle() + " (ID: " + kanban.getId() + ")");
             
             // COMM appelle directement displayKanban sur IHM Kanban
-            this.getClientContext().getKanbanComm().displayKanban(this.kanban);
+            //this.getClientContext().getKanbanComm().displayKanban(this.kanban); a décommenter par la suite 
             
             System.out.println("[SendKanban] Kanban displayed via IHM Kanban");
         } catch (Throwable t) {

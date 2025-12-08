@@ -1,6 +1,7 @@
 package client.ihmKanban.controllers;
 
 import client.MainApp;
+import client.ihmKanban.kanbanCorps;
 import client.ihmMain.MainCore;
 import client.ihmMain.controllers.UsersController;
 import common.dataClasses.Column;
@@ -24,6 +25,7 @@ public class KanbanViewController implements Initializable {
     private DisplayKanbanController displayKanbanIncludeController;
 
     private MainCore core;
+    private kanbanCorps corps;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -37,10 +39,18 @@ public class KanbanViewController implements Initializable {
 
     public void initBoard(LightKanban kanban,
                           List<Column> columns,
-                          List<CreateTask> taskCreations) {
+                          List<CreateTask> taskCreations, ManageDisplay manageDisplay) {
 
         if (displayKanbanIncludeController != null) {
-            displayKanbanIncludeController.initBoard(kanban, columns, taskCreations);
+            displayKanbanIncludeController.setCore(corps);
+            displayKanbanIncludeController.initBoard(kanban, columns, taskCreations,manageDisplay );
+            
+            
         }
+    }
+
+    public void setCore(kanbanCorps Kcorps) {
+        this.corps = Kcorps;
+        corps.LOGGER.info("KanbanViewControlleur: le Corps a été rajouté .");
     }
 }
