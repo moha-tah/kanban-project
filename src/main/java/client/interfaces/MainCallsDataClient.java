@@ -7,7 +7,6 @@ import common.dataClasses.LightKanban;
 import common.dataClasses.LightUser;
 import common.dataClasses.User;
 
-
 public interface MainCallsDataClient {
 
     void saveUser();
