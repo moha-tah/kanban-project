@@ -38,8 +38,13 @@ public class DistProfileRequest extends Message {
                     if (u.getId().equals(requestedUserId)) { found = u; break; }
                 }
             }
+            // Build a minimal full User if found (server currently retains LightUser info)
+            common.dataClasses.User full = null;
+            if (found != null) {
+                full = new common.dataClasses.User(found.getId(), found.getUsername(), null, null, null);
+            }
             // Build answer (may be null if not found)
-            return Optional.of(new ForwardProfileAnswer(requesterId, found));
+            return Optional.of(new ForwardProfileAnswer(requesterId, full));
         } catch (Exception e) {
             java.util.logging.Logger.getLogger(DistProfileRequest.class.getName())
                     .log(java.util.logging.Level.SEVERE, "Error handling DistProfileRequest", e);
