@@ -7,6 +7,7 @@ import client.interfaces.CommClientCallsMain;
 import common.dataClasses.Kanban;
 import common.dataClasses.LightKanban;
 import common.dataClasses.LightUser;
+import common.dataClasses.User;
 
 import java.util.List;
 
@@ -79,7 +80,7 @@ public class commCallsMainImpl implements CommClientCallsMain {
     }
 
     @Override
-    public void displayDistantProfile(LightUser requestedUser) {
+    public void displayDistantProfile(User requestedUser) {
         // Minimal implementation: update UI to show the user's profile
         javafx.application.Platform.runLater(() -> {
             if (requestedUser == null) {

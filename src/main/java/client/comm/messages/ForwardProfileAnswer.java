@@ -3,7 +3,7 @@ package client.comm.messages;
 import java.util.Optional;
 import java.util.UUID;
 
-import common.dataClasses.LightUser;
+import common.dataClasses.User;
 
 /**
  * Server -> Client: forward distant user's profile to requester.
@@ -12,15 +12,15 @@ public class ForwardProfileAnswer extends Message {
     private static final long serialVersionUID = 1L;
 
     private final UUID requesterId;
-    private final LightUser requestedUser;
+    private final User requestedUser;
 
-    public ForwardProfileAnswer(UUID requesterId, LightUser requestedUser) {
+    public ForwardProfileAnswer(UUID requesterId, User requestedUser) {
         this.requesterId = requesterId;
         this.requestedUser = requestedUser;
     }
 
     public UUID requesterId() { return requesterId; }
-    public LightUser requestedUser() { return requestedUser; }
+    public User requestedUser() { return requestedUser; }
 
     @Override
     public Optional<Message> handle() {
