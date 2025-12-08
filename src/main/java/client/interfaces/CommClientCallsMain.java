@@ -9,4 +9,5 @@ public interface CommClientCallsMain {
     void displayPermissionRequest(LightUser user, LightKanban kanban);
     void connectionAccepted(LightUser user, List<LightKanban> kanban);
     void addUserToList(LightUser user, List<LightKanban> kanban);
+    void displayDistantProfile(LightUser requestedUser);
 }
