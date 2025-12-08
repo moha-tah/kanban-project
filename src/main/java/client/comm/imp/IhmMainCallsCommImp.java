@@ -21,6 +21,7 @@ import client.comm.messages.RequestModification;
 import common.dataClasses.Kanban;
 import common.dataClasses.LightKanban;
 import common.dataClasses.LightUser;
+import common.dataClasses.Modification;
 
 public class IhmMainCallsCommImp implements IhmMainCallsComm {
     private static final Logger LOGGER = Logger.getLogger(IhmMainCallsCommImp.class.getName());
@@ -195,17 +196,16 @@ public class IhmMainCallsCommImp implements IhmMainCallsComm {
         }
     }
 
-    public void sendRequestModification(LightUser user, UUID cardId, String newStatus) {
-        if (user == null || cardId == null || newStatus == null) {
+    public void sendRequestModification(LightUser user, Modification myModification) {
+        if (user == null || myModification==null) {
             LOGGER.warning("Paramètres invalides pour sendRequestModification");
             return;
         }
 
-        LOGGER.info(() -> "Envoi demande de modification carte " + cardId + " vers " + newStatus + 
-                     " par " + user.getUsername());
+        LOGGER.info(() -> "Envoi demande de modification carte ");
 
         try {
-            RequestModification msg = new RequestModification(user, cardId, newStatus);
+            RequestModification msg = new RequestModification(user, myModification);
             
             if (commCore.getMsgSender() != null) {
                 commCore.sendMessage(msg);

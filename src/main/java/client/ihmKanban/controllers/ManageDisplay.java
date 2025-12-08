@@ -120,7 +120,7 @@ public class ManageDisplay {
             controller.initBoard(kanban, cols, taskCreations, this);
             
             // Afficher la fenêtre
-            profileController.getKanbanArea().setContent(kanbanView);
+            //profileController.getKanbanArea().setContent(kanbanView);
 
         } catch (IOException | IllegalStateException e) {
             corps.LOGGER.log(Level.INFO, "Erreur lors de l''ouverture de l''\u00e9cran Kanban : {0}", e.getMessage());

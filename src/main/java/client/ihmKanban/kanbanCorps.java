@@ -96,7 +96,7 @@ public class kanbanCorps {
     }
 
 
-    public void displayKanban(Kanban kanban, HomeViewController homeController) { { 
+    public void displayKanban(Kanban kanban, HomeViewController homeController) { 
         manageDisplay.openKanbanScreen(kanban, homeController); 
     }
 

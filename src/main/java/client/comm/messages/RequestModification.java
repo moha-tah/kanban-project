@@ -4,6 +4,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import common.dataClasses.LightUser;
+import common.dataClasses.Modification;
 
 /**
  * Message pour demander la modification d'une carte dans un kanban.
@@ -13,21 +14,17 @@ public class RequestModification extends Message {
     private static final long serialVersionUID = 1L;
 
     private final LightUser user;
-    private final UUID cardId;
-    private final String newStatus;
+    private final Modification myModification;
 
-    public RequestModification(LightUser user, UUID cardId, String newStatus) {
+    public RequestModification(LightUser user, Modification myModification) {
         this.user = user;
-        this.cardId = cardId;
-        this.newStatus = newStatus;
+        this.myModification = myModification;
     }
 
     @Override
     public Optional<Message> handle() {
         try {
-            System.out.println("[SERVER] Reçu demande de modification de carte " + cardId + 
-                " vers status " + newStatus + " par " + 
-                (user != null ? user.getUsername() : "Inconnu"));
+            System.out.println("[SERVER] Reçu demande de modification de carte ");
 
             // TODO: Implémenter la logique de modification
             // 1. Trouver le kanban contenant cette carte
@@ -47,11 +44,7 @@ public class RequestModification extends Message {
         return user;
     }
 
-    public UUID getCardId() {
-        return cardId;
-    }
-
-    public String getNewStatus() {
-        return newStatus;
+    public Modification getMyModification() {
+        return myModification;
     }
 }
