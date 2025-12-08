@@ -11,6 +11,8 @@ public class User extends LightUser {
 
     private List<Kanban> myKanban;
 
+    
+
     public User(String username, String firstName, String lastName, LocalDate birthDate) {
         super(username);
         this.firstName = firstName;
