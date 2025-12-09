@@ -32,7 +32,7 @@ public class UsersController {
 
         List<LightUser> users = core.getUsersSnapshot();
         for (LightUser user : users) {
-            if (user != null) {
+            if (user != null && !user.equals(core.getMe())) { // Enlever l'utilisateur actuel 
                 addUser(user);
             }
         }
