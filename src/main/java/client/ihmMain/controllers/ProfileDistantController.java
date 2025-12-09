@@ -95,7 +95,11 @@ public class ProfileDistantController {
                 + " (ID=" + requestedUser.getId() + ")");
 
         try {
-            profileName2.setText(requestedUser.getFullName());
+            String displayName = requestedUser.getFullName();
+            if (displayName == null || displayName.isBlank()) {
+                displayName = requestedUser.getUsername();
+            }
+            profileName2.setText(displayName);
             profileUsername2.setText("@" + requestedUser.getUsername());
 
             // Avatar
@@ -109,10 +113,26 @@ public class ProfileDistantController {
 
             // Kanbans
             kanbansGrid2.getChildren().clear();
-            requestedUser.getMyKanban().forEach(k -> {
-                LOGGER.info("[UI] Kanban distant : " + k.getTitle());
-                // ici tu peux ajouter tes nodes dans la grid
-            });
+            java.util.List<common.dataClasses.Kanban> list = requestedUser.getMyKanban();
+            int row = 0; int col = 0; int cols = 2;
+            if (list != null) {
+                LOGGER.info(() -> "[UI] Kanbans distants reçus: " + list.size());
+                for (common.dataClasses.Kanban k : list) {
+                    javafx.scene.layout.HBox tile = new javafx.scene.layout.HBox(8);
+                    javafx.scene.control.Label title = new javafx.scene.control.Label(k.getTitle());
+                    title.getStyleClass().add("kanban-title");
+                    javafx.scene.control.Label visibility = new javafx.scene.control.Label(
+                            (k.getVisibility() != null ? k.getVisibility() : ""));
+                    visibility.getStyleClass().add("kanban-visibility");
+                    tile.getChildren().addAll(title, visibility);
+                    tile.getStyleClass().add("kanban-tile");
+                    kanbansGrid2.add(tile, col, row);
+                    col++;
+                    if (col >= cols) { col = 0; row++; }
+                }
+            } else {
+                LOGGER.warning("[UI] Aucun kanban dans le profil distant");
+            }
 
             LOGGER.info("[UI] Profil distant affiché avec succès.");
 
