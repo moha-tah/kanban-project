@@ -13,7 +13,7 @@ public final class ServerContext {
         serverData = data;
     }
 
-    public CommCallsDataServer getData() {
+    public static CommCallsDataServer getData() {
         return serverData;
     }
 

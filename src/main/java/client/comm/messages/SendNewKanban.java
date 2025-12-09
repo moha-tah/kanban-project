@@ -1,6 +1,7 @@
 package client.comm.messages;
 
 import java.util.Optional;
+
 import common.dataClasses.Kanban;
 import common.dataClasses.LightKanban;
 // RETIRÉ : import server.ServerContext; (Cause du crash client)
