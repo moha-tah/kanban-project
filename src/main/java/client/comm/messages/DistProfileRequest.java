@@ -101,24 +101,7 @@ public class DistProfileRequest extends Message {
     }
 
     private static String readUserJson(UUID userId) {
-        try {
-            java.nio.file.Path dir = java.nio.file.Paths.get("data", "users");
-            if (!java.nio.file.Files.isDirectory(dir)) return null;
-            try (java.util.stream.Stream<java.nio.file.Path> stream = java.nio.file.Files.list(dir)) {
-                for (java.nio.file.Path p : (java.util.List<java.nio.file.Path>)stream.toList()) {
-                    String content = java.nio.file.Files.readString(p);
-                    // Primitive field extraction; robust enough for flat JSON
-                    String idStr = extractJsonString(content, "id");
-                    if (idStr == null) continue;
-                    try {
-                        UUID parsed = java.util.UUID.fromString(idStr);
-                        if (!parsed.equals(userId)) continue;
-                    } catch (IllegalArgumentException ex) { continue; }
-                    return content;
-                }
-            }
-        } catch (Exception ignore) {}
-        return null;
+        return findJsonByIdInDir(java.nio.file.Paths.get("data", "users"), userId);
     }
 
     private static common.dataClasses.User buildUserFromJson(UUID userId, String fallbackUsername, String content) {
@@ -163,25 +146,34 @@ public class DistProfileRequest extends Message {
     }
 
     private static common.dataClasses.Kanban readKanbanById(java.util.UUID id) {
+        String content = findJsonByIdInDir(java.nio.file.Paths.get("data", "kanbans"), id);
+        if (content == null) return null;
+        String title = extractJsonString(content, "title");
+        return new common.dataClasses.Kanban(id, title != null ? title : "Kanban");
+    }
+
+    // Generic helper to reduce duplicated directory scan code
+    private static String findJsonByIdInDir(java.nio.file.Path dir, java.util.UUID id) {
         try {
-            java.nio.file.Path dir = java.nio.file.Paths.get("data", "kanbans");
             if (!java.nio.file.Files.isDirectory(dir)) return null;
             try (java.util.stream.Stream<java.nio.file.Path> stream = java.nio.file.Files.list(dir)) {
-                for (java.nio.file.Path p : (java.util.List<java.nio.file.Path>)stream.toList()) {
+                java.util.List<java.nio.file.Path> paths = stream.toList();
+                for (java.nio.file.Path p : paths) {
                     String content = java.nio.file.Files.readString(p);
                     String idStr = extractJsonString(content, "id");
                     if (idStr == null) continue;
                     try {
                         java.util.UUID parsed = java.util.UUID.fromString(idStr);
-                        if (!parsed.equals(id)) continue;
-                    } catch (IllegalArgumentException ex) { continue; }
-                    String title = extractJsonString(content, "title");
-                    common.dataClasses.Kanban k = new common.dataClasses.Kanban(id, title != null ? title : "Kanban");
-                    // Optionally parse visibility or other fields here
-                    return k;
+                        if (parsed.equals(id)) {
+                            return content;
+                        }
+                    } catch (IllegalArgumentException ex) {
+                        // ignore non-UUID id fields
+                    }
                 }
             }
-        } catch (Exception ignore) {}
+        } catch (Exception ignore) {
+        }
         return null;
     }
 
