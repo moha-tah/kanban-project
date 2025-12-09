@@ -867,8 +867,8 @@ private void showTaskUsersPopup(Task task, Node anchorNode) {
                         list.removeIf(u -> u.getId().equals(user.getId()));
                     }
 
-                    //UnassignUserFromTask modify = new UnassignUserFromTask(task.getId(), user.getId());
-                    //corps.getCommPort().sendRequestModification(corps.getMe(), modify);
+                    UnassignUserFromTask modify = new UnassignUserFromTask(task.getId(), user.getId());
+                    corps.getCommPort().sendRequestModification(corps.getMe(), modify);
 
 
                     popup.hide();
