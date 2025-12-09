@@ -6,10 +6,8 @@ import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import client.comm.CommCoreClient;
-import client.comm.messages.ConnectionRequest;
 import client.MainApp;
-import common.dataClasses.User;
+import client.comm.CommCoreClient;
 import client.comm.messages.AskAddListModifiers;
 import client.comm.messages.ConnectionRequest;
 import client.comm.messages.Logout;
@@ -17,10 +15,11 @@ import client.comm.messages.NotifyDecision;
 import client.comm.messages.PermissionResponse;
 import client.comm.messages.RequestKanban;
 import client.comm.messages.RequestPermission;
-import client.interfaces.IhmMainCallsComm; // Import ajouté
-import common.dataClasses.Kanban;
+import client.interfaces.IhmMainCallsComm;
+import common.dataClasses.Kanban; // Import ajouté
 import common.dataClasses.LightKanban;
 import common.dataClasses.LightUser;
+import common.dataClasses.User;
 
 public class IhmMainCallsCommImp implements IhmMainCallsComm {
     private static final Logger LOGGER = Logger.getLogger(IhmMainCallsCommImp.class.getName());

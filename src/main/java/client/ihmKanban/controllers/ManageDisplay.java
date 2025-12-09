@@ -1,25 +1,25 @@
 package client.ihmKanban.controllers;
 
 import java.io.IOException;
-
-import client.MainApp;
-import client.ihmKanban.kanbanCorps;
-import client.ihmMain.controllers.HomeViewController;
-import common.dataClasses.Kanban;
-import common.dataClasses.Column;
-import common.dataClasses.CreateTask;
-import common.dataClasses.Task;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-
-
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import client.MainApp;
+import client.ihmKanban.kanbanCorps;
+import client.ihmMain.controllers.HomeViewController;
+import common.dataClasses.Column;
+import common.dataClasses.CreateTask;
+import common.dataClasses.Kanban;
+import common.dataClasses.Task;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 
 public class ManageDisplay {
 
+    private static final Logger LOGGER = Logger.getLogger(ManageDisplay.class.getName());
     private final kanbanCorps corps; 
 
     public ManageDisplay(kanbanCorps corps) {
@@ -42,7 +42,7 @@ public class ManageDisplay {
         try {
             // Charger le "shell" kanban complet : board
             URL fxmlUrl = MainApp.class.getResource("/kanbanView.fxml");
-            kanbanCorps.LOGGER.info("DEBUG FXML kanbanView");
+            LOGGER.info("DEBUG FXML kanbanView");
 
             setHomeViewController(homeController);
 
@@ -79,7 +79,7 @@ public class ManageDisplay {
             homeController.getKanbanArea().setContent(kanbanView);
 
         } catch (IOException | IllegalStateException e) {
-            corps.LOGGER.log(Level.INFO, "Erreur lors de l''ouverture de l''\u00e9cran Kanban : {0}", e.getMessage());
+            LOGGER.log(Level.INFO, "Erreur lors de l'ouverture de l'écran Kanban : {0}", e.getMessage());
         }
     }
 }

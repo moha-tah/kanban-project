@@ -21,7 +21,11 @@ public class RequestKanban extends Message {
     @Override
     public Optional<Message> handle() {        
         try {
-            var dataServer = this.getServerContext().getData();
+            var serverCtx = this.getServerContext();
+            if (serverCtx == null) {
+                return Optional.empty();
+            }
+            var dataServer = serverCtx.getData();
 
             if (dataServer != null) {
                 LOGGER.log(Level.FINE, "dataServer found, requesting Kanban...");

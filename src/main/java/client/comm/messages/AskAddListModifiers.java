@@ -22,7 +22,11 @@ public class AskAddListModifiers extends Message {
     @Override
     public Optional<Message> handle() {
         try {
-            CommCallsDataServer dataServer = this.getServerContext().getData();
+            var serverCtx = this.getServerContext();
+            if (serverCtx == null) {
+                return Optional.empty();
+            }
+            CommCallsDataServer dataServer = serverCtx.getData();
             
             if (dataServer != null) {
                 // TO DO

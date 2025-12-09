@@ -21,7 +21,11 @@ public class Logout extends Message {
             System.out.println("[SERVER] Reçu demande de logout pour : " + (user != null ? user.getUsername() : "Inconnu"));
 
             // 1. Appel à la couche Data Serveur
-            CommCallsDataServer dataServer = this.getServerContext().getData();
+            var serverCtx = this.getServerContext();
+            if (serverCtx == null) {
+                return Optional.empty();
+            }
+            CommCallsDataServer dataServer = serverCtx.getData();
             if (dataServer != null) {
                 dataServer.notifyLogout(user);
             }
