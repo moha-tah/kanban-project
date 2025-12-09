@@ -60,8 +60,8 @@ public class DisplayKanbanController implements Initializable {
         // Constructeur public requis par JavaFX FXML
     }
 
-    public static void setCore(kanbanCorps Kcorps) {
-        corps = Kcorps;
+    public static void setCore(kanbanCorps kcorps) {
+        corps = kcorps;
     }
 
     // Core principal (pour récupérer les users connectés / snapshot)
@@ -764,8 +764,8 @@ private void showAddUserToTaskPopup(Task task, Node anchorNode) {
 
                     if (!already)
                         list.add(user);
-                    //AssignUserToTask modify = new AssignUserToTask(task.getId(), user.getId());
-                    //corps.getCommPort().sendRequestModification(corps.getMe(), modify);
+                    AssignUserToTask modify = new AssignUserToTask(task.getId(), user.getId());
+                    corps.getCommPort().sendRequestModification(corps.getMe(), modify);
 
                     // Fermeture du popup
                     popup.hide();
@@ -836,11 +836,11 @@ private void showTaskUsersPopup(Task task, Node anchorNode) {
                 );
 
                 viewBtn.setOnAction(ev -> {
-                    corps.LOGGER.info("VIEW user " + user.getUsername()
+                    kanbanCorps.LOGGER.info("VIEW user " + user.getUsername()
                             + " on task " + task.getTitle());
 
 
-                    //showViewUserPopup(user, anchorNode);
+                    showViewUserPopup(user, anchorNode);
 
                 });
 
