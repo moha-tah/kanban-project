@@ -14,6 +14,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import client.comm.messages.ConnectionRequest;
+import client.MainApp;
+import common.dataClasses.User;
 import client.comm.messages.AskAddListModifiers;
 import client.comm.messages.RequestKanban;
 import client.comm.messages.Logout; // Import ajouté
@@ -109,7 +111,13 @@ public class IhmMainCallsCommImp implements IhmMainCallsComm {
     @Override
     public void connectServer(LightUser user, List<LightKanban> kanbans) {
         LOGGER.fine(() -> "Sending ConnectionRequest with " + (kanbans != null ? kanbans.size() : 0) + " kanbans");
-        ConnectionRequest msg = new ConnectionRequest(user, kanbans);
+        User fullUser = null;
+        try {
+            if (MainApp.getCore() != null && MainApp.getCore().getDataPort() != null) {
+                fullUser = MainApp.getCore().getDataPort().getLocalUser();
+            }
+        } catch (Throwable ignored) {}
+        ConnectionRequest msg = new ConnectionRequest(user, kanbans, fullUser);
         try {
             if (commCore.getMsgSender() != null) {
                 commCore.sendMessage(msg);
