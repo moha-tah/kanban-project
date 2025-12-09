@@ -93,28 +93,21 @@ public class ProfileDistantController {
         }
     }
 
-    private Node showKanban(Kanban kanban)
-    {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/kanban_card.fxml"));
-            Node cardNode = loader.load();
+    private Node createKanbanCard(Kanban kanban) throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/kanban_card.fxml"));
+        Node cardNode = loader.load();
 
-            KanbanCardController controller = loader.getController();
-            controller.setMainCore(core);
+        KanbanCardController controller = loader.getController();
+        controller.setMainCore(core);
 
-            String color = "#D8E9FF"; // bleu
+        String color = "#d8fff3ff"; 
+        controller.setKanbanData(kanban, color, true, true);
 
-            controller.setKanbanData(kanban, color, true, true);
-            core.registerKanbanCardController(kanban.getId(), controller);
+        core.registerKanbanCardController(kanban.getId(), controller);
 
-
-            return cardNode;
-
-        } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "Impossible de charger kanban_card.fxml", e);
-            return null;
-        }
+        return cardNode;
     }
+
 
     public void updateDistantProfile(User requestedUser) {
         LOGGER.info(() -> "[UI] Mise à jour du profil distant : "
@@ -144,12 +137,12 @@ public class ProfileDistantController {
 
             // Kanbans
             kanbansGrid2.getChildren().clear();
-            System.err.println("kanbans = " + kanbans);
             
             LOGGER.info(() -> "[UI] Kanbans distants reçus: " + kanbans.size());
-            int row = 0, col = 0;
+            int row = 0;
+            int col = 0;
             for (Kanban k : kanbans) {
-                Node card = showKanban(k);
+                Node card = createKanbanCard(k);
                 if (card != null) {
                     kanbansGrid2.add(card, col, row);
                     col++;
