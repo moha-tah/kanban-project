@@ -1,22 +1,20 @@
 package client.ihmKanban.controllers;
 
 import java.io.IOException;
-
-import client.MainApp;
-import client.ihmKanban.kanbanCorps;
-import client.ihmMain.controllers.HomeViewController;
-import common.dataClasses.Kanban;
-import common.dataClasses.Column;
-import common.dataClasses.CreateTask;
-import common.dataClasses.Task;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-
-
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
+
+import client.MainApp;
+import client.ihmKanban.kanbanCorps;
+import client.ihmMain.controllers.HomeViewController;
+import common.dataClasses.Column;
+import common.dataClasses.CreateTask;
+import common.dataClasses.Kanban;
+import common.dataClasses.Task;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 
 public class ManageDisplay {
 
@@ -41,7 +39,7 @@ public class ManageDisplay {
     public void refreshKanban(Kanban kanban) {
 
         this.openKanbanScreen(kanban, homeViewController);
-        corps.LOGGER.info("[Kanban] Refresh kanban : ");
+        kanbanCorps.LOGGER.info("[Kanban] Refresh kanban : ");
     }
 
     public void openKanbanScreen(Kanban kanban, HomeViewController homeController) {
@@ -82,7 +80,7 @@ public class ManageDisplay {
             homeController.getKanbanArea().setContent(kanbanView);
 
         } catch (IOException | IllegalStateException e) {
-            corps.LOGGER.log(Level.INFO, "Erreur lors de l''ouverture de l''\u00e9cran Kanban : {0}", e.getMessage());
+            kanbanCorps.LOGGER.log(Level.INFO, "Erreur lors de l''ouverture de l''\u00e9cran Kanban : {0}", e.getMessage());
         }
     }
 
@@ -120,10 +118,10 @@ public class ManageDisplay {
             controller.initBoard(kanban, cols, taskCreations, this);
             
             // Afficher la fenêtre
-            //profileController.getKanbanArea().setContent(kanbanView);
+            profileController.getKanbanArea().setContent(kanbanView);
 
         } catch (IOException | IllegalStateException e) {
-            corps.LOGGER.log(Level.INFO, "Erreur lors de l''ouverture de l''\u00e9cran Kanban : {0}", e.getMessage());
+            kanbanCorps.LOGGER.log(Level.INFO, "Erreur lors de l''ouverture de l''\u00e9cran Kanban : {0}", e.getMessage());
         }
     }
 }

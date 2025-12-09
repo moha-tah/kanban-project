@@ -1,13 +1,34 @@
 package client.ihmKanban.controllers;
 
+import java.io.IOException;
+import java.net.URL;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.ResourceBundle;
+import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import client.MainApp;
 import client.ihmKanban.kanbanCorps;
 import client.ihmMain.MainCore;
 import client.ihmMain.controllers.UserCardController;
 import common.dataClasses.Column;
+import common.dataClasses.CreateColumn;
 import common.dataClasses.CreateTask;
+import common.dataClasses.DeleteColumn;
+import common.dataClasses.DeleteTask;
 import common.dataClasses.LightKanban;
 import common.dataClasses.LightUser;
+import common.dataClasses.Modification;
+import common.dataClasses.ModifyColumn;
+import common.dataClasses.ModifyTask;
+import common.dataClasses.MoveTask;
 import common.dataClasses.Task;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -28,30 +49,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Popup;
 
 
-import java.util.HashMap;
-import java.util.Map;
-
-import java.io.IOException;
-import java.net.URL;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.ResourceBundle;
-import java.util.UUID;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import common.dataClasses.CreateColumn;
-import common.dataClasses.DeleteColumn;
-import common.dataClasses.DeleteTask;
-import common.dataClasses.ModifyColumn;
-import common.dataClasses.ModifyTask;
-import common.dataClasses.Modification;
-import common.dataClasses.MoveTask;
-
-
 
 public class DisplayKanbanController implements Initializable {
 
@@ -63,7 +60,7 @@ public class DisplayKanbanController implements Initializable {
         // Constructeur public requis par JavaFX FXML
     }
 
-    public void setCore(kanbanCorps Kcorps) {
+    public static void setCore(kanbanCorps Kcorps) {
         corps = Kcorps;
     }
 

@@ -1,7 +1,7 @@
 package client.comm.messages;
 
 import java.util.Optional;
-import java.util.UUID;
+import java.util.logging.Logger;
 
 import common.dataClasses.LightUser;
 import common.dataClasses.Modification;
@@ -14,7 +14,9 @@ public class RequestModification extends Message {
     private static final long serialVersionUID = 1L;
 
     private final LightUser user;
-    private final Modification myModification;
+    private transient final Modification myModification;
+
+    public static final Logger LOGGER = Logger.getLogger("Request Modification");
 
     public RequestModification(LightUser user, Modification myModification) {
         this.user = user;
@@ -24,7 +26,7 @@ public class RequestModification extends Message {
     @Override
     public Optional<Message> handle() {
         try {
-            System.out.println("[SERVER] Reçu demande de modification de carte ");
+            LOGGER.info("[SERVER] Reçu demande de modification de carte ");
 
             // TODO: Implémenter la logique de modification
             // 1. Trouver le kanban contenant cette carte
