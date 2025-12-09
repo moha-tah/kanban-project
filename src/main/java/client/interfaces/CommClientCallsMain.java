@@ -1,9 +1,9 @@
 package client.interfaces;
-import common.dataClasses.LightUser;
-import common.dataClasses.LightKanban;
-import common.dataClasses.User;
-
 import java.util.List;
+
+import common.dataClasses.LightKanban;
+import common.dataClasses.LightUser;
+import common.dataClasses.User;
 
 public interface CommClientCallsMain {
     void displayDecision(LightUser user, LightKanban kanban, boolean decision);
