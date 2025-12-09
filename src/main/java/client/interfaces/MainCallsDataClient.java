@@ -3,9 +3,9 @@ package client.interfaces;
 import java.time.LocalDate;
 import java.util.List;
 
+import common.dataClasses.LightKanban;
 import common.dataClasses.LightUser;
 import common.dataClasses.User;
-import common.dataClasses.LightKanban;
 
 public interface MainCallsDataClient {
 
