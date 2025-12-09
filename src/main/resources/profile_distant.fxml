@@ -47,10 +47,6 @@
                         <Label fx:id="kanbansCreated2" style="-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: #667eea;" />
                         <Label style="-fx-text-fill: #6b7280; -fx-font-size: 12px;" text="Kanbans créés" />
                     </VBox>
-                    <VBox>
-                        <Label fx:id="collaborations2" style="-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: #667eea;" />
-                        <Label style="-fx-text-fill: #6b7280; -fx-font-size: 12px;" text="Collaborations" />
-                    </VBox>
                 </HBox>
             </VBox>
         </HBox>

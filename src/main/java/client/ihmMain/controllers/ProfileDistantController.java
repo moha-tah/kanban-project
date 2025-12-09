@@ -1,20 +1,21 @@
 package client.ihmMain.controllers; 
 
+import java.io.File;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import client.ihmMain.MainCore;
+import common.dataClasses.Kanban;
+import common.dataClasses.LightUser;
+import common.dataClasses.User;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
-import client.ihmMain.MainCore;
-import common.dataClasses.LightUser;
-import java.util.logging.Level;
-import common.dataClasses.User;
-
-
-
-
-import java.io.File;
-import java.util.logging.Logger;
 
 public class ProfileDistantController {
 
@@ -23,6 +24,9 @@ public class ProfileDistantController {
 
     @FXML
     private Label profileUsername2;
+
+    @FXML
+    private Label kanbansCreated2;
 
     @FXML
     private ImageView profileAvatar2;
@@ -89,6 +93,29 @@ public class ProfileDistantController {
         }
     }
 
+    private Node showKanban(Kanban kanban)
+    {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/kanban_card.fxml"));
+            Node cardNode = loader.load();
+
+            KanbanCardController controller = loader.getController();
+            controller.setMainCore(core);
+
+            String color = "#D8E9FF"; // bleu
+
+            controller.setKanbanData(kanban, color, true, true);
+            core.registerKanbanCardController(kanban.getId(), controller);
+
+
+            return cardNode;
+
+        } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, "Impossible de charger kanban_card.fxml", e);
+            return null;
+        }
+    }
+
     public void updateDistantProfile(User requestedUser) {
         LOGGER.info(() -> "[UI] Mise à jour du profil distant : "
                 + requestedUser.getUsername()
@@ -99,8 +126,12 @@ public class ProfileDistantController {
             if (displayName == null || displayName.isBlank()) {
                 displayName = requestedUser.getUsername();
             }
+            java.util.List<common.dataClasses.Kanban> kanbans = requestedUser.getMyKanban();
+
             profileName2.setText(displayName);
             profileUsername2.setText("@" + requestedUser.getUsername());
+            kanbansCreated2.setText(String.valueOf(kanbans.size()));
+
 
             // Avatar
             Image avatarImg = loadAvatarDistant(requestedUser.getAvatar());
@@ -113,26 +144,22 @@ public class ProfileDistantController {
 
             // Kanbans
             kanbansGrid2.getChildren().clear();
-            java.util.List<common.dataClasses.Kanban> list = requestedUser.getMyKanban();
-            int row = 0; int col = 0; int cols = 2;
-            if (list != null) {
-                LOGGER.info(() -> "[UI] Kanbans distants reçus: " + list.size());
-                for (common.dataClasses.Kanban k : list) {
-                    javafx.scene.layout.HBox tile = new javafx.scene.layout.HBox(8);
-                    javafx.scene.control.Label title = new javafx.scene.control.Label(k.getTitle());
-                    title.getStyleClass().add("kanban-title");
-                    javafx.scene.control.Label visibility = new javafx.scene.control.Label(
-                            (k.getVisibility() != null ? k.getVisibility() : ""));
-                    visibility.getStyleClass().add("kanban-visibility");
-                    tile.getChildren().addAll(title, visibility);
-                    tile.getStyleClass().add("kanban-tile");
-                    kanbansGrid2.add(tile, col, row);
+            System.err.println("kanbans = " + kanbans);
+            
+            LOGGER.info(() -> "[UI] Kanbans distants reçus: " + kanbans.size());
+            int row = 0, col = 0;
+            for (Kanban k : kanbans) {
+                Node card = showKanban(k);
+                if (card != null) {
+                    kanbansGrid2.add(card, col, row);
                     col++;
-                    if (col >= cols) { col = 0; row++; }
+                    if (col >= 3) { 
+                        col = 0;
+                        row++;
+                    }
                 }
-            } else {
-                LOGGER.warning("[UI] Aucun kanban dans le profil distant");
             }
+        
 
             LOGGER.info("[UI] Profil distant affiché avec succès.");
 

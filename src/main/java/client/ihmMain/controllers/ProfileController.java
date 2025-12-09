@@ -1,30 +1,29 @@
 package client.ihmMain.controllers; 
 
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import client.MainApp;
+import client.ihmMain.MainCore;
+import common.dataClasses.Kanban;
+import common.dataClasses.LightUser;
+import common.dataClasses.User;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
-import client.ihmMain.MainCore;
-import common.dataClasses.Kanban;
-import common.dataClasses.LightUser;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import java.io.IOException;
-import java.util.List;
-import java.util.logging.Level;
-import common.dataClasses.User;
-
-
-import java.io.File;
-import java.util.logging.Logger;
 
 public class ProfileController {
 
@@ -36,9 +35,6 @@ public class ProfileController {
 
     @FXML
     private ImageView profileAvatar;
-
-    @FXML
-    private Label profileBirthdate;
 
     @FXML
     private Label kanbansCreated;
@@ -61,6 +57,8 @@ public class ProfileController {
     public ScrollPane getKanbanArea() {
         return kanbanArea;
     }  
+
+    
 
     private Node showKanban(Kanban kanban)
     {
@@ -95,7 +93,6 @@ public class ProfileController {
         profileName.setText(me.getFullName());
         profileUsername.setText("@" + me.getUsername());
         kanbansCreated.setText(String.valueOf(kanbans.size()));
-        profileBirthdate.setText(me.getBirthDate().toString());
 
         // Avatar
         Image avatarImg = loadAvatarProfile(currentUser.getAvatar());
