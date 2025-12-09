@@ -3,6 +3,9 @@ package client.comm.messages;
 import java.util.Optional;
 import java.util.UUID;
 
+import common.dataClasses.LightUser;
+import common.dataClasses.User;
+
 /**
  * Client -> Server: request distant user's profile by UUIDs.
  */
@@ -24,26 +27,29 @@ public class DistProfileRequest extends Message {
     public Optional<Message> handle() {
         // Executed on SERVER side
         try {
-            var data = server.ServerContext.getData();
-            if (data == null) {
+            var serverCtx = this.getServerContext();
+            if (serverCtx == null || serverCtx.getData() == null) {
                 java.util.logging.Logger.getLogger(DistProfileRequest.class.getName())
-                        .severe("Server data interface is null");
+                        .severe("Server context or data interface is null");
                 return Optional.empty();
             }
-            // Find the user in connected users or any known list
+
+            var data = serverCtx.getData();
             var users = data.getUsersList();
-            common.dataClasses.LightUser found = null;
+            LightUser found = null;
             if (users != null) {
-                for (common.dataClasses.LightUser u : users) {
+                for (LightUser u : users) {
                     if (u.getId().equals(requestedUserId)) { found = u; break; }
                 }
             }
-            // Build a minimal full User if found (server currently retains LightUser info)
-            common.dataClasses.User full = null;
+
+            // Build a minimal User if found (data layer currently stores LightUser)
+            User full = null;
             if (found != null) {
-                full = new common.dataClasses.User(found.getId(), found.getUsername(), null, null, null);
+                full = new User(found.getId(), found.getUsername(), null, null, null);
             }
-            // Build answer (may be null if not found)
+
+            // Reply (even null user is forwarded so client can handle "not found")
             return Optional.of(new ForwardProfileAnswer(requesterId, full));
         } catch (Exception e) {
             java.util.logging.Logger.getLogger(DistProfileRequest.class.getName())
