@@ -2,6 +2,7 @@ package client.comm.messages;
 
 import java.util.List;
 import java.util.Optional;
+
 import common.dataClasses.LightUser;
 import common.dataClasses.Modification;
 import server.comm.CommCoreServer;
@@ -29,12 +30,7 @@ public class RequestModification extends Message {
                 (user != null ? user.getUsername() : "Inconnu"));
 
             // Récupération du contexte serveur et du data server
-            var serverCtx = this.getServerContext();
-            if (serverCtx == null) {
-                System.err.println("[RequestModification] Server context not available");
-                return Optional.empty();
-            }
-            var dataServer = serverCtx.getData();
+            var dataServer = server.ServerContext.getData();
             if (dataServer == null) {
                 System.err.println("[RequestModification] DataServer non disponible");
                 return Optional.empty();

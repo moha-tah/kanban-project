@@ -30,12 +30,7 @@ public class DistProfileRequest extends Message {
     public Optional<Message> handle() {
         // Executed on SERVER side
         try {
-            var serverCtx = this.getServerContext();
-            if (serverCtx == null) {
-                LOGGER.severe("Server context is null");
-                return Optional.empty();
-            }
-            var data = serverCtx.getData();
+            var data = server.ServerContext.getData();
             if (data == null) {
                 LOGGER.severe("Server data interface is null");
                 return Optional.empty();
