@@ -4,6 +4,7 @@ import common.dataClasses.Kanban;
 import common.dataClasses.LightUser;
 import common.dataClasses.LightKanban;
 import common.dataClasses.Modification;
+import common.dataClasses.User;
 
 import java.util.List;
 
@@ -28,6 +29,6 @@ public interface ComCallsDataClient {
     void saveTempKanban(Kanban kanban);
 
     void addUserToList(LightUser user, List<LightKanban> kanbans);
-
     LightUser askIdUser();
+    User getDistantProfile();
 }

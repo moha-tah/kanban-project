@@ -17,4 +17,5 @@ public interface IhmMainCallsComm {
     void connectServer(LightUser user, List<LightKanban> kanbans);
     void askAddListModifiers(LightUser userId, LightKanban kanbanId);
     void getKanban(LightKanban LightKanbanId, LightUser LightUserId);
+    void requestDistantProfile(LightUser requester, java.util.UUID requestedUserId);
 }

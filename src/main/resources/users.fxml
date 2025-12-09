@@ -1,19 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox xmlns="http://javafx.com/javafx/25"
-      xmlns:fx="http://javafx.com/fxml/1"
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="client.ihmMain.controllers.UsersController"
-      style="-fx-padding: 10;"
-      prefWidth="100"
-      spacing="10">
+      spacing="10"
+      prefWidth="300"
+      minWidth="300"
+      style="-fx-background-color: transparent;">
 
-    <!-- Titre "USERS" -->
-    <Label text="USERS"
-           style="-fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: bold;" />
+    <Label text="USERS" style="-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 16px; -fx-padding: 0 0 10 0;" />
 
-    <!-- Conteneur des cartes utilisateurs -->
-    <VBox fx:id="usersContainer" spacing="6"/>
-
+    <ScrollPane fitToWidth="true" style="-fx-background-color: transparent; -fx-background: transparent;" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED">
+        <VBox fx:id="usersContainer" spacing="8" style="-fx-background-color: transparent;">
+        </VBox>
+    </ScrollPane>
 </VBox>

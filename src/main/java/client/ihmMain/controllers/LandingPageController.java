@@ -2,13 +2,21 @@ package client.ihmMain.controllers;
 
 import client.MainApp;
 import client.ihmMain.MainCore;
+import client.interfaces.MainCallsDataClient;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
+
+import java.io.File;
+import java.util.logging.Logger;
 
 public class LandingPageController {
 
     private MainCore core;
+    private static final Logger LOGGER = Logger.getLogger(LandingPageController.class.getName());
 
     @FXML
     private BorderPane root;
@@ -50,21 +58,43 @@ public class LandingPageController {
 
     @FXML
     private void importProfile() {
-        System.out.println("Import clicked");
-    }
+        if (core == null) return;
 
-    @FXML
-    private void showFeatures() {
-        System.out.println("Show features");
-    }
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Import Profile JSON");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("JSON Files", "*.json"));
 
-    @FXML
-    private void showAbout() {
-        System.out.println("Show about");
-    }
+        // Ouvre le dialogue sur la fenêtre actuelle
+        Stage stage = (Stage) root.getScene().getWindow();
+        File selectedFile = fileChooser.showOpenDialog(stage);
 
-    @FXML
-    private void showContact() {
-        System.out.println("Show contact");
+        if (selectedFile != null) {
+            String path = selectedFile.getAbsolutePath();
+            System.out.println("Importing profile from: " + path);
+
+            try {
+                MainCallsDataClient data = core.getDataPort();
+                if (data != null) {
+                    // Appel à la couche Data pour importer
+                    data.importMyProfile(path);
+
+                    // Feedback utilisateur
+                    showAlert(Alert.AlertType.INFORMATION, "Success", "Profile imported successfully!");
+
+                    // Redirection vers le login pour se connecter avec ce nouveau profil
+                    core.showLoginView();
+                }
+            } catch (Exception e) {
+                showAlert(Alert.AlertType.ERROR, "Import Failed", "Could not import profile: " + e.getMessage());
+                LOGGER.warning(e.getMessage());
+            }
+        }
+    }
+    private void showAlert(Alert.AlertType type, String title, String content) {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
     }
 }

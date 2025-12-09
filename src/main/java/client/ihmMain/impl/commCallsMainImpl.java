@@ -7,6 +7,7 @@ import client.interfaces.CommClientCallsMain;
 import common.dataClasses.Kanban;
 import common.dataClasses.LightKanban;
 import common.dataClasses.LightUser;
+import common.dataClasses.User;
 
 import java.util.List;
 
@@ -76,5 +77,28 @@ public class commCallsMainImpl implements CommClientCallsMain {
         System.out.println("[Comm->Main] addUserToList: "
                 + user.getUsername() + " (" + user.getId() + "), kanbans="
                 + (kanbans == null ? 0 : kanbans.size()));
+    }
+
+    @Override
+    public void displayDistantProfile(User requestedUser) {
+        // Minimal implementation: update UI to show the user's profile
+        javafx.application.Platform.runLater(() -> {
+            if (requestedUser == null) {
+                java.util.logging.Logger.getLogger(commCallsMainImpl.class.getName())
+                        .warning("displayDistantProfile: user not found");
+                if (HomeViewController.getInstance() != null) {
+                    HomeViewController.getInstance().addNotification("Profil introuvable.");
+                    HomeViewController.handleNotif();
+                }
+                return;
+            }
+            java.util.logging.Logger.getLogger(commCallsMainImpl.class.getName())
+                    .info("Displaying distant profile for " + requestedUser.getUsername());
+            if (HomeViewController.getInstance() != null) {
+                HomeViewController.getInstance().addNotification(
+                        "Profil: " + requestedUser.getUsername() + " (" + requestedUser.getId() + ")");
+                HomeViewController.handleNotif();
+            }
+        });
     }
 }
