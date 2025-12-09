@@ -206,6 +206,7 @@ public class ComCallsDataServImplementation implements CommCallsDataServer {
 
     @Override
     public void closeKanban(LightKanban lightKanban, LightUser user) {
+        // TODO: Implement closeKanban logic if needed
     }
 
     // -------------------------------------------------------
