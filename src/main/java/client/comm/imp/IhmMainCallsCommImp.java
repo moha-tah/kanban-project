@@ -1,25 +1,23 @@
 package client.comm.imp;
 
-import client.comm.CommCoreClient;
-import client.comm.messages.RequestPermission;
-import client.comm.messages.PermissionResponse;
-import client.comm.messages.NotifyDecision;
-import client.interfaces.IhmMainCallsComm;
-
-import java.util.Objects;
-import java.util.UUID;
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import client.comm.CommCoreClient;
 import client.comm.messages.ConnectionRequest;
 import client.MainApp;
 import common.dataClasses.User;
 import client.comm.messages.AskAddListModifiers;
+import client.comm.messages.ConnectionRequest;
+import client.comm.messages.Logout;
+import client.comm.messages.NotifyDecision;
+import client.comm.messages.PermissionResponse;
 import client.comm.messages.RequestKanban;
-import client.comm.messages.Logout; // Import ajouté
-import client.comm.messages.RequestModification;
+import client.comm.messages.RequestPermission;
+import client.interfaces.IhmMainCallsComm; // Import ajouté
 import common.dataClasses.Kanban;
 import common.dataClasses.LightKanban;
 import common.dataClasses.LightUser;
@@ -151,10 +149,6 @@ public class IhmMainCallsCommImp implements IhmMainCallsComm {
         }
     }
 
-    @Override
-    public void notifyEditions(LightKanban LightKanban) {
-        // Place breakpoint to inspect LightKanban state before sending any edition notifications
-    }
 
     @Override
     public void askKanban(LightKanban LightKanbanId) {
@@ -200,31 +194,6 @@ public class IhmMainCallsCommImp implements IhmMainCallsComm {
             LOGGER.info(() -> "DistProfileRequest sent: requester=" + requester.getUsername() + ", target=" + requestedUserId);
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "Network error during requestDistantProfile", e);
-        }
-    }
-
-    public void sendRequestModification(LightUser user, UUID cardId, String newStatus) {
-        if (user == null || cardId == null || newStatus == null) {
-            LOGGER.warning("Paramètres invalides pour sendRequestModification");
-            return;
-        }
-
-        LOGGER.info(() -> "Envoi demande de modification carte " + cardId + " vers " + newStatus + 
-                     " par " + user.getUsername());
-
-        try {
-            RequestModification msg = new RequestModification(user, cardId, newStatus);
-            
-            if (commCore.getMsgSender() != null) {
-                commCore.sendMessage(msg);
-                LOGGER.fine("Demande de modification envoyée avec succès");
-            } else {
-                LOGGER.warning("Message sender non initialisé");
-            }
-        } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "Erreur réseau lors de l'envoi de la modification", e);
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Erreur inattendue lors de la modification", e);
         }
     }
 }

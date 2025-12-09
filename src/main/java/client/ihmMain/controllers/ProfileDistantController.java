@@ -16,6 +16,12 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
+import client.ihmMain.MainCore;
+import common.dataClasses.LightUser;
+
+
+import java.io.File;
+import java.util.logging.Logger;
 
 public class ProfileDistantController {
 

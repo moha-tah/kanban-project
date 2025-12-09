@@ -3,7 +3,6 @@ package client.comm.messages;
 import java.util.Optional;
 
 import common.dataClasses.LightUser;
-import server.ServerContext;
 import server.comm.CommCoreServer;
 import server.interfaces.CommCallsDataServer;
 
@@ -22,7 +21,7 @@ public class Logout extends Message {
             System.out.println("[SERVER] Reçu demande de logout pour : " + (user != null ? user.getUsername() : "Inconnu"));
 
             // 1. Appel à la couche Data Serveur
-            CommCallsDataServer dataServer = ServerContext.getData();
+            CommCallsDataServer dataServer = this.getServerContext().getData();
             if (dataServer != null) {
                 dataServer.notifyLogout(user);
             }
