@@ -41,6 +41,9 @@ public class DeleteAccess extends Modification {
 
     @Override
     public Kanban undo(Kanban targetKanban) {
+        if (previousAccess == null) {
+            throw new IllegalStateException("Cannot undo DeleteAccess: previousAccess is null.");
+        }
         AddAccess undoModification = new AddAccess(previousAccess);
         return undoModification.execute(targetKanban);
     }
