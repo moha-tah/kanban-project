@@ -14,7 +14,7 @@ import client.ihmMain.controllers.HomeViewController;
 import common.dataClasses.Kanban;
 import common.dataClasses.LightKanban;
 import common.dataClasses.LightUser;
-import client.ihmMain.controllers.ProfileViewController;
+import client.ihmMain.controllers.ProfileController;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -100,7 +100,7 @@ public class kanbanCorps {
         manageDisplay.openKanbanScreen(kanban, homeController); 
     }
 
-    public void displayKanbanFromProfile(Kanban kanban, ProfileViewController profileController) {
+    public void displayKanbanFromProfile(Kanban kanban, ProfileController profileController) {
         manageDisplay.openKanbanScreenFromProfile(kanban, profileController);
 
     }
