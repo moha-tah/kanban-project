@@ -13,7 +13,7 @@ import javafx.stage.Stage;
 import server.comm.CommCoreServer;
 import server.data.ComCallsDataServImplementation;
 import server.data.DataServProvider;
-import server.data.ServerModel; // <--- Import ajouté
+import server.data.ServerModel;
 
 /**
  * Standalone server application - runs independently of clients.
@@ -21,7 +21,7 @@ import server.data.ServerModel; // <--- Import ajouté
  */
 public class ServerApp extends Application {
     private static final Logger logger = Logger.getLogger(ServerApp.class.getName());
-    private static CommCoreServer server; // <--- Cette variable masquait le package 'server'
+    private static CommCoreServer server;
     private static DataServProvider dataProvider;
     private static ServerApp instance;
 
@@ -63,7 +63,6 @@ public class ServerApp extends Application {
                 // Initialize server data layer
                 dataProvider = new DataServProvider();
 
-                // Correction : Utilisation directe de la classe importée (plus de préfixe server.)
                 ServerModel model = new ServerModel();
                 dataProvider.setModel(model);
 
@@ -71,7 +70,6 @@ public class ServerApp extends Application {
                 commImpl.setDataServProvider(dataProvider);
                 dataProvider.setDataCallsComServ(commImpl);
 
-                // Correction : Utilisation directe de ServerContext (il est dans le même package)
                 ServerContext.setProvider(dataProvider);
 
                 // Start server

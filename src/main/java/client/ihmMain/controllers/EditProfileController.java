@@ -197,7 +197,7 @@ public class EditProfileController {
             System.out.println("Compte supprimé et redirection effectuée.");
 
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Erreur lors de la suppression du compte : {0}", e.getMessage());
             Alert errorAlert = new Alert(Alert.AlertType.ERROR);
             errorAlert.setContentText("Erreur lors de la suppression : " + e.getMessage());
             errorAlert.show();
