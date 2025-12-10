@@ -1,11 +1,9 @@
 package client.ihmKanban.impl;
 
-import java.util.logging.Level;
-
-import client.interfaces.DataClientCallsKanban;
-import common.dataClasses.Kanban;
 import client.ihmKanban.kanbanCorps;
 import client.ihmMain.controllers.HomeViewController;
+import client.interfaces.DataClientCallsKanban;
+import common.dataClasses.Kanban;
 
 
 /** Impl des callbacks de la couche Communication vers la couche Kanban (IHM Kanban). */
@@ -20,14 +18,18 @@ public class DataClientCallsKanbanImpl implements DataClientCallsKanban {
     @Override
     public void displayKanban(Kanban kanban, HomeViewController homeController ) {
         corps.displayKanban(kanban, homeController); 
-        corps.LOGGER.info("[Data->kanban] Display kanban : "
-                + "kanban=" + kanban);
+        kanbanCorps.LOGGER.info("[Data->kanban] Display kanban : ");
 
     }
 
     @Override
     public void updateKanban(Kanban kanban) {
+        corps.updateKanban(kanban);
+
+        kanbanCorps.LOGGER.info("[Data->kanban] Display kanban : ");
+
     }
+
 }
 
 

@@ -21,6 +21,7 @@ import client.interfaces.IhmMainCallsComm; // Import ajouté
 import common.dataClasses.Kanban;
 import common.dataClasses.LightKanban;
 import common.dataClasses.LightUser;
+import common.dataClasses.Modification;
 
 public class IhmMainCallsCommImp implements IhmMainCallsComm {
     private static final Logger LOGGER = Logger.getLogger(IhmMainCallsCommImp.class.getName());
@@ -194,6 +195,30 @@ public class IhmMainCallsCommImp implements IhmMainCallsComm {
             LOGGER.info(() -> "DistProfileRequest sent: requester=" + requester.getUsername() + ", target=" + requestedUserId);
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "Network error during requestDistantProfile", e);
+        }
+    }
+
+    public void sendRequestModification(LightUser user, Modification myModification) {
+        if (user == null || myModification==null) {
+            LOGGER.warning("Paramètres invalides pour sendRequestModification");
+            return;
+        }
+
+        LOGGER.info(() -> "Envoi demande de modification carte ");
+
+        try {
+            RequestModification msg = new RequestModification(user, myModification);
+            
+            if (commCore.getMsgSender() != null) {
+                commCore.sendMessage(msg);
+                LOGGER.fine("Demande de modification envoyée avec succès");
+            } else {
+                LOGGER.warning("Message sender non initialisé");
+            }
+        } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, "Erreur réseau lors de l'envoi de la modification", e);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Erreur inattendue lors de la modification", e);
         }
     }
 }

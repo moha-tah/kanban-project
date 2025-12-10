@@ -2,9 +2,10 @@ package client.comm.messages;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Logger;
+
 import common.dataClasses.LightUser;
 import common.dataClasses.Modification;
-import server.comm.CommCoreServer;
 
 /**
  * Message pour demander la modification d'une carte dans un kanban.
@@ -14,11 +15,13 @@ public class RequestModification extends Message {
     private static final long serialVersionUID = 1L;
 
     private final LightUser user;
-    private final Modification modification;
+    private final transient Modification myModification;
 
-    public RequestModification(LightUser user, Modification modification) {
+    public static final Logger LOGGER = Logger.getLogger("Request Modification");
+
+    public RequestModification(LightUser user, Modification myModification) {
         this.user = user;
-        this.modification = modification;
+        this.myModification = myModification;
     }
 
     @Override
@@ -62,4 +65,12 @@ public class RequestModification extends Message {
         return Optional.empty();
     }   
 
+    // Getters
+    public LightUser getUser() {
+        return user;
+    }
+
+    public Modification getMyModification() {
+        return myModification;
+    }
 }
