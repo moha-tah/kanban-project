@@ -5,6 +5,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import client.MainApp;
 import client.ihmKanban.kanbanCorps;
@@ -18,6 +19,7 @@ import javafx.scene.Parent;
 
 public class ManageDisplay {
 
+    private static final Logger LOGGER = Logger.getLogger(ManageDisplay.class.getName());
     private final kanbanCorps corps; 
 
     public ManageDisplay(kanbanCorps corps) {

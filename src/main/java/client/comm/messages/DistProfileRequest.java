@@ -1,7 +1,9 @@
 package client.comm.messages;
 
+import java.io.IOException;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 import common.dataClasses.LightUser;
 import common.dataClasses.User;
@@ -11,6 +13,7 @@ import common.dataClasses.User;
  */
 public class DistProfileRequest extends Message {
     private static final long serialVersionUID = 1L;
+    private static final Logger LOGGER = Logger.getLogger(DistProfileRequest.class.getName());
 
     private final UUID requesterId;
     private final UUID requestedUserId;
@@ -32,10 +35,9 @@ public class DistProfileRequest extends Message {
     public Optional<Message> handle() {
         // Executed on SERVER side
         try {
-            var serverCtx = this.getServerContext();
-            if (serverCtx == null || serverCtx.getData() == null) {
-                java.util.logging.Logger.getLogger(DistProfileRequest.class.getName())
-                        .severe("Server context or data interface is null");
+            var data = server.ServerContext.getData();
+            if (data == null) {
+                LOGGER.severe("Server data interface is null");
                 return Optional.empty();
             }
 
@@ -53,7 +55,6 @@ public class DistProfileRequest extends Message {
 
             // Reply (even null user is forwarded so client can handle "not found")
             // First, try the server-side full user cache for uniform behavior
-            common.dataClasses.User full = null;
             try {
                 server.data.DataServProvider provider = server.ServerContext.getProvider();
                 if (provider != null) {
@@ -62,15 +63,19 @@ public class DistProfileRequest extends Message {
                         full = srvModel.getConnectedUsersFull().get(requestedUserId);
                     }
                 }
-                java.util.logging.Logger.getLogger(DistProfileRequest.class.getName())
-                        .info("[SERVER] DistProfileRequest cache lookup: "
-                                + (full != null ? "HIT" : "MISS")
-                                + " for userId=" + requestedUserId);
-            } catch (Throwable ignored) {
-            }
+                LOGGER.info(String.format("[SERVER] DistProfileRequest cache lookup: %s for userId=%s",
+                        (full != null ? "HIT" : "MISS"), requestedUserId));
+            } catch (Throwable ignored) {}
 
             if (full == null) {
                 // Fallback: find LightUser, then enrich from JSON files
+                var users = data.getUsersList();
+                LightUser found = null;
+                if (users != null) {
+                    for (LightUser u : users) {
+                        if (u.getId().equals(requestedUserId)) { found = u; break; }
+                    }
+                }
                 if (found != null) {
                     String rawUserJson = readUserJson(found.getId());
                     full = buildUserFromJson(found.getId(), found.getUsername(), rawUserJson);
@@ -78,18 +83,15 @@ public class DistProfileRequest extends Message {
                     if (full != null && created != null) {
                         full.setMyKanban(created);
                     }
-                    java.util.logging.Logger.getLogger(DistProfileRequest.class.getName())
-                            .info("[SERVER] JSON fallback used for user="
-                                    + (found != null ? found.getUsername() : "<null>")
-                                    + ", kanbans="
-                                    + (full != null && full.getMyKanban() != null ? full.getMyKanban().size() : 0));
+                    LOGGER.info(String.format("[SERVER] JSON fallback used for user=%s, kanbans=%d",
+                            found.getUsername(),
+                            (full != null && full.getMyKanban() != null ? full.getMyKanban().size() : 0)));
                     if (full == null) {
                         String uname = found.getUsername();
-                        full = new common.dataClasses.User(found.getId(), uname, uname, "", null);
+                        full = new User(found.getId(), uname, uname, "", null);
                     }
                 } else {
-                    java.util.logging.Logger.getLogger(DistProfileRequest.class.getName())
-                            .warning("[SERVER] Requested user not found in connected list: " + requestedUserId);
+                    LOGGER.warning(() -> "Requested user not found in connected list: " + requestedUserId);
                 }
             } else {
                 // If full user came from cache but has no kanbans populated, enrich from JSON
@@ -99,24 +101,21 @@ public class DistProfileRequest extends Message {
                         java.util.List<common.dataClasses.Kanban> created = loadUserKanbans(rawUserJson);
                         if (created != null && !created.isEmpty()) {
                             full.setMyKanban(created);
-                            java.util.logging.Logger.getLogger(DistProfileRequest.class.getName())
-                                    .info("[SERVER] Cache enrichment: added " + created.size() + " kanbans for user="
-                                            + full.getUsername());
+                            LOGGER.info(String.format("[SERVER] Cache enrichment: added %d kanbans for user=%s",
+                                    created.size(), full.getUsername()));
                         }
                     }
                 } catch (Throwable ignored) {
                 }
             }
             // Build answer (may be null if not found)
-            java.util.logging.Logger.getLogger(DistProfileRequest.class.getName())
-                    .info("[SERVER] Forwarding profile answer to requester=" + requesterId
-                            + ", user=" + (full != null ? full.getUsername() : "<null>")
-                            + ", kanbans="
-                            + (full != null && full.getMyKanban() != null ? full.getMyKanban().size() : 0));
+            LOGGER.info(String.format("[SERVER] Forwarding profile answer to requester=%s, user=%s, kanbans=%d",
+                    requesterId,
+                    (full != null ? full.getUsername() : "<null>"),
+                    (full != null && full.getMyKanban() != null ? full.getMyKanban().size() : 0)));
             return Optional.of(new ForwardProfileAnswer(requesterId, full));
         } catch (Exception e) {
-            java.util.logging.Logger.getLogger(DistProfileRequest.class.getName())
-                    .log(java.util.logging.Level.SEVERE, "Error handling DistProfileRequest", e);
+            LOGGER.log(java.util.logging.Level.SEVERE, "Error handling DistProfileRequest", e);
             return Optional.empty();
         }
     }
@@ -211,7 +210,7 @@ public class DistProfileRequest extends Message {
                     }
                 }
             }
-        } catch (Exception ignore) {
+        } catch (IOException ignore) {
         }
         return null;
     }

@@ -1,20 +1,27 @@
 package client.ihmMain.controllers;
 
+import java.io.File;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import client.MainApp;
 import client.ihmMain.MainCore;
 import client.interfaces.MainCallsDataClient;
 import common.dataClasses.User;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.DateCell;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-
-import java.io.File;
-import java.io.IOException;
-import java.time.LocalDate;
-import java.util.logging.Logger;
 
 public class EditProfileController {
 
@@ -28,9 +35,6 @@ public class EditProfileController {
     private MainCore core;
     private User currentUser;
     private File selectedImage;
-    @FXML private ImageView profilePic;
-    private static final String DEFAULT_AVATAR_RESOURCE = "/profile_pic.png";
-
 
     private static final Logger LOGGER = Logger.getLogger(EditProfileController.class.getName());
 
@@ -86,7 +90,7 @@ public class EditProfileController {
             }
 
         } catch (Exception e) {
-            LOGGER.warning("Erreur lors du chargement du User complet : " + e.getMessage());
+            LOGGER.log(Level.WARNING, "Erreur lors du chargement du User complet : {0}", e.getMessage());
         }
     }
 
@@ -131,10 +135,9 @@ public class EditProfileController {
             return;
         }
 
-
         // Récupération des valeurs
-        String newFirstName = firstNameField.getText();
-        String newLastName = lastNameField.getText();
+        String newFirstName = firstNameField.getText().trim();
+        String newLastName = lastNameField.getText().trim();
         LocalDate newBirthDate = birthDatePicker.getValue();
         String newAvatar = (selectedImage != null) ? selectedImage.getAbsolutePath() : null;
 
@@ -188,8 +191,8 @@ public class EditProfileController {
             stage.setTitle("Mon Profil");
             stage.setScene(new Scene(root, 1280, 720));
 
-        } catch (Exception e) {
-            LOGGER.warning("Erreur lors du retour au profil : " + e.getMessage());
+        } catch (IOException e) {
+            LOGGER.log(Level.WARNING, "Erreur lors du retour au profil : {0}", e.getMessage());
         }
     }
 }

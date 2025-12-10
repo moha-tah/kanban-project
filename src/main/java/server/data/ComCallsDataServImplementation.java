@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import common.dataClasses.Access;
 import common.dataClasses.Kanban;
 import common.dataClasses.LightKanban;
 import common.dataClasses.LightUser;
-import common.dataClasses.Modification;
-import common.dataClasses.Access; // Import nécessaire
+import common.dataClasses.Modification; // Import nécessaire
 import server.interfaces.CommCallsDataServer;
 
 public class ComCallsDataServImplementation implements CommCallsDataServer {
@@ -176,7 +176,22 @@ public class ComCallsDataServImplementation implements CommCallsDataServer {
     // C'était la méthode manquante qui causait l'erreur ligne 14
     @Override
     public void askAddListModifiers(LightUser user, LightKanban kanban) {
-        // TODO : Implémenter la logique
+        // Ajoute l'utilisateur à la liste des modificateurs du kanban
+        if (user == null || kanban == null || myProvider == null) return;
+        ServerModel model = myProvider.getModel();
+        List<Kanban> kanbans = model.getInUseKanbans();
+        Kanban target = kanbans.stream().filter(k -> k.getId().equals(kanban.getId())).findFirst().orElse(null);
+        if (target == null) return;
+
+        // Vérifier si l'utilisateur est déjà dans la liste d'accès
+        if (target.getAccessList() == null) {
+            target.setAccessList(new ArrayList<>());
+        }
+        boolean exists = target.getAccessList().stream().anyMatch(a -> a.getUser() != null && a.getUser().getId().equals(user.getId()));
+        if (!exists) {
+            target.getAccessList().add(new Access(user, null)); // Ajoute avec rôle par défaut
+        }
+        // Optionnel : sauvegarder le kanban modifié si nécessaire
     }
 
     @Override
@@ -191,6 +206,7 @@ public class ComCallsDataServImplementation implements CommCallsDataServer {
 
     @Override
     public void closeKanban(LightKanban lightKanban, LightUser user) {
+        // TODO: Implement closeKanban logic if needed
     }
 
     // -------------------------------------------------------

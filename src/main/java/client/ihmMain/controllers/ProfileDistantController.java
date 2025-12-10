@@ -16,12 +16,6 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
-import client.ihmMain.MainCore;
-import common.dataClasses.LightUser;
-
-
-import java.io.File;
-import java.util.logging.Logger;
 
 public class ProfileDistantController {
 
@@ -95,7 +89,7 @@ public class ProfileDistantController {
             core.showHomeView();
             LOGGER.info("Navigation vers home_fxml.fxml réussie.");
         } catch (Exception e) {
-            LOGGER.severe("Erreur lors de la navigation vers home_fxml.fxml : " + e.getMessage());
+            LOGGER.severe(() -> "Erreur lors de la navigation vers home_fxml.fxml : " + e.getMessage());
         }
     }
 
@@ -162,7 +156,7 @@ public class ProfileDistantController {
 
             LOGGER.info("[UI] Profil distant affiché avec succès.");
 
-        } catch (Exception e) {
+        } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "[UI] Erreur lors de updateDistantProfile", e);
         }
     }
