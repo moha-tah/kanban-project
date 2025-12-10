@@ -33,7 +33,7 @@ public class RequestModification extends Message {
                     (user != null ? user.getUsername() : "Inconnu"));
 
             // Récupération du contexte serveur et du data server
-            var dataServer = this.getServerContext().getData();
+            var dataServer = server.ServerContext.getData();
             if (dataServer == null) {
                 System.err.println("[RequestModification] DataServer non disponible");
                 return Optional.empty();
