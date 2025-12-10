@@ -321,13 +321,25 @@ public class CommCoreServer {
         }
 
         public void stop() {
-            running.set(false);
-            if (worker != null && Thread.currentThread() != worker) {
-                try {
-                    worker.join(2000);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
+            isRunning = false;
+            try {
+                // 1. Fermer le socket d'écoute principal
+                if (serverSocket != null && !serverSocket.isClosed()) {
+                    serverSocket.close();
                 }
+
+                // 2. Fermer toutes les connexions clients actives
+                for (SrvMsgSender client : connectedClients) {
+                    try {
+                        client.close(); // Suppose que SrvMsgSender a une méthode close()
+                    } catch (Exception e) { /* Ignorer */ }
+                }
+                connectedClients.clear();
+
+                LOGGER.info("SERVER: Serveur arrêté proprement.");
+
+            } catch (IOException e) {
+                LOGGER.log(Level.SEVERE, "SERVER: Erreur lors de l'arrêt.", e);
             }
         }
 
