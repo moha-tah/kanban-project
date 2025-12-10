@@ -1,13 +1,13 @@
 package client.comm.messages;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.List;
 
+import common.dataClasses.Kanban;
 import common.dataClasses.LightKanban;
 import common.dataClasses.LightUser;
-import common.dataClasses.Kanban;
 
 public class RequestPermission extends Message {
     private static final long serialVersionUID = 1L;
@@ -63,6 +63,7 @@ public class RequestPermission extends Message {
 
                 Class<?> modelClass = model.getClass();
                 java.lang.reflect.Method getKanbansMethod = modelClass.getMethod("getInUseKanbans");
+                @SuppressWarnings("unchecked")
                 List<Kanban> serverKanbans = (List<Kanban>) getKanbansMethod.invoke(model);
 
                 for (Kanban k : serverKanbans) {

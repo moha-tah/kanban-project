@@ -1,5 +1,10 @@
 package client.ihmKanban.controllers;
 
+import java.net.URL;
+import java.util.List;
+import java.util.ResourceBundle;
+import java.util.logging.Logger;
+
 import client.MainApp;
 import client.ihmKanban.kanbanCorps;
 import client.ihmMain.MainCore;
@@ -10,11 +15,9 @@ import common.dataClasses.LightKanban;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 
-import java.net.URL;
-import java.util.List;
-import java.util.ResourceBundle;
-
 public class KanbanViewController implements Initializable {
+
+    private static final Logger LOGGER = Logger.getLogger(KanbanViewController.class.getName());
 
     // contrôleur de users.fxml injecté grâce au fx:include fx:id="usersInclude"
     @FXML
@@ -42,7 +45,7 @@ public class KanbanViewController implements Initializable {
                           List<CreateTask> taskCreations, ManageDisplay manageDisplay) {
 
         if (displayKanbanIncludeController != null) {
-            displayKanbanIncludeController.setCore(corps);
+            DisplayKanbanController.setCore(corps);
             displayKanbanIncludeController.initBoard(kanban, columns, taskCreations,manageDisplay );
             
             
@@ -51,6 +54,6 @@ public class KanbanViewController implements Initializable {
 
     public void setCore(kanbanCorps Kcorps) {
         this.corps = Kcorps;
-        corps.LOGGER.info("KanbanViewControlleur: le Corps a été rajouté .");
+        LOGGER.info("KanbanViewControlleur: le Corps a été rajouté .");
     }
 }
