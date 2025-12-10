@@ -1,13 +1,30 @@
 package client.ihmKanban.controllers;
 
+import java.io.IOException;
+import java.net.URL;
+import java.time.LocalDate;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.ResourceBundle;
+import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import client.MainApp;
 import client.ihmKanban.kanbanCorps;
 import client.ihmMain.MainCore;
 import client.ihmMain.controllers.UserCardController;
 import common.dataClasses.Column;
+import common.dataClasses.CreateColumn;
 import common.dataClasses.CreateTask;
+import common.dataClasses.DeleteColumn;
+import common.dataClasses.DeleteTask;
 import common.dataClasses.LightKanban;
 import common.dataClasses.LightUser;
+import common.dataClasses.Modification;
+import common.dataClasses.ModifyColumn;
+import common.dataClasses.ModifyTask;
 import common.dataClasses.Task;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -26,24 +43,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Popup;
-
-import java.io.IOException;
-import java.net.URL;
-import java.time.LocalDate;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.ResourceBundle;
-import java.util.UUID;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import common.dataClasses.CreateColumn;
-import common.dataClasses.DeleteColumn;
-import common.dataClasses.DeleteTask;
-import common.dataClasses.ModifyColumn;
-import common.dataClasses.ModifyTask;
-import common.dataClasses.Modification;
 
 public class DisplayKanbanController implements Initializable {
 
@@ -104,6 +103,7 @@ public class DisplayKanbanController implements Initializable {
 
     @FXML
     private void handleBack() {
+        corps.getCommPort().closingKanban(kanban, corps.getMe());
         corps.getMainPort().goHomeView();
     }
 
