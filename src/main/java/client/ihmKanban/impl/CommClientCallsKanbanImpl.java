@@ -10,6 +10,7 @@ import client.ihmKanban.kanbanCorps;
 import javafx.application.Platform;
 import client.ihmMain.controllers.HomeViewController;
 import client.ihmMain.controllers.ProfileController;
+import client.ihmMain.controllers.ProfileDistantController;
 
 
 /** Impl des callbacks de la couche Communication vers la couche Kanban (IHM Kanban). */
@@ -28,11 +29,11 @@ public class CommClientCallsKanbanImpl implements CommClientCallsKanban {
     }
     
     @Override
-    public void displayKanban(Kanban kanban, HomeViewController homeController, ProfileController profileController) {
+    public void displayKanban(Kanban kanban, HomeViewController homeController, ProfileController profileController, ProfileDistantController profileDistantController) {
         corps.LOGGER.info("[Comm->Kanban] displayKanban called for: " + kanban.getTitle());
         // Exécuter sur le thread JavaFX car appelé depuis MsgReceiver-thread
         Platform.runLater(() -> {
-            corps.displayKanban(kanban, homeController, profileController);
+            corps.displayKanban(kanban, homeController, profileController,profileDistantController);
         });
     }
 }

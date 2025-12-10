@@ -127,10 +127,14 @@ public class KanbanCardController {
         }
         
 
-        if (HomeViewController.getInstance() != null && ProfileController.getInstance() ==null){
+        if (HomeViewController.getInstance() != null && ProfileController.getInstance() ==null && ProfileDistantController.getInstance() ==null ){
                 HomeViewController.getInstance().displayKanban(this.kanban); 
-            } else {
+            } 
+        if (HomeViewController.getInstance() == null && ProfileController.getInstance() !=null && ProfileDistantController.getInstance() ==null ){
                 ProfileController.getInstance().displayKanban(this.kanban); 
+            }
+        if(HomeViewController.getInstance() == null && ProfileController.getInstance() ==null && ProfileDistantController.getInstance() !=null ){
+                ProfileDistantController.getInstance().displayKanban(this.kanban); 
             }
         
     }

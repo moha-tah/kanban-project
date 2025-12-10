@@ -3,6 +3,7 @@ import client.interfaces.MainCallsKanban;
 import client.ihmKanban.kanbanCorps;
 import client.ihmMain.controllers.HomeViewController;
 import client.ihmMain.controllers.ProfileController;
+import client.ihmMain.controllers.ProfileDistantController;
 import common.dataClasses.Kanban;
 
 
@@ -23,8 +24,8 @@ public class MainCallsKanbanImpl implements MainCallsKanban {
     }
 
     @Override
-    public void openCreateForm(Kanban kanban, HomeViewController homeController, ProfileController profileController) { 
-        corps.displayKanban(kanban, homeController, profileController); 
+    public void openCreateForm(Kanban kanban, HomeViewController homeController, ProfileController profileController, ProfileDistantController profileDistantController) { 
+        corps.displayKanban(kanban, homeController, profileController,profileDistantController); 
         kanbanCorps.LOGGER.info("[MainCallsKanban] openCreateForm called");
 
     }

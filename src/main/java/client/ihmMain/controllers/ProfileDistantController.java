@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import client.ihmKanban.controllers.DisplayKanbanController;
 import client.ihmMain.MainCore;
 import common.dataClasses.Kanban;
 import common.dataClasses.LightUser;
@@ -12,7 +13,9 @@ import common.dataClasses.User;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
@@ -35,6 +38,14 @@ public class ProfileDistantController {
     @FXML
     private GridPane kanbansGrid2;
 
+    @FXML private ScrollPane kanbanArea2; 
+
+    
+
+    public ScrollPane getKanbanArea() {
+        return kanbanArea2;
+    }  
+
     private MainCore core;
     private static ProfileDistantController instance;
 
@@ -54,7 +65,6 @@ public class ProfileDistantController {
         instance = this;
         LOGGER.info("[UI] ProfileDistantController initialisé (instance enregistrée).");
     }
-
 
     public void setUser(LightUser currentUser) {
         LOGGER.info(() -> "[UI] Ouverture du profil distant pour : " 
@@ -90,6 +100,24 @@ public class ProfileDistantController {
             LOGGER.info("Navigation vers home_fxml.fxml réussie.");
         } catch (Exception e) {
             LOGGER.severe("Erreur lors de la navigation vers home_fxml.fxml : " + e.getMessage());
+        }
+    }
+
+    public void displayKanban(Kanban kanban) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/displayKanban.fxml"));
+            Parent kanbanView = loader.load();
+
+            DisplayKanbanController controller = loader.getController();
+            //controller.set(kanban);
+
+            // Remplacer le contenu central
+            kanbanArea2.setContent(kanbanView);
+
+            core.getKanbanPort().openCreateForm(kanban,null, null,this); 
+
+        } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, "Impossible de charger displayKanban.fxml", e);
         }
     }
 

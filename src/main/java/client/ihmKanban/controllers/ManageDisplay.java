@@ -6,6 +6,7 @@ import client.MainApp;
 import client.ihmKanban.kanbanCorps;
 import client.ihmMain.controllers.HomeViewController;
 import client.ihmMain.controllers.ProfileController;
+import client.ihmMain.controllers.ProfileDistantController;
 import common.dataClasses.Kanban;
 import common.dataClasses.Column;
 import common.dataClasses.CreateTask;
@@ -31,6 +32,7 @@ public class ManageDisplay {
     // Référence au contrôleur de la vue principale qui appartient à IHM Main
     private HomeViewController homeViewController;
     private ProfileController profileController;
+    private ProfileDistantController profileDistantController;
 
     public void setHomeViewController(HomeViewController homeViewController) {
         this.homeViewController = homeViewController;
@@ -40,6 +42,9 @@ public class ManageDisplay {
         this.profileController = profileController;
     }
 
+    public void setProfileDistantController(ProfileDistantController profileDistantController) {
+        this.profileDistantController = profileDistantController;
+    }
     public HomeViewController getHomeViewController() {
         return homeViewController;
     }
@@ -48,17 +53,19 @@ public class ManageDisplay {
         return profileController;
     }
 
-    public void openKanbanScreen(Kanban kanban, HomeViewController homeController, ProfileController profileController) {
+    public void openKanbanScreen(Kanban kanban, HomeViewController homeController, ProfileController profileController, ProfileDistantController profileDistantController) {
         try {
             // Charger le "shell" kanban complet : board
             URL fxmlUrl = MainApp.class.getResource("/kanbanView.fxml");
             kanbanCorps.LOGGER.info("DEBUG FXML kanbanView");
             
-            if (homeController == null && profileController !=null){
+            if (homeController == null && profileController == null && profileDistantController == null){
                 setProfileController(profileController);
             }
-            else {
+            else if (homeController != null && profileController ==null && profileDistantController == null){
                 setHomeViewController(homeController);
+            }else {
+                setProfileDistantController(profileDistantController);
             }
 
             

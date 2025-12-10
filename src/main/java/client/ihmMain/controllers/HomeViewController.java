@@ -373,7 +373,7 @@ public class HomeViewController {
             // Remplacer le contenu central
             kanbanArea.setContent(kanbanView);
 
-            core.getKanbanPort().openCreateForm(kanban,this, null); 
+            core.getKanbanPort().openCreateForm(kanban,this, null,null); 
 
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "Impossible de charger displayKanban.fxml", e);

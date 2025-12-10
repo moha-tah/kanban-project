@@ -87,7 +87,7 @@ public class ProfileController {
             // Remplacer le contenu central
             kanbanArea.setContent(kanbanView);
 
-            core.getKanbanPort().openCreateForm(kanban,null, this); 
+            core.getKanbanPort().openCreateForm(kanban,null, this,null); 
 
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "Impossible de charger displayKanban.fxml", e);
