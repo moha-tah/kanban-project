@@ -1,31 +1,5 @@
 package client.ihmMain;
 
-import client.MainApp;
-import client.interfaces.MainCallsDataClient;
-import client.interfaces.MainCallsKanban;
-import client.interfaces.IhmMainCallsComm;
-
-import client.interfaces.DataClientCallsMain;
-import client.interfaces.KanbanCallsMain;
-import client.interfaces.CommClientCallsMain;
-
-import client.ihmMain.impl.dataCallsMainImpl;
-import client.ihmMain.controllers.HomeViewController;
-import client.ihmMain.controllers.KanbanCardController;
-import client.ihmMain.impl.commCallsMainImpl;
-import client.ihmMain.impl.kanbanCallsMainImpl;
-import common.dataClasses.Kanban;
-import common.dataClasses.LightKanban;
-import client.data.DataClientProvider;
-import client.data.MainCallsDataImplementation;
-import common.dataClasses.LightUser;
-import javafx.application.Platform;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
-import javafx.stage.Window;
-
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -36,7 +10,29 @@ import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import client.ihmMain.controllers.ProfileDistantController;
+import client.MainApp;
+import client.data.DataClientProvider;
+import client.data.MainCallsDataImplementation;
+import client.ihmMain.controllers.HomeViewController;
+import client.ihmMain.controllers.KanbanCardController;
+import client.ihmMain.impl.commCallsMainImpl;
+import client.ihmMain.impl.dataCallsMainImpl;
+import client.ihmMain.impl.kanbanCallsMainImpl;
+import client.interfaces.CommClientCallsMain;
+import client.interfaces.DataClientCallsMain;
+import client.interfaces.IhmMainCallsComm;
+import client.interfaces.KanbanCallsMain;
+import client.interfaces.MainCallsDataClient;
+import client.interfaces.MainCallsKanban;
+import common.dataClasses.Kanban;
+import common.dataClasses.LightKanban;
+import common.dataClasses.LightUser;
+import javafx.application.Platform;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
+import javafx.stage.Window;
 
 
 /**
@@ -61,6 +57,11 @@ public class MainCore {
     private final dataCallsMainImpl  datCallbacks   = new dataCallsMainImpl(this);
     private final commCallsMainImpl  commCallbacks  = new commCallsMainImpl(this);
     private final kanbanCallsMainImpl kanbanCallbacks = new kanbanCallsMainImpl(this);
+    private String currentView;
+
+
+    public void setCurrentView(String v) { currentView = v; }
+    public String getCurrentView() { return currentView; }
 
     public void launchApp() {
         users.clear(); kanbans.clear(); me = null;
@@ -297,4 +298,6 @@ public class MainCore {
     public void showLandingView() { loadScene("/landing.fxml", "Welcome");}
     public void showEditProfileView() { loadScene("/editProfile.fxml", "EditProfile");}
     public void showProfileView() { loadScene("/profile.fxml", "Profile");}
+
+    
 }

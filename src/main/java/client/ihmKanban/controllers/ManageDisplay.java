@@ -1,24 +1,22 @@
 package client.ihmKanban.controllers;
 
 import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
 
 import client.MainApp;
 import client.ihmKanban.kanbanCorps;
 import client.ihmMain.controllers.HomeViewController;
 import client.ihmMain.controllers.ProfileController;
 import client.ihmMain.controllers.ProfileDistantController;
-import common.dataClasses.Kanban;
 import common.dataClasses.Column;
 import common.dataClasses.CreateTask;
+import common.dataClasses.Kanban;
 import common.dataClasses.Task;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-
-
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Level;
 
 public class ManageDisplay {
 
@@ -53,16 +51,20 @@ public class ManageDisplay {
         return profileController;
     }
 
+    public ProfileDistantController getProfileDistantController() {
+        return profileDistantController;
+    }
+
     public void openKanbanScreen(Kanban kanban, HomeViewController homeController, ProfileController profileController, ProfileDistantController profileDistantController) {
         try {
             // Charger le "shell" kanban complet : board
             URL fxmlUrl = MainApp.class.getResource("/kanbanView.fxml");
             kanbanCorps.LOGGER.info("DEBUG FXML kanbanView");
             
-            if (homeController == null && profileController == null && profileDistantController == null){
+            if (homeController == null && profileController != null && profileDistantController == null){
                 setProfileController(profileController);
             }
-            else if (homeController != null && profileController ==null && profileDistantController == null){
+            else if (homeController != null && profileController == null && profileDistantController == null){
                 setHomeViewController(homeController);
             }else {
                 setProfileDistantController(profileDistantController);
@@ -100,12 +102,14 @@ public class ManageDisplay {
             
 
             // Afficher la fenêtre
-            if (homeController != null && profileController ==null){
+            if (homeController != null && profileController ==null && profileDistantController ==null){
                 homeController.getKanbanArea().setContent(kanbanView);
+            } else if (profileDistantController != null && homeController ==null && profileController ==null){
+                profileDistantController.getKanbanArea().setContent(kanbanView);
             } else {
                 profileController.getKanbanArea().setContent(kanbanView);
             }
-            
+
         } catch (IOException | IllegalStateException e) {
             corps.LOGGER.log(Level.INFO, "Erreur lors de l''ouverture de l''\u00e9cran Kanban : {0}", e.getMessage());
         }

@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import client.MainApp;
 import client.ihmKanban.controllers.DisplayKanbanController;
 import client.ihmMain.MainCore;
 import common.dataClasses.Kanban;
@@ -64,6 +65,8 @@ public class ProfileDistantController {
     public void initialize() {
         instance = this;
         LOGGER.info("[UI] ProfileDistantController initialisé (instance enregistrée).");
+        core = MainApp.getCore();
+        core.setCurrentView("ProfileDistant");
     }
 
     public void setUser(LightUser currentUser) {
@@ -114,7 +117,7 @@ public class ProfileDistantController {
             // Remplacer le contenu central
             kanbanArea2.setContent(kanbanView);
 
-            core.getKanbanPort().openCreateForm(kanban,null, null,this); 
+            core.getKanbanPort().openKanban(kanban,null, null,this); 
 
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "Impossible de charger displayKanban.fxml", e);

@@ -1,14 +1,16 @@
 package client.ihmMain.controllers;
 
 import java.io.IOException;
-import java.util.*;
-import java.util.logging.Logger;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import client.MainApp;
-import client.ihmMain.MainCore;
 import client.data.KanbanCallsDataImplementation;
 import client.ihmKanban.controllers.DisplayKanbanController;
+import client.ihmMain.MainCore;
 import common.dataClasses.Kanban;
 import common.dataClasses.LightKanban;
 import common.dataClasses.User;
@@ -23,10 +25,10 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import javafx.scene.effect.DropShadow;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
@@ -57,6 +59,8 @@ public class HomeViewController {
         LOGGER.info("HomeView loaded!");
 
         core = MainApp.getCore();
+        core.setCurrentView("Home");
+
         if (core == null) {
             LOGGER.severe("MainCore est null dans HomeViewController !");
         }
@@ -373,7 +377,7 @@ public class HomeViewController {
             // Remplacer le contenu central
             kanbanArea.setContent(kanbanView);
 
-            core.getKanbanPort().openCreateForm(kanban,this, null,null); 
+            core.getKanbanPort().openKanban(kanban,this, null,null); 
 
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "Impossible de charger displayKanban.fxml", e);

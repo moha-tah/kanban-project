@@ -61,6 +61,7 @@ public class ProfileController {
         LOGGER.info("ProfileController loaded!");
 
         core = MainApp.getCore();
+        core.setCurrentView("Profile");
         if (core == null) {
             LOGGER.severe("MainCore est null dans ProfileController !");
         }
@@ -87,7 +88,7 @@ public class ProfileController {
             // Remplacer le contenu central
             kanbanArea.setContent(kanbanView);
 
-            core.getKanbanPort().openCreateForm(kanban,null, this,null); 
+            core.getKanbanPort().openKanban(kanban,null, this,null); 
 
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "Impossible de charger displayKanban.fxml", e);
