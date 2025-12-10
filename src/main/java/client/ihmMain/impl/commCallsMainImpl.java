@@ -3,11 +3,15 @@ package client.ihmMain.impl;
 import client.data.KanbanCallsDataImplementation;
 import client.ihmMain.MainCore;
 import client.ihmMain.controllers.HomeViewController;
+import client.ihmMain.controllers.ProfileDistantController;
 import client.interfaces.CommClientCallsMain;
 import common.dataClasses.Kanban;
 import common.dataClasses.LightKanban;
 import common.dataClasses.LightUser;
 import common.dataClasses.User;
+import java.util.logging.Logger;
+import java.util.logging.Level;
+
 
 import java.util.List;
 
@@ -15,6 +19,8 @@ import java.util.List;
 public class commCallsMainImpl implements CommClientCallsMain {
 
     private final MainCore core;
+
+    private static final Logger LOGGER = Logger.getLogger(commCallsMainImpl.class.getName());
 
     public commCallsMainImpl(MainCore core) {
         this.core = core;
@@ -81,24 +87,31 @@ public class commCallsMainImpl implements CommClientCallsMain {
 
     @Override
     public void displayDistantProfile(User requestedUser) {
-        // Minimal implementation: update UI to show the user's profile
+        if (requestedUser == null) {
+            LOGGER.severe("[Comm->Main] displayDistantProfile: requestedUser est NULL");
+            return;
+        }
+    
+        LOGGER.info(() -> "[Comm->Main] Profil distant reçu : "
+                + requestedUser.getUsername() + " (ID=" + requestedUser.getId() + ")");
+    
         javafx.application.Platform.runLater(() -> {
-            if (requestedUser == null) {
-                java.util.logging.Logger.getLogger(commCallsMainImpl.class.getName())
-                        .warning("displayDistantProfile: user not found");
-                if (HomeViewController.getInstance() != null) {
-                    HomeViewController.getInstance().addNotification("Profil introuvable.");
-                    HomeViewController.handleNotif();
+            try {
+
+                ProfileDistantController controller = ProfileDistantController.getInstance();
+                
+                if (controller == null) {
+                    LOGGER.severe("[Comm->Main] Impossible d'afficher le profil : controller == null");
+                    return;
                 }
-                return;
-            }
-            java.util.logging.Logger.getLogger(commCallsMainImpl.class.getName())
-                    .info("Displaying distant profile for " + requestedUser.getUsername());
-            if (HomeViewController.getInstance() != null) {
-                HomeViewController.getInstance().addNotification(
-                        "Profil: " + requestedUser.getUsername() + " (" + requestedUser.getId() + ")");
-                HomeViewController.handleNotif();
+    
+                controller.updateDistantProfile(requestedUser);
+                LOGGER.info("[Comm->Main] Profil distant envoyé au controller.");
+    
+            } catch (Exception e) {
+                LOGGER.log(Level.SEVERE, "[Comm->Main] Erreur lors de l’affichage du profil distant", e);
             }
         });
     }
+    
 }

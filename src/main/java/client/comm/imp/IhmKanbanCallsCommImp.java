@@ -8,7 +8,6 @@ import common.dataClasses.LightUser;
 
 import java.io.IOException;
 import java.util.Objects;
-import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -28,16 +27,16 @@ public class IhmKanbanCallsCommImp implements IhmKanbanCallsComm {
     }
 
     @Override
-    public void sendRequestModification(LightUser user,Modification myModification ) {
-        if (user == null || myModification == null) {
+    public void sendRequestModification(LightUser user, Modification modification) {
+        if (user == null || modification == null) {
             LOGGER.warning("Paramètres invalides pour sendRequestModification");
             return;
         }
 
-        LOGGER.info(() -> "Envoi demande de modification carte ");
+        LOGGER.log(Level.INFO, "Envoi demande de modification carte {0} vers {1} par {2}", new Object[]{modification.getId(), modification.getTargetKanban().getTitle(), user.getUsername()});
 
         try {
-            RequestModification msg = new RequestModification(user, myModification);
+            RequestModification msg = new RequestModification(user, modification);
             
             if (comm.getMsgSender() != null) {
                 comm.sendMessage(msg);

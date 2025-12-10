@@ -1,23 +1,23 @@
 package client.comm.imp;
 
-import client.comm.CommCoreClient;
-import client.comm.messages.RequestPermission;
-import client.comm.messages.PermissionResponse;
-import client.comm.messages.NotifyDecision;
-import client.interfaces.IhmMainCallsComm;
-
-import java.util.Objects;
-import java.util.UUID;
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import client.comm.CommCoreClient;
 import client.comm.messages.ConnectionRequest;
+import client.MainApp;
+import common.dataClasses.User;
 import client.comm.messages.AskAddListModifiers;
+import client.comm.messages.ConnectionRequest;
+import client.comm.messages.Logout;
+import client.comm.messages.NotifyDecision;
+import client.comm.messages.PermissionResponse;
 import client.comm.messages.RequestKanban;
-import client.comm.messages.Logout; // Import ajouté
-import client.comm.messages.RequestModification;
+import client.comm.messages.RequestPermission;
+import client.interfaces.IhmMainCallsComm; // Import ajouté
 import common.dataClasses.Kanban;
 import common.dataClasses.LightKanban;
 import common.dataClasses.LightUser;
@@ -110,7 +110,13 @@ public class IhmMainCallsCommImp implements IhmMainCallsComm {
     @Override
     public void connectServer(LightUser user, List<LightKanban> kanbans) {
         LOGGER.fine(() -> "Sending ConnectionRequest with " + (kanbans != null ? kanbans.size() : 0) + " kanbans");
-        ConnectionRequest msg = new ConnectionRequest(user, kanbans);
+        User fullUser = null;
+        try {
+            if (MainApp.getCore() != null && MainApp.getCore().getDataPort() != null) {
+                fullUser = MainApp.getCore().getDataPort().getLocalUser();
+            }
+        } catch (Throwable ignored) {}
+        ConnectionRequest msg = new ConnectionRequest(user, kanbans, fullUser);
         try {
             if (commCore.getMsgSender() != null) {
                 commCore.sendMessage(msg);
@@ -144,10 +150,6 @@ public class IhmMainCallsCommImp implements IhmMainCallsComm {
         }
     }
 
-    @Override
-    public void notifyEditions(LightKanban LightKanban) {
-        // Place breakpoint to inspect LightKanban state before sending any edition notifications
-    }
 
     @Override
     public void askKanban(LightKanban LightKanbanId) {

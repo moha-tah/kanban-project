@@ -36,6 +36,8 @@ import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import client.ihmMain.controllers.ProfileDistantController;
+
 
 /**
  * Coeur IHM : orchestre les appels entre la UI et les couches DATA/COMM/KANBAN.
@@ -288,10 +290,6 @@ public class MainCore {
             controller.updatePermissionStatus(accepted);
         }
     }
-
-
-
-
 
     public void showLoginView()  { loadScene("/login.fxml",  "Login"); }
     public void showSignupView() { loadScene("/signup.fxml", "Sign up"); }
