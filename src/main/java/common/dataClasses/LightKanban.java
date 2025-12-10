@@ -10,17 +10,17 @@ public class LightKanban implements Serializable {
     private List<Access> accessList;
     
     // Constructeur
-    public LightKanban(String title, List<Access> accesList) {
+    public LightKanban(String title, List<Access> accessList) {
         this.id = UUID.randomUUID();
         this.title = title;
-        this.accessList = accesList;
+        this.accessList = accessList;
     }
     
     // Constructeur avec ID
-    public LightKanban(UUID id, String title, List<Access> acces) {
+    public LightKanban(UUID id, String title, List<Access> accessList) {
         this.id = id;
         this.title = title;
-        this.accessList = acces;
+        this.accessList = accessList;
     }
     
     // Getters
@@ -48,9 +48,20 @@ public class LightKanban implements Serializable {
     }
 
      public boolean canBeModifiedBy(LightUser user) {
-        // Logique pour vérifier si l'utilisateur peut modifier le kanban
-        // À implémenter selon les règles métier
-        return true; // Placeholder
+        // Check if the user has a role that allows modification
+        if (accessList == null || user == null) {
+            return false;
+        }
+        for (Access access : accessList) {
+            if (access.getUser() != null && access.getUser().getId() != null && 
+                user.getId() != null && access.getUser().getId().equals(user.getId())) {
+                Role role = access.getRole();
+                if (role == Role.MODIFIER) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
 

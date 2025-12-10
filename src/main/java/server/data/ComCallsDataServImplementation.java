@@ -190,10 +190,15 @@ public class ComCallsDataServImplementation implements CommCallsDataServer {
                 break;
             }
         }
+        if (kanbanToUpdate == null) {
+            // Kanban not found, handle gracefully
+            System.err.println("Kanban with ID " + kanban.getId() + " not found in inUseKanbans.");
+            return usersToNotify; // Return empty list
+        }
         modification.execute(kanbanToUpdate);
-        List <Access> accesList = kanban.getAccessList();
-        for(Access acces: accesList){
-            LightUser user = acces.getUser();
+        List <Access> accessList = kanban.getAccessList();
+        for(Access access: accessList){
+            LightUser user = access.getUser();
             usersToNotify.add(user);
         }
         return usersToNotify;
