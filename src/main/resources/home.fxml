@@ -22,7 +22,8 @@
             AnchorPane.rightAnchor="0.0">
 
         <Pane fx:id="usersBar"
-              prefWidth="200"
+              prefWidth="300"
+              minWidth="300"
               style="-fx-background-color: linear-gradient(to bottom, #1a1a1a, #4b006e); -fx-padding: 16;"
               HBox.hgrow="NEVER" />
 
@@ -67,7 +68,6 @@
           AnchorPane.topAnchor="60" AnchorPane.rightAnchor="20">
         <VBox spacing="10">
             <Label text="Notifications" style="-fx-font-size: 18; -fx-font-weight: bold;"/>
-
             <ScrollPane fitToWidth="true" hbarPolicy="NEVER" style="-fx-background-color:transparent;">
                 <VBox fx:id="notifContainer" spacing="10"/>
             </ScrollPane>

@@ -1,34 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.control.Button?>
 
-<HBox xmlns="http://javafx.com/javafx/25"
-      xmlns:fx="http://javafx.com/fxml/1"
+<HBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="client.ihmMain.controllers.UserCardController"
+      alignment="CENTER_LEFT"
       spacing="10"
-      alignment="CENTER"
-      style="-fx-background-color: transparent; -fx-padding: 5 0 5 0;">
+      prefWidth="280"
+      style="-fx-alignment: center-left;">
 
     <ImageView fx:id="avatarImageView"
-               fitWidth="32"
-               fitHeight="32"
-               preserveRatio="true">
-        <image>
-            <Image url="@profile_pic.png"/>
-        </image>
-    </ImageView>
+               fitHeight="32" fitWidth="32"
+               pickOnBounds="true" preserveRatio="true"/>
 
     <Label fx:id="nameLabel"
-           style="-fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold;" />
+           text="Username"
+           style="-fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold;"
+           wrapText="true"/>
 
-    <Button fx:id="viewProfileButton"
-            text="👤"
-            minHeight="32"
-            minWidth="32"
-            style="-fx-background-color: transparent; -fx-font-size: 16; -fx-padding: 0;"
-            onAction="#handleProfileDistantClick" />
+    <Label text="👤"
+           style="-fx-font-size: 16px; -fx-cursor: hand;"
+           onMouseClicked="#handleProfileDistantClick"/>
 </HBox>
-

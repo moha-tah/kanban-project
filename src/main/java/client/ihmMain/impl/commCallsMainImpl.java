@@ -3,10 +3,15 @@ package client.ihmMain.impl;
 import client.data.KanbanCallsDataImplementation;
 import client.ihmMain.MainCore;
 import client.ihmMain.controllers.HomeViewController;
+import client.ihmMain.controllers.ProfileDistantController;
 import client.interfaces.CommClientCallsMain;
 import common.dataClasses.Kanban;
 import common.dataClasses.LightKanban;
 import common.dataClasses.LightUser;
+import common.dataClasses.User;
+import java.util.logging.Logger;
+import java.util.logging.Level;
+
 
 import java.util.List;
 
@@ -14,6 +19,8 @@ import java.util.List;
 public class commCallsMainImpl implements CommClientCallsMain {
 
     private final MainCore core;
+
+    private static final Logger LOGGER = Logger.getLogger(commCallsMainImpl.class.getName());
 
     public commCallsMainImpl(MainCore core) {
         this.core = core;
@@ -77,4 +84,34 @@ public class commCallsMainImpl implements CommClientCallsMain {
                 + user.getUsername() + " (" + user.getId() + "), kanbans="
                 + (kanbans == null ? 0 : kanbans.size()));
     }
+
+    @Override
+    public void displayDistantProfile(User requestedUser) {
+        if (requestedUser == null) {
+            LOGGER.severe("[Comm->Main] displayDistantProfile: requestedUser est NULL");
+            return;
+        }
+    
+        LOGGER.info(() -> "[Comm->Main] Profil distant reçu : "
+                + requestedUser.getUsername() + " (ID=" + requestedUser.getId() + ")");
+    
+        javafx.application.Platform.runLater(() -> {
+            try {
+
+                ProfileDistantController controller = ProfileDistantController.getInstance();
+                
+                if (controller == null) {
+                    LOGGER.severe("[Comm->Main] Impossible d'afficher le profil : controller == null");
+                    return;
+                }
+    
+                controller.updateDistantProfile(requestedUser);
+                LOGGER.info("[Comm->Main] Profil distant envoyé au controller.");
+    
+            } catch (Exception e) {
+                LOGGER.log(Level.SEVERE, "[Comm->Main] Erreur lors de l’affichage du profil distant", e);
+            }
+        });
+    }
+    
 }

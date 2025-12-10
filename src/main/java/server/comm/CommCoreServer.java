@@ -1,11 +1,5 @@
 package server.comm;
 
-import common.dataClasses.LightUser;
-import server.ServerContext;
-import server.data.ComCallsDataServImplementation;
-import server.data.ServerModel;
-import server.interfaces.CommCallsDataServer;
-
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -18,14 +12,22 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import common.dataClasses.LightUser;
+import server.data.ComCallsDataServImplementation;
+import server.data.ServerModel;
+import server.interfaces.CommCallsDataServer;
 
 public class CommCoreServer {
 
+    private static final Logger LOGGER = Logger.getLogger(CommCoreServer.class.getName());
     private final int port;
     private ServerSocket serverSocket;
     private boolean isRunning;
     private Thread serverThread;
     private static CommCoreServer instance;
+    private CommCallsDataServer dataServer;
 
     // Liste thread-safe des clients connectés pour diffuser les mises à jour
     private final List<SrvMsgSender> connectedClients = new CopyOnWriteArrayList<>();
@@ -40,7 +42,7 @@ public class CommCoreServer {
 
     public static void triggerBroadcast() { // acces statique pour déclencher le broadcast
         if (instance != null) {
-            System.out.println("SERVER: Broadcast manuel déclenché.");
+            LOGGER.info("SERVER: Broadcast manuel déclenché.");
             instance.broadcastUsersAndKanbansUpdate();
         }
     }
@@ -53,7 +55,7 @@ public class CommCoreServer {
         for (Map.Entry<SrvMsgSender, common.dataClasses.LightUser> entry : instance.clientToUserMap.entrySet()) {
             if (entry.getValue().getId().equals(targetUserId)) {
                 try {
-                    System.out.println("SERVER: Routage message vers " + entry.getValue().getUsername());
+                    LOGGER.log(Level.INFO, "SERVER: Routage message vers {0}", entry.getValue().getUsername());
                     entry.getKey().send(message);
                     return true;
                 } catch (IOException e) {
@@ -62,7 +64,7 @@ public class CommCoreServer {
                 }
             }
         }
-        System.out.println("SERVER: Utilisateur cible " + targetUserId + " non trouvé ou déconnecté.");
+        LOGGER.log(Level.WARNING, "SERVER: Utilisateur cible {0} non trouv\u00e9 ou d\u00e9connect\u00e9.", targetUserId);
         return false;
     }
 
@@ -70,7 +72,8 @@ public class CommCoreServer {
      * Configure l'interface Data globale du serveur via ServerContext.
      */
     public void setDataInterface(CommCallsDataServer dataInterface) {
-        ServerContext.setDataInterface(dataInterface);
+        this.dataServer = dataInterface;
+        server.ServerContext.setDataInterface(dataInterface);
     }
 
     /*
@@ -84,13 +87,13 @@ public class CommCoreServer {
             System.err.println("SERVER: Port " + port + " occupé, bascule sur le port " + serverSocket.getLocalPort());
         }
         isRunning = true;
-        System.out.println("SERVER: Démarré sur le port " + serverSocket.getLocalPort());
+        LOGGER.log(Level.INFO, "SERVER: D\u00e9marr\u00e9 sur le port {0}", serverSocket.getLocalPort());
 
         serverThread = new Thread(() -> {
             while (isRunning) {
                 try {
                     Socket clientSocket = serverSocket.accept();
-                    System.out.println("SERVER: Nouveau client connecté : " + clientSocket.getInetAddress());
+                    LOGGER.log(Level.INFO, "SERVER: Nouvelle connexion TCP : {0}", clientSocket.getInetAddress());
                     new Thread(() -> handleClientConnection(clientSocket)).start();
                 } catch (IOException e) {
                     if (isRunning) {
@@ -161,6 +164,7 @@ public class CommCoreServer {
                         if (receivedMsg instanceof client.comm.messages.ConnectionRequest connReq) {
                             if (connReq.getUser() != null) {
                                 clientToUserMap.put(finalMsgSender, connReq.getUser());
+                                LOGGER.log(Level.INFO, "SERVER: Utilisateur authentifi\u00e9 : {0} (ID: {1})", new Object[]{connReq.getUser().getUsername(), connReq.getUser().getId()});
                             }
                             broadcastUsersAndKanbansUpdate();
                         }
@@ -186,9 +190,8 @@ public class CommCoreServer {
                 LightUser userId = clientToUserMap.remove(finalMsgSender);
                 if (userId != null) {
                     try {
-                        CommCallsDataServer data = ServerContext.getData();
-                        if (data != null) {
-                            ServerModel model = ((ComCallsDataServImplementation) data).getDataServProvider()
+                        if (dataServer != null) {
+                            ServerModel model = ((ComCallsDataServImplementation) dataServer).getDataServProvider()
                                     .getModel();
                             model.removeConnectedUser(userId.getId());
                             logger.log(java.util.logging.Level.INFO,
@@ -207,9 +210,8 @@ public class CommCoreServer {
 
                 // Afficher le nombre d'utilisateurs restants
                 try {
-                    CommCallsDataServer data = ServerContext.getData();
-                    if (data != null) {
-                        var users = data.getUsersList();
+                    if (dataServer != null) {
+                        var users = dataServer.getUsersList();
                         logger.log(Level.INFO, "SERVER: {0} utilisateur(s) connect\u00e9(s) restant(s).", users.size());
                     }
                 } catch (Exception e) {
@@ -231,15 +233,14 @@ public class CommCoreServer {
      */
     private void broadcastUsersAndKanbansUpdate() {
         try {
-            CommCallsDataServer data = ServerContext.getData();
-            if (data == null) {
+            if (dataServer == null) {
                 java.util.logging.Logger.getLogger(CommCoreServer.class.getName())
                         .log(java.util.logging.Level.SEVERE,
                                 "SERVER: Data interface is null in ServerContext, broadcast annulé.");
                 return;
             }
 
-            var users = data.getUsersList();
+            var users = dataServer.getUsersList();
             java.util.logging.Logger logger = java.util.logging.Logger.getLogger(CommCoreServer.class.getName());
 
             for (SrvMsgSender clientSender : connectedClients) {
@@ -251,7 +252,7 @@ public class CommCoreServer {
 
                     if (currentUser != null) {
                         // --- CORRECTION ICI : On passe l'objet LightUser directement ---
-                        visibleKanbans = data.getVisibleKanbansForUser(currentUser);
+                        visibleKanbans = dataServer.getVisibleKanbansForUser(currentUser);
                     } else {
                         visibleKanbans = new java.util.ArrayList<>();
                     }

@@ -1,6 +1,5 @@
 package client.ihmMain.controllers;
 
-import client.comm.MsgReceiver;
 import client.data.KanbanCallsDataImplementation;
 import client.ihmMain.MainCore;
 import common.dataClasses.*;

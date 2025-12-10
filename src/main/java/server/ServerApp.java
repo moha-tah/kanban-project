@@ -1,10 +1,12 @@
 package server;
 
-import server.comm.CommCoreServer;
-import server.data.DataServProvider;
-import server.data.ComCallsDataServImplementation;
-import java.util.logging.Logger;
+import java.io.IOException;
 import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import server.comm.CommCoreServer;
+import server.data.ComCallsDataServImplementation;
+import server.data.DataServProvider;
 
 /**
  * Standalone server application - runs independently of clients.
@@ -33,6 +35,8 @@ public class ServerApp {
             ComCallsDataServImplementation commImpl = ComCallsDataServImplementation.newComCallsDataServImplementation();
             commImpl.setDataServProvider(dataProvider);
             dataProvider.setDataCallsComServ(commImpl);
+            // Expose the concrete provider in ServerContext so messages can reach the model/cache
+            ServerContext.setProvider(dataProvider);
 
             // Start server
             server = new CommCoreServer(port);
@@ -51,7 +55,7 @@ public class ServerApp {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             logger.log(Level.WARNING, "Server interrupted", e);
-        } catch (Exception e) {
+        } catch (IOException e) {
             logger.log(Level.SEVERE, "Fatal error starting server", e);
             System.exit(1);
         }

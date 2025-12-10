@@ -1,7 +1,8 @@
 package client.ihmKanban.impl;
-import client.interfaces.MainCallsKanban;
 import client.ihmKanban.kanbanCorps;
 import client.ihmMain.controllers.HomeViewController;
+import client.ihmMain.controllers.ProfileController;
+import client.interfaces.MainCallsKanban;
 import common.dataClasses.Kanban;
 
 
@@ -26,6 +27,12 @@ public class MainCallsKanbanImpl implements MainCallsKanban {
         corps.displayKanban(kanban, homeController); 
         kanbanCorps.LOGGER.info("[MainCallsKanban] openCreateForm called");
 
+    }
+    
+    @Override
+    public void openKanbanViewFromProfile(Kanban kanban, ProfileController profileController){
+        corps.displayKanbanFromProfile(kanban, profileController);
+        kanbanCorps.LOGGER.info("[MainCallsKanban] openKanbanViewFromProfile called");
     }
 
 }

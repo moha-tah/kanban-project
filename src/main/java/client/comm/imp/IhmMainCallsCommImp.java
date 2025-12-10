@@ -1,26 +1,27 @@
 package client.comm.imp;
 
-import client.comm.CommCoreClient;
-import client.comm.messages.RequestPermission;
-import client.comm.messages.PermissionResponse;
-import client.comm.messages.NotifyDecision;
-import client.interfaces.IhmMainCallsComm;
-
-import java.util.Objects;
-import java.util.UUID;
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import client.comm.messages.ConnectionRequest;
+import client.MainApp;
+import client.comm.CommCoreClient;
 import client.comm.messages.AskAddListModifiers;
+import client.comm.messages.ConnectionRequest;
+import client.comm.messages.Logout;
+import client.comm.messages.NotifyDecision;
+import client.comm.messages.PermissionResponse;
 import client.comm.messages.RequestKanban;
-import client.comm.messages.Logout; // Import ajouté
 import client.comm.messages.RequestModification;
-import common.dataClasses.Kanban;
+import client.comm.messages.RequestPermission;
+import client.interfaces.IhmMainCallsComm;
+import common.dataClasses.Kanban; // Import ajouté
 import common.dataClasses.LightKanban;
 import common.dataClasses.LightUser;
+import common.dataClasses.User;
+import common.dataClasses.Modification;
 
 public class IhmMainCallsCommImp implements IhmMainCallsComm {
     private static final Logger LOGGER = Logger.getLogger(IhmMainCallsCommImp.class.getName());
@@ -42,7 +43,7 @@ public class IhmMainCallsCommImp implements IhmMainCallsComm {
         try {
             // Création et envoi du message de déconnexion
             Logout msg = new Logout(user);
-            
+
             if (commCore.getMsgSender() != null) {
                 commCore.sendMessage(msg);
                 LOGGER.info("Logout message sent successfully");
@@ -52,7 +53,7 @@ public class IhmMainCallsCommImp implements IhmMainCallsComm {
 
             // Fermer la connexion socket proprement côté client
             commCore.disconnect();
-            
+
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "Network error during logout", e);
             // En cas d'erreur réseau, déconnexion locale
@@ -100,7 +101,8 @@ public class IhmMainCallsCommImp implements IhmMainCallsComm {
         try {
             PermissionResponse msg = new PermissionResponse(LightUserId, LightKanbanId, accepted);
             commCore.sendMessage(msg);
-            LOGGER.fine(() -> "sendPermissionResponse user=" + LightUserId + " kanban=" + LightKanbanId + " accepted=" + accepted);
+            LOGGER.fine(() -> "sendPermissionResponse user=" + LightUserId + " kanban=" + LightKanbanId + " accepted="
+                    + accepted);
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "Error in sendPermissionResponse", e);
         }
@@ -109,7 +111,14 @@ public class IhmMainCallsCommImp implements IhmMainCallsComm {
     @Override
     public void connectServer(LightUser user, List<LightKanban> kanbans) {
         LOGGER.fine(() -> "Sending ConnectionRequest with " + (kanbans != null ? kanbans.size() : 0) + " kanbans");
-        ConnectionRequest msg = new ConnectionRequest(user, kanbans);
+        User fullUser = null;
+        try {
+            if (MainApp.getCore() != null && MainApp.getCore().getDataPort() != null) {
+                fullUser = MainApp.getCore().getDataPort().getLocalUser();
+            }
+        } catch (Throwable ignored) {
+        }
+        ConnectionRequest msg = new ConnectionRequest(user, kanbans, fullUser);
         try {
             if (commCore.getMsgSender() != null) {
                 commCore.sendMessage(msg);
@@ -137,15 +146,11 @@ public class IhmMainCallsCommImp implements IhmMainCallsComm {
         try {
             NotifyDecision msg = new NotifyDecision(LightUserId, LightKanbanId, accepted);
             commCore.sendMessage(msg);
-            LOGGER.fine(() -> "notifyDecision user=" + LightUserId + " kanban=" + LightKanbanId + " accepted=" + accepted);
+            LOGGER.fine(
+                    () -> "notifyDecision user=" + LightUserId + " kanban=" + LightKanbanId + " accepted=" + accepted);
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "Error in notifyDecision", e);
         }
-    }
-
-    @Override
-    public void notifyEditions(LightKanban LightKanban) {
-        // Place breakpoint to inspect LightKanban state before sending any edition notifications
     }
 
     @Override
@@ -180,18 +185,34 @@ public class IhmMainCallsCommImp implements IhmMainCallsComm {
         }
     }
 
-    public void sendRequestModification(LightUser user, UUID cardId, String newStatus) {
-        if (user == null || cardId == null || newStatus == null) {
+    @Override
+    public void requestDistantProfile(LightUser requester, java.util.UUID requestedUserId) {
+        if (requester == null || requestedUserId == null) {
+            LOGGER.warning("Invalid parameters for requestDistantProfile");
+            return;
+        }
+        try {
+            client.comm.messages.DistProfileRequest msg = new client.comm.messages.DistProfileRequest(requester.getId(),
+                    requestedUserId);
+            commCore.sendMessage(msg);
+            LOGGER.info(() -> "DistProfileRequest sent: requester=" + requester.getUsername() + ", target="
+                    + requestedUserId);
+        } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, "Network error during requestDistantProfile", e);
+        }
+    }
+
+    public void sendRequestModification(LightUser user, Modification myModification) {
+        if (user == null || myModification == null) {
             LOGGER.warning("Paramètres invalides pour sendRequestModification");
             return;
         }
 
-        LOGGER.info(() -> "Envoi demande de modification carte " + cardId + " vers " + newStatus + 
-                     " par " + user.getUsername());
+        LOGGER.info(() -> "Envoi demande de modification carte ");
 
         try {
-            RequestModification msg = new RequestModification(user, cardId, newStatus);
-            
+            RequestModification msg = new RequestModification(user, myModification);
+
             if (commCore.getMsgSender() != null) {
                 commCore.sendMessage(msg);
                 LOGGER.fine("Demande de modification envoyée avec succès");

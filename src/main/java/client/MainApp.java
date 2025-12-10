@@ -73,14 +73,8 @@ public class MainApp extends Application {
         // -------- Lancement de l'IHM --------
         core.launchMainWindow(primaryStage);
 
-        // -------- Connexion réseau (optionnelle pour tests IHM) --------
-        try {
-            comm.connect();
-        } catch (Exception e) {
-            LOGGER.info("[MainApp] Impossible de se connecter au serveur (mode test UI/offline).");
-            e.printStackTrace();
-            // On ne relance PAS l'exception, pour laisser l'IHM tourner
-        }
+        // Connexion réseau retirée: la connexion se fait via la vue de login
+        // après saisie de l'adresse et du port par l'utilisateur.
     }
 
     public static void main(String[] args) {

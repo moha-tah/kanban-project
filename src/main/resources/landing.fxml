@@ -17,9 +17,8 @@
             styleClass="landing-root"
             fx:controller="client.ihmMain.controllers.LandingPageController">
 
-    <!-- HEADER -->
     <top>
-        <HBox spacing="20" styleClass="header">
+        <HBox spacing="20" styleClass="header" alignment="CENTER_LEFT">
             <Button fx:id="logoButton" style="-fx-background-color: transparent; -fx-padding: 0;">
                 <graphic>
                     <ImageView fitHeight="40" fitWidth="40">
@@ -28,55 +27,40 @@
                 </graphic>
             </Button>
 
-            <Region prefHeight="40.0" prefWidth="50.0"/>
-
-            <HBox spacing="15" styleClass="nav">
-                <Button onAction="#showFeatures" styleClass="nav-button" text="FEATURES"/>
-                <Button onAction="#showAbout" styleClass="nav-button" text="ABOUT US"/>
-                <Button onAction="#showContact" styleClass="nav-button" text="CONTACT US"/>
-            </HBox>
+            <Region prefHeight="40.0" prefWidth="20.0"/>
 
             <Region HBox.hgrow="ALWAYS"/>
 
-            <Button onAction="#login" styleClass="nav-button" text="LOGIN"/>
+            <HBox spacing="10" alignment="CENTER_RIGHT">
+                <Button onAction="#importProfile" styleClass="nav-button" text="IMPORT PROFILE"
+                        style="-fx-border-color: #6A11CB; -fx-border-radius: 5; -fx-background-color: transparent; -fx-text-fill: #6A11CB;"/>
+
+                <Button onAction="#login" styleClass="nav-button" text="LOGIN"/>
+
+                <Button onAction="#signup" styleClass="nav-button" text="SIGN UP"
+                        style="-fx-background-color: #6A11CB; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5;"/>
+            </HBox>
         </HBox>
     </top>
 
-    <!-- CONTENU CENTRAL -->
     <center>
-        <ScrollPane fx:id="scrollPane"
-                    fitToWidth="true"
-                    hbarPolicy="NEVER"
-                    vbarPolicy="ALWAYS"
-                    styleClass="scroll-pane">
+        <ScrollPane fx:id="scrollPane" fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="ALWAYS" styleClass="scroll-pane">
             <content>
                 <VBox spacing="40" style="-fx-padding: 40;">
 
-                    <!-- Hero Section -->
                     <VBox spacing="20">
-                        <Label styleClass="hero-title"
-                               text="ORGANIZE YOUR WORK, VISUALIZE YOUR PROGRESS"/>
-                        <Label styleClass="hero-subtitle"
-                               text="Gain clarity, boost collaboration, and manage your projects effortlessly"/>
+                        <Label styleClass="hero-title" text="ORGANIZE YOUR WORK, VISUALIZE YOUR PROGRESS"/>
+                        <Label styleClass="hero-subtitle" text="Gain clarity, boost collaboration, and manage your projects effortlessly"/>
                     </VBox>
 
-                    <!-- Kanban Cards -->
                     <HBox spacing="20" styleClass="cards-container">
                         <VBox spacing="10" styleClass="status-column status-pending">
                             <Label styleClass="status-header" text="Pending"/>
                             <VBox spacing="5" styleClass="task-card">
                                 <Label styleClass="task-label" text="Product"/>
-                                <Label styleClass="task-title" text="Name of the product"/>
-                                <Label styleClass="task-label" text="Created on"/>
-                                <Label styleClass="task-date" text="May 27, 2019 12:06 PM"/>
+                                <Label styleClass="task-title" text="Design System"/>
                                 <Label styleClass="task-label" text="Priority"/>
                                 <Label styleClass="task-priority priority-low" text="Low"/>
-                                <Label styleClass="task-label" text="Owner"/>
-                                <HBox spacing="5" styleClass="task-owner">
-                                    <Rectangle arcHeight="20" arcWidth="20" height="35"
-                                               styleClass="owner-avatar" width="35"/>
-                                    <Label styleClass="owner-name" text="Jenny Wilson"/>
-                                </HBox>
                             </VBox>
                         </VBox>
 
@@ -84,17 +68,9 @@
                             <Label styleClass="status-header" text="In Process"/>
                             <VBox spacing="5" styleClass="task-card">
                                 <Label styleClass="task-label" text="Product"/>
-                                <Label styleClass="task-title" text="Name of the product"/>
-                                <Label styleClass="task-label" text="Created on"/>
-                                <Label styleClass="task-date" text="May 27, 2019 12:06 PM"/>
+                                <Label styleClass="task-title" text="API Integration"/>
                                 <Label styleClass="task-label" text="Priority"/>
                                 <Label styleClass="task-priority priority-critical" text="Critical"/>
-                                <Label styleClass="task-label" text="Owner"/>
-                                <HBox spacing="5" styleClass="task-owner">
-                                    <Rectangle arcHeight="20" arcWidth="20" height="35"
-                                               styleClass="owner-avatar" width="35"/>
-                                    <Label styleClass="owner-name" text="Jenny Wilson"/>
-                                </HBox>
                             </VBox>
                         </VBox>
 
@@ -102,17 +78,9 @@
                             <Label styleClass="status-header" text="On Hold"/>
                             <VBox spacing="5" styleClass="task-card">
                                 <Label styleClass="task-label" text="Product"/>
-                                <Label styleClass="task-title" text="Name of the product"/>
-                                <Label styleClass="task-label" text="Created on"/>
-                                <Label styleClass="task-date" text="May 27, 2019 12:06 PM"/>
+                                <Label styleClass="task-title" text="User Testing"/>
                                 <Label styleClass="task-label" text="Priority"/>
                                 <Label styleClass="task-priority priority-medium" text="Medium"/>
-                                <Label styleClass="task-label" text="Owner"/>
-                                <HBox spacing="5" styleClass="task-owner">
-                                    <Rectangle arcHeight="20" arcWidth="20" height="35"
-                                               styleClass="owner-avatar" width="35"/>
-                                    <Label styleClass="owner-name" text="Jenny Wilson"/>
-                                </HBox>
                             </VBox>
                         </VBox>
 
@@ -120,22 +88,13 @@
                             <Label styleClass="status-header" text="Finished"/>
                             <VBox spacing="5" styleClass="task-card">
                                 <Label styleClass="task-label" text="Product"/>
-                                <Label styleClass="task-title" text="Name of the product"/>
-                                <Label styleClass="task-label" text="Created on"/>
-                                <Label styleClass="task-date" text="May 27, 2019 12:06 PM"/>
+                                <Label styleClass="task-title" text="Database Setup"/>
                                 <Label styleClass="task-label" text="Priority"/>
                                 <Label styleClass="task-priority priority-high" text="High"/>
-                                <Label styleClass="task-label" text="Owner"/>
-                                <HBox spacing="5" styleClass="task-owner">
-                                    <Rectangle arcHeight="20" arcWidth="20" height="35"
-                                               styleClass="owner-avatar" width="35"/>
-                                    <Label styleClass="owner-name" text="Jenny Wilson"/>
-                                </HBox>
                             </VBox>
                         </VBox>
                     </HBox>
 
-                    <!-- Features Section -->
                     <VBox spacing="20" styleClass="features">
                         <Label styleClass="features-title" text="Key Features"/>
                         <HBox spacing="40" styleClass="features-grid">
