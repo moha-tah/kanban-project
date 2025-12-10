@@ -23,8 +23,13 @@ public class DistProfileRequest extends Message {
         this.requestedUserId = requestedUserId;
     }
 
-    public UUID requesterId() { return requesterId; }
-    public UUID requestedUserId() { return requestedUserId; }
+    public UUID requesterId() {
+        return requesterId;
+    }
+
+    public UUID requestedUserId() {
+        return requestedUserId;
+    }
 
     @Override
     public Optional<Message> handle() {
@@ -35,8 +40,20 @@ public class DistProfileRequest extends Message {
                 LOGGER.severe("Server data interface is null");
                 return Optional.empty();
             }
-            User full = null;
-            
+
+            var data = serverCtx.getData();
+            var users = data.getUsersList();
+            LightUser found = null;
+            if (users != null) {
+                for (LightUser u : users) {
+                    if (u.getId().equals(requestedUserId)) {
+                        found = u;
+                        break;
+                    }
+                }
+            }
+
+            // Reply (even null user is forwarded so client can handle "not found")
             // First, try the server-side full user cache for uniform behavior
             try {
                 server.data.DataServProvider provider = server.ServerContext.getProvider();
@@ -88,7 +105,8 @@ public class DistProfileRequest extends Message {
                                     created.size(), full.getUsername()));
                         }
                     }
-                } catch (Throwable ignored) {}
+                } catch (Throwable ignored) {
+                }
             }
             // Build answer (may be null if not found)
             LOGGER.info(String.format("[SERVER] Forwarding profile answer to requester=%s, user=%s, kanbans=%d",
@@ -107,49 +125,65 @@ public class DistProfileRequest extends Message {
     }
 
     private static common.dataClasses.User buildUserFromJson(UUID userId, String fallbackUsername, String content) {
-        if (content == null) return null;
+        if (content == null)
+            return null;
         String uName = coalesce(extractJsonString(content, "username"), fallbackUsername);
         String first = extractJsonString(content, "firstName");
-        String last  = extractJsonString(content, "lastName");
+        String last = extractJsonString(content, "lastName");
         String birth = extractJsonString(content, "birthDate");
         String avatar = extractJsonString(content, "avatar");
 
         java.time.LocalDate birthDate = null;
-        try { if (birth != null && !birth.isBlank()) birthDate = java.time.LocalDate.parse(birth); } catch (Throwable ignored) {}
+        try {
+            if (birth != null && !birth.isBlank())
+                birthDate = java.time.LocalDate.parse(birth);
+        } catch (Throwable ignored) {
+        }
 
         common.dataClasses.User user = new common.dataClasses.User(userId, uName, first, last, birthDate);
         if (avatar != null && !avatar.isBlank()) {
-            try { user.setAvatar(avatar); } catch (Throwable ignored) {}
+            try {
+                user.setAvatar(avatar);
+            } catch (Throwable ignored) {
+            }
         }
         return user;
     }
 
     private static java.util.List<common.dataClasses.Kanban> loadUserKanbans(String content) {
-        if (content == null) return null;
+        if (content == null)
+            return null;
         java.util.List<common.dataClasses.Kanban> list = new java.util.ArrayList<>();
-        // Extract kanbanIds array: naive scan for UUID strings inside [ ... ] after "kanbanIds"
+        // Extract kanbanIds array: naive scan for UUID strings inside [ ... ] after
+        // "kanbanIds"
         int keyIdx = content.indexOf("\"kanbanIds\"");
-        if (keyIdx < 0) return list;
+        if (keyIdx < 0)
+            return list;
         int arrStart = content.indexOf('[', keyIdx);
         int arrEnd = content.indexOf(']', arrStart);
-        if (arrStart < 0 || arrEnd < 0 || arrEnd <= arrStart) return list;
+        if (arrStart < 0 || arrEnd < 0 || arrEnd <= arrStart)
+            return list;
         String arraySlice = content.substring(arrStart + 1, arrEnd);
         String[] parts = arraySlice.split(",");
         for (String part : parts) {
             String idStr = part.replaceAll("[^0-9a-fA-F-]", "").trim();
-            if (idStr.length() < 36) continue;
+            if (idStr.length() < 36)
+                continue;
             try {
                 java.util.UUID kid = java.util.UUID.fromString(idStr);
                 common.dataClasses.Kanban k = readKanbanById(kid);
-                if (k != null) list.add(k);
-            } catch (IllegalArgumentException ignored) {}
+                if (k != null)
+                    list.add(k);
+            } catch (IllegalArgumentException ignored) {
+            }
         }
         return list;
     }
 
     private static common.dataClasses.Kanban readKanbanById(java.util.UUID id) {
         String content = findJsonByIdInDir(java.nio.file.Paths.get("data", "kanbans"), id);
-        if (content == null) return null;
+        if (content == null)
+            return null;
         String title = extractJsonString(content, "title");
         return new common.dataClasses.Kanban(id, title != null ? title : "Kanban");
     }
@@ -157,13 +191,15 @@ public class DistProfileRequest extends Message {
     // Generic helper to reduce duplicated directory scan code
     private static String findJsonByIdInDir(java.nio.file.Path dir, java.util.UUID id) {
         try {
-            if (!java.nio.file.Files.isDirectory(dir)) return null;
+            if (!java.nio.file.Files.isDirectory(dir))
+                return null;
             try (java.util.stream.Stream<java.nio.file.Path> stream = java.nio.file.Files.list(dir)) {
                 java.util.List<java.nio.file.Path> paths = stream.toList();
                 for (java.nio.file.Path p : paths) {
                     String content = java.nio.file.Files.readString(p);
                     String idStr = extractJsonString(content, "id");
-                    if (idStr == null) continue;
+                    if (idStr == null)
+                        continue;
                     try {
                         java.util.UUID parsed = java.util.UUID.fromString(idStr);
                         if (parsed.equals(id)) {
@@ -180,15 +216,20 @@ public class DistProfileRequest extends Message {
     }
 
     private static String extractJsonString(String json, String key) {
-        if (json == null) return null;
+        if (json == null)
+            return null;
         String pattern = "\"" + key + "\"" + "\\s*:\\s*" + "\""; // "key": "
         int idx = json.indexOf(pattern);
-        if (idx < 0) return null;
+        if (idx < 0)
+            return null;
         int start = idx + pattern.length();
         int end = json.indexOf("\"", start);
-        if (end < 0) return null;
+        if (end < 0)
+            return null;
         return json.substring(start, end);
     }
 
-    private static String coalesce(String a, String b) { return (a != null && !a.isBlank()) ? a : b; }
+    private static String coalesce(String a, String b) {
+        return (a != null && !a.isBlank()) ? a : b;
+    }
 }

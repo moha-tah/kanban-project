@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 
 import common.dataClasses.LightUser;
 import common.dataClasses.Modification;
+import server.comm.CommCoreServer;
 
 /**
  * Message pour demander la modification d'une carte dans un kanban.
@@ -27,9 +28,9 @@ public class RequestModification extends Message {
     @Override
     public Optional<Message> handle() {
         try {
-            System.out.println("[SERVER] Reçu demande de modification de carte " + modification.getId() + 
-                " pour le kanban \"" + modification.getTargetKanban().getTitle() + "\" par " + 
-                (user != null ? user.getUsername() : "Inconnu"));
+            System.out.println("[SERVER] Reçu demande de modification de carte " + myModification.getId() +
+                    " pour le kanban \"" + myModification.getTargetKanban().getTitle() + "\" par " +
+                    (user != null ? user.getUsername() : "Inconnu"));
 
             // Récupération du contexte serveur et du data server
             var dataServer = server.ServerContext.getData();
@@ -39,22 +40,23 @@ public class RequestModification extends Message {
             }
 
             // Sauvegarder la modification et récupérer les utilisateurs à notifier
-            List<LightUser> usersToNotify = 
-                dataServer.saveModifiedKanban(modification.getTargetKanban(), modification);
+            List<LightUser> usersToNotify = dataServer.saveModifiedKanban(myModification.getTargetKanban(),
+                    myModification);
 
             if (usersToNotify != null && !usersToNotify.isEmpty()) {
                 System.out.println("[SERVER] Notification de " + usersToNotify.size() + " utilisateurs");
-                
+
                 // Notifier tous les utilisateurs autorisés via CommCoreServer
                 try {
                     for (LightUser userToNotify : usersToNotify) {
                         NotifyEdition notifyMsg = new NotifyEdition(
-                            modification.getTargetKanban(), modification);
+                                myModification.getTargetKanban(), myModification);
                         CommCoreServer.sendToUser(userToNotify.getId(), notifyMsg);
                         System.out.println("[SERVER] Notification envoyée à " + userToNotify.getUsername());
                     }
                 } catch (Exception e) {
-                    System.err.println("[RequestModification] Erreur lors de l'envoi des notifications: " + e.getMessage());
+                    System.err.println(
+                            "[RequestModification] Erreur lors de l'envoi des notifications: " + e.getMessage());
                 }
             }
 
@@ -63,7 +65,7 @@ public class RequestModification extends Message {
                     .log(java.util.logging.Level.SEVERE, "Erreur lors du traitement de la modification", e);
         }
         return Optional.empty();
-    }   
+    }
 
     // Getters
     public LightUser getUser() {
