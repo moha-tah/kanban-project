@@ -25,12 +25,22 @@ public class KanbanCardController {
     @FXML private Button viewButton;
     @FXML private Button requestButton;
     @FXML private Button deleteButton;
+    
 
     private String title;
     private User creator;
     private int columns;
     private String visibility;
     private String color;
+    private boolean isPending = false;
+    private static final String BTN_PRIMARY = "-fx-background-color: #4A90E2; -fx-text-fill: white; -fx-background-radius: 6;";
+    private static final String BTN_WARNING = "-fx-background-color: #FF7043; -fx-text-fill: white; -fx-background-radius: 6;";
+    private static final String BTN_PENDING = "-fx-background-color: #F5C16C; -fx-text-fill: #333; -fx-background-radius: 6;";
+    private static final String TAG_VISIBILITY =
+    "-fx-background-color: #ECECEC; -fx-text-fill: #333; -fx-padding: 3 8; -fx-background-radius: 8;";
+
+
+
 
     public void setMainCore(MainCore core) {
     this.core = core;
@@ -38,7 +48,8 @@ public class KanbanCardController {
 
 
     // Ajoutez le paramètre boolean isMyKanban
-    public void setKanbanData(Kanban kanban, String color, boolean isMyKanban) {
+    public void setKanbanData(Kanban kanban, String color, boolean isMyKanban, boolean isParticipating)
+ {
         this.kanban = kanban;
         this.color = color;
 
@@ -54,31 +65,49 @@ public class KanbanCardController {
         creatorLabel.setText("Creator: " + cName);
         columnsLabel.setText("Columns: " + columns);
         visibilityLabel.setText("Visibility: " + visibility);
+        visibilityLabel.setStyle(TAG_VISIBILITY);
+
 
         cardRoot.setStyle("-fx-background-color: " + color + "; -fx-background-radius: 10;");
 
-        // LOGIQUE DES BOUTONS
+                // LOGIQUE DES BOUTONS
         boolean isPrivate = visibility.equalsIgnoreCase("private");
 
         if (isMyKanban) {
-            // CAS 1 : C'est à moi -> J'ai toujours accès, même si c'est privé
+            // Le propriétaire : toujours accès total
             requestButton.setVisible(false);
+            requestButton.setStyle(BTN_PRIMARY);
+
             viewButton.setVisible(true);
+            viewButton.setStyle(BTN_PRIMARY);
             deleteButton.setVisible(true);
-        } else {
-            // CAS 2 : C'est pas à moi
-            deleteButton.setVisible(false); // Je ne peux pas supprimer celui des autres
+            deleteButton.setStyle(BTN_WARNING);
+
+        }
+        else if (isParticipating) {
+            //  FIX : un utilisateur accepté doit pouvoir voir même si privé
+            requestButton.setVisible(false);
+            requestButton.setStyle(BTN_PRIMARY);
+
+            viewButton.setVisible(true);
+            viewButton.setStyle(BTN_PRIMARY);
+            deleteButton.setVisible(false);
+            deleteButton.setStyle(BTN_WARNING);
+
+        }
+        else {
+            // Utilisateur externe
+            deleteButton.setVisible(false);
 
             if (isPrivate) {
-                // Privé -> Demander accès
                 requestButton.setVisible(true);
                 viewButton.setVisible(false);
             } else {
-                // Public -> Voir
                 requestButton.setVisible(false);
                 viewButton.setVisible(true);
             }
         }
+
     }
 
 
@@ -115,7 +144,36 @@ public class KanbanCardController {
         }
 
         core.requestAccessToKanban(kanban);
+        setPendingState();
+
     }
+
+    private void setPendingState() {
+        isPending = true;
+        requestButton.setText("Pending...");
+        requestButton.setDisable(true);
+        requestButton.setStyle("-fx-background-color: #FFD580; -fx-text-fill: #333;"); // orange clair
+    }
+
+    public void updatePermissionStatus(boolean accepted) {
+        isPending = false;
+
+        if (accepted) {
+            // accès accordé
+            requestButton.setVisible(false);
+            viewButton.setVisible(true);
+            deleteButton.setVisible(false);
+        } else {
+            // refusé → on remet à l’état initial
+            requestButton.setVisible(true);
+            requestButton.setDisable(false);
+            requestButton.setText("Request Access");
+            requestButton.setStyle(""); 
+            viewButton.setVisible(false);
+        }
+    }   
+
+
   
 
     @FXML

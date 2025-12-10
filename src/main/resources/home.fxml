@@ -22,9 +22,12 @@
             AnchorPane.rightAnchor="0.0">
 
         <Pane fx:id="usersBar"
-              prefWidth="450"
-              style="-fx-background-color: linear-gradient(to bottom, #1a1a1a, #4b006e); -fx-padding: 16;"
-              HBox.hgrow="NEVER" />
+            prefWidth="200"
+            minWidth="160"
+            maxWidth="200"
+            style="-fx-background-color: linear-gradient(to bottom, #1a1a1a, #4b006e); -fx-padding: 16;"
+            HBox.hgrow="NEVER" />
+
 
         <ScrollPane fx:id="kanbanArea" fitToWidth="true" HBox.hgrow="ALWAYS" style="-fx-background-color: #E6DEE4;">
             <VBox fx:id="kanbanSections" spacing="30" style="-fx-padding: 20;">

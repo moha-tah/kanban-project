@@ -239,6 +239,14 @@ public class HomeViewController {
                     } else {
                         String name = (cId != null) ? "User " + cId.toString().substring(0, 5) : "Unknown";
                         details.setCreator(new User(name, name, "", null));
+                        // Si le créateur n'est pas connecté → on ignore le Kanban
+                        if (!isMyKanban(lk.getId(), me)) {
+                            User creator = findUserById(details.getCreatorId());
+                            if (creator == null) {
+                                continue; // IGNORER le kanban
+                            }
+                        }
+
                     }
                 }
             }
@@ -255,7 +263,7 @@ public class HomeViewController {
             }
 
             // 4. Création et tri
-            Node cardNode = createKanbanCardFromFXML(details, isMine);
+            Node cardNode = createKanbanCardFromFXML(details, isMine, isParticipating);
 
             if (cardNode != null) {
                 if (isMine) {
@@ -282,7 +290,8 @@ public class HomeViewController {
         return null;
     }
 
-    private Node createKanbanCardFromFXML(Kanban kanban, boolean isMine) {
+    private Node createKanbanCardFromFXML(Kanban kanban, boolean isMine, boolean isParticipating)
+ {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/kanban_card.fxml"));
             Node cardNode = loader.load();
@@ -290,14 +299,21 @@ public class HomeViewController {
             KanbanCardController controller = loader.getController();
             controller.setMainCore(core);
 
-            String color = "#FFFFFF";
-            if (kanban.getVisibility() != null && kanban.getVisibility().equalsIgnoreCase("Private")) {
-                color = "#FFE5E5";
+            String color;
+
+            if (isMine) {
+                color = "#D8E9FF"; // bleu
+            } else if (isParticipating) {
+                color = "#EAD8FF"; // violet
             } else {
-                color = "#E5FFE5";
+                color = "#D9FFE3"; // vert
             }
 
-            controller.setKanbanData(kanban, color, isMine);
+
+            controller.setKanbanData(kanban, color, isMine, isParticipating);
+            core.registerKanbanCardController(kanban.getId(), controller);
+
+
             return cardNode;
 
         } catch (IOException e) {
