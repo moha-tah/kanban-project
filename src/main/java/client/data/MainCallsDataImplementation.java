@@ -245,7 +245,7 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
                         LightKanban tempLight = new LightKanban(kId, "");
 
                         // 3. Appel de la méthode avec le LightKanban
-                        Kanban loadedK = KanbanCallsDataImplementation.loadKanbanFromJson(tempLight);
+                        Kanban loadedK =KanbanCallsDataImplementation.loadKanbanFromJson(tempLight);
 
                         if (loadedK != null) {
                             userKanbans.add(loadedK);
