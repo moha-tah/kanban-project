@@ -127,9 +127,14 @@ public class KanbanCardController {
         }
         
 
-        //core.getKanbanPort().openCreateForm(kanban);  //A changer  
-        HomeViewController.getInstance().displayKanban(this.kanban); //cela la mis à la place 
+        if (HomeViewController.getInstance() != null && ProfileController.getInstance() ==null){
+                HomeViewController.getInstance().displayKanban(this.kanban); 
+            } else {
+                ProfileController.getInstance().displayKanban(this.kanban); 
+            }
+        
     }
+
 
 
     @FXML

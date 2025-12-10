@@ -5,6 +5,7 @@ import java.io.IOException;
 import client.MainApp;
 import client.ihmKanban.kanbanCorps;
 import client.ihmMain.controllers.HomeViewController;
+import client.ihmMain.controllers.ProfileController;
 import common.dataClasses.Kanban;
 import common.dataClasses.Column;
 import common.dataClasses.CreateTask;
@@ -29,22 +30,38 @@ public class ManageDisplay {
 
     // Référence au contrôleur de la vue principale qui appartient à IHM Main
     private HomeViewController homeViewController;
+    private ProfileController profileController;
 
     public void setHomeViewController(HomeViewController homeViewController) {
         this.homeViewController = homeViewController;
+    }
+
+    public void setProfileController(ProfileController profileController) {
+        this.profileController = profileController;
     }
 
     public HomeViewController getHomeViewController() {
         return homeViewController;
     }
 
-    public void openKanbanScreen(Kanban kanban, HomeViewController homeController) {
+    public ProfileController getProfileController() {
+        return profileController;
+    }
+
+    public void openKanbanScreen(Kanban kanban, HomeViewController homeController, ProfileController profileController) {
         try {
             // Charger le "shell" kanban complet : board
             URL fxmlUrl = MainApp.class.getResource("/kanbanView.fxml");
             kanbanCorps.LOGGER.info("DEBUG FXML kanbanView");
+            
+            if (homeController == null && profileController !=null){
+                setProfileController(profileController);
+            }
+            else {
+                setHomeViewController(homeController);
+            }
 
-            setHomeViewController(homeController);
+            
 
 
             if (fxmlUrl == null) {
@@ -76,8 +93,12 @@ public class ManageDisplay {
             
 
             // Afficher la fenêtre
-            homeController.getKanbanArea().setContent(kanbanView);
-
+            if (homeController != null && profileController ==null){
+                homeController.getKanbanArea().setContent(kanbanView);
+            } else {
+                profileController.getKanbanArea().setContent(kanbanView);
+            }
+            
         } catch (IOException | IllegalStateException e) {
             corps.LOGGER.log(Level.INFO, "Erreur lors de l''ouverture de l''\u00e9cran Kanban : {0}", e.getMessage());
         }

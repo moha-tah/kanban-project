@@ -7,6 +7,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import client.MainApp;
+import client.ihmKanban.controllers.DisplayKanbanController;
 import client.ihmMain.MainCore;
 import common.dataClasses.Kanban;
 import common.dataClasses.LightUser;
@@ -48,6 +49,23 @@ public class ProfileController {
     private static final String DEFAULT_AVATAR = "/profile_pic.png";
     private static final Logger LOGGER = Logger.getLogger(ProfileController.class.getName());
 
+    private static ProfileController instance;
+
+    public static ProfileController getInstance(){
+        return instance;
+    }
+
+    @FXML
+    private void initialize() {
+        instance = this;
+        LOGGER.info("ProfileController loaded!");
+
+        core = MainApp.getCore();
+        if (core == null) {
+            LOGGER.severe("MainCore est null dans ProfileController !");
+        }
+    }
+
     public void setCore(MainCore core) {
         this.core = core;
     }
@@ -58,7 +76,23 @@ public class ProfileController {
         return kanbanArea;
     }  
 
-    
+    public void displayKanban(Kanban kanban) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/displayKanban.fxml"));
+            Parent kanbanView = loader.load();
+
+            DisplayKanbanController controller = loader.getController();
+            //controller.set(kanban);
+
+            // Remplacer le contenu central
+            kanbanArea.setContent(kanbanView);
+
+            core.getKanbanPort().openCreateForm(kanban,null, this); 
+
+        } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, "Impossible de charger displayKanban.fxml", e);
+        }
+    }
 
     private Node showKanban(Kanban kanban)
     {
@@ -223,4 +257,6 @@ public class ProfileController {
             }
         }
     }
+
+    
 }
