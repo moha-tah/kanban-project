@@ -12,6 +12,7 @@ Client -> CommClient : requestDistProfile(RequestedUserUUID)
 
 CommClient ->> S : DistProfileRequest(Requester, AppOwner)
 S --> CommClient : void
+ CommClient --> Client : void
 
 
 CommClient -> S : DistProfileAnswer(Requester, RequestedUser)

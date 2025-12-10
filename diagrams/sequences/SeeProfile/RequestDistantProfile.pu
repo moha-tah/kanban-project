@@ -6,7 +6,7 @@ participant "Main" as Client
 participant "CommCli" as CommClient
 actor Server as S
 
-UI -> Client : demandProfile(RequestedUserUUID)
+UI ->> Client : demandProfile(RequestedUserUUID)
 Client -> CommClient : requestDistProfile(RequestedUserUUID)
 CommClient -> S : DistProfileRequestClient(Requester, AppOwner)
 S --> CommClient : void

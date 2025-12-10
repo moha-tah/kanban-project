@@ -6,7 +6,7 @@ participant "DataCli" as DataClient
 actor Server as S
 
 
-S ->> CommClient : DistProfileRequest(Requester, AppOwner)
+S ->> CommClient : FetchDistantProfile(Requester, AppOwner)
 
 CommClient -> DataClient : getDistantProfile()
 
