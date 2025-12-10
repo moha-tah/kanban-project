@@ -7,4 +7,5 @@ public interface KanbanCallsMain {
     void closingKanbanToServer(LightKanban kanban, LightUser user);
     void closingKanban(); 
     void goHomeView();
+    void goProfileView();
 }

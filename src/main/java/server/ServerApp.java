@@ -33,6 +33,8 @@ public class ServerApp {
             ComCallsDataServImplementation commImpl = ComCallsDataServImplementation.newComCallsDataServImplementation();
             commImpl.setDataServProvider(dataProvider);
             dataProvider.setDataCallsComServ(commImpl);
+            // Expose the concrete provider in ServerContext so messages can reach the model/cache
+            ServerContext.setProvider(dataProvider);
 
             // Start server
             server = new CommCoreServer(port);

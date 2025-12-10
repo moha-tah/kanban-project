@@ -25,31 +25,18 @@ public class UsersController {
         this.core = core;
     }
 
-public void refreshUsers() {
-    LOGGER.info("Refreshing users list...");
+    public void refreshUsers() {
+        if (core == null || usersContainer == null) return;
 
-    if (core == null) {
-        LOGGER.severe("MainCore n'est pas initialisé dans UsersController !");
-        return;
-    }
-    if (usersContainer == null) {
-        LOGGER.severe("usersContainer est null dans UsersController !");
-        return;
-    }
+        usersContainer.getChildren().clear();
 
-    // On ne vide plus le titre, juste la liste
-    usersContainer.getChildren().clear();
-
-    List<LightUser> users = core.getUsersSnapshot();
-    LOGGER.info("Users from MainCore: " + users.size());
-
-    for (LightUser user : users) {
-        if (user != null) {
-            addUser(user);
+        List<LightUser> users = core.getUsersSnapshot();
+        for (LightUser user : users) {
+            if (user != null && !user.equals(core.getMe())) { // Enlever l'utilisateur actuel 
+                addUser(user);
+            }
         }
     }
-}
-
 
     private void addUser(LightUser user) {
         try {
@@ -57,18 +44,12 @@ public void refreshUsers() {
             Node userCard = loader.load();
 
             UserCardController controller = loader.getController();
-
-            String avatarPath = user.getAvatar();   // plus besoin de instanceof
-            controller.setUserData(user.getUsername(), avatarPath);
+            controller.setUserData(user.getUsername(), user.getAvatar());
 
             usersContainer.getChildren().add(userCard);
-            LOGGER.info("Added user to UI: " + user.getUsername());
 
         } catch (IOException e) {
-            LOGGER.log(Level.SEVERE,
-                    "Erreur lors du chargement de user_card.fxml pour l'utilisateur : " + user.getUsername(), e);
+            LOGGER.log(Level.SEVERE, "Erreur user_card.fxml", e);
         }
     }
-
-    
 }

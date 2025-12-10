@@ -128,6 +128,7 @@ public class CommCallsDataClientImplementation implements ComCallsDataClient{
     public void addUserToList(LightUser user, List<LightKanban> kanbans){
         //TODO
     }
+    
     @Override
     public User getDistantProfile(){
         try {

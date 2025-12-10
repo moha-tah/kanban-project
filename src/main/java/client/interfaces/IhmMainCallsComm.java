@@ -13,9 +13,9 @@ public interface IhmMainCallsComm {
     boolean connect(String host, int port);
     void connectionRequest(LightUser LightUser, List<LightKanban> listKanbans);
     void notifyDecision(LightUser LightUserId, LightKanban LightKanbanId, boolean accepted);
-    void notifyEditions(LightKanban LightKanban);
     void askKanban(LightKanban LightKanbanId);
     void connectServer(LightUser user, List<LightKanban> kanbans);
     void askAddListModifiers(LightUser userId, LightKanban kanbanId);
     void getKanban(LightKanban LightKanbanId, LightUser LightUserId);
+    void requestDistantProfile(LightUser requester, java.util.UUID requestedUserId);
 }

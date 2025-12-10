@@ -1,6 +1,8 @@
 package client.interfaces;
 
+
 import common.dataClasses.*;
+
 import java.util.List;
 
 import common.dataClasses.Modification;

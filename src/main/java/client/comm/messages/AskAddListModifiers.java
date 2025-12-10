@@ -5,7 +5,7 @@ import common.dataClasses.LightUser;
 
 import java.util.Optional;
 
-import server.ServerContext;
+import server.interfaces.CommCallsDataServer;
 
 
 public class AskAddListModifiers extends Message {
@@ -22,9 +22,7 @@ public class AskAddListModifiers extends Message {
     @Override
     public Optional<Message> handle() {
         try {
-            this.getServerContext();
-            // LOGIQUE SERVEUR
-            var dataServer = ServerContext.getData();
+            CommCallsDataServer dataServer = this.getServerContext().getData();
             
             if (dataServer != null) {
                 // TO DO
