@@ -1,10 +1,9 @@
 package client.interfaces;
 
-import common.dataClasses.Kanban;
-import common.dataClasses.Snapshot;
+
+import common.dataClasses.*;
 
 import java.util.List;
-import java.util.UUID;
 
 import common.dataClasses.Modification;
 
@@ -13,5 +12,4 @@ public interface KanbanCallsDataClient {
     List<Snapshot> getListSnapshot();
     Snapshot getSnapshot(Snapshot snap);
     void deleteSnapshot(Snapshot snap);
-    void getModified(Modification modifi, UUID kanbanID);
 }

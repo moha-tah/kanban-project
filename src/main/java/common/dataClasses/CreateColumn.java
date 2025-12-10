@@ -1,8 +1,10 @@
 package common.dataClasses;
+import java.util.List;
 import java.util.UUID;
 
 public class CreateColumn extends Modification {
     private Column newColumn;
+    private UUID previousColumnId = null;
     
     // Constructeur
     public CreateColumn(Column newColumn) {
@@ -20,24 +22,30 @@ public class CreateColumn extends Modification {
     public Column getNewColumn() {
         return newColumn;
     }
-    
+    public UUID getPreviousColumnId() {
+        return previousColumnId;
+    }
     // Setters
     public void setNewColumn(Column newColumn) {
         this.newColumn = newColumn;
     }
-    
-    @Override
-    public boolean execute() {
-        // Logique pour exécuter la création de colonne
-        // À implémenter selon les règles métier
-        return newColumn != null;
+    public void setPreviousColumnId(UUID previousColumnId) {
+        this.previousColumnId = previousColumnId;
     }
     
     @Override
-    public boolean undo() {
-        // Logique pour annuler la création de colonne
-        // À implémenter selon les règles métier
-        return newColumn != null;
+    public Kanban execute(Kanban targetKanban) {
+        List<Column> columns = targetKanban.getColumns();
+        this.previousColumnId = newColumn.getId();
+        columns.add(newColumn);
+        targetKanban.setColumns(columns);
+        return targetKanban;
+    }
+    
+    @Override
+    public Kanban undo(Kanban targetKanban) {
+        DeleteColumn undoModification = new DeleteColumn(previousColumnId);
+        return undoModification.execute(targetKanban);
     }
     
     @Override

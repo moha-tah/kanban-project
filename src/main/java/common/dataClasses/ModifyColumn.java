@@ -1,8 +1,10 @@
 package common.dataClasses;
+import java.util.List;
 import java.util.UUID;
 
 public class ModifyColumn extends Modification {
     private Column column;
+    private Column previousColumn = null;
     
     // Constructeur
     public ModifyColumn(Column column) {
@@ -16,28 +18,37 @@ public class ModifyColumn extends Modification {
         this.column = column;
     }
     
+    
     // Getters
     public Column getColumn() {
         return column;
+    }
+    public Column getPreviousColumn() {
+        return previousColumn;
     }
     
     // Setters
     public void setColumn(Column column) {
         this.column = column;
     }
-    
-    @Override
-    public boolean execute() {
-        // Logique pour exécuter la modification de colonne
-        // À implémenter selon les règles métier
-        return column != null;
+    public void setPreviousColumn(Column previousColumn) {
+        this.previousColumn = previousColumn;
     }
     
     @Override
-    public boolean undo() {
-        // Logique pour annuler la modification de colonne
-        // À implémenter selon les règles métier
-        return column != null;
+    public Kanban execute(Kanban targetKanban) {
+        List<Column> columnsList = targetKanban.getColumns();
+        this.previousColumn = columnsList.stream().filter(c -> c.getId().equals(column.getId())).findFirst().orElse(null);
+        columnsList.removeIf(c -> c.getId().equals(column.getId()));
+        columnsList.add(column);
+        targetKanban.setColumns(columnsList);
+        return targetKanban;
+    }
+    
+    @Override
+    public Kanban undo(Kanban targetKanban) {
+        ModifyColumn undoModification = new ModifyColumn(previousColumn);
+        return undoModification.execute(targetKanban);
     }
     
     @Override

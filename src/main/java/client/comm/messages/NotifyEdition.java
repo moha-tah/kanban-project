@@ -32,7 +32,7 @@ public class NotifyEdition extends Message {
 
             // 1. Sauvegarder la modification côté Data Client
             if (ctx.getData() != null) {
-                ctx.getData().saveModifiedKanban(modification, kanban);
+                ctx.getData().saveModifiedKanban(modification);
             }
 
             // 2. Notifier l'IHM Kanban de la modification

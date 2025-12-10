@@ -6,9 +6,9 @@ import java.util.UUID;
 public abstract class Modification implements Serializable {
     private static final long serialVersionUID = 1L;
     private UUID id;
-    private LightKanban targetKanban;
+    private LightKanban myKanban;
     
-    // Constructeur
+    // ConstructeurL
     public Modification() {
         this.id = UUID.randomUUID();
     }
@@ -23,24 +23,27 @@ public abstract class Modification implements Serializable {
         return id;
     }
 
-    public LightKanban getTargetKanban() {
-        return targetKanban;
+    public LightKanban getMyKanban() {
+        return myKanban;
     }
+
+
     
     // Setters
     public void setId(UUID id) {
         this.id = id;
     }
 
-    public void setTargetKanban(LightKanban targetKanban) {
-        this.targetKanban = targetKanban;
+    public void setMyKanban(LightKanban myKanban) {
+        this.myKanban = myKanban;
     }
+
     
     // Méthode abstraite pour exécuter la modification
-    public abstract boolean execute();
+    public abstract Kanban execute(Kanban targetKanban);
     
     // Méthode abstraite pour annuler la modification
-    public abstract boolean undo();
+    public abstract Kanban undo(Kanban targetKanban);
     
     @Override
     public boolean equals(Object obj) {

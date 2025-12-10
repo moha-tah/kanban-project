@@ -10,6 +10,10 @@ import java.util.*;
 import client.interfaces.MainCallsDataClient;
 import common.dataClasses.*;
 
+import java.util.List;
+import java.util.UUID;
+import java.util.HashMap;
+
 public class MainCallsDataImplementation implements MainCallsDataClient {
     private DataClientProvider provider;
     private static final java.util.logging.Logger LOGGER =
@@ -239,7 +243,7 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
                         UUID kId = UUID.fromString(cleanId);
 
                         // 2. Création d'un LightKanban temporaire pour passer l'ID
-                        LightKanban tempLight = new LightKanban(kId, "");
+                        LightKanban tempLight = new LightKanban(kId,null,null );
 
                         // 3. Appel de la méthode avec le LightKanban
                         Kanban loadedK = KanbanCallsDataImplementation.loadKanbanFromJson(tempLight);
