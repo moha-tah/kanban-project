@@ -8,7 +8,7 @@ actor Server as S
 
 UI -> Client : demandProfile(RequestedUserUUID)
 Client -> CommClient : requestDistProfile(RequestedUserUUID)
-CommClient -> S : DistProfileRequest(Requester, AppOwner)
+CommClient -> S : DistProfileRequestClient(Requester, AppOwner)
 S --> CommClient : void
 CommClient --> Client : void
 Client --> UI : void
