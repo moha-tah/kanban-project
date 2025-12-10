@@ -41,12 +41,12 @@ public class ManageDisplay {
     public void refreshKanban(Kanban kanban) {
 
         this.openKanbanScreen(kanban, homeViewController);
-        kanbanCorps.LOGGER.info("[Kanban] Refresh kanban : ");
+        LOGGER.info("[Kanban] Refresh kanban : ");
     }
 
     private Parent buildKanbanView(Kanban kanban) throws IOException {
     URL fxmlUrl = MainApp.class.getResource("/kanbanView.fxml");
-    kanbanCorps.LOGGER.info("DEBUG FXML kanbanView");
+    LOGGER.info("DEBUG FXML kanbanView");
 
     if (fxmlUrl == null) {
         throw new IllegalStateException("kanbanView.fxml introuvable dans le classpath !");
@@ -81,7 +81,7 @@ public class ManageDisplay {
         homeController.getKanbanArea().setContent(kanbanView);
 
     } catch (IOException | IllegalStateException e) {
-        kanbanCorps.LOGGER.log(Level.INFO, 
+        LOGGER.log(Level.INFO, 
             "Erreur lors de l'ouverture de l'écran Kanban : {0}", e.getMessage());
     }
 }
@@ -89,7 +89,7 @@ public class ManageDisplay {
 
     public void openKanbanScreenFromProfile(
         Kanban kanban, 
-        client.ihmMain.controllers.ProfileViewController profileController) {
+        client.ihmMain.controllers.ProfileController profileController) {
     
     try {
         setHomeViewController(null);
@@ -97,7 +97,7 @@ public class ManageDisplay {
         //profileController.getKanbanArea().setContent(kanbanView);
 
     } catch (IOException | IllegalStateException e) {
-        kanbanCorps.LOGGER.log(Level.INFO, 
+        LOGGER.log(Level.INFO, 
             "Erreur lors de l'ouverture de l'écran Kanban : {0}", e.getMessage());
     }
 }

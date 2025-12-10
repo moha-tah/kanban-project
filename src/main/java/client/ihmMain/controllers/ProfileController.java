@@ -155,7 +155,7 @@ public class ProfileController {
             core.showHomeView();
             LOGGER.info("Navigation vers home.fxml réussie.");
         } catch (Exception e) {
-            LOGGER.severe("Erreur lors de la navigation vers home.fxml : " + e.getMessage());
+            LOGGER.log(Level.SEVERE, "Erreur lors de la navigation vers home.fxml : {0}", e.getMessage());
         }
     }
 

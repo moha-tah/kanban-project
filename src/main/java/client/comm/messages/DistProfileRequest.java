@@ -41,19 +41,8 @@ public class DistProfileRequest extends Message {
                 return Optional.empty();
             }
 
-            var data = serverCtx.getData();
-            var users = data.getUsersList();
-            LightUser found = null;
-            if (users != null) {
-                for (LightUser u : users) {
-                    if (u.getId().equals(requestedUserId)) {
-                        found = u;
-                        break;
-                    }
-                }
-            }
+            User full = null;
 
-            // Reply (even null user is forwarded so client can handle "not found")
             // First, try the server-side full user cache for uniform behavior
             try {
                 server.data.DataServProvider provider = server.ServerContext.getProvider();
