@@ -88,6 +88,7 @@ public class DisplayKanbanController implements Initializable {
 
     @FXML
     private void handleBack() {
+        corps.getCommPort().closingKanban(kanban, corps.getMe());
         corps.getMainPort().goHomeView();
     }
 
