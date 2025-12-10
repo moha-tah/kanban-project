@@ -1,10 +1,5 @@
 package server.comm;
 
-import common.dataClasses.LightUser;
-import server.data.ComCallsDataServImplementation;
-import server.data.ServerModel;
-import server.interfaces.CommCallsDataServer;
-
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -17,6 +12,11 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
+
+import common.dataClasses.LightUser;
+import server.data.ComCallsDataServImplementation;
+import server.data.ServerModel;
+import server.interfaces.CommCallsDataServer;
 
 public class CommCoreServer {
 
@@ -71,6 +71,7 @@ public class CommCoreServer {
      */
     public void setDataInterface(CommCallsDataServer dataInterface) {
         this.dataServer = dataInterface;
+        server.ServerContext.setDataInterface(dataInterface);
     }
 
     /*
@@ -90,7 +91,7 @@ public class CommCoreServer {
             while (isRunning) {
                 try {
                     Socket clientSocket = serverSocket.accept();
-                    System.out.println("SERVER: Nouveau client connecté : " + clientSocket.getInetAddress());
+                    System.out.println("SERVER: Nouvelle connexion TCP : " + clientSocket.getInetAddress());
                     new Thread(() -> handleClientConnection(clientSocket)).start();
                 } catch (IOException e) {
                     if (isRunning) {
@@ -161,6 +162,7 @@ public class CommCoreServer {
                         if (receivedMsg instanceof client.comm.messages.ConnectionRequest connReq) {
                             if (connReq.getUser() != null) {
                                 clientToUserMap.put(finalMsgSender, connReq.getUser());
+                                System.out.println("SERVER: Utilisateur authentifié : " + connReq.getUser().getUsername() + " (ID: " + connReq.getUser().getId() + ")");
                             }
                             broadcastUsersAndKanbansUpdate();
                         }
