@@ -88,6 +88,7 @@ public class DisplayKanbanController implements Initializable {
 
     @FXML
     private void handleBack() {
+        corps.getCommPort().closingKanban(kanban, corps.getMe());
         corps.getMainPort().goHomeView();
     }
 
@@ -230,7 +231,7 @@ public class DisplayKanbanController implements Initializable {
         addPopupButton(box, "ADD TASK", "#ff8c1a", "black", () -> showAddTaskPopup(col, anchorNode));
         addPopupButton(box, "EDIT COLUMN", "#c0c0ff", "black", () -> showEditColumnPopup(col, anchorNode));
         addPopupButton(box, "DELETE COLUMN", "#ff6666", "black", () -> {
-            kanbanCorps.LOGGER.info("DELETE COLUMN : " + col.getTitle());
+            LOGGER.log(Level.INFO, "DELETE COLUMN : {0}", col.getTitle());
             corps.getCommPort().sendRequestModification(corps.getMe(), new DeleteColumn(col.getId()));
         });
 
@@ -245,7 +246,7 @@ public class DisplayKanbanController implements Initializable {
         addPopupButton(box, "SEE USERS", "#c0c0ff", "black", () -> showTaskUsersPopup(task, anchorNode));
         addPopupButton(box, "EDIT TASK", "#d0d0d0", "black", () -> showEditTaskPopup(task, anchorNode));
         addPopupButton(box, "DELETE TASK", "#ff6666", "black", () -> {
-            kanbanCorps.LOGGER.info("DELETE TASK : " + task.getTitle());
+            LOGGER.log(Level.INFO, "DELETE TASK : {0}", task.getTitle());
             corps.getCommPort().sendRequestModification(corps.getMe(), new DeleteTask(task.getId()));
         });
 
@@ -266,7 +267,7 @@ public class DisplayKanbanController implements Initializable {
 
         for (Column col : columns) {
             addPopupButton(box, col.getTitle(), col.getColor() != null ? col.getColor() : "#5D8BF4", "white", () -> {
-                kanbanCorps.LOGGER.info("Change status of task '" + task.getTitle() + "' to column '" + col.getTitle() + "'");
+                LOGGER.log(Level.INFO, "Change status of task ''{0}'' to column ''{1}''", new Object[]{task.getTitle(), col.getTitle()});
                 statusBtn.setText(col.getTitle() + " ▼");
                 corps.getCommPort().sendRequestModification(corps.getMe(), new MoveTask(task.getId(), col.getId()));
             });
@@ -281,7 +282,7 @@ public class DisplayKanbanController implements Initializable {
         showGenericColumnPopup(anchorNode, "ADD COLUMN", null, (title, color) -> {
             Column col = new Column(title, color);
             corps.getCommPort().sendRequestModification(corps.getMe(), new CreateColumn(col));
-            kanbanCorps.LOGGER.info("Nouvelle colonne créée : " + title);
+            LOGGER.log(Level.INFO, "Nouvelle colonne cr\u00e9\u00e9e : {0}", title);
         });
     }
 
@@ -291,7 +292,7 @@ public class DisplayKanbanController implements Initializable {
             col.setColor(color);
             corps.getCommPort().sendRequestModification(corps.getMe(), new ModifyColumn(col));
             renderKanban();
-            kanbanCorps.LOGGER.info("Colonne modifiée : " + title);
+            LOGGER.log(Level.INFO, "Colonne modifi\u00e9e : {0}", title);
         });
     }
 
@@ -360,7 +361,7 @@ public class DisplayKanbanController implements Initializable {
         showGenericTaskPopup("ADD TASK", null, col, anchorNode, (taskTitle, taskDesc) -> {
             Task tache = new Task(taskTitle, taskDesc);
             corps.getCommPort().sendRequestModification(corps.getMe(), new CreateTask(tache, col.getId()));
-            kanbanCorps.LOGGER.info("Nouvelle tâche créée : " + taskTitle);
+            LOGGER.log(Level.INFO, "Nouvelle t\u00e2che cr\u00e9\u00e9e : {0}", taskTitle);
         });
     }
 
@@ -370,7 +371,7 @@ public class DisplayKanbanController implements Initializable {
             task.setDescription(taskDesc);
             corps.getCommPort().sendRequestModification(corps.getMe(), new ModifyTask(task));
             renderKanban();
-            kanbanCorps.LOGGER.info("Tâche modifiée : " + taskTitle);
+            LOGGER.log(Level.INFO, "T\u00e2che modifi\u00e9e : {0}", taskTitle);
         });
     }
 

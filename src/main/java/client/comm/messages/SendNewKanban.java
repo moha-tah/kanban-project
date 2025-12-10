@@ -1,6 +1,8 @@
 package client.comm.messages;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Optional;
+
 import common.dataClasses.Kanban;
 import common.dataClasses.LightKanban;
 // RETIRÉ : import server.ServerContext; (Cause du crash client)
@@ -36,7 +38,7 @@ public class SendNewKanban extends Message {
                         java.lang.reflect.Method triggerMethod = commClass.getMethod("triggerBroadcast");
                         triggerMethod.invoke(null);
                         System.out.println("SERVEUR: Broadcast déclenché après création.");
-                    } catch (Exception e) {
+                    } catch (ClassNotFoundException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
                         System.err.println("SERVEUR: Impossible de déclencher le broadcast : " + e.getMessage());
                     }
 
@@ -45,7 +47,7 @@ public class SendNewKanban extends Message {
             }
         } catch (ClassNotFoundException e) {
             // Normal : Le client n'a pas ServerContext, on ignore.
-        } catch (Throwable t) {
+        } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException t) {
             java.util.logging.Logger.getLogger(SendNewKanban.class.getName())
                     .log(java.util.logging.Level.SEVERE, "Erreur traitement SendNewKanban", t);
         }

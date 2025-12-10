@@ -1,0 +1,19 @@
+@startuml
+title See Distant Profile (Request/Response)
+
+participant "CommCli" as CommClient
+participant "DataCli" as DataClient
+actor Server as S
+
+
+S ->> CommClient : DistProfileRequest(Requester, AppOwner)
+
+CommClient -> DataClient : getDistantProfile()
+
+DataClient --> CommClient : User
+
+CommClient ->> S : DistProfileAnswer(Requester, RequestedUser)
+
+
+
+@enduml 

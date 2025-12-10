@@ -1,7 +1,7 @@
 package server;
 
-import server.interfaces.CommCallsDataServer;
 import server.data.DataServProvider;
+import server.interfaces.CommCallsDataServer;
 
 public final class ServerContext {
 
@@ -13,7 +13,7 @@ public final class ServerContext {
         serverData = data;
     }
 
-    public CommCallsDataServer getData() {
+    public static CommCallsDataServer getData() {
         return serverData;
     }
 

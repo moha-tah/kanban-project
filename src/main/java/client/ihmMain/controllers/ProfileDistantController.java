@@ -89,7 +89,7 @@ public class ProfileDistantController {
             core.showHomeView();
             LOGGER.info("Navigation vers home_fxml.fxml réussie.");
         } catch (Exception e) {
-            LOGGER.severe("Erreur lors de la navigation vers home_fxml.fxml : " + e.getMessage());
+            LOGGER.severe(() -> "Erreur lors de la navigation vers home_fxml.fxml : " + e.getMessage());
         }
     }
 
@@ -156,7 +156,7 @@ public class ProfileDistantController {
 
             LOGGER.info("[UI] Profil distant affiché avec succès.");
 
-        } catch (Exception e) {
+        } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "[UI] Erreur lors de updateDistantProfile", e);
         }
     }

@@ -21,7 +21,7 @@ public class kanbanCallsMainImpl implements KanbanCallsMain {
 
     @Override
     public void closingKanban(){
-        // core.onCloseKanban();
+        //core.onCloseKanban();
     }
 
     @Override
