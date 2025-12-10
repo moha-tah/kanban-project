@@ -79,10 +79,12 @@ public class KanbanCallsDataImplementation implements KanbanCallsDataClient {
         this.provider = provider;
     }
 
+    @Override
     public void saveSnapshot(Kanban kanban) {
         // TODO
     }
 
+    
     public void saveKanban(Kanban kanban) {
         if (provider == null) {
             throw new IllegalStateException("KanbanCallsDataImplementation: provider is null");
@@ -184,6 +186,7 @@ public class KanbanCallsDataImplementation implements KanbanCallsDataClient {
         return kanbans;
     }
 
+    @Override
     public List<Snapshot> getListSnapshot() {
         // TODO: à implémenter proprement
         return new List<Snapshot>() {
@@ -282,15 +285,18 @@ public class KanbanCallsDataImplementation implements KanbanCallsDataClient {
         };
     }
 
+    @Override
     public Snapshot getSnapshot(Snapshot snap) {
         // TODO
         return new Snapshot();
     }
 
+    @Override
     public void deleteSnapshot(Snapshot snap) {
         // TODO
     }
 
+    @Override
     public void getModified(Modification modifi, UUID kanbanID) {
         // TODO
     }
