@@ -11,7 +11,6 @@ import client.comm.messages.ConnectionRequest;
 import client.MainApp;
 import common.dataClasses.User;
 import client.comm.messages.AskAddListModifiers;
-import client.comm.messages.ConnectionRequest;
 import client.comm.messages.Logout;
 import client.comm.messages.NotifyDecision;
 import client.comm.messages.PermissionResponse;
@@ -117,8 +116,7 @@ public class IhmMainCallsCommImp implements IhmMainCallsComm {
             if (MainApp.getCore() != null && MainApp.getCore().getDataPort() != null) {
                 fullUser = MainApp.getCore().getDataPort().getLocalUser();
             }
-        } catch (Throwable ignored) {
-        }
+        } catch (Throwable ignored) {}
         ConnectionRequest msg = new ConnectionRequest(user, kanbans, fullUser);
         try {
             if (commCore.getMsgSender() != null) {
@@ -193,11 +191,9 @@ public class IhmMainCallsCommImp implements IhmMainCallsComm {
             return;
         }
         try {
-            client.comm.messages.DistProfileRequest msg = new client.comm.messages.DistProfileRequest(requester.getId(),
-                    requestedUserId);
+            client.comm.messages.DistProfileRequest msg = new client.comm.messages.DistProfileRequest(requester.getId(), requestedUserId);
             commCore.sendMessage(msg);
-            LOGGER.info(() -> "DistProfileRequest sent: requester=" + requester.getUsername() + ", target="
-                    + requestedUserId);
+            LOGGER.info(() -> "DistProfileRequest sent: requester=" + requester.getUsername() + ", target=" + requestedUserId);
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "Network error during requestDistantProfile", e);
         }
