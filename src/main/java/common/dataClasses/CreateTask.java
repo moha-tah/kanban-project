@@ -54,6 +54,7 @@ public class CreateTask extends Modification {
         List<Task> listTasks = targetKanban.getTasks();
         listTasks.add(newTask);
         targetKanban.modifyHashmap(listTasks, col);
+        targetKanban.setTasks(listTasks);
         return targetKanban;
     }
     
