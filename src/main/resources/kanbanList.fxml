@@ -1,0 +1,32 @@
+<VBox fx:id="kanbanSections" spacing="30" style="-fx-padding: 20;">
+    <!-- Search + Create -->
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <TextField fx:id="searchField" promptText="Search Kanbans..."
+            HBox.hgrow="ALWAYS"
+            style="-fx-background-color: white; -fx-border-color: #ccc; -fx-border-radius: 20; -fx-background-radius: 20; -fx-padding: 8 15; -fx-font-size: 14px;"/>
+        <Button fx:id="createKanbanButton" text="Create Kanban" onAction="#handleCreateKanban"
+            style="-fx-background-color: #000; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 20; -fx-padding: 8 18;"/>
+    </HBox>
+
+    <!-- Sections Kanban -->
+    <VBox spacing="10">
+        <Label text="CREATED KANBANS ▼" style="-fx-font-size: 18px; -fx-font-weight: bold;" />
+        <ScrollPane hbarPolicy="AS_NEEDED" vbarPolicy="NEVER" fitToHeight="true" style="-fx-background-color: transparent;">
+            <HBox fx:id="createdKanbansContainer" spacing="15" style="-fx-padding: 5;" />
+        </ScrollPane>
+    </VBox>
+
+    <VBox spacing="10">
+        <Label text="KANBANS I PARTICIPATE IN ▼" style="-fx-font-size: 18px; -fx-font-weight: bold;" />
+        <ScrollPane hbarPolicy="AS_NEEDED" vbarPolicy="NEVER" fitToHeight="true" style="-fx-background-color: transparent;">
+            <HBox fx:id="participateKanbansContainer" spacing="15" style="-fx-padding: 5;" />
+        </ScrollPane>
+    </VBox>
+
+    <VBox spacing="10">
+        <Label text="KANBANS AVAILABLE ▼" style="-fx-font-size: 18px; -fx-font-weight: bold;" />
+        <ScrollPane hbarPolicy="AS_NEEDED" vbarPolicy="NEVER" fitToHeight="true" style="-fx-background-color: transparent;">
+            <HBox fx:id="availableKanbansContainer" spacing="15" style="-fx-padding: 5;" />
+        </ScrollPane>
+    </VBox>
+</VBox>
