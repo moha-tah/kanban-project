@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 import client.MainApp;
 import client.comm.CommCoreClient;
 import client.comm.messages.AskAddListModifiers;
+import client.comm.messages.ConnectionRequest;
 import client.comm.messages.Logout;
 import client.comm.messages.NotifyDecision;
 import client.comm.messages.PermissionResponse;
