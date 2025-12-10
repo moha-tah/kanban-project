@@ -1,21 +1,17 @@
 @startuml
-title See Distant Profile (End-to-End Flow)
+title See Distant Profile 
 
 actor "UI" as UI
 participant "Main" as Client
 participant "CommCli" as CommClient
-participant "DataCli" as DataClient
 actor Server as S
 
-UI -> Client : demandProfile(RequestedUserUUID)
+UI ->> Client : demandProfile(RequestedUserUUID)
 
 Client -> CommClient : requestDistProfile(RequestedUserUUID)
 
-CommClient -> S : DistProfileRequest(Requester, AppOwner)
+CommClient ->> S : DistProfileRequest(Requester, AppOwner)
 S --> CommClient : void
-
-CommClient -> DataClient : getDistantProfile()
-DataClient --> CommClient : User
 
 
 CommClient -> S : DistProfileAnswer(Requester, RequestedUser)
