@@ -12,6 +12,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import common.dataClasses.LightUser;
 import server.data.ComCallsDataServImplementation;
@@ -20,6 +21,7 @@ import server.interfaces.CommCallsDataServer;
 
 public class CommCoreServer {
 
+    private static final Logger LOGGER = Logger.getLogger(CommCoreServer.class.getName());
     private final int port;
     private ServerSocket serverSocket;
     private boolean isRunning;
@@ -40,7 +42,7 @@ public class CommCoreServer {
 
     public static void triggerBroadcast() { // acces statique pour déclencher le broadcast
         if (instance != null) {
-            System.out.println("SERVER: Broadcast manuel déclenché.");
+            LOGGER.info("SERVER: Broadcast manuel déclenché.");
             instance.broadcastUsersAndKanbansUpdate();
         }
     }
@@ -53,7 +55,7 @@ public class CommCoreServer {
         for (Map.Entry<SrvMsgSender, common.dataClasses.LightUser> entry : instance.clientToUserMap.entrySet()) {
             if (entry.getValue().getId().equals(targetUserId)) {
                 try {
-                    System.out.println("SERVER: Routage message vers " + entry.getValue().getUsername());
+                    LOGGER.log(Level.INFO, "SERVER: Routage message vers {0}", entry.getValue().getUsername());
                     entry.getKey().send(message);
                     return true;
                 } catch (IOException e) {
@@ -62,7 +64,7 @@ public class CommCoreServer {
                 }
             }
         }
-        System.out.println("SERVER: Utilisateur cible " + targetUserId + " non trouvé ou déconnecté.");
+        LOGGER.log(Level.WARNING, "SERVER: Utilisateur cible {0} non trouv\u00e9 ou d\u00e9connect\u00e9.", targetUserId);
         return false;
     }
 
@@ -85,13 +87,13 @@ public class CommCoreServer {
             System.err.println("SERVER: Port " + port + " occupé, bascule sur le port " + serverSocket.getLocalPort());
         }
         isRunning = true;
-        System.out.println("SERVER: Démarré sur le port " + serverSocket.getLocalPort());
+        LOGGER.log(Level.INFO, "SERVER: D\u00e9marr\u00e9 sur le port {0}", serverSocket.getLocalPort());
 
         serverThread = new Thread(() -> {
             while (isRunning) {
                 try {
                     Socket clientSocket = serverSocket.accept();
-                    System.out.println("SERVER: Nouvelle connexion TCP : " + clientSocket.getInetAddress());
+                    LOGGER.log(Level.INFO, "SERVER: Nouvelle connexion TCP : {0}", clientSocket.getInetAddress());
                     new Thread(() -> handleClientConnection(clientSocket)).start();
                 } catch (IOException e) {
                     if (isRunning) {
@@ -162,7 +164,7 @@ public class CommCoreServer {
                         if (receivedMsg instanceof client.comm.messages.ConnectionRequest connReq) {
                             if (connReq.getUser() != null) {
                                 clientToUserMap.put(finalMsgSender, connReq.getUser());
-                                System.out.println("SERVER: Utilisateur authentifié : " + connReq.getUser().getUsername() + " (ID: " + connReq.getUser().getId() + ")");
+                                LOGGER.log(Level.INFO, "SERVER: Utilisateur authentifi\u00e9 : {0} (ID: {1})", new Object[]{connReq.getUser().getUsername(), connReq.getUser().getId()});
                             }
                             broadcastUsersAndKanbansUpdate();
                         }
