@@ -1,11 +1,20 @@
 package client.data;
 
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import java.util.*;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import static java.nio.file.StandardCopyOption.*;
 
 import client.interfaces.MainCallsDataClient;
 import common.dataClasses.*;
@@ -346,7 +355,30 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
 
     @Override
     public void importMyProfile(String path){
-        throw new UnsupportedOperationException("importMyProfile not implemented yet");
+        // choper le champ passwordHash et mettre à jour le fichier users avec
+        Path filePath = Paths.get(path);   
+
+        try{
+            //parser to read data from the file
+            Object o = new JSONParser().parse(new FileReader(path));
+            JSONObject profile = (JSONObject) o;
+
+            // get the correct directory to copy the file
+            Path newFile = USERS_DIR.resolve(profile.get("username") + ".json");
+
+            Files.copy(filePath, newFile);
+
+            String usersFile = USERS_FILE.toString();
+
+            Object u = new JSONParser().parse(new FileReader(usersFile));
+            JSONObject users = (JSONObject) u;
+            users.put(profile.get("username"), profile.get("passworHash") );
+            Files.write(USERS_FILE, users.toJSONString().getBytes(StandardCharsets.UTF_8));
+        } catch(IOException e){
+            throw new RuntimeException("Failed to load profile from JSON", e);
+        }catch(ParseException e){
+            throw new RuntimeException("Failed to load parse JSON file", e);
+        }
     }
 
     @Override
@@ -431,8 +463,7 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
         }
     }
 
-    @Override
-    public User getLocalUser () {
+    public User getLocalUser() {
         ClientModel myModel = provider.getMyModel();
         User localUser = myModel.getLocalUser();
         return localUser;
