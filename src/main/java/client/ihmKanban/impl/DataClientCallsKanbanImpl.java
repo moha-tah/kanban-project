@@ -25,6 +25,15 @@ public class DataClientCallsKanbanImpl implements DataClientCallsKanban {
         LOGGER.log(Level.INFO, "[Data->kanban] Display kanban : kanban={0}", kanban);
 
     }
+
+    @Override
+    public void updateKanban(Kanban kanban) {
+        corps.updateKanban(kanban);
+
+        kanbanCorps.LOGGER.info("[Data->kanban] Display kanban : ");
+
+    }
+
 }
 
 
