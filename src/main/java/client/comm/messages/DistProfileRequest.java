@@ -157,7 +157,7 @@ public class DistProfileRequest extends Message {
         String content = findJsonByIdInDir(java.nio.file.Paths.get("data", "kanbans"), id);
         if (content == null) return null;
         String title = extractJsonString(content, "title");
-        return new common.dataClasses.Kanban(id, title != null ? title : "Kanban");
+        return new common.dataClasses.Kanban(id, title != null ? title : "Kanban", new java.util.ArrayList<>());
     }
 
     // Generic helper to reduce duplicated directory scan code
