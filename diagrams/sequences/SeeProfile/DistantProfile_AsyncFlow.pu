@@ -7,10 +7,6 @@ actor "AppOwner" as AppOwner
 
 AppRequester ->> CommServer : DistProfileRequest(Requester, RequestedUserUUID)
 CommServer ->> AppOwner : FetchDistantProfile(Requester, RequestedUserUUID)
-<<<<<<< HEAD
-=======
 AppOwner ->> CommServer : DistProfileAnswer(Requester, RequestedUser)
->>>>>>> 2691be1fc506a44a68f8634df32445a92de1719c
-CommServer ->> AppRequester : ForwardProfileAnswer(Requester, RequestedUser)
 
 @enduml
