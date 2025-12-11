@@ -106,31 +106,32 @@ public class CommCoreClient {
     public void connect() throws IOException {
         socket = new Socket(serverAddress, serverPort);
         out = new ObjectOutputStream(socket.getOutputStream());
-        out.flush(); // IMPORTANT: Flush après création de ObjectOutputStream pour éviter deadlock
+        out.flush();
         in = new ObjectInputStream(socket.getInputStream());
-        // initialize message helpers
+
         this.msgSender = new MsgSender(out);
 
-        this.msgReceiver = new MsgReceiver(in, obj -> {
-            if (obj instanceof Message msg) {
-                try {
-                    // Ensure the runtime-only client context is attached before handling.
-                    if (this.clientContext != null) {
-                        msg.setClientContext(this.clientContext);
-                    }
-
-                    Optional<Message> response = msg.handle();
-
-                    if (response.isPresent()) {
-                        sendMessage(response.get());
-                    }
-                } catch (Exception e) {
-                    // Log l'erreur mais ne tue pas le thread receiver
-                    java.util.logging.Logger.getLogger(CommCoreClient.class.getName())
-                            .log(java.util.logging.Level.SEVERE, "MsgReceiver: Exception in handler.", e);
+        this.msgReceiver = new MsgReceiver(in, msg -> {
+            try {
+                if (this.clientContext != null) {
+                    msg.setClientContext(this.clientContext);
                 }
+
+                Optional<Message> response = msg.handle();
+
+                if (response.isPresent()) {
+                    sendMessage(response.get());
+                }
+            } catch (Exception e) {
+                java.util.logging.Logger.getLogger(CommCoreClient.class.getName())
+                        .log(java.util.logging.Level.SEVERE, "MsgReceiver: Exception in handler.", e);
+            }
+        }, () -> {
+            if (this.clientContext != null && this.clientContext.getMainComm() != null) {
+                this.clientContext.getMainComm().handleServerConnectionLost();
             }
         });
+
         this.msgReceiver.start();
     }
 

@@ -321,13 +321,25 @@ public class CommCoreServer {
         }
 
         public void stop() {
-            running.set(false);
-            if (worker != null && Thread.currentThread() != worker) {
-                try {
-                    worker.join(2000);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
+            isRunning = false;
+            try {
+                // 1. Fermer le socket d'écoute principal
+                if (serverSocket != null && !serverSocket.isClosed()) {
+                    serverSocket.close();
                 }
+
+                // 2. Fermer toutes les connexions clients actives
+                for (SrvMsgSender client : connectedClients) {
+                    try {
+                        client.close(); // Suppose que SrvMsgSender a une méthode close()
+                    } catch (Exception e) { /* Ignorer */ }
+                }
+                connectedClients.clear();
+
+                LOGGER.info("SERVER: Serveur arrêté proprement.");
+
+            } catch (IOException e) {
+                LOGGER.log(Level.SEVERE, "SERVER: Erreur lors de l'arrêt.", e);
             }
         }
 
@@ -339,21 +351,17 @@ public class CommCoreServer {
                     try {
                         msg = in.readObject();
                     } catch (java.io.EOFException e) {
-                        // EOFException est normale quand le client ferme la connexion proprement
                         java.util.logging.Logger.getLogger(SrvMsgReceiver.class.getName())
                                 .log(java.util.logging.Level.FINE,
                                         "SrvMsgReceiver: Client déconnecté (EOF).");
                         break;
                     } catch (IOException e) {
-                        // Traiter les SocketException (connection reset) comme une déconnexion normale
                         java.util.logging.Logger logger = java.util.logging.Logger
                                 .getLogger(SrvMsgReceiver.class.getName());
                         if (e instanceof java.net.SocketException) {
-                            // Connection reset / abort — log informatif sans stacktrace
                             logger.log(java.util.logging.Level.INFO,
                                     "SrvMsgReceiver: I/O error while reading message: {0}", e.getMessage());
                         } else {
-                            // Autres erreurs I/O gardent la stacktrace pour le débogage
                             logger.log(java.util.logging.Level.WARNING,
                                     "SrvMsgReceiver: I/O error while reading message.", e);
                         }
@@ -373,7 +381,6 @@ public class CommCoreServer {
                                 "SrvMsgReceiver: Class not found while reading message.", e);
             } finally {
                 running.set(false);
-                // Notifier que le client est déconnecté
                 if (onDisconnect != null) {
                     try {
                         onDisconnect.run();
