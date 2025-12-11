@@ -1,10 +1,13 @@
 package client.comm;
 
-import java.io.ObjectInputStream;
+import client.comm.messages.Message;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Runnable that continuously reads objects from an ObjectInputStream and
@@ -12,13 +15,16 @@ import java.util.function.Consumer;
  */
 public class MsgReceiver implements Runnable, AutoCloseable {
     private final ObjectInputStream in;
-    private final Consumer<Object> handler;
+    private final Consumer<Message> handler;
     private final AtomicBoolean running = new AtomicBoolean(false);
+    private final Runnable onDisconnect;
     private Thread worker;
+    private static final Logger LOGGER = Logger.getLogger(MsgReceiver.class.getName());
 
-    public MsgReceiver(ObjectInputStream in, Consumer<Object> handler) {
+    public MsgReceiver(ObjectInputStream in, Consumer<Message> handler, Runnable onDisconnect) {
         this.in = Objects.requireNonNull(in);
         this.handler = Objects.requireNonNull(handler);
+        this.onDisconnect = onDisconnect;
     }
 
     /** Start the receiver loop on a dedicated thread. */
@@ -46,22 +52,24 @@ public class MsgReceiver implements Runnable, AutoCloseable {
     public void run() {
         try {
             while (running.get()) {
-                Object msg = in.readObject();
-                try {
-                    handler.accept(msg);
-                } catch (Throwable t) {
-                    // Handler exception should not kill the receiver loop
-                    java.util.logging.Logger.getLogger(MsgReceiver.class.getName())
-                            .log(java.util.logging.Level.SEVERE, "MsgReceiver: Exception in handler.", t);
+                Object obj = in.readObject();
+                if (obj instanceof Message msg) {
+                    try {
+                        handler.accept(msg);
+                    } catch (Throwable t) {
+                        LOGGER.log(Level.SEVERE, "MsgReceiver: Exception in handler.", t);
+                    }
                 }
             }
-        } catch (IOException e) {
-            // Stream closed or network issue; stop running
-            java.util.logging.Logger.getLogger(MsgReceiver.class.getName())
-                    .log(java.util.logging.Level.INFO, "MsgReceiver: I/O error or stream closed.", e);
-        } catch (ClassNotFoundException e) {
-            java.util.logging.Logger.getLogger(MsgReceiver.class.getName())
-                    .log(java.util.logging.Level.SEVERE, "MsgReceiver: Class not found while reading message.", e);
+        } catch (java.io.EOFException | java.net.SocketException e) {
+            LOGGER.info("Connexion au serveur interrompue.");
+            if (onDisconnect != null) {
+                onDisconnect.run();
+            }
+        } catch (IOException | ClassNotFoundException e) {
+            if (running.get()) {
+                LOGGER.log(Level.INFO, "MsgReceiver: I/O error or stream closed.", e);
+            }
         } finally {
             running.set(false);
         }
