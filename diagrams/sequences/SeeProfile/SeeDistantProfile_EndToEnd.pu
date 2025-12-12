@@ -8,18 +8,9 @@ actor Server as S
 
 UI ->> Client : demandProfile(RequestedUserUUID)
 
-Client ->> CommClient : requestDistProfile(RequestedUserUUID)
+Client -> CommClient : requestDistProfile(RequestedUserUUID)
 
 CommClient ->> S : DistProfileRequest(Requester, AppOwner)
-
-
-CommClient -> S : DistProfileAnswer(Requester, RequestedUser)
-
-
-S -> CommClient : ForwardProfileAnswer(Requester, RequestedUser)
-
-
-CommClient -> Client : DisplayDistProfile(RequestedUser)
-Client --> UI : void
+CommClient --> Client   : void
 
 @enduml
