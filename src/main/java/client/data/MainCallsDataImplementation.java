@@ -11,11 +11,6 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import java.util.*;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
-import static java.nio.file.StandardCopyOption.*;
-
 import client.interfaces.MainCallsDataClient;
 import common.dataClasses.*;
 
@@ -27,6 +22,7 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
 
     private static final Path USERS_FILE = Path.of("data", "users.json");
     private static final Path USERS_DIR = Path.of("data", "users");
+    private String USERNAME = "username";
 
     private static String stripQuotes(String s) {
         if (s == null) {
@@ -355,7 +351,7 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
 
     @Override
     public void importMyProfile(String path){
-        // choper le champ passwordHash et mettre à jour le fichier users avec
+        // convert the string into a path
         Path filePath = Paths.get(path);   
 
         try{
@@ -364,7 +360,7 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
             JSONObject profile = (JSONObject) o;
 
             // get the correct directory to copy the file
-            Path newFile = USERS_DIR.resolve(profile.get("username") + ".json");
+            Path newFile = USERS_DIR.resolve(profile.get(USERNAME) + ".json");
 
             Files.copy(filePath, newFile);
 
@@ -372,11 +368,11 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
 
             Object u = new JSONParser().parse(new FileReader(usersFile));
             JSONObject users = (JSONObject) u;
-            users.put(profile.get("username"), profile.get("passworHash") );
+            users.put(profile.get(USERNAME), profile.get("passworHash") );
             Files.write(USERS_FILE, users.toJSONString().getBytes(StandardCharsets.UTF_8));
-        } catch(IOException e){
+        } catch (IOException e) {
             throw new RuntimeException("Failed to load profile from JSON", e);
-        }catch(ParseException e){
+        } catch (ParseException e) {
             throw new RuntimeException("Failed to load parse JSON file", e);
         }
     }
