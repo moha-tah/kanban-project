@@ -119,7 +119,9 @@ public class ProfileDistantController {
             if (displayName == null || displayName.isBlank()) {
                 displayName = requestedUser.getUsername();
             }
-            java.util.List<common.dataClasses.Kanban> kanbans = requestedUser.getMyKanban();
+                final java.util.List<common.dataClasses.Kanban> kanbans = (requestedUser.getMyKanban() != null)
+                    ? requestedUser.getMyKanban()
+                    : java.util.Collections.emptyList();
 
             profileName2.setText(displayName);
             profileUsername2.setText("@" + requestedUser.getUsername());
