@@ -27,6 +27,12 @@
         </font>
     </Label>
 
+    <Label fx:id="portLabel" text="Port: (not set)" textFill="#81ecec">
+        <font>
+            <Font size="14.0" />
+        </font>
+    </Label>
+
     <Button fx:id="stopButton" mnemonicParsing="false" onAction="#handleStopServer"
             text="STOP SERVER" textFill="WHITE"
             style="-fx-background-color: #ff7675; -fx-font-weight: bold; -fx-background-radius: 10; -fx-padding: 10 30; -fx-cursor: hand;">
