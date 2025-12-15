@@ -206,7 +206,25 @@ public class ComCallsDataServImplementation implements CommCallsDataServer {
 
     @Override
     public void closeKanban(LightKanban lightKanban, LightUser user) {
-        // TODO: Implement closeKanban logic if needed
+        if (lightKanban == null || user == null) {
+            return;
+        }
+
+        if (myProvider == null || myProvider.getModel() == null) {
+            return;
+        }
+
+        // Vérifier que le kanban existe dans le modèle
+        ServerModel model = myProvider.getModel();
+        boolean kanbanExists = model.getInUseKanbans().stream()
+            .anyMatch(k -> k.getId().equals(lightKanban.getId()));
+        
+        if (!kanbanExists) {
+            return;
+        }
+
+        // La fermeture du kanban côté client ne nécessite pas d'action particulière côté serveur
+        // Le kanban reste disponible en mémoire pour les autres utilisateurs
     }
 
     // -------------------------------------------------------
