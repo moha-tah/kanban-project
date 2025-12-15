@@ -7,7 +7,7 @@ import common.dataClasses.LightUser;
 
 public class AssociationUsersOnKanban {
     private LightKanban kanban;
-    private final List<LightUser> usersOnKanban;
+    private final CopyOnWriteArrayList<LightUser> usersOnKanban;
 
     public AssociationUsersOnKanban(LightKanban kanban) {
         this.kanban = kanban;
@@ -27,8 +27,9 @@ public class AssociationUsersOnKanban {
     }
 
     public void addUserOnKanban(LightUser newUser) {
-        if (newUser != null && !usersOnKanban.contains(newUser)) {
-            usersOnKanban.add(newUser);
+        if (newUser != null) {
+            // addIfAbsent is thread-safe and atomic in CopyOnWriteArrayList
+            usersOnKanban.addIfAbsent(newUser);
         }
     }
 
