@@ -1,6 +1,6 @@
 package server.data;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import common.dataClasses.LightKanban;
 import common.dataClasses.LightUser;
@@ -11,7 +11,7 @@ public class AssociationUsersOnKanban {
 
     public AssociationUsersOnKanban(LightKanban kanban) {
         this.kanban = kanban;
-        this.usersOnKanban = new ArrayList<>();
+        this.usersOnKanban = new CopyOnWriteArrayList<>();
     }
 
     public LightKanban getKanban() {
