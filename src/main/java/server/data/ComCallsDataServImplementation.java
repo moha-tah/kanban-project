@@ -238,17 +238,14 @@ public class ComCallsDataServImplementation implements CommCallsDataServer {
             .anyMatch(k -> k.getId().equals(lightKanban.getId()));
         
         if (kanbanExists) {
-            // Retirer l'utilisateur de la liste des viewers du kanban
-            AssociationUsersOnKanban assoc = kanbanViewersMap.get(lightKanban.getId());
-            if (assoc != null) {
+            // Retirer l'utilisateur de la liste des viewers du kanban de manière atomique
+            kanbanViewersMap.computeIfPresent(lightKanban.getId(), (id, assoc) -> {
                 synchronized (assoc) {
                     assoc.removeUserOnKanban(user);
-                    // Nettoyer la map si plus aucun viewer (atomic check-then-act)
-                    if (assoc.getUsersOnKanban().isEmpty()) {
-                        kanbanViewersMap.remove(lightKanban.getId(), assoc);
-                    }
+                    // Retourner null pour supprimer l'entrée si plus aucun viewer
+                    return assoc.getUsersOnKanban().isEmpty() ? null : assoc;
                 }
-            }
+            });
         }
 
         // Le kanban reste disponible en mémoire pour les autres utilisateurs
