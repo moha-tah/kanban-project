@@ -130,11 +130,13 @@ public class ComCallsDataServImplementation implements CommCallsDataServer {
             if (k.getId().equals(kanbanID.getId())) {
                 // Ajouter l'utilisateur comme viewer du kanban
                 if (user != null) {
-                    AssociationUsersOnKanban assoc = kanbanViewersMap.computeIfAbsent(
-                        kanbanID.getId(), 
-                        id -> new AssociationUsersOnKanban(kanbanID)
-                    );
-                    assoc.addUserOnKanban(user);
+                    synchronized (kanbanViewersMap) {
+                        AssociationUsersOnKanban assoc = kanbanViewersMap.computeIfAbsent(
+                            kanbanID.getId(), 
+                            id -> new AssociationUsersOnKanban(kanbanID)
+                        );
+                        assoc.addUserOnKanban(user);
+                    }
                 }
                 return k;
             }
