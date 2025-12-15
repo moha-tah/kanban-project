@@ -11,8 +11,8 @@ import common.dataClasses.LightUser;
 import common.dataClasses.Modification; // Import nécessaire
 import server.interfaces.CommCallsDataServer;
 import server.data.AssociationUsersOnKanban;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ComCallsDataServImplementation implements CommCallsDataServer {
     private DataServProvider myProvider;
@@ -20,7 +20,7 @@ public class ComCallsDataServImplementation implements CommCallsDataServer {
     private Map<UUID, AssociationUsersOnKanban> kanbanViewersMap;
 
     public ComCallsDataServImplementation() {
-        this.kanbanViewersMap = new HashMap<>();
+        this.kanbanViewersMap = new ConcurrentHashMap<>();
     }
 
     public static ComCallsDataServImplementation newComCallsDataServImplementation() {
@@ -130,13 +130,11 @@ public class ComCallsDataServImplementation implements CommCallsDataServer {
             if (k.getId().equals(kanbanID.getId())) {
                 // Ajouter l'utilisateur comme viewer du kanban
                 if (user != null) {
-                    synchronized (kanbanViewersMap) {
-                        AssociationUsersOnKanban assoc = kanbanViewersMap.computeIfAbsent(
-                            kanbanID.getId(), 
-                            id -> new AssociationUsersOnKanban(kanbanID)
-                        );
-                        assoc.addUserOnKanban(user);
-                    }
+                    AssociationUsersOnKanban assoc = kanbanViewersMap.computeIfAbsent(
+                        kanbanID.getId(), 
+                        id -> new AssociationUsersOnKanban(kanbanID)
+                    );
+                    assoc.addUserOnKanban(user);
                 }
                 return k;
             }
