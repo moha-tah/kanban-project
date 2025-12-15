@@ -24,6 +24,14 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import java.io.IOException;
+import java.util.List;
+import java.util.logging.Level;
+import common.dataClasses.User;
+
+
+import java.io.File;
+import java.util.logging.Logger;
 
 public class ProfileController {
 
