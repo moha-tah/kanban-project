@@ -134,7 +134,9 @@ public class ComCallsDataServImplementation implements CommCallsDataServer {
                         kanbanID.getId(), 
                         id -> new AssociationUsersOnKanban(kanbanID)
                     );
-                    assoc.addUserOnKanban(user);
+                    synchronized (assoc) {
+                        assoc.addUserOnKanban(user);
+                    }
                 }
                 return k;
             }
@@ -239,10 +241,12 @@ public class ComCallsDataServImplementation implements CommCallsDataServer {
             // Retirer l'utilisateur de la liste des viewers du kanban
             AssociationUsersOnKanban assoc = kanbanViewersMap.get(lightKanban.getId());
             if (assoc != null) {
-                assoc.removeUserOnKanban(user);
-                // Nettoyer la map si plus aucun viewer
-                if (assoc.getUsersOnKanban().isEmpty()) {
-                    kanbanViewersMap.remove(lightKanban.getId());
+                synchronized (assoc) {
+                    assoc.removeUserOnKanban(user);
+                    // Nettoyer la map si plus aucun viewer (atomic check-then-act)
+                    if (assoc.getUsersOnKanban().isEmpty()) {
+                        kanbanViewersMap.remove(lightKanban.getId(), assoc);
+                    }
                 }
             }
         }
