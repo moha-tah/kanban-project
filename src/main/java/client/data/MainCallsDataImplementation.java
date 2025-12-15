@@ -22,7 +22,7 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
 
     private static final Path USERS_FILE = Path.of("data", "users.json");
     private static final Path USERS_DIR = Path.of("data", "users");
-    private String USERNAME = "username";
+    private static final String USERNAME = "username";
 
     private static String stripQuotes(String s) {
         if (s == null) {
@@ -371,9 +371,9 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
             users.put(profile.get(USERNAME), profile.get("passworHash") );
             Files.write(USERS_FILE, users.toJSONString().getBytes(StandardCharsets.UTF_8));
         } catch (IOException e) {
-            throw new RuntimeException("Failed to load profile from JSON", e);
+            throw new UncheckedIOException("Failed to load profile from JSON", e);
         } catch (ParseException e) {
-            throw new RuntimeException("Failed to load parse JSON file", e);
+            throw new IllegalArgumentException("Failed to parse JSON file", e);
         }
     }
 
