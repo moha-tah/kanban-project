@@ -11,8 +11,8 @@ import common.dataClasses.LightUser;
 import common.dataClasses.Modification; // Import nécessaire
 import server.interfaces.CommCallsDataServer;
 import server.data.AssociationUsersOnKanban;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ComCallsDataServImplementation implements CommCallsDataServer {
     private DataServProvider myProvider;
@@ -20,7 +20,7 @@ public class ComCallsDataServImplementation implements CommCallsDataServer {
     private Map<UUID, AssociationUsersOnKanban> kanbanViewersMap;
 
     public ComCallsDataServImplementation() {
-        this.kanbanViewersMap = new HashMap<>();
+        this.kanbanViewersMap = new ConcurrentHashMap<>();
     }
 
     public static ComCallsDataServImplementation newComCallsDataServImplementation() {
