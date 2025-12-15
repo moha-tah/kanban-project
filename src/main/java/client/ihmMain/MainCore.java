@@ -57,6 +57,11 @@ public class MainCore {
     private final dataCallsMainImpl  datCallbacks   = new dataCallsMainImpl(this);
     private final commCallsMainImpl  commCallbacks  = new commCallsMainImpl(this);
     private final kanbanCallsMainImpl kanbanCallbacks = new kanbanCallsMainImpl(this);
+    private String currentView;
+
+
+    public void setCurrentView(String v) { currentView = v; }
+    public String getCurrentView() { return currentView; }
 
     public void launchApp() {
         users.clear(); kanbans.clear(); me = null;
@@ -293,4 +298,6 @@ public class MainCore {
     public void showLandingView() { loadScene("/landing.fxml", "Welcome");}
     public void showEditProfileView() { loadScene("/editProfile.fxml", "EditProfile");}
     public void showProfileView() { loadScene("/profile.fxml", "Profile");}
+
+    
 }

@@ -5,8 +5,10 @@ import java.util.logging.Logger;
 
 import client.ihmKanban.kanbanCorps;
 import client.ihmMain.controllers.HomeViewController;
-import client.interfaces.DataClientCallsKanban;
+import client.ihmMain.controllers.ProfileController;
+import client.ihmMain.controllers.ProfileDistantController;
 import common.dataClasses.Kanban;
+import client.interfaces.DataClientCallsKanban;
 
 
 /** Impl des callbacks de la couche Communication vers la couche Kanban (IHM Kanban). */
@@ -20,17 +22,10 @@ public class DataClientCallsKanbanImpl implements DataClientCallsKanban {
     }
 
     @Override
-    public void displayKanban(Kanban kanban, HomeViewController homeController ) {
-        corps.displayKanban(kanban, homeController); 
-        LOGGER.log(Level.INFO, "[Data->kanban] Display kanban : kanban={0}", kanban);
-
-    }
-
-    @Override
-    public void updateKanban(Kanban kanban) {
-        corps.updateKanban(kanban);
-
-        kanbanCorps.LOGGER.info("[Data->kanban] Display kanban : ");
+    public void displayKanban(Kanban kanban, HomeViewController homeController, ProfileController profileController , ProfileDistantController profileDistantController) {
+        corps.displayKanban(kanban, homeController, profileController, profileDistantController); 
+        corps.LOGGER.info("[Data->kanban] Display kanban : "
+                + "kanban=" + kanban);
 
     }
 

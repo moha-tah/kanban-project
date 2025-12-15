@@ -5,6 +5,8 @@ import java.util.logging.Logger;
 
 import client.ihmKanban.kanbanCorps;
 import client.ihmMain.controllers.HomeViewController;
+import client.ihmMain.controllers.ProfileController;
+import client.ihmMain.controllers.ProfileDistantController;
 import client.interfaces.CommClientCallsKanban;
 import common.dataClasses.Kanban;
 import common.dataClasses.LightKanban;
@@ -29,11 +31,11 @@ public class CommClientCallsKanbanImpl implements CommClientCallsKanban {
     }
     
     @Override
-    public void displayKanban(Kanban kanban, HomeViewController homeController) {
-        LOGGER.log(Level.INFO, "[Comm->Kanban] displayKanban called for: {0}", kanban.getTitle());
+    public void displayKanban(Kanban kanban, HomeViewController homeController, ProfileController profileController, ProfileDistantController profileDistantController) {
+        corps.LOGGER.info("[Comm->Kanban] displayKanban called for: " + kanban.getTitle());
         // Exécuter sur le thread JavaFX car appelé depuis MsgReceiver-thread
         Platform.runLater(() -> {
-            corps.displayKanban(kanban, homeController);
+            corps.displayKanban(kanban, homeController, profileController,profileDistantController);
         });
     }
 }
