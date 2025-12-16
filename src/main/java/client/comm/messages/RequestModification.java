@@ -29,7 +29,7 @@ public class RequestModification extends Message {
     public Optional<Message> handle() {
         try {
             System.out.println("[SERVER] Reçu demande de modification de carte " + myModification.getId() +
-                    " pour le kanban \"" + myModification.getTargetKanban().getTitle() + "\" par " +
+                    " pour le kanban \"" + myModification.getLightTargetKanban().getTitle() + "\" par " +
                     (user != null ? user.getUsername() : "Inconnu"));
 
             // Récupération du contexte serveur et du data server
@@ -40,8 +40,7 @@ public class RequestModification extends Message {
             }
 
             // Sauvegarder la modification et récupérer les utilisateurs à notifier
-            List<LightUser> usersToNotify = dataServer.saveModifiedKanban(myModification.getTargetKanban(),
-                    myModification);
+            List<LightUser> usersToNotify = dataServer.saveModifiedKanban(myModification);
 
             if (usersToNotify != null && !usersToNotify.isEmpty()) {
                 System.out.println("[SERVER] Notification de " + usersToNotify.size() + " utilisateurs");
@@ -50,7 +49,7 @@ public class RequestModification extends Message {
                 try {
                     for (LightUser userToNotify : usersToNotify) {
                         NotifyEdition notifyMsg = new NotifyEdition(
-                                myModification.getTargetKanban(), myModification);
+                                myModification.getLightTargetKanban(), myModification);
                         CommCoreServer.sendToUser(userToNotify.getId(), notifyMsg);
                         System.out.println("[SERVER] Notification envoyée à " + userToNotify.getUsername());
                     }

@@ -109,7 +109,7 @@ public class CommCallsDataClientImplementation implements ComCallsDataClient{
     public void saveModifiedKanban(Modification modification){
         ClientModel model = provider.getMyModel();
         Kanban kanban = model.getCurrentKanban();
-        UUID modificationInitialTargetId = modification.getMyKanban().getId();
+        UUID modificationInitialTargetId = modification.getLightTargetKanban().getId();
         UUID currentKanbanId = kanban.getId();
         if(modificationInitialTargetId.equals(currentKanbanId)  ){
             modification.execute(kanban);

@@ -6,7 +6,7 @@ import java.util.UUID;
 public abstract class Modification implements Serializable {
     private static final long serialVersionUID = 1L;
     private UUID id;
-    private LightKanban myKanban;
+    private LightKanban lightTargetKanban;
     
     // ConstructeurL
     public Modification() {
@@ -23,8 +23,8 @@ public abstract class Modification implements Serializable {
         return id;
     }
 
-    public LightKanban getMyKanban() {
-        return myKanban;
+    public LightKanban getLightTargetKanban() {
+        return lightTargetKanban;
     }
 
 
@@ -34,8 +34,8 @@ public abstract class Modification implements Serializable {
         this.id = id;
     }
 
-    public void setMyKanban(LightKanban myKanban) {
-        this.myKanban = myKanban;
+    public void setLightTargetKanban(LightKanban myKanban) {
+        this.lightTargetKanban = myKanban;
     }
 
     

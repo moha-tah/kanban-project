@@ -195,7 +195,8 @@ public class ComCallsDataServImplementation implements CommCallsDataServer {
     }
 
     @Override
-    public List<LightUser> saveModifiedKanban(LightKanban kanban, Modification modification) {
+    public List<LightUser> saveModifiedKanban( Modification modification) {
+        LightKanban kanban = modification.getLightTargetKanban();
         List<Kanban> inUseKanbans = myProvider.getModel().getInUseKanbans();
         Kanban kanbanToUpdate = null;
         List<LightUser> usersToNotify = new ArrayList<LightUser>();
