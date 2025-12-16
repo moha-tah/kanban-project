@@ -30,4 +30,5 @@ public interface MainCallsDataClient {
     User getLocalUser ();
 
     Void modifyLocalUser (String newFirstName, String newLastName, LocalDate newBirthDate, String newAvatar, String newUsername);
+    void deleteLocalProfile();
 }

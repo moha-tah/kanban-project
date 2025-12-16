@@ -482,6 +482,32 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
             LOGGER.log(java.util.logging.Level.SEVERE, "Erreur lors du renommage du fichier utilisateur", e);
         }
     }
+
+    @Override
+    public void deleteLocalProfile() {
+        common.dataClasses.User user = provider.getMyModel().getLocalUser();
+
+        if (user == null) {
+            LOGGER.warning("Impossible de supprimer : aucun utilisateur connecté localement.");
+            return;
+        }
+
+        try {
+            Path userFile = USERS_DIR.resolve(user.getUsername() + ".json");
+
+            if (Files.exists(userFile)) {
+                Files.delete(userFile);
+                LOGGER.info("Profil supprimé avec succès : " + userFile.toAbsolutePath());
+            } else {
+                LOGGER.warning("Fichier profil introuvable : " + userFile);
+            }
+
+        } catch (IOException e) {
+            LOGGER.log(java.util.logging.Level.SEVERE, "Erreur critique lors de la suppression du profil", e);
+            throw new RuntimeException("Erreur I/O lors de la suppression.");
+        }
+    }
+
     public void ModifyLocalUserFirstName(String newFirstName) {
         modifyLocalUser(newFirstName, null, null, null, null);
     }
