@@ -65,8 +65,11 @@ public class MoveTask extends Modification {
                     .filter(task -> task.getId().equals(taskId))
                     .findFirst()
                     .orElse(null);
-            taskList.removeIf(task -> task.getId().equals(taskId));
-            taskColumn.put(col, taskList);
+            if (taskToMove != null) {
+                taskList.removeIf(task -> task.getId().equals(taskId));
+                taskColumn.put(col, taskList);
+                break;
+            }
         }
         //Ajouter la valeur à la nouvelle colonne
         for (Column col: taskColumn.keySet()){
