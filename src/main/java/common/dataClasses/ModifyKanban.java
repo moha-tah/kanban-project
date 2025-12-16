@@ -86,8 +86,8 @@ public class ModifyKanban extends Modification {
     public String toString() {
         return "ModifyKanban{" +
                 "id=" + getId() +
-                ", title=" + (title) +
-                ", visibility=" + (visibility) +
+                ", title=" + (title != null ? title : "null") +
+                ", visibility=" + (visibility != null ? visibility : "null") +
                 ", creator=" + (creator != null ? creator.getUsername() : "null") +
                 '}';
     }
