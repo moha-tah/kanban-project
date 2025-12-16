@@ -47,6 +47,9 @@ public class ModifyColumn extends Modification {
     
     @Override
     public Kanban undo(Kanban targetKanban) {
+        if (previousColumn == null) {
+            throw new IllegalStateException("Cannot undo ModifyColumn: previousColumn is null");
+        }
         ModifyColumn undoModification = new ModifyColumn(previousColumn);
         return undoModification.execute(targetKanban);
     }
