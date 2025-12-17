@@ -1,0 +1,66 @@
+name: Build Packages
+
+on:
+  push:
+    branches: ["package_export", "main", "[vV][0-9]+"]
+
+permissions:
+  contents: read
+  actions: write
+
+jobs:
+  build-and-package:
+    name: Build ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            java-arch: x64
+            artifact-suffix: Windows
+            client-path: dist_client/KanbanClient
+            server-path: dist_server/KanbanServer
+            extra-args: "--win-console"
+          - os: ubuntu-latest
+            java-arch: x64
+            artifact-suffix: Linux
+            client-path: dist_client/KanbanClient
+            server-path: dist_server/KanbanServer
+            extra-args: ""
+          - os: macos-latest
+            java-arch: aarch64
+            artifact-suffix: MacOS-ARM
+            client-path: dist_client/KanbanClient.app
+            server-path: dist_server/KanbanServer.app
+            extra-args: ""
+
+    steps:
+      - name: Setup and Build
+        uses: ./.github/actions/setup-build
+        with:
+          java-architecture: ${{ matrix.java-arch }}
+
+      - name: Package Client
+        uses: ./.github/actions/package-artifact
+        with:
+          app-name: KanbanClient
+          main-class: client.Launcher
+          destination: dist_client
+          artifact-name: KanbanClient-${{ matrix.artifact-suffix }}
+          artifact-path: ${{ matrix.client-path }}
+          extra-jpackage-args: ${{ matrix.extra-args }}
+
+      - name: Package Server
+        uses: ./.github/actions/package-artifact
+        with:
+          app-name: KanbanServer
+          main-class: server.ServerLauncher
+          destination: dist_server
+          artifact-name: KanbanServer-${{ matrix.artifact-suffix }}
+          artifact-path: ${{ matrix.server-path }}
+          extra-jpackage-args: ${{ matrix.extra-args }}
+
+      - name: Cleanup Old Artifacts
+        uses: ./.github/actions/cleanup-artifacts
