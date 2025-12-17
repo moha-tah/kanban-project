@@ -45,13 +45,6 @@ jobs:
             --dest dist_server ^
             --win-console
 
-      # --- 3. Copie des données (CORRIGÉ) ---
-      # Remarquez l'absence de tiret devant 'run' et l'alignement
-      - name: Copy Data folder to Server Dist
-        shell: cmd
-        run: |
-          xcopy /E /I data dist_server\KanbanServer\data
-
       - name: Upload Client Artifact
         uses: actions/upload-artifact@v4
         with:
