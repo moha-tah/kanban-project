@@ -356,13 +356,19 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
                 LOGGER.warning("exportProfile: user not found or ID mismatch (expected: " + lightUserId.getId() + ")");
                 return;
             }
-            // Always export as plain User, never SecureUser, to avoid leaking password hashes or sensitive data
-            User profileCopy = new User(localUser.getId(), localUser.getUsername(), 
-                    localUser.getFirstName(), localUser.getLastName(), localUser.getBirthDate());
+
+            Map<String, String> users = readJsonToMap(USERS_FILE);
+            String password = users.get(localUser.getUsername());
+
+            // Export as a SecureUser to save the password
+            SecureUser profileCopy = new SecureUser(localUser.getId(), localUser.getUsername(), 
+                    localUser.getFirstName(), localUser.getLastName(), localUser.getBirthDate(), password);
+
             if (localUser.getAvatar() != null && !localUser.getAvatar().isBlank()) {
                 profileCopy.setAvatar(localUser.getAvatar());
             }
-            profileCopy.setMyKanban(null);
+            profileCopy.setMyKanban(localUser.getMyKanban());
+
             // Ensure no password or sensitive fields are present in profileCopy
             String json = serializeUserToJson(profileCopy);
             java.nio.file.Path outputPath = java.nio.file.Paths.get(path);
@@ -443,7 +449,6 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
             writeMapToJson(USERS_FILE, users);
         } catch (IOException e) {
             LOGGER.log(java.util.logging.Level.SEVERE, "Erreur lors de la sauvegarde du hash du mot de passe", e);
-
         }
 
         return secureUser;
