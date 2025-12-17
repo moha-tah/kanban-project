@@ -79,13 +79,11 @@ public class ProfileController {
 
     public void displayKanban(Kanban kanban) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/displayKanban.fxml"));
-            Parent kanbanView = loader.load();
+            FXMLLoader loader_kanban = new FXMLLoader(getClass().getResource("/displayKanban.fxml"));
+            Parent kanbanView = loader_kanban.load();
 
-            DisplayKanbanController controller = loader.getController();
-            //controller.set(kanban);
+            DisplayKanbanController controller = loader_kanban.getController();
 
-            // Remplacer le contenu central
             kanbanArea.setContent(kanbanView);
 
             core.getKanbanPort().openKanban(kanban,null, this,null); 
