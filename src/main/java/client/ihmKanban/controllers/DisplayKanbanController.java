@@ -278,7 +278,8 @@ public class DisplayKanbanController implements Initializable {
 
     private void showAddColumnPopup(Node anchorNode) {
         showGenericColumnPopup(anchorNode, "ADD COLUMN", null, (title, color) -> {
-            Column col = new Column(title, color);
+            int colNum = corps.getDataPort().getLocalKanban().getColumns().size();
+            Column col = new Column(title, color, colNum);
             corps.getCommPort().sendRequestModification(corps.getMe(), new CreateColumn(col, kanban));
             LOGGER.log(Level.INFO, "Nouvelle colonne créée : {0}", title);
         });

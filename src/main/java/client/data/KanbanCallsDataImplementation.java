@@ -314,4 +314,9 @@ public class KanbanCallsDataImplementation implements KanbanCallsDataClient {
     public void setProvider(DataClientProvider provider) {
         this.provider = provider;
     }
+
+    @Override
+    public Kanban getLocalKanban() {
+        return provider.getMyModel().getCurrentKanban();
+    }
 }

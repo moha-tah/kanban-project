@@ -2,8 +2,8 @@ package common.dataClasses;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.UUID;
 import java.util.Map;
+import java.util.UUID;
 
 public class Kanban extends LightKanban {
     private HashMap<Column, List<Task>> taskColumn;
@@ -60,7 +60,7 @@ public class Kanban extends LightKanban {
         return tasks;
     }
     public List<Column> getColumns() {
-        return getAllColumns();
+        return columns;
     }
 
     public User getCreator() {

@@ -45,7 +45,7 @@ public class CreateColumn extends Modification {
         List<Column> columns = targetKanban.getColumns();
         this.previousColumnId = newColumn.getId();
         columns.add(newColumn);
-        targetKanban.setColumns(columns);
+        // targetKanban.setColumns(columns);
         return targetKanban;
     }
     
