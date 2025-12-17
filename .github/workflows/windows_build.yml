@@ -2,7 +2,7 @@ name: Build Windows Executables
 
 on:
   push:
-    branches: [ "package_export", "v3" ]
+    branches: [ "package_export", "main", "v3" ]
 
 jobs:
   build-windows:
@@ -23,6 +23,7 @@ jobs:
 
       # --- 1. Création de l'EXE CLIENT ---
       - name: Create Client Executable
+        shell: cmd  # <--- AJOUT CRUCIAL ICI
         run: |
           jpackage --input target ^
             --name KanbanClient ^
@@ -34,6 +35,7 @@ jobs:
 
       # --- 2. Création de l'EXE SERVEUR ---
       - name: Create Server Executable
+        shell: cmd  # <--- ET ICI
         run: |
           jpackage --input target ^
             --name KanbanServer ^
@@ -43,7 +45,6 @@ jobs:
             --dest dist_server ^
             --win-console
 
-      # --- 3. Upload des résultats pour que tu puisses les télécharger ---
       - name: Upload Client Artifact
         uses: actions/upload-artifact@v4
         with:
