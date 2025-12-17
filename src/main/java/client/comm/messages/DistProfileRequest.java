@@ -1,5 +1,6 @@
 package client.comm.messages;
 
+import java.io.IOException;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.logging.Logger;

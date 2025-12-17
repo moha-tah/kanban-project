@@ -515,8 +515,7 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
         }
     }
 
-    @Override
-    public User getLocalUser () {
+    public User getLocalUser() {
         ClientModel myModel = provider.getMyModel();
         User localUser = myModel.getLocalUser();
         return localUser;

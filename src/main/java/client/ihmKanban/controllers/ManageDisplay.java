@@ -20,6 +20,7 @@ import javafx.scene.Parent;
 
 public class ManageDisplay {
 
+    private static final Logger LOGGER = Logger.getLogger(ManageDisplay.class.getName());
     private final kanbanCorps corps; 
 
     public ManageDisplay(kanbanCorps corps) {
@@ -114,4 +115,40 @@ public class ManageDisplay {
             corps.LOGGER.log(Level.INFO, "Erreur lors de l''ouverture de l''\u00e9cran Kanban : {0}", e.getMessage());
         }
     }
+
+    // Controller du kanban
+    KanbanViewController controller = loader.getController();
+    controller.setCore(corps);
+    controller.initBoard(kanban, cols, taskCreations, this);
+
+    return kanbanView;
+}
+
+    public void openKanbanScreen(Kanban kanban, HomeViewController homeController) {
+    try {
+        setHomeViewController(homeController);
+        Parent kanbanView = buildKanbanView(kanban);
+        homeController.getKanbanArea().setContent(kanbanView);
+
+    } catch (IOException | IllegalStateException e) {
+        LOGGER.log(Level.INFO, 
+            "Erreur lors de l'ouverture de l'écran Kanban : {0}", e.getMessage());
+    }
+}
+
+
+    public void openKanbanScreenFromProfile(
+        Kanban kanban, 
+        client.ihmMain.controllers.ProfileController profileController) {
+    
+    try {
+        setHomeViewController(null);
+        Parent kanbanView = buildKanbanView(kanban);
+        //profileController.getKanbanArea().setContent(kanbanView);
+
+    } catch (IOException | IllegalStateException e) {
+        LOGGER.log(Level.INFO, 
+            "Erreur lors de l'ouverture de l'écran Kanban : {0}", e.getMessage());
+    }
+}
 }

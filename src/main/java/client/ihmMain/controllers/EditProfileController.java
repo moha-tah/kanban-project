@@ -11,6 +11,7 @@ import client.MainApp;
 import client.ihmMain.MainCore;
 import client.interfaces.MainCallsDataClient;
 import common.dataClasses.User;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -38,9 +39,6 @@ public class EditProfileController {
     private MainCore core;
     private User currentUser;
     private File selectedImage;
-    @FXML private ImageView profilePic;
-    private static final String DEFAULT_AVATAR_RESOURCE = "/profile_pic.png";
-
 
     private static final Logger LOGGER = Logger.getLogger(EditProfileController.class.getName());
 
@@ -223,6 +221,11 @@ public class EditProfileController {
     // -------------------------------------------------------------------------------------
     // ACTION : RETOUR
     // -------------------------------------------------------------------------------------
+
+    @FXML
+    private void handleCancel() {
+        goBack();
+    }
 
     @FXML
     private void onBackToProfile() {
