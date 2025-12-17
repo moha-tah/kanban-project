@@ -112,6 +112,7 @@ public class kanbanCorps {
     }
 
     public void updateKanban(Kanban kanban) {
+        System.out.println("[Kanban Corps] updateKanban: kanban=" + kanban.getTitle());
         this.currentKanban = kanban;
         manageDisplay.refreshKanban(kanban);
     }

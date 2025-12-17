@@ -14,6 +14,7 @@ import common.dataClasses.Column;
 import common.dataClasses.CreateTask;
 import common.dataClasses.Kanban;
 import common.dataClasses.Task;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 
@@ -43,6 +44,7 @@ public class ManageDisplay {
         this.openKanbanScreen(kanban, homeViewController);
         LOGGER.info("[Kanban] Refresh kanban : ");
     }
+
 
     private Parent buildKanbanView(Kanban kanban) throws IOException {
     URL fxmlUrl = MainApp.class.getResource("/kanbanView.fxml");

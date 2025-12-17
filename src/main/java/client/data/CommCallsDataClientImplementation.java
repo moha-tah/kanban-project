@@ -107,10 +107,13 @@ public class CommCallsDataClientImplementation implements ComCallsDataClient{
 
     @Override
     public void saveModifiedKanban(Modification modification){
+        System.out.println("[CLIENT] saveModifiedKanban: Modification type=" + modification.getClass().getSimpleName() + ", kanbanID=" + modification.getLightTargetKanban().getId());
+
         ClientModel model = provider.getMyModel();
         Kanban kanban = model.getCurrentKanban();
         UUID modificationInitialTargetId = modification.getLightTargetKanban().getId();
         UUID currentKanbanId = kanban.getId();
+        System.out.println("[CLIENT] Current kanban ID=" + currentKanbanId + ", Modification target kanban ID=" + modificationInitialTargetId);
         if(modificationInitialTargetId.equals(currentKanbanId)  ){
             modification.execute(kanban);
             model.setCurrentKanban(kanban);
@@ -118,6 +121,7 @@ public class CommCallsDataClientImplementation implements ComCallsDataClient{
             DataClientCallsKanban kanbanAccess = provider.getKanbanInterface();
             kanbanAccess.updateKanban(kanban);
         }
+        System.out.println("================================================================================================================");
     }
 
     @Override

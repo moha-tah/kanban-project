@@ -218,6 +218,9 @@ public class ComCallsDataServImplementation implements CommCallsDataServer {
         modification.execute(kanbanToUpdate);
         System.out.println("[SERVER] Après modification: " + kanbanToUpdate.getColumns().size() + " colonnes");
         
+        // Sauvegarder le kanban modifié
+        saveKanban(kanbanToUpdate);
+        
         List <Access> accessList = kanbanToUpdate.getAccessList();
         if (accessList != null) {
             System.out.println("[SERVER] Utilisateurs à notifier: " + accessList.size());
