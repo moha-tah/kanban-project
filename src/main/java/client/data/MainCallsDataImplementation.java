@@ -346,7 +346,51 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
 
     @Override
     public void exportProfile(LightUser lightUserId, String path){
-        throw new UnsupportedOperationException("exportProfile not implemented yet");
+        if (lightUserId == null || path == null || path.isBlank()) {
+            LOGGER.warning("exportProfile: lightUserId or path is null/empty");
+            return;
+        }
+        try {
+            User localUser = provider.getMyModel().getLocalUser();
+            if (localUser == null || !localUser.getId().equals(lightUserId.getId())) {
+                LOGGER.warning("exportProfile: user not found or ID mismatch (expected: " + lightUserId.getId() + ")");
+                return;
+            }
+            // Always export as plain User, never SecureUser, to avoid leaking password hashes or sensitive data
+            User profileCopy = new User(localUser.getId(), localUser.getUsername(), 
+                    localUser.getFirstName(), localUser.getLastName(), localUser.getBirthDate());
+            if (localUser.getAvatar() != null && !localUser.getAvatar().isBlank()) {
+                profileCopy.setAvatar(localUser.getAvatar());
+            }
+            profileCopy.setMyKanban(null);
+            // Ensure no password or sensitive fields are present in profileCopy
+            String json = serializeUserToJson(profileCopy);
+            java.nio.file.Path outputPath = java.nio.file.Paths.get(path);
+            java.nio.file.Path parentDir = outputPath.getParent();
+            if (parentDir != null && !Files.exists(parentDir)) {
+                Files.createDirectories(parentDir);
+            }
+            java.nio.file.Path tmpPath = outputPath.resolveSibling(outputPath.getFileName().toString() + ".tmp");
+            Files.write(tmpPath, json.getBytes(StandardCharsets.UTF_8));
+            try {
+                Files.move(tmpPath, outputPath, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+                LOGGER.info("Profile exported successfully: " + outputPath.toAbsolutePath());
+            } finally {
+                // Clean up the temporary file if it still exists (i.e., move failed)
+                try {
+                    if (Files.exists(tmpPath)) {
+                        Files.delete(tmpPath);
+                    }
+                } catch (IOException cleanupEx) {
+                    LOGGER.warning("Failed to delete temporary file: " + tmpPath + " - " + cleanupEx.getMessage());
+                }
+            }
+
+        } catch (IOException e) {
+            LOGGER.log(java.util.logging.Level.SEVERE, "exportProfile: IOException", e);
+        } catch (Exception e) {
+            LOGGER.log(java.util.logging.Level.SEVERE, "exportProfile: unexpected error while exporting profile for userId=" + (lightUserId != null ? lightUserId.getId() : "null") + " to path=" + path, e);
+        }
     }
 
     @Override
