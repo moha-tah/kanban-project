@@ -45,6 +45,10 @@ jobs:
             --dest dist_server ^
             --win-console
 
+      - name: Copy Data folder to Server Dist
+      - run: |
+      - xcopy /E /I data dist_server\KanbanServer\data
+
       - name: Upload Client Artifact
         uses: actions/upload-artifact@v4
         with:
