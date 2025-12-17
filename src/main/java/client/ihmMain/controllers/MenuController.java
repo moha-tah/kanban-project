@@ -75,9 +75,10 @@ public class MenuController {
 
 
     @FXML
-    private void handleHome() throws IOException {
+    private void handleHome() {
         if (MainApp.getCore() != null) MainApp.getCore().showHomeView();
     }
+
 
     @FXML
     private void handleNotif() {
