@@ -98,6 +98,14 @@ public class Kanban extends LightKanban {
     // Setters
     public void setTaskColumn(HashMap<Column, List<Task>> taskColumn) {
         this.taskColumn = taskColumn;
+
+        //Mettre à jour la liste des tâches et des colonnes
+        List<Task> allTasks = new ArrayList<>();
+        for (Map.Entry<Column, List<Task>> entry : taskColumn.entrySet()){
+            allTasks.addAll(entry.getValue());
+        }
+        this.setTasks(allTasks);
+        this.setColumns(new ArrayList<>(taskColumn.keySet()));
     }
 
     public void setCreator(User creator) {
@@ -119,14 +127,40 @@ public class Kanban extends LightKanban {
 
     public void setTasks(List<Task> tasks) {
         this.tasks = tasks;
+
+        //Mettre à jour le hashmap des tâches
+        for (Task task : tasks){
+            Column col = this.getColumnFromTask(task.getId());
+            if (col != null){
+                List<Task> taskList = taskColumn.getOrDefault(col, new ArrayList<>());
+                if (!taskList.contains(task)){
+                    taskList.add(task);
+                    taskColumn.put(col, taskList);
+                }
+
+            }
+        }
     }
 
     public void setColumns(List<Column> columns) {
         this.columns = columns;
+        //Mettre à jour le hashmap des colonnes
+        for (Column col : columns){
+            if (!taskColumn.containsKey(col)){
+                taskColumn.put(col, new ArrayList<>());
+            }
+        }
     }
     
     public void modifyHashmap(List<Task> tasks, Column col){
         taskColumn.put(col, tasks);
+        //Mettre à jour la liste des tâches
+        this.setTasks(tasks);
+
+        //Mettre à jour la liste des colonnes si nécessaire
+        if (!columns.contains(col)){
+            columns.add(col);
+        }
     }
    
     // Méthode utilitaire pour obtenir toutes les tâches d'une colonne
