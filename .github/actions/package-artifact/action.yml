@@ -1,25 +1,25 @@
-name: 'Package and Upload Artifact'
-description: 'Runs jpackage to create an executable and uploads it as an artifact'
+name: "Package and Upload Artifact"
+description: "Runs jpackage to create an executable and uploads it as an artifact"
 inputs:
   app-name:
-    description: 'Name of the application (e.g., KanbanClient)'
+    description: "Name of the application (e.g., KanbanClient)"
     required: true
   main-class:
-    description: 'Main class entry point (e.g., client.Launcher)'
+    description: "Main class entry point (e.g., client.Launcher)"
     required: true
   destination:
-    description: 'Output directory for jpackage (e.g., dist_client)'
+    description: "Output directory for jpackage (e.g., dist_client)"
     required: true
   artifact-name:
-    description: 'Name of the artifact to upload'
+    description: "Name of the artifact to upload"
     required: true
   artifact-path:
-    description: 'Path of the file/directory to upload'
+    description: "Path of the file/directory to upload"
     required: true
   extra-jpackage-args:
-    description: 'Additional arguments for jpackage'
+    description: "Additional arguments for jpackage"
     required: false
-    default: ''
+    default: ""
 
 runs:
   using: "composite"

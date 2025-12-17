@@ -1,10 +1,10 @@
-name: 'Setup and Build'
-description: 'Checkouts code, sets up Java, and builds with Maven'
+name: "Setup and Build"
+description: "Checkouts code, sets up Java, and builds with Maven"
 inputs:
   java-architecture:
-    description: 'The architecture for the Java JDK (x64 or aarch64)'
+    description: "The architecture for the Java JDK (x64 or aarch64)"
     required: false
-    default: 'x64'
+    default: "x64"
 
 runs:
   using: "composite"

@@ -1,5 +1,5 @@
-name: 'Cleanup Old Artifacts'
-description: 'Deletes artifacts from previous runs of the same branch'
+name: "Cleanup Old Artifacts"
+description: "Deletes artifacts from previous runs of the same branch"
 runs:
   using: "composite"
   steps:
@@ -9,14 +9,14 @@ runs:
         script: |
           const { owner, repo } = context.repo;
           const branch = context.ref.replace('refs/heads/', '');
-          
+
           console.log(`Cleaning up old artifacts for branch: ${branch}`);
-          
+
           const artifacts = await github.paginate(
             github.rest.actions.listArtifactsForRepo,
             { owner, repo }
           );
-          
+
           for (const artifact of artifacts) {
             if (artifact.workflow_run && artifact.workflow_run.head_branch === branch && artifact.workflow_run.id !== context.runId) {
               console.log(`Deleting artifact ${artifact.name} (id: ${artifact.id}) from run ${artifact.workflow_run.id}`);
