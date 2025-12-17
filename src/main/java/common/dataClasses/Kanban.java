@@ -60,7 +60,7 @@ public class Kanban extends LightKanban {
         return tasks;
     }
     public List<Column> getColumns() {
-        return columns;
+        return getAllColumns();
     }
 
     public User getCreator() {

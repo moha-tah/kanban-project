@@ -12,6 +12,13 @@ public class CreateMessage extends Modification {
         this.message = message;
     }
     
+    // Constructeur avec kanban cible
+    public CreateMessage(Message message, LightKanban targetKanban) {
+        super();
+        this.message = message;
+        this.setLightTargetKanban(targetKanban);
+    }
+    
     // Constructeur avec ID
     public CreateMessage(UUID id, Message message) {
         super(id);

@@ -16,7 +16,7 @@ public class RequestModification extends Message {
     private static final long serialVersionUID = 1L;
 
     private final LightUser user;
-    private final transient Modification myModification;
+    private final Modification myModification;
 
     public static final Logger LOGGER = Logger.getLogger("Request Modification");
 

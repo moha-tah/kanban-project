@@ -12,6 +12,13 @@ public class DeleteMessage extends Modification {
         super();
         this.message = message;
     }
+    
+    // Constructeur avec kanban cible
+    public DeleteMessage(UUID message, LightKanban targetKanban) {
+        super();
+        this.message = message;
+        this.setLightTargetKanban(targetKanban);
+    }
 
     // Getters
     public UUID getMessage() {

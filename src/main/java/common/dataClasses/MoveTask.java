@@ -15,6 +15,14 @@ public class MoveTask extends Modification {
         this.targetColumn = targetColumn;
     }
     
+    // Constructeur avec kanban cible
+    public MoveTask(UUID taskId, UUID targetColumn, LightKanban targetKanban) {
+        super();
+        this.taskId = taskId;
+        this.targetColumn = targetColumn;
+        this.setLightTargetKanban(targetKanban);
+    }
+    
     // Constructeur avec ID
     public MoveTask(UUID id, UUID taskId, UUID targetColumn) {
         super(id);

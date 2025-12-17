@@ -21,7 +21,8 @@ public class NotifyEdition extends Message {
     public Optional<Message> handle() {
         try {
             System.out.println("[CLIENT] Reçu notification d'édition pour kanban " + 
-                (kanban != null ? kanban.getTitle() : "Inconnu"));
+                (kanban != null ? kanban.getTitle() : "Inconnu") + ", modification=" + 
+                (modification != null ? modification.getClass().getSimpleName() : "null"));
 
             // Utiliser le ClientContext attaché au message
             client.ClientContext ctx = this.getClientContext();
@@ -32,12 +33,16 @@ public class NotifyEdition extends Message {
 
             // 1. Sauvegarder la modification côté Data Client
             if (ctx.getData() != null) {
+                System.out.println("[CLIENT] Sauvegarde de la modification en local...");
                 ctx.getData().saveModifiedKanban(modification);
+                System.out.println("[CLIENT] Modification sauvegardée");
             }
 
             // 2. Notifier l'IHM Kanban de la modification
             if (ctx.getKanbanComm() != null) {
+                System.out.println("[CLIENT] Notification de l'IHM Kanban...");
                 ctx.getKanbanComm().deliverNotification(kanban, modification);
+                System.out.println("[CLIENT] IHM Kanban notifiée");
             }
 
         } catch (Exception e) {

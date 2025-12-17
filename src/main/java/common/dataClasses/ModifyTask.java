@@ -12,6 +12,13 @@ public class ModifyTask extends Modification {
         this.task = task;
     }
     
+    // Constructeur avec kanban cible
+    public ModifyTask(Task task, LightKanban targetKanban) {
+        super();
+        this.task = task;
+        this.setLightTargetKanban(targetKanban);
+    }
+    
     // Constructeur avec ID
     public ModifyTask(UUID id, Task task) {
         super(id);

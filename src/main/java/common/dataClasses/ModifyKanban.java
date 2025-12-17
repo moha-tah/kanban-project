@@ -17,6 +17,15 @@ public class ModifyKanban extends Modification {
         this.visibility = visibility;
         this.creator = creator;
     }
+    
+    // Constructeur avec kanban cible
+    public ModifyKanban(String title, String visibility, User creator, LightKanban targetKanban) {
+        super();
+        this.title = title;
+        this.visibility = visibility;
+        this.creator = creator;
+        this.setLightTargetKanban(targetKanban);
+    }
 
     // Getters
     public String getTitle() {

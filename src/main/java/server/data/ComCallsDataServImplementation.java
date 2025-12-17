@@ -197,6 +197,8 @@ public class ComCallsDataServImplementation implements CommCallsDataServer {
     @Override
     public List<LightUser> saveModifiedKanban( Modification modification) {
         LightKanban kanban = modification.getLightTargetKanban();
+        System.out.println("[SERVER] saveModifiedKanban: Modification type=" + modification.getClass().getSimpleName() + ", kanban=" + kanban.getTitle());
+        
         List<Kanban> inUseKanbans = myProvider.getModel().getInUseKanbans();
         Kanban kanbanToUpdate = null;
         List<LightUser> usersToNotify = new ArrayList<LightUser>();
@@ -211,11 +213,20 @@ public class ComCallsDataServImplementation implements CommCallsDataServer {
             System.err.println("Kanban with ID " + kanban.getId() + " not found in inUseKanbans.");
             return usersToNotify; // Return empty list
         }
+        
+        System.out.println("[SERVER] Avant modification: " + kanbanToUpdate.getColumns().size() + " colonnes");
         modification.execute(kanbanToUpdate);
-        List <Access> accessList = kanban.getAccessList();
-        for(Access access: accessList){
-            LightUser user = access.getUser();
-            usersToNotify.add(user);
+        System.out.println("[SERVER] Après modification: " + kanbanToUpdate.getColumns().size() + " colonnes");
+        
+        List <Access> accessList = kanbanToUpdate.getAccessList();
+        if (accessList != null) {
+            System.out.println("[SERVER] Utilisateurs à notifier: " + accessList.size());
+            for(Access access: accessList){
+                LightUser user = access.getUser();
+                if (user != null) {
+                    usersToNotify.add(user);
+                }
+            }
         }
         return usersToNotify;
     }

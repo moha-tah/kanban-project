@@ -14,6 +14,14 @@ public class CreateTask extends Modification {
         this.targetColumn = targetColumn;
     }
     
+    // Constructeur avec kanban cible
+    public CreateTask(Task newTask, UUID targetColumn, LightKanban targetKanban) {
+        super();
+        this.newTask = newTask;
+        this.targetColumn = targetColumn;
+        this.setLightTargetKanban(targetKanban);
+    }
+    
     // Constructeur avec ID
     public CreateTask(UUID id, Task newTask, UUID targetColumn) {
         super(id);

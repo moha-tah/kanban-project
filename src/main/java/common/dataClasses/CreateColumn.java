@@ -12,6 +12,13 @@ public class CreateColumn extends Modification {
         this.newColumn = newColumn;
     }
     
+    // Constructeur avec kanban cible
+    public CreateColumn(Column newColumn, LightKanban targetKanban) {
+        super();
+        this.newColumn = newColumn;
+        this.setLightTargetKanban(targetKanban);
+    }
+    
     // Constructeur avec ID
     public CreateColumn(UUID id, Column newColumn) {
         super(id);

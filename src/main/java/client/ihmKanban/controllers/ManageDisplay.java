@@ -55,6 +55,18 @@ public class ManageDisplay {
     FXMLLoader loader = new FXMLLoader(fxmlUrl);
     Parent kanbanView = loader.load();
 
+    // Initialiser l'utilisateur courant dans kanbanCorps
+    corps.setMe(MainApp.getCore().getMe());
+    
+    // Stocker le kanban courant dans kanbanCorps pour les modifications
+    corps.setCurrentKanban(kanban);
+    
+    // Stocker aussi dans le ClientModel pour la couche data via KanbanCallsDataClient
+    var dataClient = corps.getDataPort();
+    if (dataClient != null) {
+        dataClient.setCurrentKanban(kanban);
+    }
+    
     // Colonnes
     List<Column> cols = kanban.getAllColumns();
 

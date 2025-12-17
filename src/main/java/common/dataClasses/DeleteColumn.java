@@ -12,6 +12,13 @@ public class DeleteColumn extends Modification {
         this.columnId = columnId;
     }
     
+    // Constructeur avec kanban cible
+    public DeleteColumn(UUID columnId, LightKanban targetKanban) {
+        super();
+        this.columnId = columnId;
+        this.setLightTargetKanban(targetKanban);
+    }
+    
     // Constructeur avec ID
     public DeleteColumn(UUID id, UUID columnId) {
         super(id);

@@ -11,6 +11,13 @@ public class DeleteAccess extends Modification {
         super();
         this.access = access;
     }
+    
+    // Constructeur avec kanban cible
+    public DeleteAccess(UUID access, LightKanban targetKanban) {
+        super();
+        this.access = access;
+        this.setLightTargetKanban(targetKanban);
+    }
 
     // Getters
     public UUID getAccess() {

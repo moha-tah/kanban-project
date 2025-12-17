@@ -299,6 +299,13 @@ public class KanbanCallsDataImplementation implements KanbanCallsDataClient {
         // TODO
     }
 
+    @Override
+    public void setCurrentKanban(Kanban kanban) {
+        if (provider != null) {
+            provider.getMyModel().setCurrentKanban(kanban);
+        }
+    }
+
     // getters / setters
     public DataClientProvider getProvider() {
         return this.provider;

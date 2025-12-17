@@ -50,7 +50,12 @@ public class IhmKanbanCallsCommImp implements IhmKanbanCallsComm {
     @Override
     public void sendRequestModification(LightUser user, Modification modification) {
         if (user == null || modification == null) {
-            LOGGER.warning("Paramètres invalides pour sendRequestModification");
+            LOGGER.warning("Paramètres invalides pour sendRequestModification: user=" + user + ", modification=" + modification);
+            return;
+        }
+        
+        if (modification.getLightTargetKanban() == null) {
+            LOGGER.warning("LightTargetKanban non initialisé dans la modification: " + modification.getClass().getSimpleName());
             return;
         }
 

@@ -25,7 +25,26 @@ public class CommClientCallsKanbanImpl implements CommClientCallsKanban {
     @Override
     public void deliverNotification(LightKanban idKanban, Modification modification) {
         LOGGER.log(Level.INFO, "[Comm->kanban] notification reçue : kanban={0} modification={1}", new Object[]{idKanban, modification});
-
+        
+        // Vérifier si la notification concerne le kanban actuellement affiché
+        Kanban currentKanban = corps.getCurrentKanban();
+        if (currentKanban != null && currentKanban.getId().equals(idKanban.getId())) {
+            LOGGER.log(Level.INFO, "[Comm->kanban] Modification du kanban affiché, application locale de la modification");
+            try {
+                // Appliquer la modification au kanban courant localement
+                Kanban updatedKanban = modification.execute(currentKanban);
+                LOGGER.log(Level.INFO, "[Comm->kanban] Modification appliquée avec succès, rafraîchissement de l'affichage");
+                // Rafraîchir l'affichage sur le thread JavaFX
+                Platform.runLater(() -> {
+                    corps.updateKanban(updatedKanban);
+                });
+            } catch (Exception e) {
+                LOGGER.log(Level.SEVERE, "[Comm->kanban] Erreur lors de l'application de la modification", e);
+            }
+        } else {
+            LOGGER.log(Level.INFO, "[Comm->kanban] Notification pour un kanban non affiché (kanban courant: {0})", 
+                    currentKanban != null ? currentKanban.getId() : "null");
+        }
     }
     
     @Override

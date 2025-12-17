@@ -12,6 +12,13 @@ public class AddAccess extends Modification {
         this.access = access;
     }
     
+    // Constructeur avec kanban cible
+    public AddAccess(Access access, LightKanban targetKanban) {
+        super();
+        this.access = access;
+        this.setLightTargetKanban(targetKanban);
+    }
+    
     // Constructeur avec ID
     public AddAccess(UUID id, Access access) {
         super(id);

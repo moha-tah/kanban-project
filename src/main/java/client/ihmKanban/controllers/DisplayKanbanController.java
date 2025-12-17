@@ -232,7 +232,7 @@ public class DisplayKanbanController implements Initializable {
         addPopupButton(box, "EDIT COLUMN", "#c0c0ff", "black", () -> showEditColumnPopup(col, anchorNode));
         addPopupButton(box, "DELETE COLUMN", "#ff6666", "black", () -> {
             LOGGER.log(Level.INFO, "DELETE COLUMN : {0}", col.getTitle());
-            corps.getCommPort().sendRequestModification(corps.getMe(), new DeleteColumn(col.getId()));
+            corps.getCommPort().sendRequestModification(corps.getMe(), new DeleteColumn(col.getId(), kanban));
         });
 
         showPopupNearNode(popup, anchorNode);
@@ -247,9 +247,8 @@ public class DisplayKanbanController implements Initializable {
         addPopupButton(box, "EDIT TASK", "#d0d0d0", "black", () -> showEditTaskPopup(task, anchorNode));
         addPopupButton(box, "DELETE TASK", "#ff6666", "black", () -> {
             LOGGER.log(Level.INFO, "DELETE TASK : {0}", task.getTitle());
-            corps.getCommPort().sendRequestModification(corps.getMe(), new DeleteTask(task.getId()));
+            corps.getCommPort().sendRequestModification(corps.getMe(), new DeleteTask(task.getId(), kanban));
         });
-
         showPopupNearNode(popup, anchorNode);
     }
 
@@ -269,10 +268,9 @@ public class DisplayKanbanController implements Initializable {
             addPopupButton(box, col.getTitle(), col.getColor() != null ? col.getColor() : "#5D8BF4", "white", () -> {
                 LOGGER.log(Level.INFO, "Change status of task ''{0}'' to column ''{1}''", new Object[]{task.getTitle(), col.getTitle()});
                 statusBtn.setText(col.getTitle() + " ▼");
-                corps.getCommPort().sendRequestModification(corps.getMe(), new MoveTask(task.getId(), col.getId()));
+                corps.getCommPort().sendRequestModification(corps.getMe(), new MoveTask(task.getId(), col.getId(), kanban));
             });
         }
-
         showPopupNearNode(popup, statusBtn);
     }
 
@@ -281,8 +279,8 @@ public class DisplayKanbanController implements Initializable {
     private void showAddColumnPopup(Node anchorNode) {
         showGenericColumnPopup(anchorNode, "ADD COLUMN", null, (title, color) -> {
             Column col = new Column(title, color);
-            corps.getCommPort().sendRequestModification(corps.getMe(), new CreateColumn(col));
-            LOGGER.log(Level.INFO, "Nouvelle colonne cr\u00e9\u00e9e : {0}", title);
+            corps.getCommPort().sendRequestModification(corps.getMe(), new CreateColumn(col, kanban));
+            LOGGER.log(Level.INFO, "Nouvelle colonne créée : {0}", title);
         });
     }
 
@@ -290,9 +288,9 @@ public class DisplayKanbanController implements Initializable {
         showGenericColumnPopup(anchorNode, "EDIT COLUMN", col, (title, color) -> {
             col.setTitle(title);
             col.setColor(color);
-            corps.getCommPort().sendRequestModification(corps.getMe(), new ModifyColumn(col));
+            corps.getCommPort().sendRequestModification(corps.getMe(), new ModifyColumn(col, kanban));
             renderKanban();
-            LOGGER.log(Level.INFO, "Colonne modifi\u00e9e : {0}", title);
+            LOGGER.log(Level.INFO, "Colonne modifiée : {0}", title);
         });
     }
 
@@ -360,8 +358,8 @@ public class DisplayKanbanController implements Initializable {
     private void showAddTaskPopup(Column col, Node anchorNode) {
         showGenericTaskPopup("ADD TASK", null, col, anchorNode, (taskTitle, taskDesc) -> {
             Task tache = new Task(taskTitle, taskDesc);
-            corps.getCommPort().sendRequestModification(corps.getMe(), new CreateTask(tache, col.getId()));
-            LOGGER.log(Level.INFO, "Nouvelle t\u00e2che cr\u00e9\u00e9e : {0}", taskTitle);
+            corps.getCommPort().sendRequestModification(corps.getMe(), new CreateTask(tache, col.getId(), kanban));
+            LOGGER.log(Level.INFO, "Nouvelle tâche créée : {0}", taskTitle);
         });
     }
 
@@ -369,12 +367,10 @@ public class DisplayKanbanController implements Initializable {
         showGenericTaskPopup("EDIT TASK", task, null, anchorNode, (taskTitle, taskDesc) -> {
             task.setTitle(taskTitle);
             task.setDescription(taskDesc);
-            corps.getCommPort().sendRequestModification(corps.getMe(), new ModifyTask(task));
+            corps.getCommPort().sendRequestModification(corps.getMe(), new ModifyTask(task, kanban));
             renderKanban();
-            LOGGER.log(Level.INFO, "T\u00e2che modifi\u00e9e : {0}", taskTitle);
         });
     }
-
     private void showGenericTaskPopup(String popupTitle, Task taskToEdit, Column col, Node anchorNode,
                                       BiConsumer<String, String> onSubmit) {
         Popup popup = createBasePopup();

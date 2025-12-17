@@ -12,6 +12,13 @@ public class DeleteTask extends Modification {
         this.taskId = taskId;
     }
     
+    // Constructeur avec kanban cible
+    public DeleteTask(UUID taskId, LightKanban targetKanban) {
+        super();
+        this.taskId = taskId;
+        this.setLightTargetKanban(targetKanban);
+    }
+    
     // Constructeur avec ID
     public DeleteTask(UUID id, UUID taskId) {
         super(id);
