@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   build-and-package:
-    name: Build ${{ matrix.os }}
+    name: Build ${{ matrix.os-name }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 30
     strategy:
@@ -19,21 +19,15 @@ jobs:
         include:
           - os: windows-latest
             java-arch: x64
-            artifact-suffix: Windows
-            client-path: dist_client/KanbanClient
-            server-path: dist_server/KanbanServer
+            os-name: Windows
             extra-args: "--win-console"
           - os: ubuntu-latest
             java-arch: x64
-            artifact-suffix: Linux
-            client-path: dist_client/KanbanClient
-            server-path: dist_server/KanbanServer
+            os-name: Linux
             extra-args: ""
           - os: macos-latest
             java-arch: aarch64
-            artifact-suffix: MacOS-ARM
-            client-path: dist_client/KanbanClient.app
-            server-path: dist_server/KanbanServer.app
+            os-name: MacOS
             extra-args: ""
 
     steps:
@@ -50,8 +44,8 @@ jobs:
           app-name: KanbanClient
           main-class: client.Launcher
           destination: dist_client
-          artifact-name: KanbanClient-${{ matrix.artifact-suffix }}
-          artifact-path: ${{ matrix.client-path }}
+          artifact-name: ${{ matrix.os-name }}-Client
+          artifact-path: dist_client
           extra-jpackage-args: ${{ matrix.extra-args }}
 
       - name: Package Server
@@ -60,8 +54,8 @@ jobs:
           app-name: KanbanServer
           main-class: server.ServerLauncher
           destination: dist_server
-          artifact-name: KanbanServer-${{ matrix.artifact-suffix }}
-          artifact-path: ${{ matrix.server-path }}
+          artifact-name: ${{ matrix.os-name }}-Server
+          artifact-path: dist_server
           extra-jpackage-args: ${{ matrix.extra-args }}
 
       - name: Cleanup Old Artifacts
