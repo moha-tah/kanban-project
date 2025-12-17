@@ -14,16 +14,52 @@ import java.util.*;
 import client.interfaces.MainCallsDataClient;
 import common.dataClasses.*;
 
+/**
+ * Implémentation de l'interface {@link MainCallsDataClient}.
+ * 
+ * Cette classe gère les appels depuis la couche IHM principale vers la couche données.
+ * Elle est responsable de l'authentification, de la gestion des profils utilisateurs,
+ * de la sauvegarde/chargement des données depuis le disque, et de la gestion des kanbans.
+ * 
+ * @author Équipe Kanban
+ * @version 1.0
+ * @since 1.0
+ * @see MainCallsDataClient
+ * @see DataClientProvider
+ */
 public class MainCallsDataImplementation implements MainCallsDataClient {
+    /**
+     * Fournisseur de services de la couche données.
+     */
     private DataClientProvider provider;
+    
+    /**
+     * Logger pour les messages de log de cette classe.
+     */
     private static final java.util.logging.Logger LOGGER =
         java.util.logging.Logger.getLogger(MainCallsDataImplementation.class.getName());
 
-
+    /**
+     * Chemin vers le fichier JSON contenant la liste des utilisateurs.
+     */
     private static final Path USERS_FILE = Path.of("data", "users.json");
+    
+    /**
+     * Répertoire contenant les fichiers JSON des utilisateurs individuels.
+     */
     private static final Path USERS_DIR = Path.of("data", "users");
+    
+    /**
+     * Clé JSON pour le nom d'utilisateur.
+     */
     private static final String USERNAME = "username";
 
+    /**
+     * Supprime les guillemets d'une chaîne de caractères si présents.
+     * 
+     * @param s La chaîne à traiter (peut être null)
+     * @return La chaîne sans guillemets, ou null si s est null
+     */
     private static String stripQuotes(String s) {
         if (s == null) {
             return null;
@@ -36,20 +72,41 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
         return trimmed;
     }
 
+    /**
+     * Constructeur de l'implémentation.
+     * 
+     * @param provider Le fournisseur de services de la couche données (ne doit pas être null)
+     */
     public MainCallsDataImplementation(DataClientProvider provider) {
         this.provider = provider;
     }
 
+    /**
+     * Récupère la liste des kanbans disponibles pour l'utilisateur local.
+     * 
+     * @return La liste des kanbans disponibles sous forme de LightKanban
+     */
     @Override
     public List<LightKanban> getMyListLightKanbans(){
         return provider.getMyModel().getAvailableLightKanbans();
     }
 
+    /**
+     * Récupère l'utilisateur local connecté sous forme de LightUser.
+     * 
+     * @return L'utilisateur local, ou null si aucun utilisateur n'est connecté
+     */
     @Override
     public LightUser getMyLightUser(){
         return provider.getMyModel().getLocalUser();
     }
 
+    /**
+     * Sauvegarde l'utilisateur local dans un fichier JSON.
+     * 
+     * Cette méthode sérialise l'utilisateur en JSON et l'écrit dans le répertoire
+     * des utilisateurs. Le fichier est nommé selon le nom d'utilisateur.
+     */
     @Override
     public void saveUser(){
         User user = provider.getMyModel().getLocalUser();
@@ -73,6 +130,17 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
         }
     }
 
+    /**
+     * Authentifie un utilisateur avec son nom d'utilisateur et son mot de passe.
+     * 
+     * Cette méthode charge l'utilisateur depuis le disque, vérifie le mot de passe,
+     * et met à jour le modèle local si l'authentification réussit. Elle charge
+     * également les kanbans de l'utilisateur.
+     * 
+     * @param username Le nom d'utilisateur (ne doit pas être null ou vide)
+     * @param password Le mot de passe (ne doit pas être null ou vide)
+     * @return true si l'authentification réussit, false sinon
+     */
     @Override
     public boolean authentify(String username, String password) {
         if (username == null || password == null || username.isBlank() || password.isBlank()) {
@@ -115,6 +183,13 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
         }
     }
 
+    /**
+     * Lit un fichier JSON et le convertit en Map.
+     * 
+     * @param file Le chemin vers le fichier JSON à lire
+     * @return Une Map contenant les paires clé-valeur du JSON
+     * @throws IOException si la lecture du fichier échoue
+     */
     private Map<String, String> readJsonToMap(Path file) throws IOException {
         if (!Files.exists(file)) return new HashMap<>();
 
@@ -140,6 +215,13 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
     }
 
 
+    /**
+     * Écrit une Map dans un fichier JSON.
+     * 
+     * @param file Le chemin vers le fichier JSON à écrire
+     * @param map La Map à sérialiser en JSON
+     * @throws IOException si l'écriture du fichier échoue
+     */
     private void writeMapToJson(Path file, Map<String, String> map) throws IOException {
         if (file.getParent() != null && !Files.exists(file.getParent())) {
             Files.createDirectories(file.getParent());
@@ -162,6 +244,12 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
     }
 
 
+    /**
+     * Sérialise un utilisateur en chaîne JSON.
+     * 
+     * @param user L'utilisateur à sérialiser (ne doit pas être null)
+     * @return La représentation JSON de l'utilisateur
+     */
     private String serializeUserToJson(User user) {
         StringBuilder json = new StringBuilder("{");
         json.append("\"id\":\"").append(escapeJson(user.getId().toString())).append("\",");
@@ -190,6 +278,16 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
     }
 
 
+    /**
+     * Désérialise un utilisateur depuis une chaîne JSON.
+     * 
+     * Cette méthode charge également les kanbans de l'utilisateur depuis
+     * leurs fichiers JSON individuels.
+     * 
+     * @param jsonContent Le contenu JSON à désérialiser (ne doit pas être null)
+     * @return L'utilisateur désérialisé, ou null si le JSON est vide
+     * @throws IOException si la désérialisation échoue ou si des champs sont manquants
+     */
     private User deserializeUserFromJson(String jsonContent) throws IOException {
         Map<String, String> fields = parseJsonObject(jsonContent);
 
@@ -264,6 +362,12 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
         return user;
     }
 
+    /**
+     * Charge un utilisateur depuis le disque par son nom d'utilisateur.
+     * 
+     * @param username Le nom d'utilisateur à charger (ne doit pas être null)
+     * @return L'utilisateur chargé, ou null si non trouvé ou en cas d'erreur
+     */
     private User loadUser(String username) {
         try {
             Path userFile = USERS_DIR.resolve(username + ".json");
@@ -281,6 +385,12 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
     }
 
 
+    /**
+     * Parse une chaîne JSON en Map, en gérant les objets et tableaux imbriqués.
+     * 
+     * @param json La chaîne JSON à parser (peut être null ou vide)
+     * @return Une Map contenant les paires clé-valeur du JSON
+     */
     private Map<String, String> parseJsonObject(String json) {
         Map<String, String> map = new HashMap<>();
         if (json == null || json.trim().isEmpty()) {
@@ -324,6 +434,12 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
     }
 
 
+    /**
+     * Échappe les caractères spéciaux pour une utilisation dans JSON.
+     * 
+     * @param str La chaîne à échapper (peut être null)
+     * @return La chaîne échappée, ou chaîne vide si str est null
+     */
     private String escapeJson(String str) {
         if (str == null) return "";
         return str.replace("\\", "\\\\")
@@ -334,6 +450,12 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
     }
 
 
+    /**
+     * Déséchappe les caractères spéciaux d'une chaîne JSON.
+     * 
+     * @param str La chaîne à déséchapper (peut être null)
+     * @return La chaîne déséchappée, ou chaîne vide si str est null
+     */
     private String unescapeJson(String str) {
         if (str == null) return "";
         return str.replace("\\\"", "\"")
@@ -344,6 +466,16 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
     }
 
 
+    /**
+     * Exporte le profil de l'utilisateur local vers un fichier JSON.
+     * 
+     * Cette méthode crée une copie du profil sans données sensibles (mot de passe)
+     * et l'écrit dans le fichier spécifié. Le profil exporté ne contient pas
+     * les kanbans pour des raisons de taille.
+     * 
+     * @param lightUserId L'identifiant de l'utilisateur à exporter (ne doit pas être null)
+     * @param path Le chemin vers le fichier de destination (ne doit pas être null ou vide)
+     */
     @Override
     public void exportProfile(LightUser lightUserId, String path){
         if (lightUserId == null || path == null || path.isBlank()) {
@@ -393,6 +525,16 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
         }
     }
 
+    /**
+     * Importe un profil utilisateur depuis un fichier JSON.
+     * 
+     * Cette méthode copie le fichier JSON dans le répertoire des utilisateurs
+     * et met à jour le fichier de liste des utilisateurs.
+     * 
+     * @param path Le chemin vers le fichier JSON à importer (ne doit pas être null ou vide)
+     * @throws UncheckedIOException si l'importation échoue
+     * @throws IllegalArgumentException si le fichier JSON est invalide
+     */
     @Override
     public void importMyProfile(String path){
         // convert the string into a path
@@ -421,6 +563,26 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
         }
     }
 
+    /**
+     * Crée un nouveau profil utilisateur et le sauvegarde localement.
+     * 
+     * Cette méthode crée un utilisateur sécurisé avec un mot de passe hashé,
+     * le définit comme utilisateur local, et sauvegarde le hash du mot de passe
+     * dans le fichier de liste des utilisateurs.
+     * 
+     * @param login Le nom d'utilisateur (ne doit pas être null)
+     * @param password Le mot de passe en clair (ne doit pas être null)
+     * @param name Le prénom (ne doit pas être null)
+     * @param surname Le nom de famille (ne doit pas être null)
+     * @param age L'âge (utilisé pour calculer la date de naissance)
+     * @param avatar Le chemin vers l'avatar (peut être null)
+     * @param role Le rôle (non utilisé actuellement)
+     * @param permissions Les permissions (non utilisé actuellement)
+     * @param contacts Les contacts (non utilisé actuellement)
+     * @param kanbanList La liste des kanbans (non utilisé actuellement)
+     * @param status Le statut (peut être utilisé comme avatar si avatar est null)
+     * @return L'utilisateur créé sous forme de LightUser
+     */
     @Override
     public LightUser  sendCreateProfile(String login, String password, String name, String surname,
                                         int age, String avatar, String role, String permissions,
@@ -449,6 +611,16 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
         return secureUser;
     }
 
+    /**
+     * Ajoute un utilisateur autorisé à un kanban.
+     * 
+     * Cette méthode charge le kanban depuis le disque, ajoute l'utilisateur
+     * à sa liste d'accès, et sauvegarde le kanban mis à jour. Si le kanban
+     * est actuellement ouvert, il est également mis à jour dans le modèle local.
+     * 
+     * @param user L'utilisateur à autoriser (ne doit pas être null)
+     * @param kanban Le kanban auquel ajouter l'utilisateur (ne doit pas être null)
+     */
     @Override
     public void addAuthorizedUserToKanban(LightUser user, LightKanban kanban) {
         if (user == null || kanban == null) {
@@ -503,12 +675,30 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
         }
     }
 
+    /**
+     * Récupère l'utilisateur local complet.
+     * 
+     * @return L'utilisateur local, ou null si aucun utilisateur n'est connecté
+     */
     public User getLocalUser() {
         ClientModel myModel = provider.getMyModel();
         User localUser = myModel.getLocalUser();
         return localUser;
     }
 
+    /**
+     * Modifie les informations de l'utilisateur local.
+     * 
+     * Cette méthode met à jour les champs de l'utilisateur local et sauvegarde
+     * les modifications. Si le nom d'utilisateur change, le fichier est renommé.
+     * 
+     * @param newFirstName Le nouveau prénom (peut être null pour ne pas modifier)
+     * @param newLastName Le nouveau nom de famille (peut être null pour ne pas modifier)
+     * @param newBirthDate La nouvelle date de naissance (peut être null pour ne pas modifier)
+     * @param newAvatar Le nouveau chemin d'avatar (peut être null pour ne pas modifier)
+     * @param newUsername Le nouveau nom d'utilisateur (peut être null pour ne pas modifier)
+     * @return null (type Void pour compatibilité)
+     */
     public Void modifyLocalUser(String newFirstName, String newLastName, LocalDate newBirthDate,
                                 String newAvatar, String newUsername) {
 
@@ -535,6 +725,12 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
         return null;
     }
 
+    /**
+     * Renomme le fichier JSON d'un utilisateur.
+     * 
+     * @param oldUsername L'ancien nom d'utilisateur (ne doit pas être null)
+     * @param newUsername Le nouveau nom d'utilisateur (ne doit pas être null)
+     */
     private void renameUserFile(String oldUsername, String newUsername) {
         try {
             Path oldFile = USERS_DIR.resolve(oldUsername + ".json");
@@ -550,6 +746,12 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
         }
     }
 
+    /**
+     * Supprime le profil utilisateur local du disque.
+     * 
+     * Cette méthode supprime le fichier JSON de l'utilisateur local.
+     * Aucune vérification n'est effectuée avant la suppression.
+     */
     @Override
     public void deleteLocalProfile() {
         common.dataClasses.User user = provider.getMyModel().getLocalUser();
@@ -575,27 +777,67 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
         }
     }
 
+    /**
+     * Modifie uniquement le prénom de l'utilisateur local.
+     * 
+     * @param newFirstName Le nouveau prénom (ne doit pas être null)
+     */
     public void ModifyLocalUserFirstName(String newFirstName) {
         modifyLocalUser(newFirstName, null, null, null, null);
     }
+    
+    /**
+     * Modifie uniquement le nom de famille de l'utilisateur local.
+     * 
+     * @param newLastName Le nouveau nom de famille (ne doit pas être null)
+     */
     public void ModifyLocalUserLastName(String newLastName) {
         modifyLocalUser(null, newLastName, null, null, null);
     }
+    
+    /**
+     * Modifie uniquement la date de naissance de l'utilisateur local.
+     * 
+     * @param newBirthDate La nouvelle date de naissance (ne doit pas être null)
+     */
     public void ModifyLocalUserBirthDate(LocalDate newBirthDate) {
         modifyLocalUser(null, null, newBirthDate, null, null);
     }
+    
+    /**
+     * Modifie uniquement l'avatar de l'utilisateur local.
+     * 
+     * @param newAvatar Le nouveau chemin d'avatar (ne doit pas être null)
+     */
     public void ModifyLocalUserAvatar(String newAvatar) {
         modifyLocalUser(null, null, null, newAvatar, null);
     }
+    
+    /**
+     * Modifie uniquement le nom d'utilisateur de l'utilisateur local.
+     * 
+     * @param newUsername Le nouveau nom d'utilisateur (ne doit pas être null)
+     */
     public void ModifyLocalUserUsername(String newUsername) {
         modifyLocalUser(null, null, null, null, newUsername);
     }
     
 
 
+    /**
+     * Récupère le fournisseur de services de la couche données.
+     * 
+     * @return Le fournisseur de services
+     */
     public DataClientProvider getProvider() {
         return this.provider;
     }
+    
+    /**
+     * Définit le fournisseur de services de la couche données.
+     * 
+     * @param provider Le fournisseur de services à définir (ne doit pas être null)
+     */
     public void setProvider(DataClientProvider provider) {
         this.provider = provider;
     }

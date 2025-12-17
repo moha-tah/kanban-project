@@ -31,11 +31,35 @@ import java.time.Instant;
 
 import common.dataClasses.Modification;
 
+/**
+ * Implémentation de l'interface {@link KanbanCallsDataClient}.
+ * 
+ * Cette classe gère les appels depuis la couche IHM Kanban vers la couche données.
+ * Elle est responsable de la sauvegarde et du chargement des kanbans depuis le disque
+ * en format JSON, ainsi que de la gestion des snapshots et modifications.
+ * 
+ * @author Équipe Kanban
+ * @version 1.0
+ * @since 1.0
+ * @see KanbanCallsDataClient
+ * @see DataClientProvider
+ */
 public class KanbanCallsDataImplementation implements KanbanCallsDataClient {
 
+    /**
+     * Fournisseur de services de la couche données.
+     */
     private DataClientProvider provider;
 
-    // Gson configuré pour supporter java.time.LocalDate sans réflexion sur les champs privés
+    /**
+     * Instance Gson configurée pour supporter les types java.time sans réflexion.
+     * 
+     * Cette instance est configurée avec des adaptateurs personnalisés pour :
+     * - LocalDate, LocalDateTime, LocalTime, Instant
+     * - Sérialisation des clés complexes de Map
+     * - Formatage JSON lisible (pretty printing)
+     * - Inclusion des champs null
+     */
     private static final Gson GSON = new GsonBuilder()
             // LocalDate -> "2025-11-25"
             .registerTypeAdapter(LocalDate.class,
@@ -74,17 +98,34 @@ public class KanbanCallsDataImplementation implements KanbanCallsDataClient {
             .serializeNulls()     // Include null fields in JSON
             .create();
 
-    // Constructeur
+    /**
+     * Constructeur de l'implémentation.
+     * 
+     * @param provider Le fournisseur de services de la couche données (ne doit pas être null)
+     */
     public KanbanCallsDataImplementation(DataClientProvider provider) {
         this.provider = provider;
     }
 
+    /**
+     * Sauvegarde un snapshot d'un kanban (non implémenté).
+     * 
+     * @param kanban Le kanban pour lequel sauvegarder un snapshot
+     */
     @Override
     public void saveSnapshot(Kanban kanban) {
         // TODO
     }
 
-    
+    /**
+     * Sauvegarde un kanban dans le modèle local et sur le disque.
+     * 
+     * Cette méthode met à jour le modèle local, sauvegarde le kanban en JSON
+     * sur le disque, et l'envoie au serveur si la connexion est disponible.
+     * 
+     * @param kanban Le kanban à sauvegarder (ne doit pas être null)
+     * @throws IllegalStateException si le provider est null
+     */
     public void saveKanban(Kanban kanban) {
         if (provider == null) {
             throw new IllegalStateException("KanbanCallsDataImplementation: provider is null");
@@ -117,7 +158,15 @@ public class KanbanCallsDataImplementation implements KanbanCallsDataClient {
         }
     }
 
-    // Sauvegarde locale JSON d'un Kanban complet dans data/kanbans
+    /**
+     * Sauvegarde un kanban complet en format JSON dans le répertoire data/kanbans.
+     * 
+     * Cette méthode utilise un fichier temporaire pour garantir l'intégrité
+     * des données lors de l'écriture. Le fichier est nommé selon l'ID du kanban.
+     * 
+     * @param kanban Le kanban à sauvegarder (ne doit pas être null)
+     * @throws RuntimeException si la sauvegarde échoue
+     */
     public static void saveKanbanAsJson(Kanban kanban) {
         try {
             Path kanbanDir = Paths.get("data", "kanbans");
@@ -136,7 +185,16 @@ public class KanbanCallsDataImplementation implements KanbanCallsDataClient {
         }
     }
 
-    // Charge un Kanban depuis data/kanbans/{kanbanId}.json
+    /**
+     * Charge un kanban complet depuis un fichier JSON dans data/kanbans.
+     * 
+     * Le fichier est identifié par l'ID contenu dans le LightKanban fourni.
+     * Le champ creator sera null après le chargement car il est transient.
+     * 
+     * @param lightKanban La version légère du kanban contenant l'ID (ne doit pas être null)
+     * @return Le kanban chargé, ou null si le fichier n'existe pas
+     * @throws RuntimeException si le chargement échoue
+     */
     public static Kanban loadKanbanFromJson(LightKanban lightKanban) {
         try {
             Path kanbanDir = Paths.get("data", "kanbans");
@@ -160,8 +218,14 @@ public class KanbanCallsDataImplementation implements KanbanCallsDataClient {
     }
 
     /**
-     * Charge tous les kanbans d'un utilisateur basé sur la liste d'IDs
-     * Utilisé au démarrage de l'application pour charger les kanbans de l'utilisateur connecté
+     * Charge tous les kanbans d'un utilisateur basé sur la liste d'IDs.
+     * 
+     * Cette méthode est utilisée au démarrage de l'application pour charger
+     * tous les kanbans de l'utilisateur connecté depuis le disque.
+     * Les kanbans non trouvés sont ignorés avec un message d'avertissement.
+     * 
+     * @param lightKanbans La liste des versions légères des kanbans à charger (peut être null ou vide)
+     * @return La liste des kanbans chargés avec succès
      */
     public static List<Kanban> loadUserKanbans(List<LightKanban> lightKanbans) {
         List<Kanban> kanbans = new ArrayList<>();
@@ -186,6 +250,11 @@ public class KanbanCallsDataImplementation implements KanbanCallsDataClient {
         return kanbans;
     }
 
+    /**
+     * Récupère la liste des snapshots (non implémenté).
+     * 
+     * @return Une liste vide non modifiable (toutes les opérations lèvent une exception)
+     */
     @Override
     public List<Snapshot> getListSnapshot() {
         // TODO: à implémenter proprement
@@ -285,27 +354,53 @@ public class KanbanCallsDataImplementation implements KanbanCallsDataClient {
         };
     }
 
+    /**
+     * Récupère un snapshot spécifique (non implémenté).
+     * 
+     * @param snap Le snapshot à récupérer
+     * @return Un nouveau snapshot vide
+     */
     @Override
     public Snapshot getSnapshot(Snapshot snap) {
         // TODO
         return new Snapshot();
     }
 
+    /**
+     * Supprime un snapshot (non implémenté).
+     * 
+     * @param snap Le snapshot à supprimer
+     */
     @Override
     public void deleteSnapshot(Snapshot snap) {
         // TODO
     }
 
+    /**
+     * Récupère une modification (non implémenté).
+     * 
+     * @param modifi La modification à récupérer
+     * @param kanbanID L'identifiant du kanban concerné
+     */
     @Override
     public void getModified(Modification modifi, UUID kanbanID) {
         // TODO
     }
 
-    // getters / setters
+    /**
+     * Récupère le fournisseur de services de la couche données.
+     * 
+     * @return Le fournisseur de services
+     */
     public DataClientProvider getProvider() {
         return this.provider;
     }
 
+    /**
+     * Définit le fournisseur de services de la couche données.
+     * 
+     * @param provider Le fournisseur de services à définir (ne doit pas être null)
+     */
     public void setProvider(DataClientProvider provider) {
         this.provider = provider;
     }
