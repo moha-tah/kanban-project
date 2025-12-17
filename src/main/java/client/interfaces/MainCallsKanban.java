@@ -9,7 +9,4 @@ import common.dataClasses.Kanban;
 public interface MainCallsKanban {
     void displaySnapshotList();
     void openKanban(Kanban kanban, HomeViewController homeController, ProfileController profileController,ProfileDistantController profileDistantController);
-
-
-    void openKanbanViewFromProfile(Kanban kanban, ProfileController profileController);
 }

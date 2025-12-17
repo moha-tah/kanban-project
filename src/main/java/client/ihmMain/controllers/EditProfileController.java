@@ -11,7 +11,6 @@ import client.MainApp;
 import client.ihmMain.MainCore;
 import client.interfaces.MainCallsDataClient;
 import common.dataClasses.User;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -221,11 +220,6 @@ public class EditProfileController {
     // -------------------------------------------------------------------------------------
     // ACTION : RETOUR
     // -------------------------------------------------------------------------------------
-
-    @FXML
-    private void handleCancel() {
-        goBack();
-    }
 
     @FXML
     private void onBackToProfile() {

@@ -22,7 +22,6 @@ import client.interfaces.MainCallsKanban;
 import common.dataClasses.Kanban;
 import common.dataClasses.LightKanban;
 import common.dataClasses.LightUser;
-import client.ihmMain.controllers.ProfileController;
 
 
 /**
@@ -99,12 +98,5 @@ public class kanbanCorps {
         manageDisplay.openKanbanScreen(kanban, homeController, profileController,profileDistantController); 
     }
 
-    public void displayKanbanFromProfile(Kanban kanban, ProfileController profileController) {
-        manageDisplay.openKanbanScreenFromProfile(kanban, profileController);
-
-    }
-
-    public void updateKanban(Kanban kanban) {
-        manageDisplay.refreshKanban(kanban);
     }
 }
