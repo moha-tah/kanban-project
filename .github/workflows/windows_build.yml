@@ -11,7 +11,7 @@ permissions:
 jobs:
   build-windows:
     runs-on: windows-latest
-    timeout-minutes: 30
+    timeout-minutes: 10
 
     steps:
       - uses: actions/checkout@v4
@@ -69,14 +69,14 @@ jobs:
           script: |
             const { owner, repo } = context.repo;
             const branch = context.ref.replace('refs/heads/', '');
-            
+
             console.log(`Cleaning up old artifacts for branch: ${branch}`);
-            
+
             const artifacts = await github.paginate(
               github.rest.actions.listArtifactsForRepo,
               { owner, repo }
             );
-            
+
             for (const artifact of artifacts) {
               if (artifact.workflow_run && artifact.workflow_run.head_branch === branch && artifact.workflow_run.id !== context.runId) {
                 console.log(`Deleting artifact ${artifact.name} (id: ${artifact.id}) from run ${artifact.workflow_run.id}`);
