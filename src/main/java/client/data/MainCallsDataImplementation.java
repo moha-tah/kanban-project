@@ -376,7 +376,7 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
         } catch (IOException e) {
             LOGGER.log(java.util.logging.Level.SEVERE, "exportProfile: IOException", e);
         } catch (Exception e) {
-            LOGGER.log(java.util.logging.Level.SEVERE, "exportProfile: unexpected error", e);
+            LOGGER.log(java.util.logging.Level.SEVERE, "exportProfile: unexpected error while exporting profile for userId=" + (lightUserId != null ? lightUserId.getId() : "null") + " to path=" + path, e);
         }
     }
 
