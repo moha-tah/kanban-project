@@ -33,6 +33,12 @@ buildNumber.properties
 *.rar
 hs_err_pid*
 
+
+output/
+dist/
+dist_client/
+dist_server/
+
 # OS
 .DS_Store
 Thumbs.db

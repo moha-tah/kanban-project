@@ -1,0 +1,64 @@
+name: Build Packages
+
+on:
+  push:
+    branches: ["package_export", "main", "[vV][0-9]+"]
+
+permissions:
+  contents: read
+  actions: write
+
+jobs:
+  build-and-package:
+    name: Build ${{ matrix.os-name }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            java-arch: x64
+            os-name: Windows
+            extra-args: "--win-console"
+          - os: ubuntu-latest
+            java-arch: x64
+            os-name: Linux
+            extra-args: ""
+          - os: macos-latest
+            java-arch: aarch64
+            os-name: MacOS
+            extra-args: ""
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup and Build
+        uses: ./.github/actions/setup-build
+        with:
+          java-architecture: ${{ matrix.java-arch }}
+
+      - name: Package Client
+        uses: ./.github/actions/package-artifact
+        with:
+          app-name: KanbanClient
+          main-class: client.Launcher
+          destination: dist
+          extra-jpackage-args: ${{ matrix.extra-args }}
+
+      - name: Package Server
+        uses: ./.github/actions/package-artifact
+        with:
+          app-name: KanbanServer
+          main-class: server.ServerLauncher
+          destination: dist
+          extra-jpackage-args: ${{ matrix.extra-args }}
+
+      - name: Upload ${{ matrix.os-name }} Bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.os-name }}-Kanban-Bundle
+          path: dist
+
+      - name: Cleanup Old Artifacts
+        uses: ./.github/actions/cleanup-artifacts
