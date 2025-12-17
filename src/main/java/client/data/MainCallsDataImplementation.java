@@ -414,12 +414,10 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
 
             Files.copy(filePath, newFile);
 
-            String usersFile = USERS_FILE.toString();
+            Map<String, String> users = readJsonToMap(USERS_FILE);
+            users.put((String)profile.get(USERNAME), (String)profile.get("passwordHash"));
+            writeMapToJson(USERS_FILE, users);
 
-            Object u = new JSONParser().parse(new FileReader(usersFile));
-            JSONObject users = (JSONObject) u;
-            users.put(profile.get(USERNAME), profile.get("passworHash") );
-            Files.write(USERS_FILE, users.toJSONString().getBytes(StandardCharsets.UTF_8));
         } catch (IOException e) {
             throw new UncheckedIOException("Failed to load profile from JSON", e);
         } catch (ParseException e) {
