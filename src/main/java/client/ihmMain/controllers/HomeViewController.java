@@ -30,27 +30,104 @@ import javafx.scene.effect.DropShadow;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
+/**
+ * Contrôleur principal de la page d'accueil.
+ * 
+ * Ce contrôleur gère la vue principale de l'application après connexion.
+ * Il affiche les kanbans de l'utilisateur (créés, participés, disponibles),
+ * gère les notifications de demandes d'accès, et permet la navigation
+ * vers la création de kanban et l'affichage de kanbans.
+ * 
+ * @author Équipe Kanban
+ * @version 1.0
+ * @since 1.0
+ * @see MainCore
+ * @see KanbanCardController
+ * @see UsersController
+ */
 public class HomeViewController {
 
+    /**
+     * Conteneur horizontal pour les kanbans créés par l'utilisateur.
+     */
     @FXML private HBox createdKanbansContainer;
+    
+    /**
+     * Conteneur horizontal pour les kanbans auxquels l'utilisateur participe.
+     */
     @FXML private HBox participateKanbansContainer;
+    
+    /**
+     * Conteneur horizontal pour les kanbans disponibles (publics).
+     */
     @FXML private HBox availableKanbansContainer;
+    
+    /**
+     * Champ de recherche pour filtrer les kanbans.
+     */
     @FXML private TextField searchField;
+    
+    /**
+     * Bouton pour créer un nouveau kanban.
+     */
     @FXML private Button createKanbanButton;
+    
+    /**
+     * Panneau contenant la barre des utilisateurs connectés.
+     */
     @FXML private Pane usersBar;
+    
+    /**
+     * Panneau de notifications.
+     */
     @FXML private Pane notifPanel;
+    
+    /**
+     * Conteneur vertical pour les notifications.
+     */
     @FXML private VBox notifContainer;
 
+    /**
+     * Indique si le panneau de notifications est visible.
+     */
     private boolean notifVisible = false;
+    
+    /**
+     * Cœur de l'application principale.
+     */
     private MainCore core;
+    
+    /**
+     * Contrôleur de la liste des utilisateurs.
+     */
     private UsersController usersController;
+    
+    /**
+     * Instance unique du contrôleur (singleton).
+     */
     private static HomeViewController instance;
+    
+    /**
+     * Logger pour les messages de log de cette classe.
+     */
     private static final Logger LOGGER = Logger.getLogger(HomeViewController.class.getName());
 
+    /**
+     * Récupère l'instance unique du contrôleur.
+     * 
+     * @return L'instance du contrôleur, ou null si non initialisée
+     */
     public static HomeViewController getInstance() {
         return instance;
     }
 
+    /**
+     * Initialise le contrôleur après le chargement du FXML.
+     * 
+     * Cette méthode enregistre cette instance comme instance unique,
+     * récupère le MainCore, charge la barre des utilisateurs, et
+     * rafraîchit l'affichage des kanbans.
+     */
     @FXML
     private void initialize() {
         instance = this;
@@ -65,6 +142,12 @@ public class HomeViewController {
         refreshKanbansFromModel();
     }
 
+    /**
+     * Charge la barre des utilisateurs connectés.
+     * 
+     * Cette méthode charge le fichier FXML users.fxml, injecte le MainCore
+     * dans son contrôleur, et rafraîchit la liste des utilisateurs.
+     */
     private void loadUsersBar() {
         if (usersBar == null) return;
         try {
@@ -82,18 +165,27 @@ public class HomeViewController {
         }
     }
 
+    /**
+     * Rafraîchit la barre des utilisateurs connectés.
+     */
     public void refreshUsersBar() {
         if (usersController != null) {
             usersController.refreshUsers();
         }
     }
 
-    // ==================== NOTIFICATIONS ====================
-
+    /**
+     * Gère l'affichage/masquage du panneau de notifications (méthode statique).
+     * 
+     * Cette méthode délègue à l'instance pour basculer la visibilité.
+     */
     public static void handleNotif() {
         if (instance != null) instance.toggleNotif();
     }
 
+    /**
+     * Bascule la visibilité du panneau de notifications.
+     */
     private void toggleNotif() {
         notifVisible = !notifVisible;
         notifPanel.setVisible(notifVisible);
@@ -103,6 +195,12 @@ public class HomeViewController {
 
     /**
      * Affiche une notification interactive pour une demande d'accès.
+     * 
+     * Cette méthode crée une carte de notification avec des boutons
+     * pour accepter ou refuser la demande d'accès à un kanban privé.
+     * 
+     * @param requester L'utilisateur qui demande l'accès (ne doit pas être null)
+     * @param kanban Le kanban concerné par la demande (ne doit pas être null)
      */
     public void addRequestNotification(common.dataClasses.LightUser requester, common.dataClasses.LightKanban kanban) {
         if (notifContainer == null) return;
@@ -154,6 +252,11 @@ public class HomeViewController {
         if (!notifVisible) toggleNotif();
     }
 
+    /**
+     * Ajoute une notification simple au conteneur.
+     * 
+     * @param message Le message de la notification (ne doit pas être null)
+     */
     public void addNotification(String message) {
         if (notifContainer == null) return;
         HBox box = new HBox();
@@ -167,6 +270,16 @@ public class HomeViewController {
         notifContainer.getChildren().add(0, box);
     }
 
+    /**
+     * Gère la décision sur une demande d'accès (acceptation ou refus).
+     * 
+     * Cette méthode envoie la réponse au serveur et, si accepté,
+     * ajoute l'utilisateur au kanban dans la couche Data.
+     * 
+     * @param requester L'utilisateur qui a demandé l'accès (ne doit pas être null)
+     * @param kanban Le kanban concerné (ne doit pas être null)
+     * @param accepted true si l'accès est accordé, false sinon
+     */
     private void handleDecision(common.dataClasses.LightUser requester, common.dataClasses.LightKanban kanban, boolean accepted) {
         if (core != null) {
             core.sendPermissionResponse(requester, kanban, accepted);
@@ -188,8 +301,15 @@ public class HomeViewController {
         }
     }
 
-    // ==================== KANBANS ====================
-
+    /**
+     * Rafraîchit l'affichage des kanbans depuis le modèle.
+     * 
+     * Cette méthode récupère tous les kanbans disponibles depuis le core,
+     * les charge depuis le disque si nécessaire, vérifie les droits d'accès,
+     * et les affiche dans les conteneurs appropriés (créés, participés, disponibles).
+     * 
+     * Cette méthode doit être appelée sur le thread JavaFX.
+     */
     public void refreshKanbansFromModel() {
         if (!Platform.isFxApplicationThread()) {
             Platform.runLater(this::refreshKanbansFromModel);
@@ -279,6 +399,12 @@ public class HomeViewController {
         }
     }
 
+    /**
+     * Recherche un utilisateur par son identifiant.
+     * 
+     * @param id L'identifiant de l'utilisateur (peut être null)
+     * @return L'utilisateur trouvé, ou null si non trouvé
+     */
     private User findUserById(UUID id) {
         if (id == null) return null;
         List<common.dataClasses.LightUser> users = core.getUsersSnapshot();
@@ -292,6 +418,14 @@ public class HomeViewController {
         return null;
     }
 
+    /**
+     * Crée une carte de kanban depuis le fichier FXML.
+     * 
+     * @param kanban Le kanban pour lequel créer la carte (ne doit pas être null)
+     * @param isMine true si l'utilisateur est le propriétaire
+     * @param isParticipating true si l'utilisateur participe au kanban
+     * @return Le nœud représentant la carte, ou null si le chargement échoue
+     */
     private Node createKanbanCardFromFXML(Kanban kanban, boolean isMine, boolean isParticipating)
  {
         try {
@@ -324,18 +458,41 @@ public class HomeViewController {
         }
     }
 
+    /**
+     * Vérifie si un kanban appartient à l'utilisateur.
+     * 
+     * @param kanbanId L'identifiant du kanban (ne doit pas être null)
+     * @param me L'utilisateur à vérifier (peut être null)
+     * @return true si l'utilisateur est le propriétaire du kanban
+     */
     private boolean isMyKanban(UUID kanbanId, User me) {
         if (me == null || me.getMyKanban() == null) return false;
         return me.getMyKanban().stream().anyMatch(k -> k.getId().equals(kanbanId));
     }
 
-    // ==================== NAVIGATION ====================
-
+    /**
+     * Gère le clic sur le bouton de création de kanban.
+     * 
+     * Cette méthode ouvre une nouvelle fenêtre avec le formulaire de création.
+     * 
+     * @throws IOException si le chargement du FXML échoue
+     */
     @FXML
     private void handleCreateKanban() throws IOException {
         switchScene("/createKanban.fxml", "Créer un Kanban", createKanbanButton);
     }
 
+    /**
+     * Change de scène en chargeant un nouveau FXML.
+     * 
+     * Pour le formulaire de création, une nouvelle fenêtre est ouverte.
+     * Pour les autres vues, la scène actuelle est remplacée.
+     * 
+     * @param fxmlPath Le chemin vers le fichier FXML à charger
+     * @param title Le titre de la nouvelle fenêtre
+     * @param triggerNode Le nœud qui a déclenché le changement de scène
+     * @throws IOException si le chargement du FXML échoue
+     */
     private void switchScene(String fxmlPath, String title, Node triggerNode) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
         Parent root = loader.load();
@@ -356,12 +513,28 @@ public class HomeViewController {
         stage.setScene(new Scene(root, 1280, 720));
     }
 
+    /**
+     * Zone de défilement pour afficher un kanban en détail.
+     */
     @FXML private ScrollPane kanbanArea; 
 
+    /**
+     * Récupère la zone de défilement pour afficher un kanban.
+     * 
+     * @return La zone de défilement
+     */
     public ScrollPane getKanbanArea() {
         return kanbanArea;
     }   
 
+    /**
+     * Affiche un kanban dans la zone centrale.
+     * 
+     * Cette méthode charge la vue d'affichage du kanban et l'affiche
+     * dans la zone de défilement centrale.
+     * 
+     * @param kanban Le kanban à afficher (ne doit pas être null)
+     */
     public void displayKanban(Kanban kanban) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/displayKanban.fxml"));
@@ -380,6 +553,12 @@ public class HomeViewController {
         }
     }
 
+    /**
+     * Affiche la liste des kanbans dans la zone centrale.
+     * 
+     * Cette méthode recharge le contenu original de la page d'accueil
+     * (la liste des kanbans) et rafraîchit les données.
+     */
     public void showHomeKanbanList() {
     try {
         // Recharger le contenu original (la liste des kanbans)

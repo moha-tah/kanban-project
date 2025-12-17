@@ -22,24 +22,77 @@ import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+/**
+ * Contrôleur de la page d'édition de profil.
+ * 
+ * Ce contrôleur gère l'édition des informations du profil utilisateur :
+ * prénom, nom, nom d'utilisateur, date de naissance, et avatar.
+ * Il permet également de supprimer le compte utilisateur.
+ * 
+ * @author Équipe Kanban
+ * @version 1.0
+ * @since 1.0
+ * @see ProfileController
+ * @see MainCore
+ */
 public class EditProfileController {
 
+    /**
+     * Champ de saisie du prénom.
+     */
     @FXML private TextField firstNameField;
+    
+    /**
+     * Champ de saisie du nom de famille.
+     */
     @FXML private TextField lastNameField;
+    
+    /**
+     * Sélecteur de date de naissance.
+     */
     @FXML private DatePicker birthDatePicker;
+    
+    /**
+     * Champ de saisie du nom d'utilisateur.
+     */
     @FXML private TextField usernameField;
+    
+    /**
+     * ImageView pour l'avatar de profil.
+     */
     @FXML private ImageView profileImageView;
+    
+    /**
+     * Label pour afficher les erreurs de validation.
+     */
     @FXML private Label errorLabel;
 
+    /**
+     * Cœur de l'application principale.
+     */
     private MainCore core;
+    
+    /**
+     * Utilisateur actuellement édité.
+     */
     private User currentUser;
+    
+    /**
+     * Fichier image sélectionné pour l'avatar.
+     */
     private File selectedImage;
 
+    /**
+     * Logger pour les messages de log de cette classe.
+     */
     private static final Logger LOGGER = Logger.getLogger(EditProfileController.class.getName());
 
-    // -------------------------------------------------------------------------------------
-    // INITIALISATION
-    // -------------------------------------------------------------------------------------
+    /**
+     * Initialise le contrôleur après le chargement du FXML.
+     * 
+     * Cette méthode masque le label d'erreur et configure le DatePicker
+     * pour empêcher la sélection de dates futures.
+     */
     @FXML
     private void initialize() {
         errorLabel.setVisible(false);
@@ -56,7 +109,11 @@ public class EditProfileController {
         });
     }
 
-    // Injecte le core
+    /**
+     * Définit le cœur de l'application principale et charge les données utilisateur.
+     * 
+     * @param core Le cœur de l'application (ne doit pas être null)
+     */
     public void setCore(MainCore core) {
         this.core = core;
 
@@ -65,7 +122,12 @@ public class EditProfileController {
         }
     }
 
-    // Récupère le User complet via Data
+    /**
+     * Charge les données complètes de l'utilisateur depuis la couche Data.
+     * 
+     * Cette méthode récupère l'utilisateur complet et pré-remplit tous les champs
+     * du formulaire avec ses données actuelles.
+     */
     private void loadUserData() {
         try {
             MainCallsDataClient data = core.getDataPort();
@@ -93,9 +155,12 @@ public class EditProfileController {
         }
     }
 
-    // -------------------------------------------------------------------------------------
-    // ACTION : CHOISIR UNE IMAGE
-    // -------------------------------------------------------------------------------------
+    /**
+     * Gère la sélection d'une image pour l'avatar.
+     * 
+     * Cette méthode ouvre un dialogue de sélection de fichier pour choisir
+     * une image de profil (PNG, JPG, JPEG) et l'affiche dans l'ImageView.
+     */
     @FXML
     private void onSelectImage() {
         FileChooser chooser = new FileChooser();
@@ -113,9 +178,12 @@ public class EditProfileController {
         }
     }
 
-    // -------------------------------------------------------------------------------------
-    // ACTION : ENREGISTRER
-    // -------------------------------------------------------------------------------------
+    /**
+     * Gère l'enregistrement des modifications du profil.
+     * 
+     * Cette méthode valide les champs, puis appelle la couche Data
+     * pour mettre à jour le profil utilisateur avec les nouvelles valeurs.
+     */
     @FXML
     private void onSaveProfile() {
         errorLabel.setVisible(false);
@@ -158,6 +226,12 @@ public class EditProfileController {
         goBack();
     }
 
+    /**
+     * Gère la suppression du compte utilisateur.
+     * 
+     * Cette méthode affiche une boîte de dialogue de confirmation,
+     * puis supprime le profil local et redirige vers la landing page.
+     */
     @FXML
     private void handleDeleteAccount() {
         // 1. Création de la boite de dialogue de confirmation
@@ -175,6 +249,12 @@ public class EditProfileController {
         }
     }
 
+    /**
+     * Effectue la suppression effective du compte.
+     * 
+     * Cette méthode déconnecte l'utilisateur du serveur, supprime le profil local,
+     * nettoie l'état de l'application, et redirige vers la landing page.
+     */
     private void performDeletion() {
         if (core == null) return;
 
@@ -204,20 +284,28 @@ public class EditProfileController {
         }
     }
 
-    // -------------------------------------------------------------------------------------
-    // ACTION : RETOUR
-    // -------------------------------------------------------------------------------------
-
+    /**
+     * Gère l'annulation des modifications et retourne au profil.
+     */
     @FXML
     private void handleCancel() {
         goBack();
     }
 
+    /**
+     * Gère le retour au profil sans sauvegarder.
+     */
     @FXML
     private void onBackToProfile() {
         goBack();
     }
 
+    /**
+     * Navigue vers la vue de profil.
+     * 
+     * Cette méthode charge la vue de profil, injecte le MainCore et
+     * l'utilisateur actuel, puis affiche la scène.
+     */
     private void goBack() {
         try {
             // Charger le FXML Profil

@@ -15,22 +15,57 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 
+/**
+ * Contrôleur d'une carte utilisateur.
+ * 
+ * Ce contrôleur gère l'affichage d'une carte utilisateur avec son nom
+ * et son avatar. Il permet également de naviguer vers le profil distant
+ * de l'utilisateur en cliquant sur la carte.
+ * 
+ * @author Équipe Kanban
+ * @version 1.0
+ * @since 1.0
+ * @see ProfileDistantController
+ */
 public class UserCardController {
 
+    /**
+     * Logger pour les messages de log de cette classe.
+     */
     private static final Logger LOGGER = Logger.getLogger(UserCardController.class.getName());
 
+    /**
+     * Label affichant le nom d'utilisateur.
+     */
     @FXML
     private Label nameLabel;
 
+    /**
+     * ImageView affichant l'avatar de l'utilisateur.
+     */
     @FXML
     private ImageView avatarImageView;
 
+    /**
+     * Nom d'utilisateur de la carte.
+     */
     private String username;
 
-
-    // on réutilise profile_pic.png comme avatar par défaut
+    /**
+     * Chemin de l'avatar par défaut dans les ressources.
+     * On réutilise profile_pic.png comme avatar par défaut.
+     */
     private static final String DEFAULT_AVATAR = "/profile_pic.png";
 
+    /**
+     * Définit les données de l'utilisateur à afficher.
+     * 
+     * Cette méthode met à jour le label avec le nom d'utilisateur et
+     * charge l'avatar depuis le chemin fourni ou utilise l'avatar par défaut.
+     * 
+     * @param username Le nom d'utilisateur à afficher (ne doit pas être null)
+     * @param avatarPath Le chemin vers l'image de l'avatar (peut être null ou vide)
+     */
     public void setUserData(String username, String avatarPath) {
         this.username = username;
         nameLabel.setText(username);
@@ -39,6 +74,16 @@ public class UserCardController {
         avatarImageView.setImage(avatar);
     }
 
+    /**
+     * Charge l'image de l'avatar depuis un chemin de fichier.
+     * 
+     * Cette méthode tente de charger l'avatar depuis le chemin fourni.
+     * Si le fichier n'existe pas ou si le chemin est vide, elle charge
+     * l'avatar par défaut depuis les ressources.
+     * 
+     * @param avatarPath Le chemin vers l'image de l'avatar (peut être null ou vide)
+     * @return L'image de l'avatar, ou null si le chargement échoue
+     */
     private Image loadAvatar(String avatarPath) {
         // 1) si un chemin fichier valide est fourni depuis le serveur
         try {
@@ -68,6 +113,14 @@ public class UserCardController {
         }
     }
 
+    /**
+     * Gère le clic sur la carte utilisateur pour afficher son profil distant.
+     * 
+     * Cette méthode charge la vue de profil distant, récupère l'utilisateur
+     * correspondant au nom d'utilisateur, et affiche son profil.
+     * 
+     * @throws IOException si le chargement du FXML échoue
+     */
     @FXML
     private void handleProfileDistantClick() throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/profile_distant.fxml"));

@@ -25,41 +25,107 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+/**
+ * Contrôleur de la vue de profil de l'utilisateur connecté.
+ * 
+ * Ce contrôleur gère l'affichage du profil de l'utilisateur actuel,
+ * incluant ses informations (nom, avatar, nombre de kanbans) et
+ * la liste de ses kanbans. Il permet également d'éditer le profil
+ * et d'exporter les données.
+ * 
+ * @author Équipe Kanban
+ * @version 1.0
+ * @since 1.0
+ * @see EditProfileController
+ * @see ProfileDistantController
+ * @see MainCore
+ */
 public class ProfileController {
 
+    /**
+     * Label affichant le nom complet de l'utilisateur.
+     */
     @FXML
     private Label profileName;
 
+    /**
+     * Label affichant le nom d'utilisateur avec @.
+     */
     @FXML
     private Label profileUsername;
 
+    /**
+     * ImageView affichant l'avatar de l'utilisateur.
+     */
     @FXML
     private ImageView profileAvatar;
 
+    /**
+     * Label affichant le nombre de kanbans créés.
+     */
     @FXML
     private Label kanbansCreated;
 
+    /**
+     * Grille pour afficher les cartes de kanbans.
+     */
     @FXML
     private GridPane kanbansGrid;
 
+    /**
+     * Cœur de l'application principale.
+     */
     private MainCore core;
+    
+    /**
+     * Utilisateur actuellement affiché.
+     */
     private LightUser currentUser;
 
+    /**
+     * Chemin de l'avatar par défaut dans les ressources.
+     */
     private static final String DEFAULT_AVATAR = "/profile_pic.png";
+    
+    /**
+     * Logger pour les messages de log de cette classe.
+     */
     private static final Logger LOGGER = Logger.getLogger(ProfileController.class.getName());
 
+    /**
+     * Définit le cœur de l'application principale.
+     * 
+     * @param core Le cœur de l'application (ne doit pas être null)
+     */
     public void setCore(MainCore core) {
         this.core = core;
     }
 
+    /**
+     * Zone de défilement pour afficher un kanban en détail.
+     */
     @FXML private ScrollPane kanbanArea; 
 
+    /**
+     * Récupère la zone de défilement pour afficher un kanban.
+     * 
+     * @return La zone de défilement
+     */
     public ScrollPane getKanbanArea() {
         return kanbanArea;
     }  
 
     
 
+    /**
+     * Affiche une carte de kanban dans la grille.
+     * 
+     * Cette méthode charge le fichier FXML kanban_card.fxml, initialise
+     * son contrôleur avec les données du kanban, et retourne le nœud.
+     * 
+     * @param kanban Le kanban à afficher (ne doit pas être null)
+     * @return Le nœud représentant la carte, ou null si le chargement échoue
+     */
     private Node showKanban(Kanban kanban)
     {
         try {
@@ -83,6 +149,14 @@ public class ProfileController {
         }
     }
     
+    /**
+     * Définit l'utilisateur à afficher et met à jour l'interface.
+     * 
+     * Cette méthode récupère les données complètes de l'utilisateur depuis
+     * la couche Data, affiche ses informations et la liste de ses kanbans.
+     * 
+     * @param currentUser L'utilisateur à afficher (ne doit pas être null)
+     */
     public void setUser(LightUser currentUser) {
 
         this.currentUser = currentUser;
@@ -117,6 +191,12 @@ public class ProfileController {
         
     }
 
+    /**
+     * Charge l'image de l'avatar depuis un chemin de fichier.
+     * 
+     * @param avPath Le chemin vers l'image de l'avatar (peut être null ou vide)
+     * @return L'image de l'avatar, ou l'avatar par défaut si le chargement échoue
+     */
    private Image loadAvatarProfile(String avPath) {
         // 1) si un chemin fichier valide est fourni depuis le serveur
         if (avPath != null && !avPath.isBlank()) {
@@ -137,6 +217,9 @@ public class ProfileController {
     }
 
 
+    /**
+     * Gère le clic sur le bouton de retour vers la page d'accueil.
+     */
     @FXML
     private void handleBackClick() {
         LOGGER.info("Bouton 'Back' cliqué : retour à l'écran d'accueil.");
@@ -160,6 +243,13 @@ public class ProfileController {
     }
 
 
+    /**
+     * Gère le clic sur le bouton d'édition du profil.
+     * 
+     * Cette méthode charge la vue d'édition de profil et y injecte le MainCore.
+     * 
+     * @throws IOException si le chargement du FXML échoue
+     */
     @FXML
     private void handleEditProfileClick() throws IOException {
 
@@ -185,6 +275,12 @@ public class ProfileController {
         stage.show();
     }
 
+    /**
+     * Gère l'export du profil vers un fichier JSON.
+     * 
+     * Cette méthode ouvre un dialogue de sauvegarde de fichier, puis appelle
+     * la couche Data pour exporter le profil de l'utilisateur.
+     */
     @FXML
     private void handleExportProfile() {
         if (core == null) return;

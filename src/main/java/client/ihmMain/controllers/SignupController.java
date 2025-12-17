@@ -16,27 +16,64 @@ import java.time.LocalDate;
 import javafx.scene.control.DateCell;
 
 /**
- * Gère le scénario d’inscription (Sign Up).
- * 1) L’utilisateur remplit le formulaire
- * 2) On valide les champs
- * 3) DATA.sendCreateProfile()
- * 4) DATA.saveUser()
- * 5) COMM.connectToServer()
- * 6) Navigation vers Home
+ * Contrôleur de la page d'inscription (Sign Up).
+ * 
+ * Ce contrôleur gère le processus d'inscription d'un nouvel utilisateur :
+ * 1) L'utilisateur remplit le formulaire
+ * 2) Validation des champs
+ * 3) Création du profil via DATA.sendCreateProfile()
+ * 4) Sauvegarde de l'utilisateur via DATA.saveUser()
+ * 5) Navigation vers la page de login
+ * 
+ * @author Équipe Kanban
+ * @version 1.0
+ * @since 1.0
+ * @see LoginController
+ * @see MainCore
  */
 public class SignupController {
 
-    // ---- FXML
+    /**
+     * Champ de saisie du prénom.
+     */
     @FXML private TextField firstNameField, lastNameField, usernameField;
+    
+    /**
+     * Champ de saisie du mot de passe.
+     */
     @FXML private PasswordField passwordField;
+    
+    /**
+     * Sélecteur de date de naissance.
+     */
     @FXML private DatePicker birthDatePicker;
+    
+    /**
+     * ImageView pour l'avatar de profil.
+     */
     @FXML private ImageView profileImageView;
+    
+    /**
+     * Label pour afficher les erreurs de validation.
+     */
     @FXML private Label errorLabel;
 
-    // ---- Core principal
+    /**
+     * Cœur de l'application principale.
+     */
     private MainCore core;
+    
+    /**
+     * Fichier image sélectionné pour l'avatar.
+     */
     private File selectedImageFile;
 
+    /**
+     * Initialise le contrôleur après le chargement du FXML.
+     * 
+     * Cette méthode récupère le MainCore, masque le label d'erreur,
+     * et configure le DatePicker pour empêcher la sélection de dates futures.
+     */
     @FXML
     public void initialize() {
         core = MainApp.getCore();
@@ -60,6 +97,12 @@ public class SignupController {
 
     // ================== Handlers ==================
 
+    /**
+     * Gère la sélection d'une image pour l'avatar.
+     * 
+     * Cette méthode ouvre un dialogue de sélection de fichier pour choisir
+     * une image de profil (PNG, JPG, JPEG).
+     */
     @FXML
     private void onSelectImage() {
         FileChooser chooser = new FileChooser();
@@ -74,6 +117,12 @@ public class SignupController {
         }
     }
 
+    /**
+     * Gère le processus d'inscription.
+     * 
+     * Cette méthode valide tous les champs du formulaire, puis crée
+     * le profil utilisateur via la couche Data.
+     */
     @FXML
     private void onSignup() {
         showError(null);
@@ -99,6 +148,9 @@ public class SignupController {
         createProfile(firstName, lastName, username, password, birth);
     }
 
+    /**
+     * Navigue vers la page de connexion.
+     */
     @FXML
     private void onBackToLogin() {
         try {
@@ -108,8 +160,18 @@ public class SignupController {
         }
     }
 
-    // ================== Logique principale ==================
-
+    /**
+     * Crée un nouveau profil utilisateur.
+     * 
+     * Cette méthode appelle la couche Data pour créer le profil,
+     * sauvegarde l'utilisateur, puis redirige vers la page de login.
+     * 
+     * @param firstName Le prénom (ne doit pas être null)
+     * @param lastName Le nom de famille (ne doit pas être null)
+     * @param username Le nom d'utilisateur (ne doit pas être null)
+     * @param password Le mot de passe (ne doit pas être null)
+     * @param birth La date de naissance (ne doit pas être null)
+     */
     private void createProfile(String firstName, String lastName, String username, String password, LocalDate birth) {
         MainCallsDataClient data = core.getDataPort();
         IhmMainCallsComm comm = core.getCommPort();
@@ -142,6 +204,9 @@ public class SignupController {
         }
     }
 
+    /**
+     * Navigue vers la page de connexion après l'inscription.
+     */
     private void navigateBackToLogin() {
         try {
             core.showLoginView();
@@ -150,8 +215,11 @@ public class SignupController {
         }
     }
 
-    // ================== Utilitaires ==================
-
+    /**
+     * Affiche un message d'erreur dans le label d'erreur.
+     * 
+     * @param msg Le message d'erreur à afficher (null pour masquer l'erreur)
+     */
     private void showError(String msg) {
         if (errorLabel == null) return;
         if (msg == null || msg.isBlank()) { errorLabel.setVisible(false); return; }
@@ -160,6 +228,12 @@ public class SignupController {
         errorLabel.setVisible(true);
     }
 
+    /**
+     * Nettoie une chaîne de caractères en supprimant les espaces.
+     * 
+     * @param s La chaîne à nettoyer (peut être null)
+     * @return La chaîne nettoyée, ou une chaîne vide si null
+     */
     private static String safe(String s) {
         return s == null ? "" : s.trim();
     }

@@ -16,38 +16,115 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Contrôleur du formulaire de création de kanban.
+ * 
+ * Ce contrôleur gère un formulaire en 3 étapes pour créer un nouveau kanban :
+ * 1) Informations de base (nom, description, visibilité)
+ * 2) Configuration des colonnes (nom et couleur)
+ * 3) Finalisation et création
+ * 
+ * @author Équipe Kanban
+ * @version 1.0
+ * @since 1.0
+ * @see MainCore
+ * @see HomeViewController
+ */
 public class CreateKanbanController {
 
+    /**
+     * Cœur de l'application principale.
+     */
     private MainCore mainCore;
 
-    // Composants de navigation
+    /**
+     * Conteneur de l'étape 1 (informations de base).
+     */
     @FXML private VBox step1Box;
+    
+    /**
+     * Conteneur de l'étape 2 (colonnes).
+     */
     @FXML private VBox step2Box;
+    
+    /**
+     * Conteneur de l'étape 3 (finalisation).
+     */
     @FXML private VBox step3Box;
+    
+    /**
+     * Label affichant l'étape actuelle.
+     */
     @FXML private Label stepLabel;
+    
+    /**
+     * Barre de progression indiquant l'avancement.
+     */
     @FXML private ProgressBar progressBar;
+    
+    /**
+     * Bouton pour revenir à l'étape précédente.
+     */
     @FXML private Button btnBack;
+    
+    /**
+     * Bouton pour passer à l'étape suivante ou créer le kanban.
+     */
     @FXML private Button btnNext;
 
-    // Champs de données
+    /**
+     * Champ de saisie du nom du projet.
+     */
     @FXML private TextField projectNameField;
+    
+    /**
+     * Zone de texte pour la description du projet.
+     */
     @FXML private TextArea descriptionField;
+    
+    /**
+     * Conteneur pour les champs de colonnes.
+     */
     @FXML private VBox columnsContainer;
+    
+    /**
+     * Choix de la visibilité (Private/Public).
+     */
     @FXML private ChoiceBox<String> visibilityChoice;
 
-    // ColorPickers (Injectés depuis le FXML)
+    /**
+     * Sélecteurs de couleur pour les colonnes (injectés depuis le FXML).
+     */
     @FXML private ColorPicker colorPicker1;
     @FXML private ColorPicker colorPicker2;
     @FXML private ColorPicker colorPicker3;
     @FXML private ColorPicker colorPicker4;
 
+    /**
+     * Liste des entrées de colonnes (nom + couleur).
+     */
     private final List<ColumnInput> columnInputs = new ArrayList<>();
-    private int currentStep = 1; // 1, 2 ou 3
+    
+    /**
+     * Étape actuelle du formulaire (1, 2 ou 3).
+     */
+    private int currentStep = 1;
 
+    /**
+     * Définit le cœur de l'application principale.
+     * 
+     * @param mainCore Le cœur de l'application (ne doit pas être null)
+     */
     public void setMainCore(MainCore mainCore) {
         this.mainCore = mainCore;
     }
 
+    /**
+     * Initialise le contrôleur après le chargement du FXML.
+     * 
+     * Cette méthode configure les valeurs par défaut pour la visibilité,
+     * les couleurs des colonnes, et mappe les éléments FXML aux objets logiques.
+     */
     @FXML
     private void initialize() {
         // Init Visibility
@@ -70,8 +147,12 @@ public class CreateKanbanController {
         updateUI();
     }
 
-    // --- Navigation Logic ---
-
+    /**
+     * Gère le passage à l'étape suivante ou la finalisation.
+     * 
+     * Cette méthode valide l'étape actuelle, puis passe à l'étape suivante
+     * ou finalise la création si on est à l'étape 3.
+     */
     @FXML
     private void handleNext() {
         if (validateCurrentStep()) {
@@ -85,6 +166,9 @@ public class CreateKanbanController {
         }
     }
 
+    /**
+     * Gère le retour à l'étape précédente.
+     */
     @FXML
     private void handleBack() {
         if (currentStep > 1) {
@@ -93,6 +177,12 @@ public class CreateKanbanController {
         }
     }
 
+    /**
+     * Met à jour l'interface utilisateur selon l'étape actuelle.
+     * 
+     * Cette méthode gère la visibilité des conteneurs d'étapes, met à jour
+     * le label et la barre de progression, et ajuste les boutons.
+     */
     private void updateUI() {
         // 1. Gérer la visibilité des VBox
         step1Box.setVisible(currentStep == 1);
@@ -116,6 +206,11 @@ public class CreateKanbanController {
         }
     }
 
+    /**
+     * Valide les données de l'étape actuelle.
+     * 
+     * @return true si l'étape est valide, false sinon
+     */
     private boolean validateCurrentStep() {
         if (currentStep == 1 && projectNameField.getText().trim().isEmpty()) {
             showAlert("Name Required", "Please enter a project name.");
@@ -126,8 +221,13 @@ public class CreateKanbanController {
         return true;
     }
 
-    // --- Business Logic (Création) ---
-
+    /**
+     * Finalise la création du kanban.
+     * 
+     * Cette méthode crée l'objet Kanban avec toutes les données saisies,
+     * sauvegarde le kanban localement, l'ajoute à l'utilisateur, l'envoie
+     * au serveur, puis ferme la fenêtre et retourne à la page d'accueil.
+     */
     private void finalizeCreation() {
         String title = projectNameField.getText().trim();
         String visibility = visibilityChoice.getValue();
@@ -185,8 +285,12 @@ public class CreateKanbanController {
         closeWindow();
     }
 
-    // --- Helpers ---
-
+    /**
+     * Gère l'ajout d'une nouvelle colonne dynamiquement.
+     * 
+     * Cette méthode crée un nouveau champ de saisie avec un sélecteur de couleur
+     * et l'ajoute au conteneur et à la liste des entrées.
+     */
     @FXML
     private void handleAddColumn() {
         HBox newColumn = new HBox(10);
@@ -206,12 +310,21 @@ public class CreateKanbanController {
         columnInputs.add(new ColumnInput(columnName, colorPicker));
     }
 
+    /**
+     * Ferme la fenêtre de création et retourne à la page d'accueil.
+     */
     private void closeWindow() {
         Stage stage = (Stage) btnNext.getScene().getWindow();
         stage.close();
         if (mainCore != null) mainCore.showHomeView();
     }
 
+    /**
+     * Affiche une alerte à l'utilisateur.
+     * 
+     * @param title Le titre de l'alerte
+     * @param msg Le message de l'alerte
+     */
     private void showAlert(String title, String msg) {
         Alert alert = new Alert(Alert.AlertType.WARNING);
         alert.setTitle(title);
@@ -220,6 +333,12 @@ public class CreateKanbanController {
         alert.showAndWait();
     }
 
+    /**
+     * Convertit une couleur JavaFX en code hexadécimal.
+     * 
+     * @param color La couleur à convertir (ne doit pas être null)
+     * @return Le code couleur hexadécimal (format #RRGGBB)
+     */
     private String colorToHex(Color color) {
         return String.format("#%02X%02X%02X",
                 (int) (color.getRed() * 255),
@@ -227,9 +346,26 @@ public class CreateKanbanController {
                 (int) (color.getBlue() * 255));
     }
 
+    /**
+     * Classe interne représentant une entrée de colonne (nom + couleur).
+     */
     private static class ColumnInput {
+        /**
+         * Champ de saisie du nom de la colonne.
+         */
         TextField nameField;
+        
+        /**
+         * Sélecteur de couleur de la colonne.
+         */
         ColorPicker colorPicker;
+        
+        /**
+         * Constructeur d'une entrée de colonne.
+         * 
+         * @param nameField Le champ de saisie du nom (ne doit pas être null)
+         * @param colorPicker Le sélecteur de couleur (ne doit pas être null)
+         */
         ColumnInput(TextField nameField, ColorPicker colorPicker) {
             this.nameField = nameField;
             this.colorPicker = colorPicker;

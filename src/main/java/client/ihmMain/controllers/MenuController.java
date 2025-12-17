@@ -15,11 +15,37 @@ import javafx.scene.image.ImageView;
 import javafx.fxml.FXMLLoader;
 import javafx.stage.Stage;
 
+/**
+ * Contrôleur du menu de navigation principal.
+ * 
+ * Ce contrôleur gère le menu latéral de l'application, affichant l'avatar
+ * de l'utilisateur connecté et fournissant des actions de navigation :
+ * accueil, profil, notifications, et déconnexion.
+ * 
+ * @author Équipe Kanban
+ * @version 1.0
+ * @since 1.0
+ * @see ProfileController
+ * @see HomeViewController
+ */
 public class MenuController {
 
+    /**
+     * ImageView affichant l'avatar de l'utilisateur connecté.
+     */
     @FXML private ImageView profilePic;
+    
+    /**
+     * Chemin de l'avatar par défaut dans les ressources.
+     */
     private static final String DEFAULT_AVATAR_RESOURCE = "/profile_pic.png";
 
+    /**
+     * Initialise le contrôleur après le chargement du FXML.
+     * 
+     * Cette méthode charge l'avatar de l'utilisateur connecté et l'affiche
+     * dans le menu. Si l'utilisateur n'a pas d'avatar, l'avatar par défaut est utilisé.
+     */
     @FXML
     private void initialize() {
         MainCore core = MainApp.getCore();
@@ -32,8 +58,17 @@ public class MenuController {
         profilePic.setImage(avatar);
     }
 
+    /**
+     * Charge l'image de l'avatar depuis un chemin de fichier ou une URL.
+     * 
+     * Cette méthode tente de charger l'avatar depuis le chemin fourni.
+     * Elle supporte les chemins de fichiers locaux et les URLs (http/file:).
+     * Si le chargement échoue, elle retourne l'avatar par défaut.
+     * 
+     * @param avatarPath Le chemin vers l'image de l'avatar (peut être null ou vide)
+     * @return L'image de l'avatar, ou null si le chargement échoue
+     */
     private Image loadAvatar(String avatarPath) {
-        // (Votre code existant pour charger l'avatar...)
         if (avatarPath != null && !avatarPath.isBlank()) {
             try {
                 if (avatarPath.startsWith("http") || avatarPath.startsWith("file:")) {
@@ -50,6 +85,14 @@ public class MenuController {
         return null;
     }
 
+    /**
+     * Gère le clic sur l'avatar pour afficher le profil utilisateur.
+     * 
+     * Cette méthode charge la vue de profil, injecte le MainCore et
+     * l'utilisateur actuel, puis affiche la scène.
+     * 
+     * @throws IOException si le chargement du FXML échoue
+     */
     @FXML
     private void handleProfileClick() throws IOException {
         // Charger le FXML
@@ -74,16 +117,32 @@ public class MenuController {
     }
 
 
+    /**
+     * Navigue vers la vue d'accueil.
+     * 
+     * @throws IOException si la navigation échoue
+     */
     @FXML
     private void handleHome() throws IOException {
         if (MainApp.getCore() != null) MainApp.getCore().showHomeView();
     }
 
+    /**
+     * Gère l'affichage/masquage du panneau de notifications.
+     * 
+     * Cette méthode délègue à HomeViewController pour gérer les notifications.
+     */
     @FXML
     private void handleNotif() {
         HomeViewController.handleNotif();
     }
 
+    /**
+     * Gère la déconnexion de l'utilisateur.
+     * 
+     * Cette méthode sauvegarde les données locales, envoie une demande de
+     * déconnexion au serveur, nettoie l'état local, et redirige vers la page de login.
+     */
     @FXML
     private void handleLogout() {
         MainCore core = MainApp.getCore();
@@ -112,6 +171,14 @@ public class MenuController {
         core.showLoginView();
     }
 
+    /**
+     * Change de scène en chargeant un nouveau FXML.
+     * 
+     * @param fxmlPath Le chemin vers le fichier FXML à charger
+     * @param title Le titre de la nouvelle fenêtre
+     * @param triggerNode Le nœud qui a déclenché le changement de scène
+     * @throws IOException si le chargement du FXML échoue
+     */
     private void switchScene(String fxmlPath, String title, Node triggerNode) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
         Parent root = loader.load();
