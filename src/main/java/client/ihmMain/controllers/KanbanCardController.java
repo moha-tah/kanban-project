@@ -136,6 +136,7 @@ public class KanbanCardController {
 
 
 
+
     @FXML
     private void requestPermission() {
         LOGGER.log(Level.INFO, "[REQUEST ACCESS] Kanban priv\u00e9: {0}", title);

@@ -1,11 +1,11 @@
 package client.interfaces;
 
-import common.dataClasses.Kanban;
-import common.dataClasses.LightKanban;
-import common.dataClasses.Modification;
 import client.ihmMain.controllers.HomeViewController;
 import client.ihmMain.controllers.ProfileController;
 import client.ihmMain.controllers.ProfileDistantController;
+import common.dataClasses.Kanban;
+import common.dataClasses.LightKanban;
+import common.dataClasses.Modification;
 
 
 // CommCallsKanban
