@@ -46,36 +46,122 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Popup;
 
+/**
+ * Contrôleur de l'affichage détaillé d'un kanban.
+ * 
+ * Ce contrôleur gère l'affichage visuel d'un kanban avec ses colonnes et tâches.
+ * Il permet de créer, modifier et supprimer des colonnes et tâches via des popups,
+ * de déplacer des tâches entre colonnes, et de gérer les utilisateurs assignés aux tâches.
+ * 
+ * @author Équipe Kanban
+ * @version 1.0
+ * @since 1.0
+ * @see Initializable
+ * @see KanbanViewController
+ * @see ManageDisplay
+ */
 public class DisplayKanbanController implements Initializable {
 
+    /**
+     * Logger pour les messages de log de cette classe.
+     */
     private static final Logger LOGGER = Logger.getLogger(DisplayKanbanController.class.getName());
+    
+    /**
+     * Style CSS pour le texte blanc.
+     */
     private static final String WHITE_TEXT = "-fx-text-fill: white;";
+    
+    /**
+     * Cœur de l'application Kanban (statique pour accès global).
+     */
     private static kanbanCorps corps;
 
+    /**
+     * Constructeur par défaut du contrôleur.
+     */
     public DisplayKanbanController() {}
 
+    /**
+     * Définit le cœur de l'application Kanban (méthode statique).
+     * 
+     * @param kcorps Le cœur de l'application Kanban (ne doit pas être null)
+     */
     public static void setCore(kanbanCorps kcorps) {
         corps = kcorps;
     }
 
+    /**
+     * Cœur de l'application principale.
+     */
     private MainCore core;
 
+    /**
+     * Label affichant le titre du kanban.
+     */
     @FXML private Label kanbanTitleLabel;
+    
+    /**
+     * Conteneur horizontal pour les colonnes du kanban.
+     */
     @FXML private HBox columnsContainer;
+    
+    /**
+     * Bouton pour ajouter une nouvelle colonne.
+     */
     @FXML private Button addColumnButton;
 
+    /**
+     * Map associant les IDs de tâches à leurs listes d'utilisateurs assignés.
+     */
     private final Map<UUID, List<LightUser>> taskUsers = new HashMap<>();
+    
+    /**
+     * Le kanban actuellement affiché.
+     */
     private LightKanban kanban;
+    
+    /**
+     * Liste des colonnes du kanban.
+     */
     private List<Column> columns;
+    
+    /**
+     * Liste des tâches à créer lors de l'initialisation.
+     */
     private List<CreateTask> taskCreations;
+    
+    /**
+     * Gestionnaire d'affichage pour les opérations de rafraîchissement.
+     */
     private ManageDisplay manageDisplay;
+    
+    /**
+     * Popup actuellement affichée (une seule à la fois).
+     */
     private Popup currentPopup;
 
+    /**
+     * Initialise le contrôleur après le chargement du FXML.
+     * 
+     * @param url L'URL du fichier FXML (non utilisé)
+     * @param resourceBundle Le ResourceBundle (non utilisé)
+     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         core = MainApp.getCore();
     }
 
+    /**
+     * Initialise le tableau kanban avec les données fournies.
+     * 
+     * Cette méthode stocke les données et déclenche le rendu du kanban.
+     * 
+     * @param kanban La version légère du kanban à afficher (ne doit pas être null)
+     * @param columns La liste des colonnes du kanban (ne doit pas être null)
+     * @param taskCreations La liste des tâches à créer (ne doit pas être null)
+     * @param manageDisplay Le gestionnaire d'affichage (ne doit pas être null)
+     */
     public void initBoard(LightKanban kanban,
                           List<Column> columns,
                           List<CreateTask> taskCreations, ManageDisplay manageDisplay) {
@@ -86,12 +172,23 @@ public class DisplayKanbanController implements Initializable {
         renderKanban();
     }
 
+    /**
+     * Gère l'action de retour à la vue principale.
+     * 
+     * Cette méthode ferme le kanban côté serveur et retourne à la vue d'accueil.
+     */
     @FXML
     private void handleBack() {
         corps.getCommPort().closingKanban(kanban, corps.getMe());
         corps.getMainPort().goHomeView();
     }
 
+    /**
+     * Rend le kanban dans l'interface utilisateur.
+     * 
+     * Cette méthode affiche le titre du kanban et crée les nœuds visuels
+     * pour chaque colonne avec ses tâches. Les colonnes sont triées par numéro.
+     */
     private void renderKanban() {
         if (kanban == null || columns == null) return;
 
@@ -104,6 +201,15 @@ public class DisplayKanbanController implements Initializable {
         }
     }
 
+    /**
+     * Crée un nœud visuel pour une colonne du kanban.
+     * 
+     * Cette méthode crée un VBox stylisé avec le titre de la colonne,
+     * un menu d'actions, et toutes les tâches de cette colonne.
+     * 
+     * @param col La colonne pour laquelle créer le nœud (ne doit pas être null)
+     * @return Un VBox représentant visuellement la colonne
+     */
     private VBox createColumnNode(Column col) {
         VBox columnBox = new VBox(10);
         columnBox.setPadding(new Insets(10));
@@ -139,6 +245,15 @@ public class DisplayKanbanController implements Initializable {
         return columnBox;
     }
 
+    /**
+     * Crée une carte visuelle pour une tâche.
+     * 
+     * Cette méthode crée un VBox stylisé avec le titre, la description,
+     * un bouton de menu d'actions, et un bouton de changement de statut.
+     * 
+     * @param task La tâche pour laquelle créer la carte (ne doit pas être null)
+     * @return Un VBox représentant visuellement la tâche
+     */
     private VBox createTaskCard(Task task) {
         VBox card = new VBox(5);
         card.setPadding(new Insets(8));
@@ -164,11 +279,22 @@ public class DisplayKanbanController implements Initializable {
         return card;
     }
 
+    /**
+     * Ferme le popup actuellement affiché s'il existe.
+     */
     private void closeCurrentPopup() {
         if (currentPopup != null && currentPopup.isShowing()) currentPopup.hide();
         currentPopup = null;
     }
 
+    /**
+     * Crée un bouton de menu stylisé.
+     * 
+     * @param text Le texte du bouton (ne doit pas être null)
+     * @param bgColor La couleur de fond (ne doit pas être null)
+     * @param textColor La couleur du texte (ne doit pas être null)
+     * @return Un bouton stylisé avec les paramètres fournis
+     */
     private Button createMenuButton(String text, String bgColor, String textColor) {
         Button b = new Button(text);
         b.setMaxWidth(Double.MAX_VALUE);
@@ -182,6 +308,14 @@ public class DisplayKanbanController implements Initializable {
         return b;
     }
 
+    /**
+     * Crée un popup de base avec le style par défaut.
+     * 
+     * Le popup est configuré pour se fermer automatiquement et se positionner
+     * automatiquement. Il a un style avec dégradé violet/rose.
+     * 
+     * @return Un popup configuré avec le style de base
+     */
     private Popup createBasePopup() {
         Popup popup = new Popup();
         popup.setAutoHide(true);
@@ -199,6 +333,15 @@ public class DisplayKanbanController implements Initializable {
         return popup;
     }
 
+    /**
+     * Affiche un popup près d'un nœud d'ancrage.
+     * 
+     * Cette méthode ferme tout popup existant, stocke le nouveau popup,
+     * et l'affiche à côté du nœud d'ancrage.
+     * 
+     * @param popup Le popup à afficher (ne doit pas être null)
+     * @param anchor Le nœud près duquel afficher le popup (ne doit pas être null)
+     */
     private void showPopupNearNode(Popup popup, Node anchor) {
         closeCurrentPopup();
         currentPopup = popup;
@@ -206,13 +349,27 @@ public class DisplayKanbanController implements Initializable {
         popup.show(anchor.getScene().getWindow(), b.getMaxX() + 4, b.getMinY());
     }
 
+    /**
+     * Gère le clic sur le bouton d'ajout de colonne.
+     * 
+     * Affiche un popup pour créer une nouvelle colonne.
+     */
     @FXML
     private void onAddColumnButtonClick() {
         if (addColumnButton != null) showAddColumnPopup(addColumnButton);
     }
 
-    // ----------------------- Refactoring général -----------------------
-
+    /**
+     * Ajoute un bouton d'action dans un popup.
+     * 
+     * Le bouton exécute l'action fournie puis ferme le popup.
+     * 
+     * @param box Le conteneur VBox du popup (ne doit pas être null)
+     * @param text Le texte du bouton (ne doit pas être null)
+     * @param bgColor La couleur de fond du bouton (ne doit pas être null)
+     * @param textColor La couleur du texte du bouton (ne doit pas être null)
+     * @param action L'action à exécuter lors du clic (ne doit pas être null)
+     */
     private void addPopupButton(VBox box, String text, String bgColor, String textColor, Runnable action) {
         Button btn = createMenuButton(text, bgColor, textColor);
         btn.setOnAction(e -> {
@@ -222,8 +379,15 @@ public class DisplayKanbanController implements Initializable {
         box.getChildren().add(btn);
     }
 
-    // ----------------------- POPUPS -----------------------
-
+    /**
+     * Gère le clic sur le menu d'une colonne.
+     * 
+     * Affiche un popup avec les actions disponibles pour la colonne :
+     * ajouter une tâche, éditer la colonne, ou supprimer la colonne.
+     * 
+     * @param col La colonne concernée (ne doit pas être null)
+     * @param anchorNode Le nœud d'ancrage pour positionner le popup (ne doit pas être null)
+     */
     private void onColumnMenuClick(Column col, Node anchorNode) {
         Popup popup = createBasePopup();
         VBox box = (VBox) popup.getContent().get(0);
@@ -238,6 +402,15 @@ public class DisplayKanbanController implements Initializable {
         showPopupNearNode(popup, anchorNode);
     }
 
+    /**
+     * Gère le clic sur le menu d'une tâche.
+     * 
+     * Affiche un popup avec les actions disponibles pour la tâche :
+     * ajouter un utilisateur, voir les utilisateurs, éditer la tâche, ou supprimer la tâche.
+     * 
+     * @param task La tâche concernée (ne doit pas être null)
+     * @param anchorNode Le nœud d'ancrage pour positionner le popup (ne doit pas être null)
+     */
     private void onTaskMenuClick(Task task, Node anchorNode) {
         Popup popup = createBasePopup();
         VBox box = (VBox) popup.getContent().get(0);
@@ -253,6 +426,15 @@ public class DisplayKanbanController implements Initializable {
         showPopupNearNode(popup, anchorNode);
     }
 
+    /**
+     * Gère le clic sur le bouton de statut d'une tâche.
+     * 
+     * Affiche un popup listant toutes les colonnes disponibles pour permettre
+     * de déplacer la tâche vers une autre colonne.
+     * 
+     * @param task La tâche concernée (ne doit pas être null)
+     * @param statusBtn Le bouton de statut cliqué (ne doit pas être null)
+     */
     private void onStatusClick(Task task, Button statusBtn) {
         Popup popup = createBasePopup();
         VBox box = (VBox) popup.getContent().get(0);
@@ -276,8 +458,11 @@ public class DisplayKanbanController implements Initializable {
         showPopupNearNode(popup, statusBtn);
     }
 
-    // ----------------------- Ajout / édition colonnes et tâches -----------------------
-
+    /**
+     * Affiche un popup pour ajouter une nouvelle colonne.
+     * 
+     * @param anchorNode Le nœud d'ancrage pour positionner le popup (ne doit pas être null)
+     */
     private void showAddColumnPopup(Node anchorNode) {
         showGenericColumnPopup(anchorNode, "ADD COLUMN", null, (title, color) -> {
             Column col = new Column(title, color);
@@ -286,6 +471,12 @@ public class DisplayKanbanController implements Initializable {
         });
     }
 
+    /**
+     * Affiche un popup pour éditer une colonne existante.
+     * 
+     * @param col La colonne à éditer (ne doit pas être null)
+     * @param anchorNode Le nœud d'ancrage pour positionner le popup (ne doit pas être null)
+     */
     private void showEditColumnPopup(Column col, Node anchorNode) {
         showGenericColumnPopup(anchorNode, "EDIT COLUMN", col, (title, color) -> {
             col.setTitle(title);
@@ -296,6 +487,16 @@ public class DisplayKanbanController implements Initializable {
         });
     }
 
+    /**
+     * Affiche un popup générique pour créer ou éditer une colonne.
+     * 
+     * Ce popup permet de saisir le nom et la couleur de la colonne.
+     * 
+     * @param anchorNode Le nœud d'ancrage pour positionner le popup (ne doit pas être null)
+     * @param popupTitle Le titre du popup (ne doit pas être null)
+     * @param colToEdit La colonne à éditer (null pour création)
+     * @param onSubmit Le callback appelé lors de la soumission avec (titre, couleur)
+     */
     private void showGenericColumnPopup(Node anchorNode, String popupTitle, Column colToEdit,
                                         BiConsumer<String, String> onSubmit) {
         Popup popup = createBasePopup();
@@ -331,6 +532,12 @@ public class DisplayKanbanController implements Initializable {
         showPopupNearNode(popup, anchorNode);
     }
 
+    /**
+     * Convertit un code couleur hexadécimal en nom de couleur.
+     * 
+     * @param color Le code couleur hexadécimal (peut être null)
+     * @return Le nom de la couleur correspondante, ou "BLUE" par défaut
+     */
     private String mapColorToName(String color) {
         if (color == null) return "BLUE";
         return switch (color.toUpperCase()) {
@@ -343,6 +550,12 @@ public class DisplayKanbanController implements Initializable {
         };
     }
 
+    /**
+     * Convertit un nom de couleur en code couleur hexadécimal.
+     * 
+     * @param name Le nom de la couleur (peut être null)
+     * @return Le code couleur hexadécimal correspondant, ou "#5D8BF4" (bleu) par défaut
+     */
     private String mapNameToColor(String name) {
         if (name == null) return "#5D8BF4";
         return switch (name.toUpperCase()) {
@@ -355,8 +568,12 @@ public class DisplayKanbanController implements Initializable {
         };
     }
 
-    // ----------------------- Tâches -----------------------
-
+    /**
+     * Affiche un popup pour ajouter une nouvelle tâche à une colonne.
+     * 
+     * @param col La colonne dans laquelle ajouter la tâche (ne doit pas être null)
+     * @param anchorNode Le nœud d'ancrage pour positionner le popup (ne doit pas être null)
+     */
     private void showAddTaskPopup(Column col, Node anchorNode) {
         showGenericTaskPopup("ADD TASK", null, col, anchorNode, (taskTitle, taskDesc) -> {
             Task tache = new Task(taskTitle, taskDesc);
@@ -365,6 +582,12 @@ public class DisplayKanbanController implements Initializable {
         });
     }
 
+    /**
+     * Affiche un popup pour éditer une tâche existante.
+     * 
+     * @param task La tâche à éditer (ne doit pas être null)
+     * @param anchorNode Le nœud d'ancrage pour positionner le popup (ne doit pas être null)
+     */
     private void showEditTaskPopup(Task task, Node anchorNode) {
         showGenericTaskPopup("EDIT TASK", task, null, anchorNode, (taskTitle, taskDesc) -> {
             task.setTitle(taskTitle);
@@ -375,6 +598,17 @@ public class DisplayKanbanController implements Initializable {
         });
     }
 
+    /**
+     * Affiche un popup générique pour créer ou éditer une tâche.
+     * 
+     * Ce popup permet de saisir le titre et la description de la tâche.
+     * 
+     * @param popupTitle Le titre du popup (ne doit pas être null)
+     * @param taskToEdit La tâche à éditer (null pour création)
+     * @param col La colonne cible pour une nouvelle tâche (peut être null si édition)
+     * @param anchorNode Le nœud d'ancrage pour positionner le popup (ne doit pas être null)
+     * @param onSubmit Le callback appelé lors de la soumission avec (titre, description)
+     */
     private void showGenericTaskPopup(String popupTitle, Task taskToEdit, Column col, Node anchorNode,
                                       BiConsumer<String, String> onSubmit) {
         Popup popup = createBasePopup();
@@ -410,16 +644,37 @@ public class DisplayKanbanController implements Initializable {
         showPopupNearNode(popup, anchorNode);
     }
 
-    // ----------------------- Utilisateurs -----------------------
-
+    /**
+     * Affiche un popup pour ajouter un utilisateur à une tâche.
+     * 
+     * @param task La tâche concernée (ne doit pas être null)
+     * @param anchorNode Le nœud d'ancrage pour positionner le popup (ne doit pas être null)
+     */
     private void showAddUserToTaskPopup(Task task, Node anchorNode) {
         showUsersPopup(task, anchorNode, true);
     }
 
+    /**
+     * Affiche un popup listant les utilisateurs assignés à une tâche.
+     * 
+     * @param task La tâche concernée (ne doit pas être null)
+     * @param anchorNode Le nœud d'ancrage pour positionner le popup (ne doit pas être null)
+     */
     private void showTaskUsersPopup(Task task, Node anchorNode) {
         showUsersPopup(task, anchorNode, false);
     }
 
+    /**
+     * Affiche un popup générique pour gérer les utilisateurs d'une tâche.
+     * 
+     * En mode ajout, affiche la liste des utilisateurs connectés avec un bouton
+     * pour les ajouter. En mode affichage, affiche uniquement les utilisateurs
+     * déjà assignés à la tâche.
+     * 
+     * @param task La tâche concernée (ne doit pas être null)
+     * @param anchorNode Le nœud d'ancrage pour positionner le popup (ne doit pas être null)
+     * @param isAddMode true pour le mode ajout, false pour le mode affichage
+     */
     private void showUsersPopup(Task task, Node anchorNode, boolean isAddMode) {
         Popup popup = createBasePopup();
         VBox box = (VBox) popup.getContent().get(0);
