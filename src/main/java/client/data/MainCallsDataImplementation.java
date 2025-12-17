@@ -370,8 +370,19 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
             }
             java.nio.file.Path tmpPath = outputPath.resolveSibling(outputPath.getFileName().toString() + ".tmp");
             Files.write(tmpPath, json.getBytes(StandardCharsets.UTF_8));
-            Files.move(tmpPath, outputPath, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-            LOGGER.info("Profile exported successfully: " + outputPath.toAbsolutePath());
+            try {
+                Files.move(tmpPath, outputPath, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+                LOGGER.info("Profile exported successfully: " + outputPath.toAbsolutePath());
+            } finally {
+                // Clean up the temporary file if it still exists (i.e., move failed)
+                try {
+                    if (Files.exists(tmpPath)) {
+                        Files.delete(tmpPath);
+                    }
+                } catch (IOException cleanupEx) {
+                    LOGGER.warning("Failed to delete temporary file: " + tmpPath + " - " + cleanupEx.getMessage());
+                }
+            }
 
         } catch (IOException e) {
             LOGGER.log(java.util.logging.Level.SEVERE, "exportProfile: IOException", e);
