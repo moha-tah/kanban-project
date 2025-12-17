@@ -1,8 +1,6 @@
 package server;
 
-import client.MainApp;
-
-public class Launcher {
+public class ServerLauncher {
     public static void main(String[] args) {
         ServerApp.main(args);
     }
