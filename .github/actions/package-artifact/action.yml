@@ -1,5 +1,5 @@
-name: "Package and Upload Artifact"
-description: "Runs jpackage to create an executable and uploads it as an artifact"
+name: "Package Application"
+description: "Runs jpackage to create an executable"
 inputs:
   app-name:
     description: "Name of the application (e.g., KanbanClient)"
@@ -8,13 +8,7 @@ inputs:
     description: "Main class entry point (e.g., client.Launcher)"
     required: true
   destination:
-    description: "Output directory for jpackage (e.g., dist_client)"
-    required: true
-  artifact-name:
-    description: "Name of the artifact to upload"
-    required: true
-  artifact-path:
-    description: "Path of the file/directory to upload"
+    description: "Output directory for jpackage (e.g., dist)"
     required: true
   extra-jpackage-args:
     description: "Additional arguments for jpackage"
@@ -34,9 +28,3 @@ runs:
           --type app-image \
           --dest "${{ inputs.destination }}" \
           ${{ inputs.extra-jpackage-args }}
-
-    - name: Upload ${{ inputs.app-name }} Artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: ${{ inputs.artifact-name }}
-        path: ${{ inputs.artifact-path }}

@@ -43,9 +43,7 @@ jobs:
         with:
           app-name: KanbanClient
           main-class: client.Launcher
-          destination: dist_client
-          artifact-name: ${{ matrix.os-name }}-Client
-          artifact-path: dist_client
+          destination: dist
           extra-jpackage-args: ${{ matrix.extra-args }}
 
       - name: Package Server
@@ -53,10 +51,14 @@ jobs:
         with:
           app-name: KanbanServer
           main-class: server.ServerLauncher
-          destination: dist_server
-          artifact-name: ${{ matrix.os-name }}-Server
-          artifact-path: dist_server
+          destination: dist
           extra-jpackage-args: ${{ matrix.extra-args }}
+
+      - name: Upload ${{ matrix.os-name }} Bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.os-name }}-Kanban-Bundle
+          path: dist
 
       - name: Cleanup Old Artifacts
         uses: ./.github/actions/cleanup-artifacts
