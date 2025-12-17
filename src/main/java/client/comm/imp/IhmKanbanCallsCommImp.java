@@ -1,16 +1,16 @@
 package client.comm.imp;
 
-import client.comm.CommCoreClient;
-import client.comm.messages.RequestModification;
-import client.interfaces.IhmKanbanCallsComm;
-import common.dataClasses.LightKanban;
-import common.dataClasses.LightUser;
-
 import java.io.IOException;
 import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import client.comm.CommCoreClient;
+import client.comm.messages.CloseKanban;
+import client.comm.messages.RequestModification;
+import client.interfaces.IhmKanbanCallsComm;
+import common.dataClasses.LightKanban;
+import common.dataClasses.LightUser;
 import common.dataClasses.Modification;
 
 public class IhmKanbanCallsCommImp implements IhmKanbanCallsComm {
@@ -22,8 +22,29 @@ public class IhmKanbanCallsCommImp implements IhmKanbanCallsComm {
     }
 
     @Override
-    public void closingKanban(LightKanban LightKanbanId, LightUser LightUserId) {
-        // TODO: Implémenter la fermeture de kanban
+    public void closingKanban(LightKanban lightKanban, LightUser lightUser) {
+        if (lightKanban == null || lightUser == null) {
+            LOGGER.warning("Paramètres invalides pour closingKanban");
+            return;
+        }
+
+        LOGGER.log(Level.INFO, "Fermeture de la visualisation Kanban {0} pour l'utilisateur {1}", 
+                   new Object[]{lightKanban.getId(), lightUser.getUsername()});
+
+        try {
+            CloseKanban msg = new CloseKanban(lightKanban, lightUser);
+            
+            if (comm.getMsgSender() != null) {
+                comm.sendMessage(msg);
+                LOGGER.fine("Demande de fermeture de Kanban envoyée avec succès au serveur");
+            } else {
+                LOGGER.warning("Message sender non initialisé");
+            }
+        } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, "Erreur réseau lors de la fermeture du Kanban", e);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Erreur inattendue lors de la fermeture du Kanban", e);
+        }
     }
 
     @Override

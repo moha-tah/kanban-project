@@ -1,0 +1,15 @@
+@startuml
+title See Distant Profile (Request/Response)
+
+participant "Main" as Client
+participant "CommCli" as CommClient
+actor Server as S
+
+S ->> CommClient : ForwardProfileAnswer(Requester, RequestedUser)
+
+CommClient -> Client : DisplayDistProfile(RequestedUser)
+
+
+Client --> CommClient : void
+
+@enduml

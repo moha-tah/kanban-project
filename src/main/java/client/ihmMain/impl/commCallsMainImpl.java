@@ -1,5 +1,6 @@
 package client.ihmMain.impl;
 
+import client.comm.messages.Message;
 import client.data.KanbanCallsDataImplementation;
 import client.ihmMain.MainCore;
 import client.ihmMain.controllers.HomeViewController;
@@ -9,6 +10,9 @@ import common.dataClasses.Kanban;
 import common.dataClasses.LightKanban;
 import common.dataClasses.LightUser;
 import common.dataClasses.User;
+import javafx.application.Platform;
+import javafx.scene.control.Alert;
+
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
@@ -34,6 +38,11 @@ public class commCallsMainImpl implements CommClientCallsMain {
                 HomeViewController.getInstance().addRequestNotification(user, kanban);
             }
         });
+    }
+
+    @Override
+    public void receiveMessage(Message message) {
+        LOGGER.fine(() -> "Message générique reçu dans Main: " + message);
     }
 
     @Override
@@ -110,6 +119,29 @@ public class commCallsMainImpl implements CommClientCallsMain {
     
             } catch (Exception e) {
                 LOGGER.log(Level.SEVERE, "[Comm->Main] Erreur lors de l’affichage du profil distant", e);
+            }
+        });
+    }
+
+    @Override
+    public void handleServerConnectionLost() {
+        Platform.runLater(() -> {
+            // On ne réagit que si l'utilisateur est actuellement connecté
+            if (core.getMe() != null) {
+                System.out.println("[CLIENT] Serveur arrêté. Déconnexion forcée.");
+
+                // 1. Nettoyer les données locales
+                core.launchApp();
+
+                // 2. Afficher l'alerte
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Déconnexion");
+                alert.setHeaderText("Connexion perdue");
+                alert.setContentText("Le serveur a été arrêté ou la connexion a été interrompue.");
+                alert.show();
+
+                // 3. Retour au Login
+                core.showLoginView();
             }
         });
     }

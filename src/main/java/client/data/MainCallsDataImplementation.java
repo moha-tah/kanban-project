@@ -1,10 +1,14 @@
 package client.data;
 
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import java.util.*;
 
 import client.interfaces.MainCallsDataClient;
@@ -18,6 +22,7 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
 
     private static final Path USERS_FILE = Path.of("data", "users.json");
     private static final Path USERS_DIR = Path.of("data", "users");
+    private static final String USERNAME = "username";
 
     private static String stripQuotes(String s) {
         if (s == null) {
@@ -377,7 +382,30 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
 
     @Override
     public void importMyProfile(String path){
-        throw new UnsupportedOperationException("importMyProfile not implemented yet");
+        // convert the string into a path
+        Path filePath = Paths.get(path);   
+
+        try{
+            //parser to read data from the file
+            Object o = new JSONParser().parse(new FileReader(path));
+            JSONObject profile = (JSONObject) o;
+
+            // get the correct directory to copy the file
+            Path newFile = USERS_DIR.resolve(profile.get(USERNAME) + ".json");
+
+            Files.copy(filePath, newFile);
+
+            String usersFile = USERS_FILE.toString();
+
+            Object u = new JSONParser().parse(new FileReader(usersFile));
+            JSONObject users = (JSONObject) u;
+            users.put(profile.get(USERNAME), profile.get("passworHash") );
+            Files.write(USERS_FILE, users.toJSONString().getBytes(StandardCharsets.UTF_8));
+        } catch (IOException e) {
+            throw new UncheckedIOException("Failed to load profile from JSON", e);
+        } catch (ParseException e) {
+            throw new IllegalArgumentException("Failed to parse JSON file", e);
+        }
     }
 
     @Override
@@ -462,8 +490,7 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
         }
     }
 
-    @Override
-    public User getLocalUser () {
+    public User getLocalUser() {
         ClientModel myModel = provider.getMyModel();
         User localUser = myModel.getLocalUser();
         return localUser;
@@ -509,6 +536,32 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
             LOGGER.log(java.util.logging.Level.SEVERE, "Erreur lors du renommage du fichier utilisateur", e);
         }
     }
+
+    @Override
+    public void deleteLocalProfile() {
+        common.dataClasses.User user = provider.getMyModel().getLocalUser();
+
+        if (user == null) {
+            LOGGER.warning("Impossible de supprimer : aucun utilisateur connecté localement.");
+            return;
+        }
+
+        try {
+            Path userFile = USERS_DIR.resolve(user.getUsername() + ".json");
+
+            if (Files.exists(userFile)) {
+                Files.delete(userFile);
+                LOGGER.info("Profil supprimé avec succès : " + userFile.toAbsolutePath());
+            } else {
+                LOGGER.warning("Fichier profil introuvable : " + userFile);
+            }
+
+        } catch (IOException e) {
+            LOGGER.log(java.util.logging.Level.SEVERE, "Erreur critique lors de la suppression du profil", e);
+            throw new RuntimeException("Erreur I/O lors de la suppression.");
+        }
+    }
+
     public void ModifyLocalUserFirstName(String newFirstName) {
         modifyLocalUser(newFirstName, null, null, null, null);
     }

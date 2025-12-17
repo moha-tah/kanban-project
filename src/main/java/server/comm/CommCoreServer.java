@@ -1,10 +1,5 @@
 package server.comm;
 
-import common.dataClasses.LightUser;
-import server.data.ComCallsDataServImplementation;
-import server.data.ServerModel;
-import server.interfaces.CommCallsDataServer;
-
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -17,9 +12,16 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import common.dataClasses.LightUser;
+import server.data.ComCallsDataServImplementation;
+import server.data.ServerModel;
+import server.interfaces.CommCallsDataServer;
 
 public class CommCoreServer {
 
+    private static final Logger LOGGER = Logger.getLogger(CommCoreServer.class.getName());
     private final int port;
     private ServerSocket serverSocket;
     private boolean isRunning;
@@ -40,7 +42,7 @@ public class CommCoreServer {
 
     public static void triggerBroadcast() { // acces statique pour déclencher le broadcast
         if (instance != null) {
-            System.out.println("SERVER: Broadcast manuel déclenché.");
+            LOGGER.info("SERVER: Broadcast manuel déclenché.");
             instance.broadcastUsersAndKanbansUpdate();
         }
     }
@@ -53,7 +55,7 @@ public class CommCoreServer {
         for (Map.Entry<SrvMsgSender, common.dataClasses.LightUser> entry : instance.clientToUserMap.entrySet()) {
             if (entry.getValue().getId().equals(targetUserId)) {
                 try {
-                    System.out.println("SERVER: Routage message vers " + entry.getValue().getUsername());
+                    LOGGER.log(Level.INFO, "SERVER: Routage message vers {0}", entry.getValue().getUsername());
                     entry.getKey().send(message);
                     return true;
                 } catch (IOException e) {
@@ -62,7 +64,7 @@ public class CommCoreServer {
                 }
             }
         }
-        System.out.println("SERVER: Utilisateur cible " + targetUserId + " non trouvé ou déconnecté.");
+        LOGGER.log(Level.WARNING, "SERVER: Utilisateur cible {0} non trouv\u00e9 ou d\u00e9connect\u00e9.", targetUserId);
         return false;
     }
 
@@ -71,6 +73,7 @@ public class CommCoreServer {
      */
     public void setDataInterface(CommCallsDataServer dataInterface) {
         this.dataServer = dataInterface;
+        server.ServerContext.setDataInterface(dataInterface);
     }
 
     /*
@@ -84,13 +87,13 @@ public class CommCoreServer {
             System.err.println("SERVER: Port " + port + " occupé, bascule sur le port " + serverSocket.getLocalPort());
         }
         isRunning = true;
-        System.out.println("SERVER: Démarré sur le port " + serverSocket.getLocalPort());
+        LOGGER.log(Level.INFO, "SERVER: D\u00e9marr\u00e9 sur le port {0}", serverSocket.getLocalPort());
 
         serverThread = new Thread(() -> {
             while (isRunning) {
                 try {
                     Socket clientSocket = serverSocket.accept();
-                    System.out.println("SERVER: Nouveau client connecté : " + clientSocket.getInetAddress());
+                    LOGGER.log(Level.INFO, "SERVER: Nouvelle connexion TCP : {0}", clientSocket.getInetAddress());
                     new Thread(() -> handleClientConnection(clientSocket)).start();
                 } catch (IOException e) {
                     if (isRunning) {
@@ -161,6 +164,7 @@ public class CommCoreServer {
                         if (receivedMsg instanceof client.comm.messages.ConnectionRequest connReq) {
                             if (connReq.getUser() != null) {
                                 clientToUserMap.put(finalMsgSender, connReq.getUser());
+                                LOGGER.log(Level.INFO, "SERVER: Utilisateur authentifi\u00e9 : {0} (ID: {1})", new Object[]{connReq.getUser().getUsername(), connReq.getUser().getId()});
                             }
                             broadcastUsersAndKanbansUpdate();
                         }
@@ -317,13 +321,25 @@ public class CommCoreServer {
         }
 
         public void stop() {
-            running.set(false);
-            if (worker != null && Thread.currentThread() != worker) {
-                try {
-                    worker.join(2000);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
+            isRunning = false;
+            try {
+                // 1. Fermer le socket d'écoute principal
+                if (serverSocket != null && !serverSocket.isClosed()) {
+                    serverSocket.close();
                 }
+
+                // 2. Fermer toutes les connexions clients actives
+                for (SrvMsgSender client : connectedClients) {
+                    try {
+                        client.close(); // Suppose que SrvMsgSender a une méthode close()
+                    } catch (Exception e) { /* Ignorer */ }
+                }
+                connectedClients.clear();
+
+                LOGGER.info("SERVER: Serveur arrêté proprement.");
+
+            } catch (IOException e) {
+                LOGGER.log(Level.SEVERE, "SERVER: Erreur lors de l'arrêt.", e);
             }
         }
 
@@ -335,21 +351,17 @@ public class CommCoreServer {
                     try {
                         msg = in.readObject();
                     } catch (java.io.EOFException e) {
-                        // EOFException est normale quand le client ferme la connexion proprement
                         java.util.logging.Logger.getLogger(SrvMsgReceiver.class.getName())
                                 .log(java.util.logging.Level.FINE,
                                         "SrvMsgReceiver: Client déconnecté (EOF).");
                         break;
                     } catch (IOException e) {
-                        // Traiter les SocketException (connection reset) comme une déconnexion normale
                         java.util.logging.Logger logger = java.util.logging.Logger
                                 .getLogger(SrvMsgReceiver.class.getName());
                         if (e instanceof java.net.SocketException) {
-                            // Connection reset / abort — log informatif sans stacktrace
                             logger.log(java.util.logging.Level.INFO,
                                     "SrvMsgReceiver: I/O error while reading message: {0}", e.getMessage());
                         } else {
-                            // Autres erreurs I/O gardent la stacktrace pour le débogage
                             logger.log(java.util.logging.Level.WARNING,
                                     "SrvMsgReceiver: I/O error while reading message.", e);
                         }
@@ -369,7 +381,6 @@ public class CommCoreServer {
                                 "SrvMsgReceiver: Class not found while reading message.", e);
             } finally {
                 running.set(false);
-                // Notifier que le client est déconnecté
                 if (onDisconnect != null) {
                     try {
                         onDisconnect.run();

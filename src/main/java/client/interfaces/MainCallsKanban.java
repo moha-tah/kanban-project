@@ -1,8 +1,7 @@
 package client.interfaces;
 
 import client.ihmMain.controllers.HomeViewController;
-import client.ihmMain.controllers.ProfileViewController;
-import common.dataClasses.LightUser;
+import client.ihmMain.controllers.ProfileController;
 import common.dataClasses.Kanban;
 
 // MainCallsKanban
@@ -11,5 +10,5 @@ public interface MainCallsKanban {
     void openCreateForm(Kanban kanban, HomeViewController homeController);
 
 
-    void openKanbanViewFromProfile(Kanban kanban, ProfileViewController profileController);
+    void openKanbanViewFromProfile(Kanban kanban, ProfileController profileController);
 }
