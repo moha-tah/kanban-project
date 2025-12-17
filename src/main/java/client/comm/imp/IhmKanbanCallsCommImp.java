@@ -13,14 +13,50 @@ import common.dataClasses.LightKanban;
 import common.dataClasses.LightUser;
 import common.dataClasses.Modification;
 
+/**
+ * Implémentation de l'interface {@link IhmKanbanCallsComm}.
+ * 
+ * Cette classe gère les appels de communication depuis l'interface utilisateur
+ * du kanban vers la couche de communication. Elle permet d'envoyer des messages
+ * au serveur pour fermer un kanban ou demander des modifications.
+ * 
+ * @author Équipe Kanban
+ * @version 1.0
+ * @since 1.0
+ * @see IhmKanbanCallsComm
+ * @see CommCoreClient
+ */
 public class IhmKanbanCallsCommImp implements IhmKanbanCallsComm {
+    /**
+     * Logger pour les messages de log de cette classe.
+     */
     private static final Logger LOGGER = Logger.getLogger(IhmKanbanCallsCommImp.class.getName());
+    
+    /**
+     * Client de communication utilisé pour envoyer les messages au serveur.
+     */
     private final CommCoreClient comm;
 
+    /**
+     * Constructeur de l'implémentation.
+     * 
+     * @param comm Le client de communication à utiliser (ne doit pas être null)
+     * @throws NullPointerException si comm est null
+     */
     public IhmKanbanCallsCommImp(CommCoreClient comm) {
         this.comm = Objects.requireNonNull(comm);
     }
 
+    /**
+     * Ferme la visualisation d'un kanban et notifie le serveur.
+     * 
+     * Cette méthode envoie un message {@link CloseKanban} au serveur pour
+     * indiquer que l'utilisateur ne visualise plus ce kanban. Les erreurs
+     * réseau sont loggées mais n'interrompent pas l'exécution.
+     * 
+     * @param lightKanban Le kanban à fermer (ne doit pas être null)
+     * @param lightUser L'utilisateur qui ferme le kanban (ne doit pas être null)
+     */
     @Override
     public void closingKanban(LightKanban lightKanban, LightUser lightUser) {
         if (lightKanban == null || lightUser == null) {
@@ -47,6 +83,16 @@ public class IhmKanbanCallsCommImp implements IhmKanbanCallsComm {
         }
     }
 
+    /**
+     * Envoie une demande de modification au serveur.
+     * 
+     * Cette méthode crée et envoie un message {@link RequestModification}
+     * au serveur pour demander l'application d'une modification sur une carte
+     * du kanban. Les erreurs réseau sont loggées mais n'interrompent pas l'exécution.
+     * 
+     * @param user L'utilisateur qui demande la modification (ne doit pas être null)
+     * @param modification La modification à appliquer (ne doit pas être null)
+     */
     @Override
     public void sendRequestModification(LightUser user, Modification modification) {
         if (user == null || modification == null) {

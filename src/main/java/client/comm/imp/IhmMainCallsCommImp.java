@@ -23,14 +23,49 @@ import common.dataClasses.LightUser;
 import common.dataClasses.User;
 import common.dataClasses.Modification;
 
+/**
+ * Implémentation de l'interface {@link IhmMainCallsComm}.
+ * 
+ * Cette classe gère tous les appels de communication depuis l'interface utilisateur
+ * principale vers la couche de communication. Elle permet d'envoyer des messages
+ * au serveur pour gérer les connexions, déconnexions, permissions, kanbans, etc.
+ * 
+ * @author Équipe Kanban
+ * @version 1.0
+ * @since 1.0
+ * @see IhmMainCallsComm
+ * @see CommCoreClient
+ */
 public class IhmMainCallsCommImp implements IhmMainCallsComm {
+    /**
+     * Logger pour les messages de log de cette classe.
+     */
     private static final Logger LOGGER = Logger.getLogger(IhmMainCallsCommImp.class.getName());
+    
+    /**
+     * Client de communication utilisé pour envoyer les messages au serveur.
+     */
     private final CommCoreClient commCore;
 
+    /**
+     * Constructeur de l'implémentation.
+     * 
+     * @param commCore Le client de communication à utiliser (ne doit pas être null)
+     * @throws NullPointerException si commCore est null
+     */
     public IhmMainCallsCommImp(CommCoreClient commCore) {
         this.commCore = Objects.requireNonNull(commCore);
     }
 
+    /**
+     * Déconnecte un utilisateur du serveur.
+     * 
+     * Cette méthode envoie un message {@link Logout} au serveur et ferme
+     * proprement la connexion socket côté client. En cas d'erreur réseau,
+     * la déconnexion locale est effectuée de toute façon.
+     * 
+     * @param user L'utilisateur à déconnecter (ne doit pas être null)
+     */
     @Override
     public void logout(LightUser user) {
         if (user == null) {
@@ -64,11 +99,28 @@ public class IhmMainCallsCommImp implements IhmMainCallsComm {
         }
     }
 
+    /**
+     * Demande la liste des modificateurs pour un utilisateur.
+     * 
+     * Cette méthode est actuellement non implémentée.
+     * 
+     * @param LightUserId L'utilisateur pour lequel demander la liste des modificateurs
+     */
     @Override
     public void askListModifiers(LightUser LightUserId) {
         // Breakpoint suggestion: inspect LightUserId
     }
 
+    /**
+     * Demande l'ajout d'un utilisateur à la liste des modificateurs d'un kanban.
+     * 
+     * Cette méthode envoie un message {@link AskAddListModifiers} au serveur
+     * pour demander l'ajout d'un utilisateur à la liste des personnes autorisées
+     * à modifier un kanban.
+     * 
+     * @param userId L'utilisateur à ajouter comme modificateur
+     * @param kanbanId Le kanban pour lequel ajouter le modificateur
+     */
     @Override
     public void askAddListModifiers(LightUser userId, LightKanban kanbanId) {
         LOGGER.fine(() -> "Sending AskAddListModifiers user=" + userId + " kanban=" + kanbanId);
@@ -85,6 +137,15 @@ public class IhmMainCallsCommImp implements IhmMainCallsComm {
         }
     }
 
+    /**
+     * Envoie une demande de permission d'accès à un kanban.
+     * 
+     * Cette méthode crée et envoie un message {@link RequestPermission} au serveur
+     * pour demander l'autorisation d'accéder à un kanban.
+     * 
+     * @param LightUserId L'utilisateur qui demande la permission
+     * @param LightKanbanId Le kanban pour lequel la permission est demandée
+     */
     @Override
     public void sendPermissionRequest(LightUser LightUserId, LightKanban LightKanbanId) {
         try {
@@ -96,6 +157,16 @@ public class IhmMainCallsCommImp implements IhmMainCallsComm {
         }
     }
 
+    /**
+     * Envoie une réponse à une demande de permission.
+     * 
+     * Cette méthode crée et envoie un message {@link PermissionResponse} au serveur
+     * pour répondre à une demande de permission d'accès à un kanban.
+     * 
+     * @param LightUserId L'utilisateur qui répond à la demande
+     * @param LightKanbanId Le kanban concerné par la demande
+     * @param accepted true si la permission est accordée, false sinon
+     */
     @Override
     public void sendPermissionResponse(LightUser LightUserId, LightKanban LightKanbanId, boolean accepted) {
         try {
@@ -108,6 +179,16 @@ public class IhmMainCallsCommImp implements IhmMainCallsComm {
         }
     }
 
+    /**
+     * Connecte un utilisateur au serveur avec ses kanbans.
+     * 
+     * Cette méthode crée et envoie un message {@link ConnectionRequest} au serveur
+     * pour établir la connexion d'un utilisateur. Elle récupère également l'utilisateur
+     * complet depuis le port de données local si disponible.
+     * 
+     * @param user L'utilisateur à connecter
+     * @param kanbans Liste des kanbans de l'utilisateur à synchroniser avec le serveur
+     */
     @Override
     public void connectServer(LightUser user, List<LightKanban> kanbans) {
         LOGGER.fine(() -> "Sending ConnectionRequest with " + (kanbans != null ? kanbans.size() : 0) + " kanbans");
@@ -130,17 +211,42 @@ public class IhmMainCallsCommImp implements IhmMainCallsComm {
         }
     }
 
+    /**
+     * Établit une connexion au serveur avec l'adresse et le port spécifiés.
+     * 
+     * @param host L'adresse du serveur (ex: "localhost" ou une adresse IP)
+     * @param port Le port sur lequel se connecter
+     * @return true si la connexion a réussi, false sinon
+     */
     @Override
     public boolean connect(String host, int port) {
         // Breakpoint: inspect host/port before connection attempt
         return commCore.connect_host_port(host, port);
     }
 
+    /**
+     * Envoie une demande de connexion au serveur.
+     * 
+     * Cette méthode est un alias de {@link #connectServer(LightUser, List)}.
+     * 
+     * @param user L'utilisateur à connecter
+     * @param kanbans Liste des kanbans de l'utilisateur
+     */
     @Override
     public void connectionRequest(LightUser user, List<LightKanban> kanbans) {
         connectServer(user, kanbans);
     }
 
+    /**
+     * Notifie le serveur d'une décision concernant une demande de permission.
+     * 
+     * Cette méthode envoie un message {@link NotifyDecision} au serveur pour
+     * informer de l'acceptation ou du refus d'une demande de permission d'accès.
+     * 
+     * @param LightUserId L'utilisateur qui prend la décision
+     * @param LightKanbanId Le kanban concerné par la décision
+     * @param accepted true si la demande est acceptée, false sinon
+     */
     @Override
     public void notifyDecision(LightUser LightUserId, LightKanban LightKanbanId, boolean accepted) {
         try {
@@ -153,11 +259,26 @@ public class IhmMainCallsCommImp implements IhmMainCallsComm {
         }
     }
 
+    /**
+     * Demande un kanban au serveur.
+     * 
+     * Cette méthode est actuellement non implémentée.
+     * 
+     * @param LightKanbanId L'identifiant du kanban à demander
+     */
     @Override
     public void askKanban(LightKanban LightKanbanId) {
         // Add implementation + breakpoint to trace request flow
     }
 
+    /**
+     * Envoie un nouveau kanban au serveur.
+     * 
+     * Cette méthode crée et envoie un message {@link client.comm.messages.SendNewKanban}
+     * au serveur pour créer un nouveau kanban sur le serveur.
+     * 
+     * @param kanban Le kanban complet à envoyer au serveur (ne doit pas être null)
+     */
     @Override
     public void sendNewKanban(Kanban kanban) {
         try {
@@ -173,6 +294,15 @@ public class IhmMainCallsCommImp implements IhmMainCallsComm {
         }
     }
 
+    /**
+     * Demande un kanban complet au serveur.
+     * 
+     * Cette méthode crée et envoie un message {@link RequestKanban} au serveur
+     * pour récupérer un kanban complet à partir de sa version légère.
+     * 
+     * @param LightKanbanId La version légère du kanban à récupérer
+     * @param LightUserId L'utilisateur qui demande le kanban
+     */
     @Override
     public void getKanban(LightKanban LightKanbanId, LightUser LightUserId) {
         LOGGER.fine(() -> "getKanban request title=" + LightKanbanId.getTitle() + " id=" + LightKanbanId.getId());
@@ -185,6 +315,15 @@ public class IhmMainCallsCommImp implements IhmMainCallsComm {
         }
     }
 
+    /**
+     * Demande le profil distant d'un utilisateur au serveur.
+     * 
+     * Cette méthode crée et envoie un message {@link client.comm.messages.DistProfileRequest}
+     * au serveur pour récupérer le profil public d'un autre utilisateur.
+     * 
+     * @param requester L'utilisateur qui fait la demande (ne doit pas être null)
+     * @param requestedUserId L'identifiant UUID de l'utilisateur dont on veut le profil (ne doit pas être null)
+     */
     @Override
     public void requestDistantProfile(LightUser requester, java.util.UUID requestedUserId) {
         if (requester == null || requestedUserId == null) {
@@ -202,6 +341,16 @@ public class IhmMainCallsCommImp implements IhmMainCallsComm {
         }
     }
 
+    /**
+     * Envoie une demande de modification au serveur.
+     * 
+     * Cette méthode crée et envoie un message {@link RequestModification}
+     * au serveur pour demander l'application d'une modification sur une carte
+     * du kanban. Les erreurs réseau sont loggées mais n'interrompent pas l'exécution.
+     * 
+     * @param user L'utilisateur qui demande la modification (ne doit pas être null)
+     * @param myModification La modification à appliquer (ne doit pas être null)
+     */
     public void sendRequestModification(LightUser user, Modification myModification) {
         if (user == null || myModification == null) {
             LOGGER.warning("Paramètres invalides pour sendRequestModification");
