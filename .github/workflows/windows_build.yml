@@ -1,0 +1,57 @@
+name: Build Windows Executables
+
+on:
+  push:
+    branches: [ "package_export", "v3" ]
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v3
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          architecture: x64
+
+      - name: Build with Maven (Create Fat JAR)
+        run: mvn clean package -DskipTests
+
+      # --- 1. Création de l'EXE CLIENT ---
+      - name: Create Client Executable
+        run: |
+          jpackage --input target ^
+            --name KanbanClient ^
+            --main-jar kanban-project-1.0-SNAPSHOT.jar ^
+            --main-class client.Launcher ^
+            --type app-image ^
+            --dest dist_client ^
+            --win-console
+
+      # --- 2. Création de l'EXE SERVEUR ---
+      - name: Create Server Executable
+        run: |
+          jpackage --input target ^
+            --name KanbanServer ^
+            --main-jar kanban-project-1.0-SNAPSHOT.jar ^
+            --main-class server.ServerLauncher ^
+            --type app-image ^
+            --dest dist_server ^
+            --win-console
+
+      # --- 3. Upload des résultats pour que tu puisses les télécharger ---
+      - name: Upload Client Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: KanbanClient-Windows
+          path: dist_client/KanbanClient
+
+      - name: Upload Server Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: KanbanServer-Windows
+          path: dist_server/KanbanServer
