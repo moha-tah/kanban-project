@@ -9,12 +9,38 @@ import common.dataClasses.Kanban;
 import common.dataClasses.LightKanban;
 import common.dataClasses.LightUser;
 
+/**
+ * Message envoyé par un client pour demander l'autorisation d'accéder à un kanban.
+ * 
+ * Ce message est traité côté serveur qui notifie le propriétaire du kanban
+ * via un message {@link NotifyPermissionRequest} pour qu'il puisse accepter
+ * ou refuser la demande.
+ * 
+ * @author Équipe Kanban
+ * @version 1.0
+ * @since 1.0
+ * @see Message
+ * @see NotifyPermissionRequest
+ */
 public class RequestPermission extends Message {
     private static final long serialVersionUID = 1L;
 
+    /**
+     * L'identifiant de l'utilisateur qui demande la permission.
+     */
     private final UUID requesterId;
+    
+    /**
+     * L'identifiant du kanban pour lequel la permission est demandée.
+     */
     private final UUID kanbanId;
 
+    /**
+     * Constructeur du message de demande de permission.
+     * 
+     * @param requesterId L'identifiant de l'utilisateur qui demande la permission (ne doit pas être null)
+     * @param kanbanId L'identifiant du kanban pour lequel la permission est demandée (ne doit pas être null)
+     */
     public RequestPermission(UUID requesterId, UUID kanbanId) {
         this.requesterId = requesterId;
         this.kanbanId = kanbanId;

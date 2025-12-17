@@ -5,13 +5,38 @@ import java.util.Optional;
 import common.dataClasses.LightKanban;
 import common.dataClasses.Modification;
 
-
+/**
+ * Message envoyé par le serveur pour notifier les clients d'une modification
+ * effectuée sur un kanban.
+ * 
+ * Ce message est traité côté client qui met à jour son modèle local
+ * et notifie l'interface utilisateur du kanban.
+ * 
+ * @author Équipe Kanban
+ * @version 1.0
+ * @since 1.0
+ * @see Message
+ * @see Modification
+ */
 public class NotifyEdition extends Message {
     private static final long serialVersionUID = 1L;
 
+    /**
+     * Le kanban concerné par la modification.
+     */
     private final LightKanban kanban;
+    
+    /**
+     * La modification effectuée sur le kanban.
+     */
     private final Modification modification;
 
+    /**
+     * Constructeur du message de notification d'édition.
+     * 
+     * @param kanban Le kanban concerné par la modification (ne doit pas être null)
+     * @param modification La modification effectuée (ne doit pas être null)
+     */
     public NotifyEdition(LightKanban kanban, Modification modification) {
         this.kanban = kanban;
         this.modification = modification;

@@ -8,13 +8,43 @@ import client.comm.CommCoreClient;
 import common.dataClasses.LightKanban;
 import common.dataClasses.LightUser;
 
+/**
+ * Message envoyé par le propriétaire d'un kanban pour répondre à une demande d'accès.
+ * 
+ * Ce message est traité côté serveur qui met à jour les permissions si accepté
+ * et notifie le demandeur via un message {@link NotifyDecision}.
+ * 
+ * @author Équipe Kanban
+ * @version 1.0
+ * @since 1.0
+ * @see Message
+ * @see NotifyDecision
+ */
 public class PermissionResponse extends Message {
     private static final long serialVersionUID = 1L;
 
+    /**
+     * L'utilisateur qui a demandé l'accès.
+     */
     private final LightUser requesterId;
+    
+    /**
+     * Le kanban concerné par la demande.
+     */
     private final LightKanban kanbanId;
+    
+    /**
+     * Indique si la permission est accordée (true) ou refusée (false).
+     */
     private final boolean accepted;
 
+    /**
+     * Constructeur du message de réponse à une demande de permission.
+     * 
+     * @param requesterId L'utilisateur qui a demandé l'accès (ne doit pas être null)
+     * @param kanbanId Le kanban concerné par la demande (ne doit pas être null)
+     * @param accepted true si la permission est accordée, false sinon
+     */
     public PermissionResponse(LightUser requesterId, LightKanban kanbanId, boolean accepted) {
         this.requesterId = requesterId;
         this.kanbanId = kanbanId;

@@ -9,17 +9,43 @@ import common.dataClasses.Modification;
 import server.comm.CommCoreServer;
 
 /**
- * Message pour demander la modification d'une carte dans un kanban.
- * Correspond au diagramme 1 - Requête de modification.
+ * Message envoyé par un client pour demander la modification d'une carte dans un kanban.
+ * 
+ * Ce message est traité côté serveur qui sauvegarde la modification et notifie
+ * tous les utilisateurs autorisés à visualiser le kanban via un message
+ * {@link NotifyEdition}. Correspond au diagramme 1 - Requête de modification.
+ * 
+ * @author Équipe Kanban
+ * @version 1.0
+ * @since 1.0
+ * @see Message
+ * @see NotifyEdition
+ * @see Modification
  */
 public class RequestModification extends Message {
     private static final long serialVersionUID = 1L;
 
+    /**
+     * L'utilisateur qui demande la modification.
+     */
     private final LightUser user;
+    
+    /**
+     * La modification à appliquer (transitoire, non sérialisée).
+     */
     private final transient Modification myModification;
 
+    /**
+     * Logger pour les messages de log de cette classe.
+     */
     public static final Logger LOGGER = Logger.getLogger("Request Modification");
 
+    /**
+     * Constructeur du message de demande de modification.
+     * 
+     * @param user L'utilisateur qui demande la modification (ne doit pas être null)
+     * @param myModification La modification à appliquer (ne doit pas être null)
+     */
     public RequestModification(LightUser user, Modification myModification) {
         this.user = user;
         this.myModification = myModification;
@@ -67,11 +93,20 @@ public class RequestModification extends Message {
         return Optional.empty();
     }
 
-    // Getters
+    /**
+     * Récupère l'utilisateur qui demande la modification.
+     * 
+     * @return L'utilisateur qui demande la modification
+     */
     public LightUser getUser() {
         return user;
     }
 
+    /**
+     * Récupère la modification à appliquer.
+     * 
+     * @return La modification à appliquer
+     */
     public Modification getMyModification() {
         return myModification;
     }

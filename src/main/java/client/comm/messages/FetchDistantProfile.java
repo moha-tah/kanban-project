@@ -6,21 +6,56 @@ import java.util.UUID;
 import common.dataClasses.User;
 
 /**
- * Server -> AppOwner Client: ask to fetch full profile for requested user UUID,
- * then reply back to server using DistProfileAnswer.
+ * Message envoyé par le serveur au client propriétaire du profil pour demander
+ * de récupérer le profil complet de l'utilisateur local.
+ * 
+ * Ce message est traité côté client qui construit le profil complet depuis
+ * sa couche de données locale et répond au serveur avec un message
+ * {@link DistProfileAnswer}.
+ * 
+ * @author Équipe Kanban
+ * @version 1.0
+ * @since 1.0
+ * @see Message
+ * @see DistProfileRequest
+ * @see DistProfileAnswer
  */
 public class FetchDistantProfile extends Message {
     private static final long serialVersionUID = 1L;
 
+    /**
+     * L'identifiant de l'utilisateur qui a fait la demande initiale.
+     */
     private final UUID requesterId;
+    
+    /**
+     * L'identifiant de l'utilisateur dont on veut le profil (correspond au propriétaire local).
+     */
     private final UUID requestedUserId;
 
+    /**
+     * Constructeur du message de demande de récupération de profil.
+     * 
+     * @param requesterId L'identifiant de l'utilisateur qui a fait la demande (ne doit pas être null)
+     * @param requestedUserId L'identifiant de l'utilisateur dont on veut le profil (ne doit pas être null)
+     */
     public FetchDistantProfile(UUID requesterId, UUID requestedUserId) {
         this.requesterId = requesterId;
         this.requestedUserId = requestedUserId;
     }
 
+    /**
+     * Récupère l'identifiant de l'utilisateur qui a fait la demande.
+     * 
+     * @return L'identifiant du demandeur
+     */
     public UUID requesterId() { return requesterId; }
+    
+    /**
+     * Récupère l'identifiant de l'utilisateur dont on veut le profil.
+     * 
+     * @return L'identifiant de l'utilisateur demandé
+     */
     public UUID requestedUserId() { return requestedUserId; }
 
     @Override

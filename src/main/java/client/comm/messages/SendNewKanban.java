@@ -8,11 +8,32 @@ import common.dataClasses.LightKanban;
 // RETIRÉ : import server.ServerContext; (Cause du crash client)
 // RETIRÉ : import server.interfaces.CommCallsDataServer;
 
+/**
+ * Message envoyé par un client pour créer un nouveau kanban sur le serveur.
+ * 
+ * Ce message est traité côté serveur qui sauvegarde le kanban et déclenche
+ * un broadcast pour notifier tous les clients. Le serveur répond avec
+ * un message {@link NotifyKanbanCreated} pour confirmer la création.
+ * 
+ * @author Équipe Kanban
+ * @version 1.0
+ * @since 1.0
+ * @see Message
+ * @see NotifyKanbanCreated
+ */
 public class SendNewKanban extends Message {
     private static final long serialVersionUID = 1L;
 
+    /**
+     * Le kanban complet à créer sur le serveur.
+     */
     private final Kanban newKanban;
 
+    /**
+     * Constructeur du message de création de kanban.
+     * 
+     * @param newKanban Le kanban complet à créer (ne doit pas être null)
+     */
     public SendNewKanban(Kanban newKanban) {
         this.newKanban = newKanban;
     }

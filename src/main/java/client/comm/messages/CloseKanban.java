@@ -8,16 +8,39 @@ import common.dataClasses.LightKanban;
 import common.dataClasses.LightUser;
 
 /**
- * Message sent from IHM-Kanban to Client Communication to close a Kanban visualization.
- * This message is forwarded to the server.
+ * Message envoyé depuis l'interface Kanban pour fermer la visualisation d'un kanban.
+ * 
+ * Ce message est transmis au serveur qui retire l'utilisateur de la liste
+ * des viewers du kanban. Le kanban reste disponible en mémoire pour les autres utilisateurs.
+ * 
+ * @author Équipe Kanban
+ * @version 1.0
+ * @since 1.0
+ * @see Message
  */
 public class CloseKanban extends Message {
+    /**
+     * Logger pour les messages de log de cette classe.
+     */
     private static final Logger LOGGER = Logger.getLogger(CloseKanban.class.getName());
     private static final long serialVersionUID = 1L;
 
+    /**
+     * Le kanban à fermer.
+     */
     private final LightKanban lightKanban;
+    
+    /**
+     * L'utilisateur qui ferme le kanban.
+     */
     private final LightUser lightUser;
 
+    /**
+     * Constructeur du message de fermeture de kanban.
+     * 
+     * @param lightKanban Le kanban à fermer (ne doit pas être null)
+     * @param lightUser L'utilisateur qui ferme le kanban (ne doit pas être null)
+     */
     public CloseKanban(LightKanban lightKanban, LightUser lightUser) {
         this.lightKanban = lightKanban;
         this.lightUser = lightUser;

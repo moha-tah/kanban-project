@@ -4,10 +4,30 @@ import java.util.Optional;
 
 import common.dataClasses.Kanban;
 
+/**
+ * Message envoyé par le serveur pour transmettre un kanban complet à un client.
+ * 
+ * Ce message est la réponse à une demande {@link RequestKanban} et contient
+ * le kanban complet avec toutes ses colonnes et tâches.
+ * 
+ * @author Équipe Kanban
+ * @version 1.0
+ * @since 1.0
+ * @see Message
+ * @see RequestKanban
+ */
 public class SendKanban extends Message {
 
-    private final Kanban kanban; // Remplacer "Object" par votre classe métier "Kanban"
+    /**
+     * Le kanban complet à transmettre au client.
+     */
+    private final Kanban kanban;
 
+    /**
+     * Constructeur du message d'envoi de kanban.
+     * 
+     * @param kanban Le kanban complet à transmettre (ne doit pas être null)
+     */
     public SendKanban(Kanban kanban) {
         this.kanban = kanban;
     }
