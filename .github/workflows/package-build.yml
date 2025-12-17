@@ -74,7 +74,7 @@ jobs:
           embed-description: |
             **Branch:** `${{ github.ref_name }}`
             **Commit:** `${{ github.sha }}`
-            
+
             [Download Artifact](${{ steps.upload-artifact.outputs.artifact-url }})
           embed-color: ${{ job.status == 'success' && 5763719 || 15548997 }}
           embed-timestamp: ${{ github.event.head_commit.timestamp }}
