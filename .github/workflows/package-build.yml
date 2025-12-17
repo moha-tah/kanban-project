@@ -21,14 +21,17 @@ jobs:
             java-arch: x64
             os-name: Windows
             extra-args: "--win-console"
+            icon: ":desktop:"
           - os: ubuntu-latest
             java-arch: x64
             os-name: Linux
             extra-args: ""
+            icon: ":penguin:"
           - os: macos-latest
             java-arch: aarch64
             os-name: MacOS
             extra-args: ""
+            icon: ":apple:"
 
     steps:
       - uses: actions/checkout@v4
@@ -55,10 +58,25 @@ jobs:
           extra-jpackage-args: ${{ matrix.extra-args }}
 
       - name: Upload ${{ matrix.os-name }} Bundle
+        id: upload-artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.os-name }}-Kanban-Bundle
           path: dist
 
+      - name: Notify Discord
+        if: always()
+        uses: tsickert/discord-webhook@v5.3.0
+        with:
+          webhook-url: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          embed-title: "${{ matrix.icon }} Build ${{ job.status }}: ${{ matrix.os-name }}"
+          embed-description: |
+            **Branch:** `${{ github.ref_name }}`
+            **Commit:** `${{ github.sha }}`
+            
+            [Download Artifact](${{ steps.upload-artifact.outputs.artifact-url }})
+          embed-color: ${{ job.status == 'success' && 5763719 || 15548997 }}
+          embed-timestamp: ${{ github.event.head_commit.timestamp }}
+          
       - name: Cleanup Old Artifacts
         uses: ./.github/actions/cleanup-artifacts
