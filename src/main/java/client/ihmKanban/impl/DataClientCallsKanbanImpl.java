@@ -31,4 +31,3 @@ public class DataClientCallsKanbanImpl implements DataClientCallsKanban {
 
 }
 
-
