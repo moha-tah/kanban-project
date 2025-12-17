@@ -1,9 +1,9 @@
 package client.comm.messages;
 
+import java.util.Optional;
+
 import common.dataClasses.LightKanban;
 import common.dataClasses.LightUser;
-
-import java.util.Optional;
 
 /**
  * Notification envoyée au demandeur pour l'informer de la décision.
@@ -12,12 +12,12 @@ import java.util.Optional;
 public class NotifyDecision extends Message {
     private static final long serialVersionUID = 1L;
 
-    private final LightUser requesterId;
+    private final LightUser requestedId;
     private final LightKanban kanbanId;
     private final boolean accepted;
 
-    public NotifyDecision(LightUser requesterId, LightKanban kanbanId, boolean accepted) {
-        this.requesterId = requesterId;
+    public NotifyDecision(LightUser requestedId, LightKanban kanbanId, boolean accepted) {
+        this.requestedId = requestedId;
         this.kanbanId = kanbanId;
         this.accepted = accepted;
     }
@@ -26,7 +26,7 @@ public class NotifyDecision extends Message {
     public Optional<Message> handle() {
         // Côté CLIENT (Demandeur)
         if (client.MainApp.getCore() != null) {
-            client.MainApp.getCore().getCOMMService().displayDecision(null, kanbanId, accepted);
+            client.MainApp.getCore().getCOMMService().displayDecision(requestedId, kanbanId, accepted);
 
             javafx.application.Platform.runLater(() -> {
 

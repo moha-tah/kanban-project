@@ -1,0 +1,26 @@
+@startuml
+title See Distant Profile 
+
+actor "UI" as UI
+participant "Main" as Client
+participant "CommCli" as CommClient
+actor Server as S
+
+UI ->> Client : demandProfile(RequestedUserUUID)
+
+Client -> CommClient : requestDistProfile(RequestedUserUUID)
+
+CommClient ->> S : DistProfileRequest(Requester, AppOwner)
+S --> CommClient : void
+
+
+CommClient -> S : DistProfileAnswer(Requester, RequestedUser)
+
+
+S -> CommClient : ForwardProfileAnswer(Requester, RequestedUser)
+
+
+CommClient -> Client : DisplayDistProfile(RequestedUser)
+Client --> UI : void
+
+@enduml

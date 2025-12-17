@@ -128,7 +128,14 @@ public class CommCallsDataClientImplementation implements ComCallsDataClient{
             try {
                 if (local.getAvatar() != null && !local.getAvatar().isBlank()) copy.setAvatar(local.getAvatar());
             } catch (Throwable ignored) {}
-            copy.setMyKanban(null);
+            // Provide the local user's kanbans to display on distant profile view
+            if (local.getMyKanban() != null) {
+                // Create a shallow copy list to avoid accidental mutations
+                java.util.List<common.dataClasses.Kanban> list = new java.util.ArrayList<>(local.getMyKanban());
+                copy.setMyKanban(list);
+            } else {
+                copy.setMyKanban(new java.util.ArrayList<>());
+            }
             return copy;
         } catch (Exception e) {
             java.util.logging.Logger.getLogger(CommCallsDataClientImplementation.class.getName())

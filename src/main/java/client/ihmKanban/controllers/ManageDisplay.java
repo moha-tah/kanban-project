@@ -5,6 +5,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import client.MainApp;
 import client.ihmKanban.kanbanCorps;
@@ -18,6 +19,7 @@ import javafx.scene.Parent;
 
 public class ManageDisplay {
 
+    private static final Logger LOGGER = Logger.getLogger(ManageDisplay.class.getName());
     private final kanbanCorps corps; 
 
     public ManageDisplay(kanbanCorps corps) {
@@ -39,12 +41,12 @@ public class ManageDisplay {
     public void refreshKanban(Kanban kanban) {
 
         this.openKanbanScreen(kanban, homeViewController);
-        kanbanCorps.LOGGER.info("[Kanban] Refresh kanban : ");
+        LOGGER.info("[Kanban] Refresh kanban : ");
     }
 
     private Parent buildKanbanView(Kanban kanban) throws IOException {
     URL fxmlUrl = MainApp.class.getResource("/kanbanView.fxml");
-    kanbanCorps.LOGGER.info("DEBUG FXML kanbanView");
+    LOGGER.info("DEBUG FXML kanbanView");
 
     if (fxmlUrl == null) {
         throw new IllegalStateException("kanbanView.fxml introuvable dans le classpath !");
@@ -79,7 +81,7 @@ public class ManageDisplay {
         homeController.getKanbanArea().setContent(kanbanView);
 
     } catch (IOException | IllegalStateException e) {
-        kanbanCorps.LOGGER.log(Level.INFO, 
+        LOGGER.log(Level.INFO, 
             "Erreur lors de l'ouverture de l'écran Kanban : {0}", e.getMessage());
     }
 }
@@ -87,7 +89,7 @@ public class ManageDisplay {
 
     public void openKanbanScreenFromProfile(
         Kanban kanban, 
-        client.ihmMain.controllers.ProfileViewController profileController) {
+        client.ihmMain.controllers.ProfileController profileController) {
     
     try {
         setHomeViewController(null);
@@ -95,7 +97,7 @@ public class ManageDisplay {
         //profileController.getKanbanArea().setContent(kanbanView);
 
     } catch (IOException | IllegalStateException e) {
-        kanbanCorps.LOGGER.log(Level.INFO, 
+        LOGGER.log(Level.INFO, 
             "Erreur lors de l'ouverture de l'écran Kanban : {0}", e.getMessage());
     }
 }

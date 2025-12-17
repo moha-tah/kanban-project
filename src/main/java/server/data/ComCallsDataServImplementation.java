@@ -4,17 +4,24 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import common.dataClasses.Access;
 import common.dataClasses.Kanban;
 import common.dataClasses.LightKanban;
 import common.dataClasses.LightUser;
-import common.dataClasses.Modification;
-import common.dataClasses.Access; // Import nécessaire
+import common.dataClasses.Modification; // Import nécessaire
 import server.interfaces.CommCallsDataServer;
+import server.data.AssociationUsersOnKanban;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ComCallsDataServImplementation implements CommCallsDataServer {
     private DataServProvider myProvider;
+    // Map pour tracker les viewers par kanban (kanbanId -> AssociationUsersOnKanban)
+    private Map<UUID, AssociationUsersOnKanban> kanbanViewersMap;
 
-    public ComCallsDataServImplementation() {}
+    public ComCallsDataServImplementation() {
+        this.kanbanViewersMap = new HashMap<>();
+    }
 
     public static ComCallsDataServImplementation newComCallsDataServImplementation() {
         return new ComCallsDataServImplementation();
@@ -121,6 +128,16 @@ public class ComCallsDataServImplementation implements CommCallsDataServer {
         ServerModel model = myProvider.getModel();
         for (Kanban k : model.getInUseKanbans()) {
             if (k.getId().equals(kanbanID.getId())) {
+                // Ajouter l'utilisateur comme viewer du kanban
+                if (user != null) {
+                    synchronized (kanbanViewersMap) {
+                        AssociationUsersOnKanban assoc = kanbanViewersMap.computeIfAbsent(
+                            kanbanID.getId(), 
+                            id -> new AssociationUsersOnKanban(kanbanID)
+                        );
+                        assoc.addUserOnKanban(user);
+                    }
+                }
                 return k;
             }
         }
@@ -176,7 +193,22 @@ public class ComCallsDataServImplementation implements CommCallsDataServer {
     // C'était la méthode manquante qui causait l'erreur ligne 14
     @Override
     public void askAddListModifiers(LightUser user, LightKanban kanban) {
-        // TODO : Implémenter la logique
+        // Ajoute l'utilisateur à la liste des modificateurs du kanban
+        if (user == null || kanban == null || myProvider == null) return;
+        ServerModel model = myProvider.getModel();
+        List<Kanban> kanbans = model.getInUseKanbans();
+        Kanban target = kanbans.stream().filter(k -> k.getId().equals(kanban.getId())).findFirst().orElse(null);
+        if (target == null) return;
+
+        // Vérifier si l'utilisateur est déjà dans la liste d'accès
+        if (target.getAccessList() == null) {
+            target.setAccessList(new ArrayList<>());
+        }
+        boolean exists = target.getAccessList().stream().anyMatch(a -> a.getUser() != null && a.getUser().getId().equals(user.getId()));
+        if (!exists) {
+            target.getAccessList().add(new Access(user, null)); // Ajoute avec rôle par défaut
+        }
+        // Optionnel : sauvegarder le kanban modifié si nécessaire
     }
 
     @Override
@@ -191,6 +223,35 @@ public class ComCallsDataServImplementation implements CommCallsDataServer {
 
     @Override
     public void closeKanban(LightKanban lightKanban, LightUser user) {
+        if (lightKanban == null || user == null) {
+            return;
+        }
+
+        if (myProvider == null || myProvider.getModel() == null) {
+            return;
+        }
+
+        ServerModel model = myProvider.getModel();
+        
+        // Vérifier que le kanban existe dans le modèle
+        boolean kanbanExists = model.getInUseKanbans().stream()
+            .anyMatch(k -> k.getId().equals(lightKanban.getId()));
+        
+        if (kanbanExists) {
+            // Retirer l'utilisateur de la liste des viewers du kanban
+            synchronized (kanbanViewersMap) {
+                AssociationUsersOnKanban assoc = kanbanViewersMap.get(lightKanban.getId());
+                if (assoc != null) {
+                    assoc.removeUserOnKanban(user);
+                    // Nettoyer la map si plus aucun viewer
+                    if (assoc.getUsersOnKanban().isEmpty()) {
+                        kanbanViewersMap.remove(lightKanban.getId());
+                    }
+                }
+            }
+        }
+
+        // Le kanban reste disponible en mémoire pour les autres utilisateurs
     }
 
     // -------------------------------------------------------
