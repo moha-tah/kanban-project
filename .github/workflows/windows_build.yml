@@ -25,7 +25,7 @@ jobs:
           destination: dist_client
           artifact-name: KanbanClient-Windows
           artifact-path: dist_client/KanbanClient
-          extra-jpackage-args: '--win-console'
+          extra-jpackage-args: "--win-console"
 
       - name: Package Server
         uses: ./.github/actions/package-artifact
@@ -35,7 +35,7 @@ jobs:
           destination: dist_server
           artifact-name: KanbanServer-Windows
           artifact-path: dist_server/KanbanServer
-          extra-jpackage-args: '--win-console'
+          extra-jpackage-args: "--win-console"
 
       - name: Cleanup Old Artifacts
         uses: ./.github/actions/cleanup-artifacts
