@@ -38,8 +38,7 @@ public class KanbanCardController {
     private static final String BTN_PENDING = "-fx-background-color: #F5C16C; -fx-text-fill: #333; -fx-background-radius: 6;";
     private static final String TAG_VISIBILITY =
     "-fx-background-color: #ECECEC; -fx-text-fill: #333; -fx-padding: 3 8; -fx-background-radius: 8;";
-
-
+    
 
 
     public void setMainCore(MainCore core) {
@@ -114,22 +113,29 @@ public class KanbanCardController {
 
     @FXML
     private void handleView() {
-        LOGGER.log(Level.INFO, "[VIEW] Kanban: {0}", title);
+        LOGGER.info("[VIEW] Kanban: " + title);
+        String view = core.getCurrentView();
 
-        if (core == null) {
-            LOGGER.severe(" MainCore is null in KanbanCardController!");
-            return;
+        switch(view) {
+            case "Home":
+                HomeViewController.getInstance().displayKanban(this.kanban);
+                break;
+
+            case "Profile":
+                ProfileController.getInstance().displayKanban(this.kanban);
+                break;
+
+            case "ProfileDistant":
+                ProfileDistantController.getInstance().displayKanban(this.kanban);
+                break;
+
+            default:
+                LOGGER.severe("Unknown view: " + view);
         }
-
-        if (core.getKanbanPort() == null) {
-            LOGGER.severe(" MainCallsKanban interface is null!");
-            return;
-        }
-        
-
-        //core.getKanbanPort().openCreateForm(kanban);  //A changer  
-        HomeViewController.getInstance().displayKanban(this.kanban); //cela la mis à la place 
     }
+
+
+
 
 
     @FXML

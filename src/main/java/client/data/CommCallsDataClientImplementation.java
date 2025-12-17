@@ -1,14 +1,14 @@
 package client.data;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import client.interfaces.ComCallsDataClient;
 import common.dataClasses.Kanban;
 import common.dataClasses.LightKanban;
 import common.dataClasses.LightUser;
 import common.dataClasses.Modification;
 import common.dataClasses.User;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class CommCallsDataClientImplementation implements ComCallsDataClient{
     private DataClientProvider provider;

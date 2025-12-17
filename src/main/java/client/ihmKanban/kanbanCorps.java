@@ -1,29 +1,27 @@
 package client.ihmKanban;
 
-import client.interfaces.KanbanCallsDataClient;
-import client.interfaces.KanbanCallsMain;
-import client.interfaces.IhmKanbanCallsComm;
-import client.interfaces.DataClientCallsKanban;
-import client.interfaces.MainCallsKanban;
-import client.interfaces.CommClientCallsKanban;
-
-import client.ihmKanban.impl.CommClientCallsKanbanImpl;
-import client.ihmKanban.impl.DataClientCallsKanbanImpl;
-import client.ihmKanban.impl.MainCallsKanbanImpl;
-import client.ihmMain.controllers.HomeViewController;
-import common.dataClasses.Kanban;
-import common.dataClasses.LightKanban;
-import common.dataClasses.LightUser;
-import client.ihmMain.controllers.ProfileController;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import client.ihmKanban.controllers.ManageDisplay;
-
-import java.util.logging.Logger;
+import client.ihmKanban.impl.CommClientCallsKanbanImpl;
+import client.ihmKanban.impl.DataClientCallsKanbanImpl;
+import client.ihmKanban.impl.MainCallsKanbanImpl;
+import client.ihmMain.controllers.HomeViewController;
+import client.ihmMain.controllers.ProfileController;
+import client.ihmMain.controllers.ProfileDistantController;
+import client.interfaces.CommClientCallsKanban;
+import client.interfaces.DataClientCallsKanban;
+import client.interfaces.IhmKanbanCallsComm;
+import client.interfaces.KanbanCallsDataClient;
+import client.interfaces.KanbanCallsMain;
+import client.interfaces.MainCallsKanban;
+import common.dataClasses.Kanban;
+import common.dataClasses.LightKanban;
+import common.dataClasses.LightUser;
 
 
 /**
@@ -96,16 +94,9 @@ public class kanbanCorps {
     }
 
 
-    public void displayKanban(Kanban kanban, HomeViewController homeController) { 
-        manageDisplay.openKanbanScreen(kanban, homeController); 
+    public void displayKanban(Kanban kanban, HomeViewController homeController, ProfileController profileController, ProfileDistantController profileDistantController) { { 
+        manageDisplay.openKanbanScreen(kanban, homeController, profileController,profileDistantController); 
     }
 
-    public void displayKanbanFromProfile(Kanban kanban, ProfileController profileController) {
-        manageDisplay.openKanbanScreenFromProfile(kanban, profileController);
-
-    }
-
-    public void updateKanban(Kanban kanban) {
-        manageDisplay.refreshKanban(kanban);
     }
 }
