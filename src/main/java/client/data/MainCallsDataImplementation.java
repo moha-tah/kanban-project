@@ -356,12 +356,14 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
                 LOGGER.warning("exportProfile: user not found or ID mismatch (expected: " + lightUserId.getId() + ")");
                 return;
             }
+            // Always export as plain User, never SecureUser, to avoid leaking password hashes or sensitive data
             User profileCopy = new User(localUser.getId(), localUser.getUsername(), 
                     localUser.getFirstName(), localUser.getLastName(), localUser.getBirthDate());
             if (localUser.getAvatar() != null && !localUser.getAvatar().isBlank()) {
                 profileCopy.setAvatar(localUser.getAvatar());
             }
             profileCopy.setMyKanban(null);
+            // Ensure no password or sensitive fields are present in profileCopy
             String json = serializeUserToJson(profileCopy);
             java.nio.file.Path outputPath = java.nio.file.Paths.get(path);
             java.nio.file.Path parentDir = outputPath.getParent();
