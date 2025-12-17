@@ -86,19 +86,18 @@ public class ManageDisplay {
     }
 }
 
-
-    public void openKanbanScreenFromProfile(
-        Kanban kanban, 
+    public void openKanbanScreenFromProfile(Kanban kanban,
         client.ihmMain.controllers.ProfileController profileController) {
-    
+
     try {
         setHomeViewController(null);
         Parent kanbanView = buildKanbanView(kanban);
-        //profileController.getKanbanArea().setContent(kanbanView);
+        profileController.getKanbanArea().setContent(kanbanView);
 
     } catch (IOException | IllegalStateException e) {
-        LOGGER.log(Level.INFO, 
+        LOGGER.log(Level.INFO,
             "Erreur lors de l'ouverture de l'écran Kanban : {0}", e.getMessage());
     }
 }
+
 }
