@@ -37,6 +37,8 @@ jobs:
             extra-args: ""
 
     steps:
+      - uses: actions/checkout@v4
+
       - name: Setup and Build
         uses: ./.github/actions/setup-build
         with:
