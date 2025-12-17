@@ -1,18 +1,30 @@
 package client.data;
 
-import java.io.*;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import java.util.*;
 
 import client.interfaces.MainCallsDataClient;
-import common.dataClasses.*;
+import common.dataClasses.Access;
+import common.dataClasses.Kanban;
+import common.dataClasses.LightKanban;
+import common.dataClasses.LightUser;
+import common.dataClasses.SecureUser;
+import common.dataClasses.User;
 
 public class MainCallsDataImplementation implements MainCallsDataClient {
     private DataClientProvider provider;

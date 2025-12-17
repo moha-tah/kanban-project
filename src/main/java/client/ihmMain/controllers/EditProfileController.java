@@ -11,12 +11,16 @@ import client.MainApp;
 import client.ihmMain.MainCore;
 import client.interfaces.MainCallsDataClient;
 import common.dataClasses.User;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.DateCell;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
@@ -34,6 +38,9 @@ public class EditProfileController {
     private MainCore core;
     private User currentUser;
     private File selectedImage;
+    @FXML private ImageView profilePic;
+    private static final String DEFAULT_AVATAR_RESOURCE = "/profile_pic.png";
+
 
     private static final Logger LOGGER = Logger.getLogger(EditProfileController.class.getName());
 
@@ -212,6 +219,10 @@ public class EditProfileController {
     private void handleCancel() {
         goBack();
     }
+
+    // -------------------------------------------------------------------------------------
+    // ACTION : RETOUR
+    // -------------------------------------------------------------------------------------
 
     @FXML
     private void onBackToProfile() {
