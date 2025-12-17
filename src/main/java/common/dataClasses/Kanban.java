@@ -1,7 +1,8 @@
 package common.dataClasses;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.ArrayList;
+import java.util.Map;
 import java.util.UUID;
 
 public class Kanban extends LightKanban {
@@ -16,8 +17,8 @@ public class Kanban extends LightKanban {
     
 
 // Constructeur sans ID et visibility
-    public Kanban(String title , String visibility, User creator) {
-        super(title);
+    public Kanban(String title, List<Access> accessList, String visibility, User creator) {
+        super(title, accessList);
         this.taskColumn = new HashMap<>();
         this.visibility = visibility;
         this.creator = creator;
@@ -25,8 +26,8 @@ public class Kanban extends LightKanban {
     }
     
     // Constructeur avec ID et visibility
-    public Kanban(UUID id, String title, String visibility, User creator) {
-        super(id, title);
+    public Kanban(UUID id, String title, List<Access> accessList, String visibility, User creator) {
+        super(id, title, accessList);
         this.visibility = visibility;
         this.taskColumn = new HashMap<>();
         this.creator = creator;
@@ -36,14 +37,14 @@ public class Kanban extends LightKanban {
     
 
     // Constructeur
-    public Kanban(String title) {
-        super(title);
+    public Kanban(String title, List<Access> accessList) {
+        super(title, accessList);
         this.taskColumn = new HashMap<>();
     }
     
     // Constructeur avec ID
-    public Kanban(UUID id, String title) {
-        super(id, title);
+    public Kanban(UUID id, String title, List<Access> accessList) {
+        super(id, title, accessList);
         this.taskColumn = new HashMap<>();
     }
     
@@ -73,10 +74,38 @@ public class Kanban extends LightKanban {
     public String getVisibility() {
         return visibility;
     }
+
+    public Column getColumnFromID(UUID columnId){
+        for (Column col : columns){
+            if (col.getId() == columnId){
+                return col;
+            }
+        }
+        return null;
+    }
+
+    public Column getColumnFromTask(UUID taskId){
+        for (Map.Entry<Column,List<Task>> entry : taskColumn.entrySet()){
+            for (Task task : entry.getValue()){
+                if (task.getId().equals(taskId)){
+                    return entry.getKey();
+                }
+            }
+        }
+        return null;
+    }
     
     // Setters
     public void setTaskColumn(HashMap<Column, List<Task>> taskColumn) {
         this.taskColumn = taskColumn;
+
+        //Mettre à jour la liste des tâches et des colonnes
+        List<Task> allTasks = new ArrayList<>();
+        for (Map.Entry<Column, List<Task>> entry : taskColumn.entrySet()){
+            allTasks.addAll(entry.getValue());
+        }
+        this.setTasks(allTasks);
+        this.setColumns(new ArrayList<>(taskColumn.keySet()));
     }
 
     public void setCreator(User creator) {
@@ -92,48 +121,48 @@ public class Kanban extends LightKanban {
         this.visibility = visibility;
     }
 
-    // Méthodes métier
-    public boolean canBeModifiedBy(LightUser user) {
-        // Logique pour vérifier si l'utilisateur peut modifier le kanban
-        // À implémenter selon les règles métier
-        return true; // Placeholder
+    public void setMessages(List<Message> messages) {
+        this.messages = messages;
     }
-    
-    public boolean modifyKanban(LightUser user, String newTitle) {
-        if (canBeModifiedBy(user)) {
-            setTitle(newTitle);
-            return true;
-        }
-        return false;
-    }
-    
-    public boolean addTaskToColumn(LightUser user, Task task, Column column) {
-        if (canBeModifiedBy(user)) {
-            taskColumn.computeIfAbsent(column, k -> new ArrayList<>()).add(task);
-            return true;
-        }
-        return false;
-    }
-    
-    public boolean moveTask(LightUser user, Task task, Column fromColumn, Column toColumn) {
-        if (canBeModifiedBy(user)) {
-            List<Task> fromTasks = taskColumn.get(fromColumn);
-            List<Task> toTasks = taskColumn.get(toColumn);
-            
-            if (fromTasks != null && fromTasks.contains(task)) {
-                fromTasks.remove(task);
-                if (toTasks != null) {
-                    toTasks.add(task);
-                } else {
-                    taskColumn.put(toColumn, new ArrayList<>());
-                    taskColumn.get(toColumn).add(task);
+
+    public void setTasks(List<Task> tasks) {
+        this.tasks = tasks;
+
+        //Mettre à jour le hashmap des tâches
+        for (Task task : tasks){
+            Column col = this.getColumnFromTask(task.getId());
+            if (col != null){
+                List<Task> taskList = taskColumn.getOrDefault(col, new ArrayList<>());
+                if (!taskList.contains(task)){
+                    taskList.add(task);
+                    taskColumn.put(col, taskList);
                 }
-                return true;
+
             }
         }
-        return false;
+    }
+
+    public void setColumns(List<Column> columns) {
+        this.columns = columns;
+        //Mettre à jour le hashmap des colonnes
+        for (Column col : columns){
+            if (!taskColumn.containsKey(col)){
+                taskColumn.put(col, new ArrayList<>());
+            }
+        }
     }
     
+    public void modifyHashmap(List<Task> tasks, Column col){
+        taskColumn.put(col, tasks);
+        //Mettre à jour la liste des tâches
+        this.setTasks(tasks);
+
+        //Mettre à jour la liste des colonnes si nécessaire
+        if (!columns.contains(col)){
+            columns.add(col);
+        }
+    }
+   
     // Méthode utilitaire pour obtenir toutes les tâches d'une colonne
     public List<Task> getTasksFromColumn(Column column) {
         return taskColumn.getOrDefault(column, new ArrayList<>());
@@ -146,7 +175,7 @@ public class Kanban extends LightKanban {
 
     // methode renvoie lightKanban a partir de Kanban
     public LightKanban getLightKanban() { 
-        return new LightKanban(this.getId(),this.getTitle());
+        return new LightKanban(this.getId(),this.getTitle(), this.getAccessList());
     }
 
 }

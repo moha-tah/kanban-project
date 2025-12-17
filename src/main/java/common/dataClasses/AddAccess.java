@@ -1,50 +1,70 @@
 package common.dataClasses;
+import java.util.List;
 import java.util.UUID;
 
 public class AddAccess extends Modification {
-    private LightKanban lightKanban;
+    private Access access;
+    private UUID previousAccessId = null;
     
     // Constructeur
-    public AddAccess(LightKanban lightKanban) {
+    public AddAccess(Access access) {
         super();
-        this.lightKanban = lightKanban;
+        this.access = access;
+    }
+    
+    // Constructeur avec kanban cible
+    public AddAccess(Access access, LightKanban targetKanban) {
+        super();
+        this.access = access;
+        this.setLightTargetKanban(targetKanban);
     }
     
     // Constructeur avec ID
-    public AddAccess(UUID id, LightKanban lightKanban) {
+    public AddAccess(UUID id, Access access) {
         super(id);
-        this.lightKanban = lightKanban;
+        this.access = access;
     }
     
     // Getters
-    public LightKanban getLightKanban() {
-        return lightKanban;
+    public Access getAccess() {
+        return access;
+    }
+    public UUID getPreviousAccessId() {
+        return previousAccessId;
     }
     
     // Setters
-    public void setLightKanban(LightKanban lightKanban) {
-        this.lightKanban = lightKanban;
+    public void setAccess(Access access) {
+        this.access = access;
+    }
+    public void setPreviousAccessId(UUID previousAccessId) {
+        this.previousAccessId = previousAccessId;
     }
     
     @Override
-    public boolean execute() {
-        // Logique pour exécuter l'ajout d'accès
-        // À implémenter selon les règles métier
-        return lightKanban != null;
+    public Kanban execute(Kanban targetKanban) {
+        LightKanban lightKanban = targetKanban.getLightKanban();
+        this.previousAccessId = access.getId();
+        if(lightKanban.getAccessList().stream().noneMatch(a -> a.getId().equals(access.getId()))){
+            List<Access> accessLightKanban = lightKanban.getAccessList();
+            accessLightKanban.add(access);
+            lightKanban.setAccessList(accessLightKanban);
+        }
+        
+        return targetKanban;
     }
     
     @Override
-    public boolean undo() {
-        // Logique pour annuler l'ajout d'accès
-        // À implémenter selon les règles métier
-        return lightKanban != null;
+    public Kanban undo(Kanban targetKanban) {
+        DeleteAccess undoModification = new DeleteAccess(previousAccessId);
+        return undoModification.execute(targetKanban);
     }
     
     @Override
     public String toString() {
         return "AddAccess{" +
                 "id=" + getId() +
-                ", lightKanban=" + (lightKanban != null ? lightKanban.getTitle() : "null") +
+                ", access =" + (access != null ? access.getRole() : "null") +
                 '}';
     }
 }

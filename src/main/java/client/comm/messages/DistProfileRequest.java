@@ -1,12 +1,8 @@
 package client.comm.messages;
 
-import java.io.IOException;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.logging.Logger;
-
-import common.dataClasses.LightUser;
-import common.dataClasses.User;
 
 /**
  * Client -> Server: request distant user's profile by UUIDs.

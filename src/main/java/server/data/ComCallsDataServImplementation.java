@@ -49,7 +49,7 @@ public class ComCallsDataServImplementation implements CommCallsDataServer {
                 boolean kExists = serverKanbans.stream().anyMatch(k -> k.getId().equals(lk.getId()));
 
                 if (!kExists) {
-                    Kanban newK = new Kanban(lk.getId(), lk.getTitle());
+                    Kanban newK = new Kanban(lk.getId(), lk.getTitle(), lk.getAccessList());
                     newK.setCreatorId(user.getId());
 
                     // Récupération visibilité via instance check
@@ -212,8 +212,43 @@ public class ComCallsDataServImplementation implements CommCallsDataServer {
     }
 
     @Override
-    public List<LightUser> saveModifiedKanban(LightKanban kanban, Modification modification) {
-        return null;
+    public List<LightUser> saveModifiedKanban( Modification modification) {
+        LightKanban kanban = modification.getLightTargetKanban();
+        System.out.println("[SERVER] saveModifiedKanban: Modification type=" + modification.getClass().getSimpleName() + ", kanban=" + kanban.getTitle());
+        
+        List<Kanban> inUseKanbans = myProvider.getModel().getInUseKanbans();
+        Kanban kanbanToUpdate = null;
+        List<LightUser> usersToNotify = new ArrayList<LightUser>();
+        for(Kanban kanbanInList : inUseKanbans){
+            if( kanbanInList.getId().equals(kanban.getId())){
+                kanbanToUpdate = kanbanInList;
+                break;
+            }
+        }
+        if (kanbanToUpdate == null) {
+            // Kanban not found, handle gracefully
+            System.err.println("Kanban with ID " + kanban.getId() + " not found in inUseKanbans.");
+            return usersToNotify; // Return empty list
+        }
+        
+        System.out.println("[SERVER] Avant modification: " + kanbanToUpdate.getColumns().size() + " colonnes");
+        modification.execute(kanbanToUpdate);
+        System.out.println("[SERVER] Après modification: " + kanbanToUpdate.getColumns().size() + " colonnes");
+        
+        // Sauvegarder le kanban modifié
+        saveKanban(kanbanToUpdate);
+        
+        List <Access> accessList = kanbanToUpdate.getAccessList();
+        if (accessList != null) {
+            System.out.println("[SERVER] Utilisateurs à notifier: " + accessList.size());
+            for(Access access: accessList){
+                LightUser user = access.getUser();
+                if (user != null) {
+                    usersToNotify.add(user);
+                }
+            }
+        }
+        return usersToNotify;
     }
 
     @Override

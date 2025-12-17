@@ -29,7 +29,7 @@ public class DataClientCallsKanbanImpl implements DataClientCallsKanban {
     @Override
     public void updateKanban(Kanban kanban) {
         corps.updateKanban(kanban);
-
+        System.out.println("[Data->kanban] Update kanban : kanban=" + kanban.getTitle());
         kanbanCorps.LOGGER.info("[Data->kanban] Display kanban : ");
 
     }

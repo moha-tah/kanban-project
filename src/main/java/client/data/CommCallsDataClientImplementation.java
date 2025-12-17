@@ -1,11 +1,13 @@
 package client.data;
 
 import client.interfaces.ComCallsDataClient;
+import client.interfaces.DataClientCallsKanban;
 import common.dataClasses.Kanban;
 import common.dataClasses.LightKanban;
 import common.dataClasses.LightUser;
 import common.dataClasses.Modification;
 import common.dataClasses.User;
+import java.util.UUID;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -104,8 +106,22 @@ public class CommCallsDataClientImplementation implements ComCallsDataClient{
     }
 
     @Override
-    public void saveModifiedKanban(Modification modification, LightKanban kanban){
-        //TODO
+    public void saveModifiedKanban(Modification modification){
+        System.out.println("[CLIENT] saveModifiedKanban: Modification type=" + modification.getClass().getSimpleName() + ", kanbanID=" + modification.getLightTargetKanban().getId());
+
+        ClientModel model = provider.getMyModel();
+        Kanban kanban = model.getCurrentKanban();
+        UUID modificationInitialTargetId = modification.getLightTargetKanban().getId();
+        UUID currentKanbanId = kanban.getId();
+        System.out.println("[CLIENT] Current kanban ID=" + currentKanbanId + ", Modification target kanban ID=" + modificationInitialTargetId);
+        if(modificationInitialTargetId.equals(currentKanbanId)  ){
+            modification.execute(kanban);
+            model.setCurrentKanban(kanban);
+            provider.setMyModel(model);
+            DataClientCallsKanban kanbanAccess = provider.getKanbanInterface();
+            kanbanAccess.updateKanban(kanban);
+        }
+        System.out.println("================================================================================================================");
     }
 
     @Override
@@ -143,6 +159,7 @@ public class CommCallsDataClientImplementation implements ComCallsDataClient{
             return null;
         }
     }
+
 
     //Constructeur
     public CommCallsDataClientImplementation(DataClientProvider provider) {

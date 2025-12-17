@@ -19,11 +19,9 @@ import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializer;
 
 import client.interfaces.DataCallsComm;
+import client.interfaces.DataClientCallsKanban;
 import client.interfaces.KanbanCallsDataClient;
-import common.dataClasses.Kanban;
-import common.dataClasses.Snapshot;
-import common.dataClasses.LightKanban;
-import common.dataClasses.User;
+import common.dataClasses.* ;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -301,6 +299,13 @@ public class KanbanCallsDataImplementation implements KanbanCallsDataClient {
         // TODO
     }
 
+    @Override
+    public void setCurrentKanban(Kanban kanban) {
+        if (provider != null) {
+            provider.getMyModel().setCurrentKanban(kanban);
+        }
+    }
+
     // getters / setters
     public DataClientProvider getProvider() {
         return this.provider;
@@ -308,5 +313,10 @@ public class KanbanCallsDataImplementation implements KanbanCallsDataClient {
 
     public void setProvider(DataClientProvider provider) {
         this.provider = provider;
+    }
+
+    @Override
+    public Kanban getLocalKanban() {
+        return provider.getMyModel().getCurrentKanban();
     }
 }

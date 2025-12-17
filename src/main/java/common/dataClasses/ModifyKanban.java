@@ -1,50 +1,103 @@
 package common.dataClasses;
-import java.util.UUID;
 
 public class ModifyKanban extends Modification {
-    private LightKanban kanban;
+    private String title = null;
+    private String visibility = null;
+    private User creator = null;
+
+    private String previousTitle = null;
+    private String previousVisibility = null;
+    private User previousCreator = null;
+
     
     // Constructeur
-    public ModifyKanban(LightKanban kanban) {
+    public ModifyKanban(String title, String visibility, User creator) {
         super();
-        this.kanban = kanban;
+        this.title = title;
+        this.visibility = visibility;
+        this.creator = creator;
     }
     
-    // Constructeur avec ID
-    public ModifyKanban(UUID id, LightKanban kanban) {
-        super(id);
-        this.kanban = kanban;
+    // Constructeur avec kanban cible
+    public ModifyKanban(String title, String visibility, User creator, LightKanban targetKanban) {
+        super();
+        this.title = title;
+        this.visibility = visibility;
+        this.creator = creator;
+        this.setLightTargetKanban(targetKanban);
     }
-    
+
     // Getters
-    public LightKanban getKanban() {
-        return kanban;
+    public String getTitle() {
+        return title;
+    }
+    public String getVisibility() {
+        return visibility;
+    }
+    public User getCreator() {
+        return creator;
+    }
+    public String getPreviousTitle() {
+        return previousTitle;
+    }
+    public String getPreviousVisibility() {
+        return previousVisibility;
+    }
+    public User getPreviousCreator() {
+        return previousCreator;
     }
     
     // Setters
-    public void setKanban(LightKanban kanban) {
-        this.kanban = kanban;
+    public void setTitle(String title) {
+        this.title = title;
+    }
+    public void setVisibility(String visibility) {
+        this.visibility = visibility;
+    }
+    public void setCreator(User creator) {
+        this.creator = creator;
+    }
+    public void setPreviousTitle(String previousTitle) {
+        this.previousTitle = previousTitle;
+    }
+    public void setPreviousVisibility(String previousVisibility) {
+        this.previousVisibility = previousVisibility;
+    }
+    public void setPreviousCreator(User previousCreator) {
+        this.previousCreator = previousCreator;
+    }
+
+    @Override
+    public Kanban execute(Kanban targetKanban) {
+        if (title != null) {
+            targetKanban.setTitle(title);
+            this.previousTitle = targetKanban.getTitle();
+        }
+        if (visibility != null) {
+            targetKanban.setVisibility(visibility);
+            this.previousVisibility = targetKanban.getVisibility();
+        }
+        if (creator != null) {
+            targetKanban.setCreator(creator);
+            targetKanban.setCreatorId(creator.getId());
+            this.previousCreator = targetKanban.getCreator();
+        }
+        return targetKanban;
     }
     
     @Override
-    public boolean execute() {
-        // Logique pour exécuter la modification de kanban
-        // À implémenter selon les règles métier
-        return kanban != null;
-    }
-    
-    @Override
-    public boolean undo() {
-        // Logique pour annuler la modification de kanban
-        // À implémenter selon les règles métier
-        return kanban != null;
+    public Kanban undo(Kanban targetKanban) {
+        ModifyKanban undoModification = new ModifyKanban(previousTitle, previousVisibility, previousCreator);
+        return undoModification.execute(targetKanban);
     }
     
     @Override
     public String toString() {
         return "ModifyKanban{" +
                 "id=" + getId() +
-                ", kanban=" + (kanban != null ? kanban.getTitle() : "null") +
+                ", title=" + (title != null ? title : "null") +
+                ", visibility=" + (visibility != null ? visibility : "null") +
+                ", creator=" + (creator != null ? creator.getUsername() : "null") +
                 '}';
     }
 }

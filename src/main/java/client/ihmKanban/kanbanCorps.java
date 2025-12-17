@@ -38,6 +38,7 @@ public class kanbanCorps {
 
     // ---- État IHM ----
     private LightUser me;
+    private Kanban currentKanban;  // <— Kanban courant affiché dans l'IHM
     private final List<LightUser>   users   = new ArrayList<>();
     private final List<LightKanban> kanbans = new ArrayList<>();
 
@@ -48,7 +49,7 @@ public class kanbanCorps {
     private final MainCallsKanbanImpl mainCallbacks = new MainCallsKanbanImpl(this);
 
     public void launchApp() {
-        users.clear(); kanbans.clear(); me = null;
+        users.clear(); kanbans.clear(); me = null; currentKanban = null;
     }
 
     // Exposition des callbacks (pour câblage)
@@ -68,6 +69,9 @@ public class kanbanCorps {
     // Accès état
     public void setMe(LightUser me) { this.me = me; }
     public LightUser getMe()        { return me; }
+
+    public Kanban getCurrentKanban() { return currentKanban; }
+    public void setCurrentKanban(Kanban kanban) { this.currentKanban = kanban; }
 
     public List<LightUser> getUsersSnapshot()     { return new ArrayList<>(users); }
     public List<LightKanban> getKanbansSnapshot() { return new ArrayList<>(kanbans); }
@@ -97,15 +101,19 @@ public class kanbanCorps {
 
 
     public void displayKanban(Kanban kanban, HomeViewController homeController) { 
+        this.currentKanban = kanban;
         manageDisplay.openKanbanScreen(kanban, homeController); 
     }
 
     public void displayKanbanFromProfile(Kanban kanban, ProfileController profileController) {
+        this.currentKanban = kanban;
         manageDisplay.openKanbanScreenFromProfile(kanban, profileController);
 
     }
 
     public void updateKanban(Kanban kanban) {
+        System.out.println("[Kanban Corps] updateKanban: kanban=" + kanban.getTitle());
+        this.currentKanban = kanban;
         manageDisplay.refreshKanban(kanban);
     }
 }
