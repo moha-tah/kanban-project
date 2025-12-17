@@ -71,7 +71,7 @@ public class SecureUser extends User {
             random.nextBytes(salt);
 
             md.update(salt);
-            byte[] hashedPassword = md.digest(password.getBytes());
+            byte[] hashedPassword = md.digest(password.getBytes(StandardCharsets.UTF_8));
 
             // Combiner le salt et le hash
             byte[] combined = new byte[salt.length + hashedPassword.length];

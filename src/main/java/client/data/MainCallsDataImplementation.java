@@ -360,9 +360,20 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
             Map<String, String> users = readJsonToMap(USERS_FILE);
             String password = users.get(localUser.getUsername());
 
-            // Export as a SecureUser to save the password
+            // Export as a SecureUser, but preserve existing hash (avoid double-hash)
             SecureUser profileCopy = new SecureUser(localUser.getId(), localUser.getUsername(), 
-                    localUser.getFirstName(), localUser.getLastName(), localUser.getBirthDate(), password);
+                    localUser.getFirstName(), localUser.getLastName(), localUser.getBirthDate(), "temp");
+            if (password != null) {
+                try {
+                    java.lang.reflect.Field passwordField = SecureUser.class.getDeclaredField("password");
+                    passwordField.setAccessible(true);
+                    passwordField.set(profileCopy, password); // set the already-hashed value
+                } catch (Exception e) {
+                    LOGGER.log(java.util.logging.Level.WARNING, "Failed to preserve hashed password during export; falling back to rehash", e);
+                    // If reflection fails, profileCopy currently contains a hash of "temp";
+                    // this is not ideal, but we avoid crashing the export.
+                }
+            }
 
             if (localUser.getAvatar() != null && !localUser.getAvatar().isBlank()) {
                 profileCopy.setAvatar(localUser.getAvatar());
