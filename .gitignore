@@ -42,3 +42,7 @@ Thumbs.db
 
 # md
 soutenabilite.md
+
+# JavaDoc
+generate-javadoc.bat
+generate-javadoc.sh
