@@ -1,0 +1,24 @@
+name: 'Setup and Build'
+description: 'Checkouts code, sets up Java, and builds with Maven'
+inputs:
+  java-architecture:
+    description: 'The architecture for the Java JDK (x64 or aarch64)'
+    required: false
+    default: 'x64'
+
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up JDK 21
+      uses: actions/setup-java@v4
+      with:
+        java-version: "21"
+        distribution: "temurin"
+        architecture: ${{ inputs.java-architecture }}
+        cache: "maven"
+
+    - name: Build with Maven (Create Fat JAR)
+      shell: bash
+      run: mvn -B package -DskipTests
