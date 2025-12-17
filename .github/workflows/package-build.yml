@@ -2,7 +2,7 @@ name: Build Packages
 
 on:
   push:
-    branches: ["package_export", "main", "[vV][0-9]+"]
+    branches: ["main", "[vV][0-9]+"]
 
 permissions:
   contents: read
@@ -75,7 +75,7 @@ jobs:
             **Branch:** `${{ github.ref_name }}`
             **Commit:** `${{ github.sha }}`
 
-            [Download Artifact](${{ steps.upload-artifact.outputs.artifact-url }})
+            :arrow_down: [Download Artifact](${{ steps.upload-artifact.outputs.artifact-url }})
           embed-color: ${{ job.status == 'success' && 5763719 || 15548997 }}
           embed-timestamp: ${{ github.event.head_commit.timestamp }}
 
