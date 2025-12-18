@@ -66,7 +66,7 @@ jobs:
           echo "Fixing 'App is damaged' error..."
           sudo xattr -cr "$DIR/KanbanClient.app"
           sudo xattr -cr "$DIR/KanbanServer.app"
-          echo "Done! You can now open the apps."
+          echo "Done! You can now open the apps with the command: $DIR/Kanban[Client/Server].app/Contents/MacOS/Kanban[Client/Server]"
           EOF
           chmod +x dist/fix_damaged_app.command
         shell: bash
@@ -79,7 +79,7 @@ jobs:
           path: dist
 
       - name: Notify Discord
-        if: always()
+        if: false
         uses: tsickert/discord-webhook@v5.3.0
         with:
           webhook-url: ${{ secrets.DISCORD_WEBHOOK_URL }}
@@ -87,7 +87,7 @@ jobs:
           embed-url: ${{ steps.upload-artifact.outputs.artifact-url }}
           embed-description: |
             **Branch:** `${{ github.ref_name }}`
-            **Commit:** `${{ github.sha }}`
+            # **Commit:** `${{ github.sha }}`
 
             :arrow_down: [Download Artifact](${{ steps.upload-artifact.outputs.artifact-url }})
           embed-color: ${{ job.status == 'success' && 5763719 || 15548997 }}
