@@ -1,5 +1,12 @@
 {
   "java.project.sourcePaths": ["."],
   "java.project.referencedLibraries": [],
-  "java.configuration.updateBuildConfiguration": "interactive"
+  "java.configuration.updateBuildConfiguration": "interactive",
+  "java.configuration.runtimes": [
+  {
+    "name": "JavaSE-25",
+    "path": "C:/Users/engel/OneDrive/Documents/Travail/LO23/jdk-25",
+    "default": true
+  }
+]
 }

@@ -8,6 +8,7 @@ import java.util.logging.Logger;
 import common.dataClasses.LightKanban;
 import common.dataClasses.LightUser;
 import common.dataClasses.User;
+import common.dataClasses.Kanban;
 // RETIRÉ : import server.ServerContext;
 
 public class ConnectionRequest extends Message {
@@ -16,17 +17,19 @@ public class ConnectionRequest extends Message {
 
     private final LightUser user;
     private final List<LightKanban> kanbans;
+    private final List<Kanban> completeKanbans;
     // Optional full user details to be cached server-side on connect
     private final User fullUser;
 
-    public ConnectionRequest(LightUser user, List<LightKanban> kanbans) {
-        this(user, kanbans, null);
+    public ConnectionRequest(LightUser user, List<LightKanban> kanbans, List<Kanban> completeKanbans) {
+        this(user, kanbans, null, completeKanbans);
     }
 
-    public ConnectionRequest(LightUser user, List<LightKanban> kanbans, User fullUser) {
+    public ConnectionRequest(LightUser user, List<LightKanban> kanbans, User fullUser, List<Kanban> completeKanbans) {
         this.user = user;
         this.kanbans = kanbans;
         this.fullUser = fullUser;
+        this.completeKanbans = completeKanbans;
     }
 
     public LightUser getUser() { return user; }
@@ -48,7 +51,7 @@ public class ConnectionRequest extends Message {
                 return Optional.empty();
             }
             
-            dataServer.addNewUser(this.user, this.kanbans);
+            dataServer.addNewUser(this.user, this.kanbans, this.completeKanbans);
 
             // Also cache full user on the server model if provided
             try {

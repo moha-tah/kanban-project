@@ -70,7 +70,7 @@ public class ManageDisplay {
     }
     
     // Colonnes
-    List<Column> cols = kanban.getAllColumns();
+    List<Column> cols = kanban.getColumns();
 
     // Tasks & CreateTask
     List<CreateTask> taskCreations = new ArrayList<>();

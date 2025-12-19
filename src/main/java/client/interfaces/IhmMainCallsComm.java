@@ -11,10 +11,10 @@ public interface IhmMainCallsComm {
     void sendPermissionResponse(LightUser LightUserId, LightKanban LightKanbanId, boolean accepted);
     void sendNewKanban(Kanban kanban);
     boolean connect(String host, int port);
-    void connectionRequest(LightUser LightUser, List<LightKanban> listKanbans);
+    void connectionRequest(LightUser LightUser, List<LightKanban> listKanbans, List<Kanban> completeKanbans);
     void notifyDecision(LightUser LightUserId, LightKanban LightKanbanId, boolean accepted);
     void askKanban(LightKanban LightKanbanId);
-    void connectServer(LightUser user, List<LightKanban> kanbans);
+    void connectServer(LightUser user, List<LightKanban> kanbans, List<Kanban> completeKanbans);
     void askAddListModifiers(LightUser userId, LightKanban kanbanId);
     void getKanban(LightKanban LightKanbanId, LightUser LightUserId);
     void requestDistantProfile(LightUser requester, java.util.UUID requestedUserId);

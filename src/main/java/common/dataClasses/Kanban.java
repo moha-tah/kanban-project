@@ -98,14 +98,6 @@ public class Kanban extends LightKanban {
     // Setters
     public void setTaskColumn(HashMap<Column, List<Task>> taskColumn) {
         this.taskColumn = taskColumn;
-
-        //Mettre à jour la liste des tâches et des colonnes
-        List<Task> allTasks = new ArrayList<>();
-        for (Map.Entry<Column, List<Task>> entry : taskColumn.entrySet()){
-            allTasks.addAll(entry.getValue());
-        }
-        this.setTasks(allTasks);
-        this.setColumns(new ArrayList<>(taskColumn.keySet()));
     }
 
     public void setCreator(User creator) {
@@ -170,7 +162,7 @@ public class Kanban extends LightKanban {
     
     // Méthode utilitaire pour obtenir toutes les colonnes
     public List<Column> getAllColumns() {
-        return new ArrayList<>(taskColumn.keySet());
+        return columns;
     }
 
     // methode renvoie lightKanban a partir de Kanban

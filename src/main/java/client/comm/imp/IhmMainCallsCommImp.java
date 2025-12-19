@@ -109,7 +109,7 @@ public class IhmMainCallsCommImp implements IhmMainCallsComm {
     }
 
     @Override
-    public void connectServer(LightUser user, List<LightKanban> kanbans) {
+    public void connectServer(LightUser user, List<LightKanban> kanbans, List<Kanban> completeKanbans) {
         LOGGER.fine(() -> "Sending ConnectionRequest with " + (kanbans != null ? kanbans.size() : 0) + " kanbans");
         User fullUser = null;
         try {
@@ -117,7 +117,7 @@ public class IhmMainCallsCommImp implements IhmMainCallsComm {
                 fullUser = MainApp.getCore().getDataPort().getLocalUser();
             }
         } catch (Throwable ignored) {}
-        ConnectionRequest msg = new ConnectionRequest(user, kanbans, fullUser);
+        ConnectionRequest msg = new ConnectionRequest(user, kanbans, fullUser, completeKanbans);
         try {
             if (commCore.getMsgSender() != null) {
                 commCore.sendMessage(msg);
@@ -136,8 +136,8 @@ public class IhmMainCallsCommImp implements IhmMainCallsComm {
     }
 
     @Override
-    public void connectionRequest(LightUser user, List<LightKanban> kanbans) {
-        connectServer(user, kanbans);
+    public void connectionRequest(LightUser user, List<LightKanban> kanbans, List<Kanban> completeKanbans) {
+        connectServer(user, kanbans, completeKanbans);
     }
 
     @Override

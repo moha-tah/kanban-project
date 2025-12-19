@@ -93,7 +93,7 @@ public class LoginController {
         core.addKanbans(myKanbansToSend);
 
         // 5. Envoi au serveur pour qu'il les connaisse et les diffuse
-        connectToServer(me, myKanbansToSend);
+        connectToServer(me, myKanbansToSend, core.getDataPort().getLocalUser().getMyKanban());
 
         core.showHomeView();
     }
@@ -143,10 +143,10 @@ public class LoginController {
         }
     }
 
-    private void connectToServer(LightUser me, List<LightKanban> kanbans) {
+    private void connectToServer(LightUser me, List<LightKanban> kanbans, List<Kanban> completeKanbans) {
         IhmMainCallsComm comm = core.getCommPort();
         if (comm != null) {
-            comm.connectServer(me, kanbans);
+            comm.connectServer(me, kanbans, completeKanbans);
         }
     }
 }

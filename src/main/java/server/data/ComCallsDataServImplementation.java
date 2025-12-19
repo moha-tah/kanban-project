@@ -25,7 +25,7 @@ public class ComCallsDataServImplementation implements CommCallsDataServer {
     // -------------------------------------------------------
 
     @Override
-    public void addNewUser(LightUser user, List<LightKanban> clientKanbans) {
+    public void addNewUser(LightUser user, List<LightKanban> clientKanbans, List<Kanban> completeKanbans) {
         // Correction erreur "ServerModel cannot be referenced" : on utilise l'objet
         ServerModel model = myProvider.getModel();
 
@@ -35,26 +35,39 @@ public class ComCallsDataServImplementation implements CommCallsDataServer {
             connectedUsers.add(user);
         }
 
-        if (clientKanbans != null && !clientKanbans.isEmpty()) {
-            List<Kanban> serverKanbans = model.getInUseKanbans();
-
-            for (LightKanban lk : clientKanbans) {
-                boolean kExists = serverKanbans.stream().anyMatch(k -> k.getId().equals(lk.getId()));
-
-                if (!kExists) {
-                    Kanban newK = new Kanban(lk.getId(), lk.getTitle(), lk.getAccessList());
-                    newK.setCreatorId(user.getId());
-
-                    // Récupération visibilité via instance check
-                    if (lk instanceof Kanban kanban) {
-                        newK.setVisibility(kanban.getVisibility());
-                    } else {
-                        newK.setVisibility("Private");
-                    }
-                    serverKanbans.add(newK);
+        for(Kanban k : completeKanbans){
+            Boolean found = false;
+            for(Kanban l : model.getInUseKanbans()){
+                if(k.getId().equals(l.getId())){
+                    found = true;
+                    break;
                 }
             }
+            if(!found){
+                model.getInUseKanbans().add(k);
+            }
         }
+        //Ghost à enlever
+        // if (clientKanbans != null && !clientKanbans.isEmpty()) {
+        //     List<Kanban> serverKanbans = model.getInUseKanbans();
+
+        //     for (LightKanban lk : clientKanbans) {
+        //         boolean kExists = serverKanbans.stream().anyMatch(k -> k.getId().equals(lk.getId()));
+
+        //         if (!kExists) {
+        //             Kanban newK = new Kanban(lk.getId(), lk.getTitle(), lk.getAccessList());
+        //             newK.setCreatorId(user.getId());
+
+        //             // Récupération visibilité via instance check
+        //             if (lk instanceof Kanban kanban) {
+        //                 newK.setVisibility(kanban.getVisibility());
+        //             } else {
+        //                 newK.setVisibility("Private");
+        //             }
+        //             serverKanbans.add(newK);
+        //         }
+        //     }
+        // }
     }
 
     @Override

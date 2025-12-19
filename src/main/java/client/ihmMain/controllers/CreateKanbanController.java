@@ -165,6 +165,7 @@ public class CreateKanbanController {
             return;
         }
         newKanban.setTaskColumn(orderedColumns);
+        newKanban.setColumns(new ArrayList<>(orderedColumns.keySet()));
 
         // 3. Sauvegarde
         KanbanCallsDataImplementation.saveKanbanAsJson(newKanban);
