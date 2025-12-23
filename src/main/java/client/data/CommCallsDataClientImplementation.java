@@ -120,6 +120,7 @@ public class CommCallsDataClientImplementation implements ComCallsDataClient{
             provider.setMyModel(model);
             DataClientCallsKanban kanbanAccess = provider.getKanbanInterface();
             kanbanAccess.updateKanban(kanban);
+            KanbanCallsDataImplementation.saveKanbanAsJson(kanban);
         }
         System.out.println("================================================================================================================");
     }

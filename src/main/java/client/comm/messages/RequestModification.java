@@ -59,6 +59,34 @@ public class RequestModification extends Message {
                 }
             }
 
+            // Notifier aussi les viewers (utilisateurs ayant la visibilité du kanban
+            // mais ne participant pas à la modification)
+            try {
+                List<LightUser> allUsers = dataServer.getUsersList();
+                java.util.Set<java.util.UUID> alreadyNotified = new java.util.HashSet<>();
+                if (usersToNotify != null) {
+                    for (LightUser u : usersToNotify) {
+                        if (u != null) alreadyNotified.add(u.getId());
+                    }
+                }
+
+                for (LightUser candidate : allUsers) {
+                    if (candidate == null || alreadyNotified.contains(candidate.getId())) continue;
+
+                    List<common.dataClasses.LightKanban> visibles = dataServer.getVisibleKanbansForUser(candidate);
+                    boolean canSeeKanban = visibles.stream()
+                            .anyMatch(k -> k.getId().equals(myModification.getLightTargetKanban().getId()));
+                    if (canSeeKanban) {
+                        // Envoyer NotifyModification au viewer
+                        NotifyModification viewerMsg = new NotifyModification(
+                                myModification.getLightTargetKanban(), myModification);
+                        server.comm.CommCoreServer.sendToUser(candidate.getId(), viewerMsg);
+                    }
+                }
+            } catch (Exception e) {
+                System.err.println("[RequestModification] Erreur notification viewers: " + e.getMessage());
+            }
+
         } catch (Exception e) {
             java.util.logging.Logger.getLogger(RequestModification.class.getName())
                     .log(java.util.logging.Level.SEVERE, "Erreur lors du traitement de la modification", e);
