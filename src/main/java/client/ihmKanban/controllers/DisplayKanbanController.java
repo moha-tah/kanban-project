@@ -206,6 +206,12 @@ public class DisplayKanbanController implements Initializable {
         popup.show(anchor.getScene().getWindow(), b.getMaxX() + 4, b.getMinY());
     }
 
+    private void showPopupNearNodeWithBounds(Popup popup, Bounds bounds, javafx.stage.Window window) {
+        closeCurrentPopup();
+        currentPopup = popup;
+        popup.show(window, bounds.getMaxX() + 4, bounds.getMinY());
+    }
+
     @FXML
     private void onAddColumnButtonClick() {
         if (addColumnButton != null) showAddColumnPopup(addColumnButton);
@@ -217,7 +223,7 @@ public class DisplayKanbanController implements Initializable {
         Button btn = createMenuButton(text, bgColor, textColor);
         btn.setOnAction(e -> {
             action.run();
-            closeCurrentPopup();
+            // Ne pas fermer le popup ici, laisser showPopupNearNode() le faire
         });
         box.getChildren().add(btn);
     }
@@ -357,7 +363,11 @@ public class DisplayKanbanController implements Initializable {
     // ----------------------- Tâches -----------------------
 
     private void showAddTaskPopup(Column col, Node anchorNode) {
-        showGenericTaskPopup("ADD TASK", null, col, anchorNode, (taskTitle, taskDesc) -> {
+        // Capturer les bounds et la fenêtre avant de fermer le popup du menu
+        Bounds bounds = anchorNode.localToScreen(anchorNode.getBoundsInLocal());
+        javafx.stage.Window window = anchorNode.getScene().getWindow();
+        
+        showGenericTaskPopup("ADD TASK", null, col, bounds, window, (taskTitle, taskDesc) -> {
             Task tache = new Task(taskTitle, taskDesc);
             corps.getCommPort().sendRequestModification(corps.getMe(), new CreateTask(tache, col.getId(), kanban));
             LOGGER.log(Level.INFO, "Nouvelle tâche créée : {0}", taskTitle);
@@ -372,7 +382,15 @@ public class DisplayKanbanController implements Initializable {
             renderKanban();
         });
     }
+    
     private void showGenericTaskPopup(String popupTitle, Task taskToEdit, Column col, Node anchorNode,
+                                      BiConsumer<String, String> onSubmit) {
+        showGenericTaskPopup(popupTitle, taskToEdit, col, 
+            anchorNode.localToScreen(anchorNode.getBoundsInLocal()), 
+            anchorNode.getScene().getWindow(), onSubmit);
+    }
+    
+    private void showGenericTaskPopup(String popupTitle, Task taskToEdit, Column col, Bounds bounds, javafx.stage.Window window,
                                       BiConsumer<String, String> onSubmit) {
         Popup popup = createBasePopup();
         VBox box = (VBox) popup.getContent().get(0);
@@ -404,7 +422,7 @@ public class DisplayKanbanController implements Initializable {
         });
 
         box.getChildren().addAll(title, nameLabel, nameField, descLabel, descArea, addBtn);
-        showPopupNearNode(popup, anchorNode);
+        showPopupNearNodeWithBounds(popup, bounds, window);
     }
 
     // ----------------------- Utilisateurs -----------------------
