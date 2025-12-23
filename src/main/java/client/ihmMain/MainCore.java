@@ -15,6 +15,7 @@ import client.data.DataClientProvider;
 import client.data.MainCallsDataImplementation;
 import client.ihmMain.controllers.HomeViewController;
 import client.ihmMain.controllers.KanbanCardController;
+import client.ihmMain.controllers.ProfileDistantController;
 import client.ihmMain.impl.commCallsMainImpl;
 import client.ihmMain.impl.dataCallsMainImpl;
 import client.ihmMain.impl.kanbanCallsMainImpl;
@@ -27,6 +28,7 @@ import client.interfaces.MainCallsKanban;
 import common.dataClasses.Kanban;
 import common.dataClasses.LightKanban;
 import common.dataClasses.LightUser;
+import common.dataClasses.User;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -270,22 +272,62 @@ public class MainCore {
     }
 
     public void onPermissionResponse(LightKanban kanban, boolean accepted) {
-        Platform.runLater(() -> {
+    Platform.runLater(() -> {
+
+        // Rafraîchir HomeView
+        if (HomeViewController.getInstance() != null) {
             HomeViewController.getInstance().refreshKanbansFromModel();
-        });
+        }
+
+        // 🔥 Rafraîchir ProfileDistant si ouvert
+        User last = getLastRequestedProfile();
+        if (last != null) {
+            ProfileDistantController pdc = ProfileDistantController.getInstance();
+            if (pdc != null) {
+                pdc.updateDistantProfile(last);
+            }
+        }
+    });
 }
-    private final Map<UUID, KanbanCardController> kanbanControllers = new HashMap<>();
+
+    private final Map<UUID, java.util.List<KanbanCardController>> kanbanControllers = new HashMap<>();
 
     public void registerKanbanCardController(UUID id, KanbanCardController controller) {
-        kanbanControllers.put(id, controller);
+        kanbanControllers.computeIfAbsent(id, k -> new java.util.ArrayList<>()).add(controller);
     }
 
+
     public void notifyKanbanPermission(UUID kanbanId, boolean accepted) {
-        KanbanCardController controller = kanbanControllers.get(kanbanId);
-        if (controller != null) {
-            controller.updatePermissionStatus(accepted);
+        var list = kanbanControllers.get(kanbanId);
+        if (list == null) return;
+
+        for (KanbanCardController c : list) {
+            if (c != null) c.updatePermissionStatus(accepted);
         }
     }
+
+
+    private User lastRequestedProfile;
+
+    public void setLastRequestedProfile(User u) {
+        this.lastRequestedProfile = u;
+    }
+
+    public User getLastRequestedProfile() {
+        return lastRequestedProfile;
+    }
+
+    public void refreshDistantProfileIfOpen() {
+    User last = getLastRequestedProfile();
+    if (last != null) {
+        ProfileDistantController pdc = ProfileDistantController.getInstance();
+        if (pdc != null) {
+            pdc.updateDistantProfile(last);
+        }
+    }
+}
+
+
 
     public void showLoginView()  { loadScene("/login.fxml",  "Login"); }
     public void showSignupView() { loadScene("/signup.fxml", "Sign up"); }

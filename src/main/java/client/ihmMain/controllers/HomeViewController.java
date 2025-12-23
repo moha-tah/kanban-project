@@ -167,26 +167,38 @@ public class HomeViewController {
         notifContainer.getChildren().add(0, box);
     }
 
-    private void handleDecision(common.dataClasses.LightUser requester, common.dataClasses.LightKanban kanban, boolean accepted) {
-        if (core != null) {
-            core.sendPermissionResponse(requester, kanban, accepted);
-            
-            // Si accepté, mettre à jour le kanban local (DATA) pour lier l'utilisateur au kanban
-            if (accepted) {
-                try {
-                    client.data.DataClientProvider provider = core.getDataClientProvider();
-                    if (provider != null) {
-                        client.interfaces.MainCallsDataClient dataClient = provider.getToMainImpl();
-                        if (dataClient != null) {
-                            dataClient.addAuthorizedUserToKanban(requester, kanban);
-                        }
-                    }
-                } catch (Exception e) {
-                    LOGGER.log(java.util.logging.Level.SEVERE, "Erreur lors de l'ajout de l'utilisateur au kanban", e);
+    private void handleDecision(common.dataClasses.LightUser requester,
+                            common.dataClasses.LightKanban kanban,
+                            boolean accepted) {
+
+    if (core == null) return;
+
+    core.sendPermissionResponse(requester, kanban, accepted);
+
+    if (accepted) {
+        try {
+            client.data.DataClientProvider provider = core.getDataClientProvider();
+            if (provider != null) {
+                client.interfaces.MainCallsDataClient dataClient = provider.getToMainImpl();
+                if (dataClient != null) {
+                    dataClient.addAuthorizedUserToKanban(requester, kanban);
                 }
             }
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE,
+                    "Erreur lors de l'ajout de l'utilisateur au kanban", e);
         }
     }
+
+    // 🔥 AJOUT CRITIQUE : rafraîchir le profil distant si ouvert
+    Platform.runLater(() -> {
+        ProfileDistantController pdc = ProfileDistantController.getInstance();
+        if (pdc != null) {
+            pdc.refreshKanbans();
+        }
+    });
+}
+    
 
     // ==================== KANBANS ====================
 

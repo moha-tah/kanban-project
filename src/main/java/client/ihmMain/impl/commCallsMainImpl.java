@@ -46,28 +46,36 @@ public class commCallsMainImpl implements CommClientCallsMain {
     }
 
     @Override
-    public void displayDecision(LightUser user, LightKanban kanban, boolean decision) {
-        String decisionMaker = (user != null) ? user.getUsername() : "Le propriétaire";
+public void displayDecision(LightUser user, LightKanban kanban, boolean decision) {
+    String decisionMaker = (user != null) ? user.getUsername() : "Le propriétaire";
 
-        System.out.println("[Main->CommCB] decision=" + decision
-                + " by=" + decisionMaker
-                + " kanban=" + kanban.getTitle());
+    System.out.println("[Main->CommCB] decision=" + decision
+            + " by=" + decisionMaker
+            + " kanban=" + kanban.getTitle());
 
-        javafx.application.Platform.runLater(() -> {
-            if (HomeViewController.getInstance() != null) {
-                String status = decision ? "ACCEPTÉE" : "REFUSÉE";
-                Kanban full = KanbanCallsDataImplementation.loadKanbanFromJson(kanban);
-                String realTitle = (full != null) ? full.getTitle() : kanban.getTitle();
+    Platform.runLater(() -> {
+        if (HomeViewController.getInstance() != null) {
 
-                String msg = "Votre demande pour '" + realTitle + "' a été " + status;
-                HomeViewController.getInstance().addNotification(msg);
-                HomeViewController.handleNotif();
-                if (decision) {
-                    HomeViewController.getInstance().refreshKanbansFromModel();
-                }
+            String status = decision ? "ACCEPTÉE" : "REFUSÉE";
+            Kanban full = KanbanCallsDataImplementation.loadKanbanFromJson(kanban);
+            String realTitle = (full != null) ? full.getTitle() : kanban.getTitle();
+
+            String msg = "Votre demande pour '" + realTitle + "' a été " + status;
+            HomeViewController.getInstance().addNotification(msg);
+            HomeViewController.handleNotif();
+            core.refreshDistantProfileIfOpen();
+
+
+            if (decision) {
+                HomeViewController.getInstance().refreshKanbansFromModel();
             }
-        });
-    }
+        }
+
+        // LIGNE CRITIQUE À AJOUTER
+        core.notifyKanbanPermission(kanban.getId(), decision);
+    });
+}
+
 
     @Override
     public void connectionAccepted(LightUser user, List<LightKanban> kanban) {
@@ -114,7 +122,9 @@ public class commCallsMainImpl implements CommClientCallsMain {
                     return;
                 }
     
+                core.setLastRequestedProfile(requestedUser);
                 controller.updateDistantProfile(requestedUser);
+
                 LOGGER.info("[Comm->Main] Profil distant envoyé au controller.");
     
             } catch (Exception e) {

@@ -52,6 +52,11 @@ public class KanbanCardController {
  {
         this.kanban = kanban;
         this.color = color;
+            // Reset styles (important)
+    requestButton.setStyle(BTN_PRIMARY);
+    viewButton.setStyle(BTN_PRIMARY);
+    deleteButton.setStyle(BTN_WARNING);
+
 
         this.title = kanban.getTitle();
         // Gestion safe si columns ou creator sont null

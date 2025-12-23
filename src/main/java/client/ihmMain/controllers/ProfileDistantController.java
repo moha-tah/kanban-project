@@ -2,13 +2,19 @@ package client.ihmMain.controllers;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import client.data.KanbanCallsDataImplementation;
 import client.ihmMain.MainCore;
 import common.dataClasses.Kanban;
+import common.dataClasses.LightKanban;
 import common.dataClasses.LightUser;
 import common.dataClasses.User;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -92,16 +98,50 @@ public class ProfileDistantController {
             LOGGER.severe(() -> "Erreur lors de la navigation vers home_fxml.fxml : " + e.getMessage());
         }
     }
+    private boolean isParticipating(Kanban kanban, LightUser me) {
+        if (kanban.getAccessList() == null || me == null) return false;
+        return kanban.getAccessList().stream()
+                .anyMatch(a -> a.getUser().getId().equals(me.getId()));
+    }   
+
+    public void refreshKanbans() {
+        if (core == null) return;
+
+        User last = core.getLastRequestedProfile();
+        if (last != null) {
+            updateDistantProfile(last);
+        }
+    }
+
+
+
 
     private Node createKanbanCard(Kanban kanban) throws IOException {
+
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/kanban_card.fxml"));
         Node cardNode = loader.load();
 
         KanbanCardController controller = loader.getController();
         controller.setMainCore(core);
 
-        String color = "#d8fff3ff"; 
-        controller.setKanbanData(kanban, color, true, true);
+        LightUser me = core.getMe();
+
+        boolean isMine = kanban.getCreator() != null
+             && kanban.getCreator().getId().equals(me.getId());
+
+
+        boolean isParticipating = isParticipating(kanban, me);
+
+        String color;
+        if (isMine) {
+            color = "#D8E9FF";       // bleu
+        } else if (isParticipating) {
+            color = "#EAD8FF";       // violet
+        } else {
+            color = "#D9FFE3";       // vert
+        }
+
+        controller.setKanbanData(kanban, color, isMine, isParticipating);
 
         core.registerKanbanCardController(kanban.getId(), controller);
 
@@ -110,6 +150,9 @@ public class ProfileDistantController {
 
 
     public void updateDistantProfile(User requestedUser) {
+
+    Platform.runLater(() -> {
+
         LOGGER.info(() -> "[UI] Mise à jour du profil distant : "
                 + requestedUser.getUsername()
                 + " (ID=" + requestedUser.getId() + ")");
@@ -119,49 +162,52 @@ public class ProfileDistantController {
             if (displayName == null || displayName.isBlank()) {
                 displayName = requestedUser.getUsername();
             }
-                final java.util.List<common.dataClasses.Kanban> kanbans = (requestedUser.getMyKanban() != null)
-                    ? requestedUser.getMyKanban()
-                    : java.util.Collections.emptyList();
 
             profileName2.setText(displayName);
             profileUsername2.setText("@" + requestedUser.getUsername());
-            kanbansCreated2.setText(String.valueOf(kanbans.size()));
-
 
             // Avatar
             Image avatarImg = loadAvatarDistant(requestedUser.getAvatar());
             if (avatarImg != null) {
                 profileAvatar2.setImage(avatarImg);
-                LOGGER.info("[UI] Avatar distant chargé.");
-            } else {
-                LOGGER.warning("[UI] Avatar distant introuvable, utilisation valeur par défaut.");
             }
 
-            // Kanbans
+            // 🔥 UTILISER LE MODELE PARTAGÉ (PAS requestedUser.myKanban)
+            List<LightKanban> allKanbans = core.getAvailableLightKanbans();
+            List<Kanban> kanbans = new ArrayList<>();
+
+            for (LightKanban lk : allKanbans) {
+                Kanban full = KanbanCallsDataImplementation.loadKanbanFromJson(lk);
+                if (full == null) continue;
+
+                UUID creatorId = full.getCreatorId();
+
+                if (creatorId != null && creatorId.equals(requestedUser.getId())) {
+                    kanbans.add(full);
+                }
+
+            }
+
+            kanbansCreated2.setText(String.valueOf(kanbans.size()));
+
+            // UI grid
             kanbansGrid2.getChildren().clear();
-            
-            LOGGER.info(() -> "[UI] Kanbans distants reçus: " + kanbans.size());
-            int row = 0;
-            int col = 0;
+            int row = 0, col = 0;
+
             for (Kanban k : kanbans) {
                 Node card = createKanbanCard(k);
-                if (card != null) {
-                    kanbansGrid2.add(card, col, row);
-                    col++;
-                    if (col >= 3) { 
-                        col = 0;
-                        row++;
-                    }
-                }
+                kanbansGrid2.add(card, col++, row);
+                if (col >= 3) { col = 0; row++; }
             }
-        
 
             LOGGER.info("[UI] Profil distant affiché avec succès.");
 
-        } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "[UI] Erreur lors de updateDistantProfile", e);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "[UI] Erreur updateDistantProfile", e);
         }
-    }
+    });
+}
+
 
 
 }
