@@ -369,6 +369,14 @@ public class DisplayKanbanController implements Initializable {
         
         showGenericTaskPopup("ADD TASK", null, col, bounds, window, (taskTitle, taskDesc) -> {
             Task tache = new Task(taskTitle, taskDesc);
+            // Mise à jour optimiste : ajouter la tâche localement pour affichage immédiat
+            if (taskCreations == null) {
+                taskCreations = new java.util.ArrayList<>();
+            }
+            CreateTask createTask = new CreateTask(tache, col.getId());
+            taskCreations.add(createTask);
+            renderKanban(); // Afficher immédiatement la nouvelle tâche
+            // Envoyer la modification au serveur
             corps.getCommPort().sendRequestModification(corps.getMe(), new CreateTask(tache, col.getId(), kanban));
             LOGGER.log(Level.INFO, "Nouvelle tâche créée : {0}", taskTitle);
         });

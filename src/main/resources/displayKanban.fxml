@@ -42,7 +42,7 @@
                         vbarPolicy="NEVER"
                         AnchorPane.topAnchor="0.0"
                         AnchorPane.leftAnchor="0.0"
-                        AnchorPane.rightAnchor="0.0"
+                        AnchorPane.rightAnchor="85.0"
                         AnchorPane.bottomAnchor="0.0">
                 <content>
                     <HBox fx:id="columnsContainer"
