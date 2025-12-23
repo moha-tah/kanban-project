@@ -31,7 +31,8 @@ public class RequestKanban extends Message {
                 if (fullKanban != null) {
                     LOGGER.log(Level.FINE, "Full Kanban received from server: {0}", fullKanban.getTitle());
                     LOGGER.log(Level.FINE, "Sending SendKanban response to client");
-                    return Optional.of(new SendKanban(fullKanban));
+                    SendKanban mymessage = new SendKanban(fullKanban);
+                    return Optional.of(mymessage);
                 } else {
                     LOGGER.log(Level.WARNING, "dataServer.requestKanban returned null");
                 }

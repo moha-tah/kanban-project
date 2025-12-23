@@ -32,11 +32,11 @@ public class CommClientCallsKanbanImpl implements CommClientCallsKanban {
             LOGGER.log(Level.INFO, "[Comm->kanban] Modification du kanban affiché, application locale de la modification");
             try {
                 // Appliquer la modification au kanban courant localement
-                Kanban updatedKanban = modification.execute(currentKanban);
+                //Kanban updatedKanban = modification.execute(currentKanban);
                 LOGGER.log(Level.INFO, "[Comm->kanban] Modification appliquée avec succès, rafraîchissement de l'affichage");
                 // Rafraîchir l'affichage sur le thread JavaFX
                 Platform.runLater(() -> {
-                    corps.updateKanban(updatedKanban);
+                    corps.updateKanban(currentKanban);
                 });
             } catch (Exception e) {
                 LOGGER.log(Level.SEVERE, "[Comm->kanban] Erreur lors de l'application de la modification", e);
