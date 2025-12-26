@@ -122,15 +122,35 @@ public class Kanban extends LightKanban {
         this.tasks = tasks;
 
         //Mettre à jour le hashmap des tâches
+        // IMPORTANT: Utiliser la recherche par ID pour éviter les problèmes de référence d'objet
         for (Task task : tasks){
             Column col = this.getColumnFromTask(task.getId());
             if (col != null){
-                List<Task> taskList = taskColumn.getOrDefault(col, new ArrayList<>());
-                if (!taskList.contains(task)){
-                    taskList.add(task);
-                    taskColumn.put(col, taskList);
+                // Chercher la colonne par ID dans taskColumn pour éviter les problèmes de référence
+                UUID colId = col.getId();
+                Column targetCol = null;
+                for (Column c : taskColumn.keySet()) {
+                    if (c != null && c.getId() != null && c.getId().equals(colId)) {
+                        targetCol = c;
+                        break;
+                    }
                 }
-
+                
+                // Si on a trouvé la colonne, utiliser celle-là, sinon utiliser celle retournée par getColumnFromTask
+                if (targetCol != null) {
+                    List<Task> taskList = taskColumn.getOrDefault(targetCol, new ArrayList<>());
+                    if (!taskList.contains(task)){
+                        taskList.add(task);
+                        taskColumn.put(targetCol, taskList);
+                    }
+                } else {
+                    // Si la colonne n'existe pas dans taskColumn, l'ajouter
+                    List<Task> taskList = taskColumn.getOrDefault(col, new ArrayList<>());
+                    if (!taskList.contains(task)){
+                        taskList.add(task);
+                        taskColumn.put(col, taskList);
+                    }
+                }
             }
         }
     }

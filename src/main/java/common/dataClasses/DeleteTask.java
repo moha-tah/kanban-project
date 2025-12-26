@@ -49,12 +49,24 @@ public class DeleteTask extends Modification {
                 .filter(task -> task.getId().equals(taskId))
                 .findFirst()
                 .orElse(null);
-        //récupérer la colonne de la tâche AVANT de supprimer la tâche
-        Column col = targetKanban.getColumnFromTask(taskId);
+        
+        // Retirer la tâche de toutes les colonnes dans taskColumn AVANT de modifier la liste tasks
+        java.util.HashMap<Column, List<Task>> taskColumn = targetKanban.getTaskColumn();
+        for (java.util.Map.Entry<Column, List<Task>> entry : taskColumn.entrySet()) {
+            List<Task> columnTasks = entry.getValue();
+            if (columnTasks != null) {
+                columnTasks.removeIf(task -> task.getId().equals(taskId));
+                taskColumn.put(entry.getKey(), columnTasks);
+            }
+        }
+        targetKanban.setTaskColumn(taskColumn);
+        
+        // Supprimer la tâche de la liste
         tasks.removeIf(task -> task.getId().equals(taskId));
+        
+        // Mettre à jour la liste des tâches
+        // setTasks() ne pourra pas réajouter la tâche car elle n'est plus dans taskColumn
         targetKanban.setTasks(tasks);
-        //mettre à jour le hashmap en enlevant la tâche pour sa colonne
-        targetKanban.modifyHashmap(tasks, col);
 
         return targetKanban;
     }

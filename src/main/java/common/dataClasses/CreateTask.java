@@ -59,14 +59,51 @@ public class CreateTask extends Modification {
     public Kanban execute(Kanban targetKanban) {
         Column col = targetKanban.getColumnFromID(targetColumn);
         this.previousTaskId = newTask.getId();
+        
+        // Ajouter la tâche à la liste des tâches
         List<Task> listTasks = targetKanban.getTasks();
-        // Initialiser la liste si elle est null
         if (listTasks == null) {
             listTasks = new java.util.ArrayList<>();
         }
         listTasks.add(newTask);
-        targetKanban.modifyHashmap(listTasks, col);
+        
+        // Ajouter la tâche à la colonne dans taskColumn
+        if (col != null) {
+            java.util.HashMap<Column, List<Task>> taskColumn = targetKanban.getTaskColumn();
+            if (taskColumn == null) {
+                taskColumn = new java.util.HashMap<>();
+            }
+            
+            // Trouver la colonne par ID dans taskColumn (au cas où l'objet Column serait différent)
+            Column targetCol = null;
+            UUID colId = col.getId();
+            for (Column c : taskColumn.keySet()) {
+                if (c != null && c.getId() != null && c.getId().equals(colId)) {
+                    targetCol = c;
+                    break;
+                }
+            }
+            
+            // Si la colonne n'existe pas dans taskColumn, utiliser celle passée en paramètre
+            if (targetCol == null) {
+                targetCol = col;
+            }
+            
+            // Ajouter la tâche à la colonne
+            List<Task> columnTasks = taskColumn.getOrDefault(targetCol, new java.util.ArrayList<>());
+            // S'assurer que la tâche n'est pas déjà dans la colonne (au cas où)
+            columnTasks.removeIf(t -> t.getId().equals(newTask.getId()));
+            columnTasks.add(newTask);
+            taskColumn.put(targetCol, columnTasks);
+            targetKanban.setTaskColumn(taskColumn);
+        }
+        
+        // Mettre à jour directement la liste des tâches
+        // IMPORTANT: Ne pas utiliser setTasks() car elle utilise getColumnFromTask() qui peut
+        // réajouter la tâche dans une mauvaise colonne si taskColumn n'est pas synchronisé
+        // On met à jour directement le champ tasks
         targetKanban.setTasks(listTasks);
+        
         return targetKanban;
     }
     
