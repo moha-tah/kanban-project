@@ -47,11 +47,61 @@ public class ModifyTask extends Modification {
                 .filter(t -> t.getId().equals(task.getId()))
                 .findFirst()
                 .orElse(null);
-        //supprimer la tache avec le meme id
+        
+        // Trouver la colonne actuelle de la tâche AVANT de la retirer
+        Column currentColumn = targetKanban.getColumnFromTask(task.getId());
+        
+        // Supprimer la tâche de la liste
         taskList.removeIf(t -> t.getId().equals(task.getId()));
-        //ajouter la tache modifiée
+        
+        // Retirer la tâche de l'ancienne colonne dans taskColumn
+        if (currentColumn != null) {
+            java.util.HashMap<Column, List<Task>> taskColumn = targetKanban.getTaskColumn();
+            List<Task> columnTasks = taskColumn.get(currentColumn);
+            if (columnTasks != null) {
+                columnTasks.removeIf(t -> t.getId().equals(task.getId()));
+                taskColumn.put(currentColumn, columnTasks);
+            }
+        }
+        
+        // Ajouter la tâche modifiée à la liste
         taskList.add(task);
+        
+        // Ajouter la tâche modifiée à la colonne actuelle dans taskColumn
+        if (currentColumn != null) {
+            java.util.HashMap<Column, List<Task>> taskColumn = targetKanban.getTaskColumn();
+            List<Task> columnTasks = taskColumn.getOrDefault(currentColumn, new java.util.ArrayList<>());
+            // Vérifier que la tâche n'est pas déjà dans la liste (au cas où)
+            columnTasks.removeIf(t -> t.getId().equals(task.getId()));
+            columnTasks.add(task);
+            taskColumn.put(currentColumn, columnTasks);
+            targetKanban.setTaskColumn(taskColumn);
+        }
+        
+        // Mettre à jour la liste des tâches
+        // IMPORTANT: Ne pas utiliser setTasks() car elle utilise getColumnFromTask() qui peut
+        // trouver l'ancienne colonne si la HashMap n'est pas synchronisée
+        // On met à jour directement la liste et on s'assure que taskColumn est déjà à jour
         targetKanban.setTasks(taskList);
+        
+        // S'assurer que la tâche n'est que dans la colonne actuelle
+        // Retirer la tâche de toutes les autres colonnes
+        if (currentColumn != null) {
+            java.util.HashMap<Column, List<Task>> taskColumn = targetKanban.getTaskColumn();
+            for (java.util.Map.Entry<Column, List<Task>> entry : taskColumn.entrySet()) {
+                Column col = entry.getKey();
+                if (!col.getId().equals(currentColumn.getId())) {
+                    List<Task> columnTasks = entry.getValue();
+                    if (columnTasks != null) {
+                        boolean removed = columnTasks.removeIf(t -> t.getId().equals(task.getId()));
+                        if (removed) {
+                            taskColumn.put(col, columnTasks);
+                        }
+                    }
+                }
+            }
+            targetKanban.setTaskColumn(taskColumn);
+        }
         return targetKanban;
     }
     
