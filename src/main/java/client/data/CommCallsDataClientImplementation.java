@@ -110,11 +110,51 @@ public class CommCallsDataClientImplementation implements ComCallsDataClient{
 
         ClientModel model = provider.getMyModel();
         Kanban kanban = model.getCurrentKanban();
+        if (kanban == null) {
+            System.out.println("[CLIENT] saveModifiedKanban: kanban is null, skipping");
+            return;
+        }
         UUID modificationInitialTargetId = modification.getLightTargetKanban().getId();
         UUID currentKanbanId = kanban.getId();
         System.out.println("[CLIENT] Current kanban ID=" + currentKanbanId + ", Modification target kanban ID=" + modificationInitialTargetId);
         if(modificationInitialTargetId.equals(currentKanbanId)  ){
             modification.execute(kanban);
+            
+            // Si c'est une AddUserToTask, compléter les informations utilisateur
+            if (modification instanceof common.dataClasses.AddUserToTask) {
+                common.dataClasses.AddUserToTask addUserMod = (common.dataClasses.AddUserToTask) modification;
+                UUID userId = addUserMod.getUserId();
+                UUID taskId = addUserMod.getTaskId();
+                
+                // Chercher l'utilisateur dans la liste des utilisateurs connectés
+                List<LightUser> connectedUsers = model.getConnectedUsers();
+                if (connectedUsers != null) {
+                    LightUser fullUser = connectedUsers.stream()
+                            .filter(u -> u.getId().equals(userId))
+                            .findFirst()
+                            .orElse(null);
+                    
+                    if (fullUser != null) {
+                        // Trouver la tâche et mettre à jour l'utilisateur avec les bonnes informations
+                        common.dataClasses.Task task = kanban.getTasks().stream()
+                                .filter(t -> t.getId().equals(taskId))
+                                .findFirst()
+                                .orElse(null);
+                        
+                        if (task != null && task.getAffectedUsers() != null) {
+                            // Remplacer l'utilisateur temporaire par l'utilisateur complet
+                            for (int i = 0; i < task.getAffectedUsers().size(); i++) {
+                                LightUser user = task.getAffectedUsers().get(i);
+                                if (user.getId().equals(userId)) {
+                                    task.getAffectedUsers().set(i, fullUser);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            
             model.setCurrentKanban(kanban);
             provider.setMyModel(model);
             // Ne pas appeler updateKanban ici - deliverNotification s'en chargera

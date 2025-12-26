@@ -17,6 +17,7 @@ import client.MainApp;
 import client.ihmKanban.kanbanCorps;
 import client.ihmMain.MainCore;
 import client.ihmMain.controllers.UserCardController;
+import common.dataClasses.AddUserToTask;
 import common.dataClasses.Column;
 import common.dataClasses.CreateColumn;
 import common.dataClasses.CreateTask;
@@ -83,7 +84,21 @@ public class DisplayKanbanController implements Initializable {
         this.columns = columns;
         this.taskCreations = taskCreations;
         this.manageDisplay = manageDisplay;
+        updateTaskUsers();
         renderKanban();
+    }
+    
+    private void updateTaskUsers() {
+        // Mettre à jour taskUsers avec les utilisateurs affectés de chaque tâche
+        if (corps != null && corps.getCurrentKanban() != null) {
+            common.dataClasses.Kanban fullKanban = corps.getCurrentKanban();
+            taskUsers.clear();
+            for (Task task : fullKanban.getTasks()) {
+                if (task.getAffectedUsers() != null && !task.getAffectedUsers().isEmpty()) {
+                    taskUsers.put(task.getId(), task.getAffectedUsers());
+                }
+            }
+        }
     }
 
     @FXML
@@ -472,7 +487,7 @@ public class DisplayKanbanController implements Initializable {
                     if (isAddMode) {
                         Button addBtn = new Button("ADD");
                         addBtn.setOnAction(e -> {
-                            //corps.getCommPort().sendRequestModification(corps.getMe(), new AddUserToTask(task.getId(), user.getId()));
+                            corps.getCommPort().sendRequestModification(corps.getMe(), new AddUserToTask(task.getId(), user.getId(), kanban));
                             popup.hide();
                         });
                         row.getChildren().add(addBtn);

@@ -139,14 +139,18 @@ public class Kanban extends LightKanban {
                 // Si on a trouvé la colonne, utiliser celle-là, sinon utiliser celle retournée par getColumnFromTask
                 if (targetCol != null) {
                     List<Task> taskList = taskColumn.getOrDefault(targetCol, new ArrayList<>());
-                    if (!taskList.contains(task)){
+                    // Vérifier par ID au lieu de contains() pour éviter les problèmes de référence
+                    boolean taskExists = taskList.stream().anyMatch(t -> t.getId().equals(task.getId()));
+                    if (!taskExists){
                         taskList.add(task);
                         taskColumn.put(targetCol, taskList);
                     }
                 } else {
                     // Si la colonne n'existe pas dans taskColumn, l'ajouter
                     List<Task> taskList = taskColumn.getOrDefault(col, new ArrayList<>());
-                    if (!taskList.contains(task)){
+                    // Vérifier par ID au lieu de contains() pour éviter les problèmes de référence
+                    boolean taskExists = taskList.stream().anyMatch(t -> t.getId().equals(task.getId()));
+                    if (!taskExists){
                         taskList.add(task);
                         taskColumn.put(col, taskList);
                     }
