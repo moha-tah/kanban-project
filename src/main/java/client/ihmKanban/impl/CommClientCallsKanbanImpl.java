@@ -29,15 +29,31 @@ public class CommClientCallsKanbanImpl implements CommClientCallsKanban {
         // Vérifier si la notification concerne le kanban actuellement affiché
         Kanban currentKanban = corps.getCurrentKanban();
         if (currentKanban != null && currentKanban.getId().equals(idKanban.getId())) {
-            LOGGER.log(Level.INFO, "[Comm->kanban] Modification du kanban affiché, application locale de la modification");
+            LOGGER.log(Level.INFO, "[Comm->kanban] Modification du kanban affiché, récupération du kanban modifié depuis le ClientModel");
             try {
-                // Appliquer la modification au kanban courant localement
-                //Kanban updatedKanban = modification.execute(currentKanban);
-                LOGGER.log(Level.INFO, "[Comm->kanban] Modification appliquée avec succès, rafraîchissement de l'affichage");
-                // Rafraîchir l'affichage sur le thread JavaFX
-                Platform.runLater(() -> {
-                    corps.updateKanban(currentKanban);
-                });
+                // Récupérer le kanban modifié depuis le ClientModel (modifié par saveModifiedKanban)
+                // au lieu d'utiliser celui de kanbanCorps qui pourrait être obsolète
+                if (corps.getDataPort() != null) {
+                    Kanban updatedKanban = corps.getDataPort().getLocalKanban();
+                    if (updatedKanban != null && updatedKanban.getId().equals(idKanban.getId())) {
+                        // Mettre à jour le kanban dans kanbanCorps avec la version modifiée
+                        corps.setCurrentKanban(updatedKanban);
+                        LOGGER.log(Level.INFO, "[Comm->kanban] Modification appliquée avec succès, rafraîchissement de l'affichage");
+                        // Rafraîchir l'affichage sur le thread JavaFX
+                        Platform.runLater(() -> {
+                            corps.updateKanban(updatedKanban);
+                        });
+                    } else {
+                        LOGGER.log(Level.WARNING, "[Comm->kanban] Impossible de récupérer le kanban modifié depuis le ClientModel (updatedKanban={0}, idKanban={1})", 
+                                new Object[]{updatedKanban != null ? updatedKanban.getId() : "null", idKanban.getId()});
+                    }
+                } else {
+                    LOGGER.log(Level.WARNING, "[Comm->kanban] dataPort est null, utilisation du kanban de kanbanCorps");
+                    // Fallback : utiliser le kanban de kanbanCorps (peut être obsolète)
+                    Platform.runLater(() -> {
+                        corps.updateKanban(currentKanban);
+                    });
+                }
             } catch (Exception e) {
                 LOGGER.log(Level.SEVERE, "[Comm->kanban] Erreur lors de l'application de la modification", e);
             }

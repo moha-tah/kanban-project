@@ -60,6 +60,10 @@ public class CreateTask extends Modification {
         Column col = targetKanban.getColumnFromID(targetColumn);
         this.previousTaskId = newTask.getId();
         List<Task> listTasks = targetKanban.getTasks();
+        // Initialiser la liste si elle est null
+        if (listTasks == null) {
+            listTasks = new java.util.ArrayList<>();
+        }
         listTasks.add(newTask);
         targetKanban.modifyHashmap(listTasks, col);
         targetKanban.setTasks(listTasks);

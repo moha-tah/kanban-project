@@ -1,7 +1,6 @@
 package client.data;
 
 import client.interfaces.ComCallsDataClient;
-import client.interfaces.DataClientCallsKanban;
 import common.dataClasses.Kanban;
 import common.dataClasses.LightKanban;
 import common.dataClasses.LightUser;
@@ -118,8 +117,8 @@ public class CommCallsDataClientImplementation implements ComCallsDataClient{
             modification.execute(kanban);
             model.setCurrentKanban(kanban);
             provider.setMyModel(model);
-            DataClientCallsKanban kanbanAccess = provider.getKanbanInterface();
-            kanbanAccess.updateKanban(kanban);
+            // Ne pas appeler updateKanban ici - deliverNotification s'en chargera
+            // pour éviter le double rafraîchissement
             KanbanCallsDataImplementation.saveKanbanAsJson(kanban);
         }
         System.out.println("================================================================================================================");

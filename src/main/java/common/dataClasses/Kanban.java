@@ -76,8 +76,9 @@ public class Kanban extends LightKanban {
     }
 
     public Column getColumnFromID(UUID columnId){
+        if (columnId == null || columns == null) return null;
         for (Column col : columns){
-            if (col.getId() == columnId){
+            if (col.getId() != null && col.getId().equals(columnId)){
                 return col;
             }
         }
@@ -136,12 +137,29 @@ public class Kanban extends LightKanban {
 
     public void setColumns(List<Column> columns) {
         this.columns = columns;
-        //Mettre à jour le hashmap des colonnes
-        for (Column col : columns){
-            if (!taskColumn.containsKey(col)){
-                taskColumn.put(col, new ArrayList<>());
-            }
+        // Reconstruire taskColumn en utilisant les objets Column de la liste columns
+        // pour garantir la cohérence entre columns et taskColumn
+        if (taskColumn == null) {
+            taskColumn = new HashMap<>();
         }
+        HashMap<Column, List<Task>> newTaskColumn = new HashMap<>();
+        // Préserver les tâches existantes en les trouvant par ID
+        for (Column col : columns) {
+            List<Task> existingTasks = null;
+            // Chercher les tâches existantes pour cette colonne par ID
+            UUID colId = col.getId();
+            if (colId != null) {
+                for (Map.Entry<Column, List<Task>> entry : taskColumn.entrySet()) {
+                    Column oldCol = entry.getKey();
+                    if (oldCol != null && oldCol.getId() != null && oldCol.getId().equals(colId)) {
+                        existingTasks = entry.getValue();
+                        break;
+                    }
+                }
+            }
+            newTaskColumn.put(col, existingTasks != null ? existingTasks : new ArrayList<>());
+        }
+        this.taskColumn = newTaskColumn;
     }
     
     public void modifyHashmap(List<Task> tasks, Column col){
@@ -157,7 +175,21 @@ public class Kanban extends LightKanban {
    
     // Méthode utilitaire pour obtenir toutes les tâches d'une colonne
     public List<Task> getTasksFromColumn(Column column) {
-        return taskColumn.getOrDefault(column, new ArrayList<>());
+        if (column == null || taskColumn == null) {
+            return new ArrayList<>();
+        }
+        // Chercher par ID au lieu de par référence d'objet
+        UUID columnId = column.getId();
+        if (columnId == null) {
+            return new ArrayList<>();
+        }
+        for (Map.Entry<Column, List<Task>> entry : taskColumn.entrySet()) {
+            Column col = entry.getKey();
+            if (col != null && col.getId() != null && col.getId().equals(columnId)) {
+                return entry.getValue();
+            }
+        }
+        return new ArrayList<>();
     }
     
     // Méthode utilitaire pour obtenir toutes les colonnes

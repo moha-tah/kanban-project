@@ -40,9 +40,11 @@ public class ManageDisplay {
     }
 
     public void refreshKanban(Kanban kanban) {
-
-        this.openKanbanScreen(kanban, homeViewController);
-        LOGGER.info("[Kanban] Refresh kanban : ");
+        // S'assurer que les modifications UI sont faites sur le thread JavaFX
+        Platform.runLater(() -> {
+            this.openKanbanScreen(kanban, homeViewController);
+            LOGGER.info("[Kanban] Refresh kanban : ");
+        });
     }
 
 
@@ -89,16 +91,25 @@ public class ManageDisplay {
 }
 
     public void openKanbanScreen(Kanban kanban, HomeViewController homeController) {
-    try {
-        setHomeViewController(homeController);
-        Parent kanbanView = buildKanbanView(kanban);
-        homeController.getKanbanArea().setContent(kanbanView);
-
-    } catch (IOException | IllegalStateException e) {
-        LOGGER.log(Level.INFO, 
-            "Erreur lors de l'ouverture de l'écran Kanban : {0}", e.getMessage());
+        // Vérifier si on est déjà sur le thread JavaFX
+        if (Platform.isFxApplicationThread()) {
+            openKanbanScreenInternal(kanban, homeController);
+        } else {
+            Platform.runLater(() -> openKanbanScreenInternal(kanban, homeController));
+        }
     }
-}
+    
+    private void openKanbanScreenInternal(Kanban kanban, HomeViewController homeController) {
+        try {
+            setHomeViewController(homeController);
+            Parent kanbanView = buildKanbanView(kanban);
+            homeController.getKanbanArea().setContent(kanbanView);
+
+        } catch (IOException | IllegalStateException e) {
+            LOGGER.log(Level.INFO, 
+                "Erreur lors de l'ouverture de l'écran Kanban : {0}", e.getMessage());
+        }
+    }
 
 
     public void openKanbanScreenFromProfile(

@@ -80,15 +80,28 @@ public class MoveTask extends Modification {
             }
         }
         //Ajouter la valeur à la nouvelle colonne
+        Column targetCol = null;
         for (Column col: taskColumn.keySet()){
             if(col.getId().equals(targetColumn)){
-                List<Task> taskList = taskColumn.get(col);
-                if (taskToMove != null) {
-                    taskList.add(taskToMove);
-                }
-                taskColumn.put(col, taskList);
+                targetCol = col;
                 break;
             }
+        }
+        // Si la colonne cible n'existe pas dans la HashMap, la chercher dans les colonnes du kanban
+        if (targetCol == null) {
+            targetCol = targetKanban.getColumnFromID(targetColumn);
+            if (targetCol != null) {
+                // Initialiser la liste de tâches pour cette colonne si elle n'existe pas
+                taskColumn.put(targetCol, new java.util.ArrayList<>());
+            }
+        }
+        if (targetCol != null && taskToMove != null) {
+            List<Task> taskList = taskColumn.get(targetCol);
+            if (taskList == null) {
+                taskList = new java.util.ArrayList<>();
+            }
+            taskList.add(taskToMove);
+            taskColumn.put(targetCol, taskList);
         }
         targetKanban.setTaskColumn(taskColumn);   
         return targetKanban;
@@ -109,3 +122,4 @@ public class MoveTask extends Modification {
                 '}';
     }
 }
+
