@@ -3,6 +3,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import client.ihmMain.MainCore;
+import client.interfaces.MainCallsDataClient;
 import common.dataClasses.Kanban;
 import common.dataClasses.User;
 import javafx.fxml.FXML;
@@ -181,6 +182,11 @@ public class KanbanCardController {
     @FXML
     private void handleDelete() {
         LOGGER.log(Level.WARNING, "[DELETE] Kanban: {0}", title);
+        MainCallsDataClient dataPort = core.getDataPort();
+        dataPort.askDeleteKanban(kanban.getLightKanban());
+        
+        // Rafraîchir l'affichage après suppression
+        HomeViewController.getInstance().refreshKanbansFromModel();
     }
     
 

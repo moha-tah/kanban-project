@@ -157,6 +157,21 @@ public class KanbanCallsDataImplementation implements KanbanCallsDataClient {
         }
     }
 
+    // Supprime un Kanban depuis data/kanbans/{kanbanId}.json
+    public static void deleteKanbanFromJson(UUID kanbanId) {
+        try {
+            Path kanbanDir = Paths.get("data", "kanbans");
+            Path file = kanbanDir.resolve(kanbanId.toString() + ".json");
+
+            if (Files.exists(file)) {
+                Files.delete(file);
+                System.out.println("Kanban file deleted: " + file.toString());
+            }
+        } catch (java.io.IOException e) {
+            System.err.println("Failed to delete kanban file: " + e.getMessage());
+        }
+    }
+
     /**
      * Charge tous les kanbans d'un utilisateur basé sur la liste d'IDs
      * Utilisé au démarrage de l'application pour charger les kanbans de l'utilisateur connecté

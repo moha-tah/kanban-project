@@ -5,14 +5,19 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 import client.interfaces.MainCallsDataClient;
-import common.dataClasses.*;
-
-import java.util.List;
-import java.util.UUID;
-import java.util.HashMap;
+import common.dataClasses.Access;
+import common.dataClasses.Kanban;
+import common.dataClasses.LightKanban;
+import common.dataClasses.LightUser;
+import common.dataClasses.SecureUser;
+import common.dataClasses.User;
 
 public class MainCallsDataImplementation implements MainCallsDataClient {
     private DataClientProvider provider;
@@ -531,5 +536,19 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
     }
     public void setProvider(DataClientProvider provider) {
         this.provider = provider;
+    }
+
+    @Override
+    public void askDeleteKanban(LightKanban kanban) {
+        LightUser LightUserId = getMyLightUser();
+        provider.getCommInterface().askDeleteKanban(kanban, LightUserId);
+        ClientModel model = provider.getMyModel();
+        
+        List<Kanban> myKanbans = model.getLocalUser().getMyKanban();
+        myKanbans.removeIf(k -> k.getId().equals(kanban.getId()));
+        model.getLocalUser().setMyKanban(myKanbans);
+        
+        // Supprimer le fichier JSON local
+        KanbanCallsDataImplementation.deleteKanbanFromJson(kanban.getId());
     }
 }

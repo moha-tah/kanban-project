@@ -31,4 +31,6 @@ public interface MainCallsDataClient {
 
     Void modifyLocalUser (String newFirstName, String newLastName, LocalDate newBirthDate, String newAvatar, String newUsername);
     void deleteLocalProfile();
+
+    void askDeleteKanban(LightKanban kanban);
 }
