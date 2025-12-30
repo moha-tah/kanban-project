@@ -93,9 +93,12 @@ public class DisplayKanbanController implements Initializable {
         if (corps != null && corps.getCurrentKanban() != null) {
             common.dataClasses.Kanban fullKanban = corps.getCurrentKanban();
             taskUsers.clear();
-            for (Task task : fullKanban.getTasks()) {
-                if (task.getAffectedUsers() != null && !task.getAffectedUsers().isEmpty()) {
-                    taskUsers.put(task.getId(), task.getAffectedUsers());
+            List<Task> tasks = fullKanban.getTasks();
+            if (tasks != null) {
+                for (Task task : tasks) {
+                    if (task.getAffectedUsers() != null && !task.getAffectedUsers().isEmpty()) {
+                        taskUsers.put(task.getId(), task.getAffectedUsers());
+                    }
                 }
             }
         }
@@ -108,10 +111,15 @@ public class DisplayKanbanController implements Initializable {
     }
 
     private void renderKanban() {
-        if (kanban == null || columns == null) return;
-
+        if (kanban == null) return;
+        
         kanbanTitleLabel.setText(kanban.getTitle());
         columnsContainer.getChildren().clear();
+        
+        if (columns == null || columns.isEmpty()) {
+            return;
+        }
+        
         columns.sort(Comparator.comparingInt(Column::getNumber));
 
         for (Column col : columns) {

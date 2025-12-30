@@ -73,12 +73,18 @@ public class ManageDisplay {
     
     // Colonnes
     List<Column> cols = kanban.getColumns();
+    if (cols == null) {
+        cols = new ArrayList<>();
+    }
 
     // Tasks & CreateTask
     List<CreateTask> taskCreations = new ArrayList<>();
     for (Column col : cols) {
-        for (Task t : kanban.getTasksFromColumn(col)) {
-            taskCreations.add(new CreateTask(t, col.getId()));
+        List<Task> tasks = kanban.getTasksFromColumn(col);
+        if (tasks != null) {
+            for (Task t : tasks) {
+                taskCreations.add(new CreateTask(t, col.getId()));
+            }
         }
     }
 
