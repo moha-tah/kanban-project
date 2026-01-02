@@ -1,14 +1,16 @@
 package client.ihmMain.controllers;
 
 import java.io.IOException;
-import java.util.*;
-import java.util.logging.Logger;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import client.MainApp;
-import client.ihmMain.MainCore;
 import client.data.KanbanCallsDataImplementation;
 import client.ihmKanban.controllers.DisplayKanbanController;
+import client.ihmMain.MainCore;
 import common.dataClasses.Kanban;
 import common.dataClasses.LightKanban;
 import common.dataClasses.User;
@@ -23,10 +25,10 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import javafx.scene.effect.DropShadow;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
@@ -136,11 +138,13 @@ public class HomeViewController {
         btnRefuse.setOnAction(e -> {
             handleDecision(requester, kanban, false);
             notifContainer.getChildren().remove(card);
+            if (notifVisible) toggleNotif();
         });
 
         btnAccept.setOnAction(e -> {
             handleDecision(requester, kanban, true);
             notifContainer.getChildren().remove(card);
+            if (notifVisible) toggleNotif();
         });
 
         buttons.getChildren().addAll(btnRefuse, btnAccept);

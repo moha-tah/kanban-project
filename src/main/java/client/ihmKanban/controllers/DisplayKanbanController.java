@@ -153,7 +153,7 @@ public class DisplayKanbanController implements Initializable {
         if (taskCreations != null) {
             for (CreateTask ct : taskCreations) {
                 if (ct.getTargetColumn().equals(colId)) {
-                    tasksBox.getChildren().add(createTaskCard(ct.getNewTask()));
+                    tasksBox.getChildren().add(createTaskCard(ct.getNewTask(), col));
                 }
             }
         }
@@ -162,7 +162,7 @@ public class DisplayKanbanController implements Initializable {
         return columnBox;
     }
 
-    private VBox createTaskCard(Task task) {
+    private VBox createTaskCard(Task task, Column column) {
         VBox card = new VBox(5);
         card.setPadding(new Insets(8));
         card.setStyle("-fx-background-color: white; -fx-background-radius: 6;");
@@ -179,8 +179,10 @@ public class DisplayKanbanController implements Initializable {
         desc.setWrapText(true);
         desc.setStyle("-fx-font-size: 11; -fx-text-fill: gray;");
 
-        Button statusBtn = new Button("STATUS ▼");
-        statusBtn.setStyle("-fx-background-color: #ffa500; -fx-text-fill: white; -fx-font-size: 10;");
+        String columnColor = column != null && column.getColor() != null ? column.getColor() : "#ffa500";
+        String columnTitle = column != null ? column.getTitle() : "STATUS";
+        Button statusBtn = new Button(columnTitle + " ▼");
+        statusBtn.setStyle("-fx-background-color: " + columnColor + "; -fx-text-fill: white; -fx-font-size: 10;");
         statusBtn.setOnAction(e -> onStatusClick(task, statusBtn));
 
         card.getChildren().addAll(topRow, title, desc, statusBtn);
@@ -297,7 +299,10 @@ public class DisplayKanbanController implements Initializable {
             addPopupButton(box, col.getTitle(), col.getColor() != null ? col.getColor() : "#5D8BF4", "white", () -> {
                 LOGGER.log(Level.INFO, "Change status of task ''{0}'' to column ''{1}''", new Object[]{task.getTitle(), col.getTitle()});
                 statusBtn.setText(col.getTitle() + " ▼");
+                String columnColor = col.getColor() != null ? col.getColor() : "#5D8BF4";
+                statusBtn.setStyle("-fx-background-color: " + columnColor + "; -fx-text-fill: white; -fx-font-size: 10;");
                 corps.getCommPort().sendRequestModification(corps.getMe(), new MoveTask(task.getId(), col.getId(), kanban));
+                popup.hide();
             });
         }
         showPopupNearNode(popup, statusBtn);

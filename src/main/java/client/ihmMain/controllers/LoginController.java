@@ -1,24 +1,27 @@
 package client.ihmMain.controllers;
 
-import client.MainApp;
-import client.ihmMain.MainCore;
-import client.interfaces.MainCallsDataClient;
-import client.interfaces.IhmMainCallsComm;
-import common.dataClasses.Kanban;
-import common.dataClasses.LightKanban;
-import common.dataClasses.LightUser;
-import common.dataClasses.User;
-import javafx.fxml.FXML;
-import javafx.scene.control.*;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import client.MainApp;
+import client.ihmMain.MainCore;
 import static client.ihmMain.utils.UiFormUtils.safe;
 import static client.ihmMain.utils.UiFormUtils.showError;
+import client.interfaces.IhmMainCallsComm;
+import client.interfaces.MainCallsDataClient;
+import common.dataClasses.Kanban;
+import common.dataClasses.LightKanban;
+import common.dataClasses.LightUser;
+import common.dataClasses.User;
+import javafx.fxml.FXML;
+import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 
 public class LoginController {
 
@@ -37,6 +40,24 @@ public class LoginController {
         if (errorLabel != null) errorLabel.setVisible(false);
         if (ipField != null) ipField.setText("127.0.0.1");
         if (portField != null) portField.setText("8080");
+        
+        // Ajouter un listener pour la touche Entrée sur tous les champs
+        setupEnterKeyListener(usernameField);
+        setupEnterKeyListener(passwordField);
+        setupEnterKeyListener(ipField);
+        setupEnterKeyListener(portField);
+    }
+    
+    private void setupEnterKeyListener(TextField field) {
+        if (field != null) {
+            field.setOnKeyPressed(this::handleEnterKey);
+        }
+    }
+    
+    private void handleEnterKey(KeyEvent event) {
+        if (event.getCode() == KeyCode.ENTER) {
+            onLogin();
+        }
     }
 
     @FXML

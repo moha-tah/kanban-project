@@ -183,7 +183,36 @@ public class ComCallsDataServImplementation implements CommCallsDataServer {
 
     @Override
     public void askDeleteKanban(LightUser user, LightKanban kanban) {
-        // TODO : Implémenter la suppression
+        if (user == null || kanban == null || myProvider == null) return;
+        
+        ServerModel model = myProvider.getModel();
+        List<Kanban> kanbans = model.getInUseKanbans();
+        
+        // Trouver le kanban à supprimer
+        Kanban targetKanban = kanbans.stream()
+                .filter(k -> k.getId().equals(kanban.getId()))
+                .findFirst()
+                .orElse(null);
+        
+        if (targetKanban != null) {
+            // Vérifier si l'utilisateur est le créateur du kanban
+            if (targetKanban.getCreatorId() != null && targetKanban.getCreatorId().equals(user.getId())) {
+                // L'utilisateur est le créateur : supprimer complètement le kanban
+                kanbans.remove(targetKanban);
+                System.out.println("SERVER: Kanban supprimé par le créateur : " + targetKanban.getTitle());
+            } else {
+                // L'utilisateur n'est pas le créateur : juste retirer son accès
+                if (targetKanban.getAccessList() != null) {
+                    targetKanban.getAccessList().removeIf(access -> 
+                        access.getUser() != null && access.getUser().getId().equals(user.getId()));
+                    saveKanban(targetKanban);
+                    System.out.println("SERVER: Utilisateur retiré de l'accessList du kanban : " + targetKanban.getTitle());
+                }
+            }
+            
+            // Notifier tous les clients de la mise à jour
+            server.comm.CommCoreServer.triggerBroadcast();
+        }
     }
 
     // C'était la méthode manquante qui causait l'erreur ligne 14

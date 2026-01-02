@@ -20,6 +20,10 @@ public class SendKanban extends Message {
         try {
             System.out.println("[SendKanban] Received Kanban from server: " + kanban.getTitle() + " (ID: " + kanban.getId() + ")");
             
+            // Sauvegarder le kanban localement pour persister les modifications (notamment l'accessList)
+            client.data.KanbanCallsDataImplementation.saveKanbanAsJson(kanban);
+            System.out.println("[SendKanban] Kanban saved locally");
+            
             // COMM appelle directement displayKanban sur IHM Kanban
             //this.getClientContext().getKanbanComm().displayKanban(this.kanban); a décommenter par la suite 
             
