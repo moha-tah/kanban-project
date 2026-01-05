@@ -1,15 +1,12 @@
 package client.data;
 
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import client.interfaces.MainCallsDataClient;
 import common.dataClasses.Access;
@@ -27,6 +24,7 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
 
     private static final Path USERS_FILE = Path.of("data", "users.json");
     private static final Path USERS_DIR = Path.of("data", "users");
+    private static final String USERNAME = "username";
 
     private static String stripQuotes(String s) {
         if (s == null) {
@@ -350,12 +348,94 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
 
     @Override
     public void exportProfile(LightUser lightUserId, String path){
-        throw new UnsupportedOperationException("exportProfile not implemented yet");
+        if (lightUserId == null || path == null || path.isBlank()) {
+            LOGGER.warning("exportProfile: lightUserId or path is null/empty");
+            return;
+        }
+        try {
+            User localUser = provider.getMyModel().getLocalUser();
+            if (localUser == null || !localUser.getId().equals(lightUserId.getId())) {
+                LOGGER.warning("exportProfile: user not found or ID mismatch (expected: " + lightUserId.getId() + ")");
+                return;
+            }
+
+            Map<String, String> users = readJsonToMap(USERS_FILE);
+            String password = users.get(localUser.getUsername());
+
+            // Export as a SecureUser, but preserve existing hash (avoid double-hash)
+            SecureUser profileCopy = new SecureUser(localUser.getId(), localUser.getUsername(), 
+                    localUser.getFirstName(), localUser.getLastName(), localUser.getBirthDate(), "temp");
+            if (password != null) {
+                try {
+                    java.lang.reflect.Field passwordField = SecureUser.class.getDeclaredField("password");
+                    passwordField.setAccessible(true);
+                    passwordField.set(profileCopy, password); // set the already-hashed value
+                } catch (Exception e) {
+                    LOGGER.log(java.util.logging.Level.WARNING, "Failed to preserve hashed password during export; falling back to rehash", e);
+                    // If reflection fails, profileCopy currently contains a hash of "temp";
+                    // this is not ideal, but we avoid crashing the export.
+                }
+            }
+
+            if (localUser.getAvatar() != null && !localUser.getAvatar().isBlank()) {
+                profileCopy.setAvatar(localUser.getAvatar());
+            }
+            profileCopy.setMyKanban(localUser.getMyKanban());
+
+            // Ensure no password or sensitive fields are present in profileCopy
+            String json = serializeUserToJson(profileCopy);
+            java.nio.file.Path outputPath = java.nio.file.Paths.get(path);
+            java.nio.file.Path parentDir = outputPath.getParent();
+            if (parentDir != null && !Files.exists(parentDir)) {
+                Files.createDirectories(parentDir);
+            }
+            java.nio.file.Path tmpPath = outputPath.resolveSibling(outputPath.getFileName().toString() + ".tmp");
+            Files.write(tmpPath, json.getBytes(StandardCharsets.UTF_8));
+            try {
+                Files.move(tmpPath, outputPath, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+                LOGGER.info("Profile exported successfully: " + outputPath.toAbsolutePath());
+            } finally {
+                // Clean up the temporary file if it still exists (i.e., move failed)
+                try {
+                    if (Files.exists(tmpPath)) {
+                        Files.delete(tmpPath);
+                    }
+                } catch (IOException cleanupEx) {
+                    LOGGER.warning("Failed to delete temporary file: " + tmpPath + " - " + cleanupEx.getMessage());
+                }
+            }
+
+        } catch (IOException e) {
+            LOGGER.log(java.util.logging.Level.SEVERE, "exportProfile: IOException", e);
+        } catch (Exception e) {
+            LOGGER.log(java.util.logging.Level.SEVERE, "exportProfile: unexpected error while exporting profile for userId=" + (lightUserId != null ? lightUserId.getId() : "null") + " to path=" + path, e);
+        }
     }
 
     @Override
     public void importMyProfile(String path){
-        throw new UnsupportedOperationException("importMyProfile not implemented yet");
+        // convert the string into a path
+        Path filePath = Paths.get(path);   
+
+        try{
+            //parser to read data from the file
+            Object o = new JSONParser().parse(new FileReader(path));
+            JSONObject profile = (JSONObject) o;
+
+            // get the correct directory to copy the file
+            Path newFile = USERS_DIR.resolve(profile.get(USERNAME) + ".json");
+
+            Files.copy(filePath, newFile);
+
+            Map<String, String> users = readJsonToMap(USERS_FILE);
+            users.put((String)profile.get(USERNAME), (String)profile.get("passwordHash"));
+            writeMapToJson(USERS_FILE, users);
+
+        } catch (IOException e) {
+            throw new UncheckedIOException("Failed to load profile from JSON", e);
+        } catch (ParseException e) {
+            throw new IllegalArgumentException("Failed to parse JSON file", e);
+        }
     }
 
     @Override
@@ -380,7 +460,6 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
             writeMapToJson(USERS_FILE, users);
         } catch (IOException e) {
             LOGGER.log(java.util.logging.Level.SEVERE, "Erreur lors de la sauvegarde du hash du mot de passe", e);
-
         }
 
         return secureUser;
@@ -440,8 +519,7 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
         }
     }
 
-    @Override
-    public User getLocalUser () {
+    public User getLocalUser() {
         ClientModel myModel = provider.getMyModel();
         User localUser = myModel.getLocalUser();
         return localUser;

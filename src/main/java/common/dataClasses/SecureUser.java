@@ -1,7 +1,9 @@
 package common.dataClasses;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.Arrays;
 import java.util.Base64;
 import java.time.LocalDate;
 import java.util.UUID;
@@ -35,6 +37,7 @@ public class SecureUser extends User {
 
     // Méthode pour vérifier un mot de passe
     public boolean verifyPassword(String inputPassword) {
+
         // Extraire le salt du hash stocké et utiliser le même salt pour vérifier
         try {
             byte[] combined = Base64.getDecoder().decode(this.password);
@@ -44,7 +47,7 @@ public class SecureUser extends User {
             // Hasher le mot de passe fourni avec le même salt
             MessageDigest md = MessageDigest.getInstance("SHA-256");
             md.update(salt);
-            byte[] hashedInput = md.digest(inputPassword.getBytes());
+            byte[] hashedInput = md.digest(inputPassword.getBytes(StandardCharsets.UTF_8));
 
             // Comparer avec le hash stocké (sans le salt)
             for (int i = 0; i < hashedInput.length; i++) {
@@ -68,7 +71,7 @@ public class SecureUser extends User {
             random.nextBytes(salt);
 
             md.update(salt);
-            byte[] hashedPassword = md.digest(password.getBytes());
+            byte[] hashedPassword = md.digest(password.getBytes(StandardCharsets.UTF_8));
 
             // Combiner le salt et le hash
             byte[] combined = new byte[salt.length + hashedPassword.length];
