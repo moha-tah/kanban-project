@@ -51,6 +51,26 @@ jobs:
       - name: Build and Copy Dependencies
         run: |
           mvn clean package dependency:copy-dependencies -DoutputDirectory=target/dist
-          copy target\kanban-project-1.0-SNAPSHOT.jar target\dist\
+          copy target/kanban-project-1.0-SNAPSHOT.jar target/dist/
 
-      - name: Create
+      # Crée l'exe pour le client
+      - name: Create Client Executable
+        run: |
+          jpackage --name KanbanClient --input target/dist --main-jar kanban-project-1.0-SNAPSHOT.jar --main-class client.MainApp --type app-image --win-console
+
+      # Crée l'exe pour le serveur
+      - name: Create Server Executable
+        run: |
+          jpackage --name KanbanServer --input target/dist --main-jar kanban-project-1.0-SNAPSHOT.jar --main-class server.ServerApp --type app-image --win-console
+
+      - name: Upload Client Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: KanbanClient-Windows
+          path: KanbanClient
+
+      - name: Upload Server Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: KanbanServer-Windows
+          path: KanbanServer
