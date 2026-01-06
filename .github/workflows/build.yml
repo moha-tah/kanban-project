@@ -2,7 +2,7 @@ name: Build Multi-OS
 
 on:
   push:
-    branches: ["main"]
+    branches: ["main","ver/fin","v3"]
   workflow_dispatch:
 
 jobs:
