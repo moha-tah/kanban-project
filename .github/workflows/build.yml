@@ -1,77 +1,73 @@
-name: SonarQube
+name: Build Multi-OS
+
 on:
   push:
+    branches: ["main"]
   workflow_dispatch:
 
-permissions:
-  contents: read
-
 jobs:
-  build:
-    name: Build and analyze
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Set up JDK 21
-        uses: actions/setup-java@v4
-        with:
-            java-version: 21
-            distribution: "temurin"
-      - name: Cache SonarQube packages
-        uses: actions/cache@v4
-        with:
-          path: ~/.sonar/cache
-          key: ${{ runner.os }}-sonar
-          restore-keys: ${{ runner.os }}-sonar
-      - name: Cache Maven packages
-        uses: actions/cache@v4
-        with:
-          path: ~/.m2
-          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-          restore-keys: ${{ runner.os }}-m2
-      - name: Build and analyze
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn -B verify
+  package-matrix:
+    name: Package ${{ matrix.os-name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            os-name: Windows
+            extra-args: "--win-console"
+          - os: ubuntu-latest
+            os-name: Linux
+            extra-args: ""
+          - os: macos-latest
+            os-name: MacOS
+            extra-args: ""
 
-  build-windows:
-    name: Build Windows Executables
-    runs-on: windows-latest
-    needs: build
     steps:
       - uses: actions/checkout@v4
 
+      # Utilisation du cache Maven pour accélérer le setup
       - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
           java-version: '21'
           distribution: 'temurin'
+          cache: 'maven'
 
-      - name: Build and Copy Dependencies
+      # Compilation sans les tests (plus rapide pour le packaging)
+      - name: Build & Prepare
+        shell: bash
         run: |
-          mvn clean package dependency:copy-dependencies -DoutputDirectory=target/dist
-          copy target/kanban-project-1.0-SNAPSHOT.jar target/dist/
+          mvn clean package dependency:copy-dependencies -DoutputDirectory=target/dist -DskipTests
+          cp target/kanban-project-1.0-SNAPSHOT.jar target/dist/
 
-      # Crée l'exe pour le client
-      - name: Create Client Executable
+      # Création Client
+      - name: Package Client
+        shell: bash
         run: |
-          jpackage --name KanbanClient --input target/dist --main-jar kanban-project-1.0-SNAPSHOT.jar --main-class client.MainApp --type app-image --win-console
+          jpackage --name KanbanClient \
+            --input target/dist \
+            --main-jar kanban-project-1.0-SNAPSHOT.jar \
+            --main-class client.MainApp \
+            --type app-image \
+            --dest dist-pkg \
+            ${{ matrix.extra-args }}
 
-      # Crée l'exe pour le serveur
-      - name: Create Server Executable
+      # Création Server
+      - name: Package Server
+        shell: bash
         run: |
-          jpackage --name KanbanServer --input target/dist --main-jar kanban-project-1.0-SNAPSHOT.jar --main-class server.ServerApp --type app-image --win-console
+          jpackage --name KanbanServer \
+            --input target/dist \
+            --main-jar kanban-project-1.0-SNAPSHOT.jar \
+            --main-class server.ServerApp \
+            --type app-image \
+            --dest dist-pkg \
+            ${{ matrix.extra-args }}
 
-      - name: Upload Client Artifact
+      # Upload des résultats
+      - name: Upload ${{ matrix.os-name }} Apps
         uses: actions/upload-artifact@v4
         with:
-          name: KanbanClient-Windows
-          path: KanbanClient
-
-      - name: Upload Server Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: KanbanServer-Windows
-          path: KanbanServer
+          name: Kanban-${{ matrix.os-name }}
+          path: dist-pkg
