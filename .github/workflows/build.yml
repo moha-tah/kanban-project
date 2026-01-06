@@ -2,7 +2,7 @@ name: Build Multi-OS
 
 on:
   push:
-    branches: ["main","ver/fin"]
+    branches: ["main"]
   workflow_dispatch:
 
 jobs:
@@ -26,7 +26,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Utilisation du cache Maven pour accélérer le setup
       - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
@@ -34,14 +33,13 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
 
-      # Compilation sans les tests (plus rapide pour le packaging)
       - name: Build & Prepare
         shell: bash
         run: |
           mvn clean package dependency:copy-dependencies -DoutputDirectory=target/dist -DskipTests
           cp target/kanban-project-1.0-SNAPSHOT.jar target/dist/
 
-      # Création Client
+      # Création du Client
       - name: Package Client
         shell: bash
         run: |
@@ -53,7 +51,7 @@ jobs:
             --dest dist-pkg \
             ${{ matrix.extra-args }}
 
-      # Création Server
+      # Création du Serveur
       - name: Package Server
         shell: bash
         run: |
@@ -65,9 +63,18 @@ jobs:
             --dest dist-pkg \
             ${{ matrix.extra-args }}
 
-      # Upload des résultats
-      - name: Upload ${{ matrix.os-name }} Apps
+      # --- MODIFICATION ICI : DEUX UPLOADS SÉPARÉS ---
+
+      # 1. Upload uniquement le Client
+      - name: Upload Client (${{ matrix.os-name }})
         uses: actions/upload-artifact@v4
         with:
-          name: Kanban-${{ matrix.os-name }}
-          path: dist-pkg
+          name: KanbanClient-${{ matrix.os-name }}
+          path: dist-pkg/KanbanClient* # Le '*' permet de prendre le dossier (Win/Linux) ou le .app (Mac)
+
+      # 2. Upload uniquement le Serveur
+      - name: Upload Server (${{ matrix.os-name }})
+        uses: actions/upload-artifact@v4
+        with:
+          name: KanbanServer-${{ matrix.os-name }}
+          path: dist-pkg/KanbanServer*
