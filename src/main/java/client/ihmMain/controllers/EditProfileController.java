@@ -146,7 +146,7 @@ public class EditProfileController {
             return;
         }
 
-        // Appel Data (la seule vraie source de vérité utilisateur)
+        // Appel Data
         core.getDataPort().modifyLocalUser(
                 newFirstName,
                 newLastName,
@@ -160,16 +160,13 @@ public class EditProfileController {
 
     @FXML
     private void handleDeleteAccount() {
-        // 1. Création de la boite de dialogue de confirmation
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Suppression de compte");
         alert.setHeaderText("Êtes-vous sûr de vouloir supprimer votre profil ?");
         alert.setContentText("Cette action est irréversible. Toutes vos données locales seront effacées.");
 
-        // 2. Attente de la réponse
         Optional<ButtonType> result = alert.showAndWait();
 
-        // 3. Si l'utilisateur clique sur OK
         if (result.isPresent() && result.get() == ButtonType.OK) {
             performDeletion();
         }
@@ -179,22 +176,13 @@ public class EditProfileController {
         if (core == null) return;
 
         try {
-            // A. Prévenir le serveur pour se déconnecter proprement avant de supprimer
             if (core.getMe() != null && core.getCommPort() != null) {
                 core.getCommPort().logout(core.getMe());
             }
 
-            // B. Appel à la couche Data pour supprimer le fichier
             core.getDataPort().deleteLocalProfile();
-
-            // C. Nettoyage de la mémoire vive (User courant = null)
             core.launchApp();
-
-            // D. Redirection vers la Landing Page (ou Login)
-            // On navigue vers l'accueil
             core.showLandingView();
-
-            System.out.println("Compte supprimé et redirection effectuée.");
 
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Erreur lors de la suppression du compte : {0}", e.getMessage());
@@ -203,10 +191,6 @@ public class EditProfileController {
             errorAlert.show();
         }
     }
-
-    // -------------------------------------------------------------------------------------
-    // ACTION : RETOUR
-    // -------------------------------------------------------------------------------------
 
     @FXML
     private void handleCancel() {
@@ -220,23 +204,18 @@ public class EditProfileController {
 
     private void goBack() {
         try {
-            // Charger le FXML Profil
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/profile.fxml"));
             Parent root = loader.load();
 
-            // Récupérer son contrôleur
             ProfileController controller = loader.getController();
 
-            // Injecter le core
             MainCore core = MainApp.getCore();
             controller.setCore(core);
 
-            // Injecter l’utilisateur courant (depuis Data, le vrai user complet)
             if (core != null && core.getDataPort() != null) {
                 controller.setUser(core.getDataPort().getMyLightUser());
             }
 
-            // Changer la scène
             Stage stage = (Stage) profileImageView.getScene().getWindow();
             stage.setTitle("Mon Profil");
             stage.setScene(new Scene(root, 1280, 720));

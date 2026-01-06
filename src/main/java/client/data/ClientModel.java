@@ -52,7 +52,7 @@ public class ClientModel {
     }
 
     public void addKanban(LightKanban lightKanban) {
-        if (!availableLightKanbans.contains(lightKanban)) {
+        if (availableLightKanbans != null && !availableLightKanbans.contains(lightKanban)) {
             availableLightKanbans.add(lightKanban);
         }
     }

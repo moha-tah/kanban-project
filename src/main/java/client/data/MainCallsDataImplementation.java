@@ -26,7 +26,7 @@ import common.dataClasses.User;
 public class MainCallsDataImplementation implements MainCallsDataClient {
     private DataClientProvider provider;
     private static final java.util.logging.Logger LOGGER =
-        java.util.logging.Logger.getLogger(MainCallsDataImplementation.class.getName());
+            java.util.logging.Logger.getLogger(MainCallsDataImplementation.class.getName());
 
 
     private static final Path USERS_FILE = Path.of("data", "users.json");
@@ -78,7 +78,7 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
 
             Files.write(userFile, json.getBytes(StandardCharsets.UTF_8));
         } catch (IOException e) {
-        LOGGER.log(java.util.logging.Level.SEVERE, "Erreur lors de la sauvegarde de l'utilisateur", e);
+            LOGGER.log(java.util.logging.Level.SEVERE, "Erreur lors de la sauvegarde de l'utilisateur", e);
         }
     }
 
@@ -106,8 +106,7 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
                 // 2. Met à jour l'utilisateur dans le modèle
                 provider.getMyModel().setLocalUser(user);
 
-                // 3. AJOUT CRITIQUE : Met à jour la liste des LightKanbans dans le modèle
-                // Cela permet au LoginController de récupérer la liste via getMyListLightKanbans()
+                // 3. Met à jour la liste des LightKanbans dans le modèle
                 List<LightKanban> lights = new ArrayList<>();
                 if (user.getMyKanban() != null) {
                     for (Kanban k : user.getMyKanban()) {
@@ -119,7 +118,7 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
 
             return isValid;
         } catch (Exception e) {
-        LOGGER.log(java.util.logging.Level.SEVERE, "Erreur lors de l'authentification de " + username, e);
+            LOGGER.log(java.util.logging.Level.SEVERE, "Erreur lors de l'authentification de " + username, e);
             return false;
         }
     }
@@ -369,18 +368,16 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
             Map<String, String> users = readJsonToMap(USERS_FILE);
             String password = users.get(localUser.getUsername());
 
-            // Export as a SecureUser, but preserve existing hash (avoid double-hash)
-            SecureUser profileCopy = new SecureUser(localUser.getId(), localUser.getUsername(), 
+            // Export as a SecureUser, but preserve existing hash
+            SecureUser profileCopy = new SecureUser(localUser.getId(), localUser.getUsername(),
                     localUser.getFirstName(), localUser.getLastName(), localUser.getBirthDate(), "temp");
             if (password != null) {
                 try {
                     java.lang.reflect.Field passwordField = SecureUser.class.getDeclaredField("password");
                     passwordField.setAccessible(true);
-                    passwordField.set(profileCopy, password); // set the already-hashed value
+                    passwordField.set(profileCopy, password);
                 } catch (Exception e) {
-                    LOGGER.log(java.util.logging.Level.WARNING, "Failed to preserve hashed password during export; falling back to rehash", e);
-                    // If reflection fails, profileCopy currently contains a hash of "temp";
-                    // this is not ideal, but we avoid crashing the export.
+                    LOGGER.log(java.util.logging.Level.WARNING, "Failed to preserve hashed password during export", e);
                 }
             }
 
@@ -389,7 +386,6 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
             }
             profileCopy.setMyKanban(localUser.getMyKanban());
 
-            // Ensure no password or sensitive fields are present in profileCopy
             String json = serializeUserToJson(profileCopy);
             java.nio.file.Path outputPath = java.nio.file.Paths.get(path);
             java.nio.file.Path parentDir = outputPath.getParent();
@@ -402,34 +398,30 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
                 Files.move(tmpPath, outputPath, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
                 LOGGER.info("Profile exported successfully: " + outputPath.toAbsolutePath());
             } finally {
-                // Clean up the temporary file if it still exists (i.e., move failed)
                 try {
                     if (Files.exists(tmpPath)) {
                         Files.delete(tmpPath);
                     }
                 } catch (IOException cleanupEx) {
-                    LOGGER.warning("Failed to delete temporary file: " + tmpPath + " - " + cleanupEx.getMessage());
+                    LOGGER.warning("Failed to delete temporary file: " + tmpPath);
                 }
             }
 
         } catch (IOException e) {
             LOGGER.log(java.util.logging.Level.SEVERE, "exportProfile: IOException", e);
         } catch (Exception e) {
-            LOGGER.log(java.util.logging.Level.SEVERE, "exportProfile: unexpected error while exporting profile for userId=" + (lightUserId != null ? lightUserId.getId() : "null") + " to path=" + path, e);
+            LOGGER.log(java.util.logging.Level.SEVERE, "exportProfile: unexpected error", e);
         }
     }
 
     @Override
     public void importMyProfile(String path){
-        // convert the string into a path
-        Path filePath = Paths.get(path);   
+        Path filePath = Paths.get(path);
 
         try{
-            //parser to read data from the file
             Object o = new JSONParser().parse(new FileReader(path));
             JSONObject profile = (JSONObject) o;
 
-            // get the correct directory to copy the file
             Path newFile = USERS_DIR.resolve(profile.get(USERNAME) + ".json");
 
             Files.copy(filePath, newFile);
@@ -476,17 +468,15 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
     public void addAuthorizedUserToKanban(LightUser user, LightKanban kanban) {
         if (user == null || kanban == null) {
             LOGGER.warning("addAuthorizedUserToKanban : user ou kanban est null");
-
             return;
         }
 
         try {
             // 1. Charger le kanban complet depuis le JSON
             Kanban fullKanban = KanbanCallsDataImplementation.loadKanbanFromJson(kanban);
-            
+
             if (fullKanban == null) {
                 LOGGER.warning("Kanban non trouvé pour l'ID : " + kanban.getId());
-
                 return;
             }
 
@@ -495,7 +485,6 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
                 fullKanban.setAccessList(new ArrayList<>());
             }
 
-            // Vérifier si l'utilisateur existe déjà
             boolean userExists = fullKanban.getAccessList().stream()
                     .anyMatch(access -> access.getUser() != null && access.getUser().getId().equals(user.getId()));
 
@@ -503,26 +492,32 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
                 // 3. Ajouter l'utilisateur à la accessList
                 Access newAccess = new Access(user, null);
                 fullKanban.getAccessList().add(newAccess);
-                
+
                 // 4. Sauvegarder le kanban mis à jour
                 KanbanCallsDataImplementation.saveKanbanAsJson(fullKanban);
-                
+
                 LOGGER.info("Utilisateur " + user.getUsername() + " ajouté au kanban " + fullKanban.getTitle());
 
-                // 5. Mettre à jour le kanban dans le modèle local si c'est le kanban actuel
+                // 5. Mettre à jour le kanban dans le modèle local
                 ClientModel model = provider.getMyModel();
                 Kanban currentKanban = model.getCurrentKanban();
                 if (currentKanban != null && currentKanban.getId().equals(fullKanban.getId())) {
-                    // Mettre à jour le kanban actuel avec la nouvelle accessList
                     currentKanban.setAccessList(fullKanban.getAccessList());
                     model.setCurrentKanban(currentKanban);
                 }
+
+                // 6. NOTIFIER LE SERVEUR
+                // Important pour que le nouvel utilisateur reçoive le kanban dans sa liste "Participate In"
+                if (provider.getCommInterface() != null) {
+                    provider.getCommInterface().sendKanban(fullKanban);
+                    LOGGER.info("addAuthorizedUserToKanban: Mise à jour envoyée au serveur.");
+                }
+
             } else {
                 LOGGER.info("Utilisateur " + user.getUsername() + " est déjà dans la accessList du kanban");
             }
         } catch (Exception e) {
             LOGGER.log(java.util.logging.Level.SEVERE, "Erreur lors de l'ajout de l'utilisateur au kanban", e);
-
         }
     }
 
@@ -554,6 +549,12 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
         }
 
         saveUser(); // sauvegarde dans le *nouveau* fichier
+
+        // NOTIFIER LE SERVEUR
+        if (provider.getCommInterface() != null) {
+            provider.getCommInterface().sendUpdateUserList(currentUser);
+            LOGGER.info("modifyLocalUser: Profil mis à jour envoyé au serveur.");
+        }
 
         return null;
     }
@@ -613,8 +614,6 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
     public void ModifyLocalUserUsername(String newUsername) {
         modifyLocalUser(null, null, null, null, newUsername);
     }
-    
-
 
     public DataClientProvider getProvider() {
         return this.provider;
@@ -625,15 +624,30 @@ public class MainCallsDataImplementation implements MainCallsDataClient {
 
     @Override
     public void askDeleteKanban(LightKanban kanban) {
+        if (kanban == null) return;
+
         LightUser LightUserId = getMyLightUser();
+        // 1. Envoyer la demande au serveur
         provider.getCommInterface().askDeleteKanban(kanban, LightUserId);
+
         ClientModel model = provider.getMyModel();
-        
+
+        // 2. Supprimer de la liste "Mes Kanbans"
         List<Kanban> myKanbans = model.getLocalUser().getMyKanban();
-        myKanbans.removeIf(k -> k.getId().equals(kanban.getId()));
-        model.getLocalUser().setMyKanban(myKanbans);
-        
-        // Supprimer le fichier JSON local
+        if (myKanbans != null) {
+            myKanbans.removeIf(k -> k.getId().equals(kanban.getId()));
+            model.getLocalUser().setMyKanban(myKanbans);
+        }
+
+        // 3. Supprimer aussi de la liste globale "availableLightKanbans"
+        // pour éviter qu'il ne réapparaisse instantanément
+        List<LightKanban> avail = model.getAvailableLightKanbans();
+        if (avail != null) {
+            avail.removeIf(k -> k.getId().equals(kanban.getId()));
+            model.setAvailableLightKanbans(avail);
+        }
+
+        // 4. Supprimer le fichier JSON local
         KanbanCallsDataImplementation.deleteKanbanFromJson(kanban.getId());
     }
 }

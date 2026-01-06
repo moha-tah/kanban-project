@@ -1,25 +1,27 @@
-package server.data; // <--- CRUCIAL
+package server.data;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import common.dataClasses.Kanban;
 import common.dataClasses.LightUser;
 import common.dataClasses.User;
 
 public class ServerModel {
 
+    // Thread-safe lists to prevent ConcurrentModificationException
     private List<LightUser> connectedUsers;
     private List<Kanban> inUseKanbans;
-    // Full user cache to ensure uniform profile access for local/distant
+
+    // Full user cache
     private Map<UUID, User> connectedUsersFull;
 
     public ServerModel() {
-        this.connectedUsers = new ArrayList<>();
-        this.inUseKanbans = new ArrayList<>();
-        this.connectedUsersFull = new HashMap<>();
+        this.connectedUsers = new CopyOnWriteArrayList<>();
+        this.inUseKanbans = new CopyOnWriteArrayList<>();
+        this.connectedUsersFull = new ConcurrentHashMap<>();
     }
 
     public List<LightUser> getConnectedUsers() {
@@ -27,7 +29,11 @@ public class ServerModel {
     }
 
     public void setConnectedUsers(List<LightUser> connectedUsers) {
-        this.connectedUsers = connectedUsers;
+        if (connectedUsers != null) {
+            this.connectedUsers = new CopyOnWriteArrayList<>(connectedUsers);
+        } else {
+            this.connectedUsers.clear();
+        }
     }
 
     public List<Kanban> getInUseKanbans() {
@@ -35,7 +41,11 @@ public class ServerModel {
     }
 
     public void setInUseKanbans(List<Kanban> inUseKanbans) {
-        this.inUseKanbans = inUseKanbans;
+        if (inUseKanbans != null) {
+            this.inUseKanbans = new CopyOnWriteArrayList<>(inUseKanbans);
+        } else {
+            this.inUseKanbans.clear();
+        }
     }
 
     public void removeConnectedUser(UUID userId) {
@@ -58,7 +68,7 @@ public class ServerModel {
 
     public void putFullUser(User user) {
         if (user == null || user.getId() == null) return;
-        if (connectedUsersFull == null) connectedUsersFull = new HashMap<>();
+        if (connectedUsersFull == null) connectedUsersFull = new ConcurrentHashMap<>();
         connectedUsersFull.put(user.getId(), user);
     }
 }
