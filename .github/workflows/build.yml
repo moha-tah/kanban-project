@@ -2,7 +2,7 @@ name: Build Multi-OS
 
 on:
   push:
-    branches: ["main","ver/fin"]
+    branches: ["main","ver/fin","fix-displayKanban"]
   workflow_dispatch:
 
 jobs:
