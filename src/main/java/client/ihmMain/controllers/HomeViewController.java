@@ -245,10 +245,7 @@ public class HomeViewController {
                     } else {
                         String name = (cId != null) ? "User " + cId.toString().substring(0, 5) : "Unknown";
                         details.setCreator(new User(name, name, "", null));
-                        // Ancien comportement: ignorer si créateur non connecté.
-                        // Problème: cela faisait disparaître des kanbans côté client distant.
-                        // Nouveau: ne pas ignorer, on affiche avec créateur placeholder.
-
+                    
                     }
                 }
             }
