@@ -245,13 +245,9 @@ public class HomeViewController {
                     } else {
                         String name = (cId != null) ? "User " + cId.toString().substring(0, 5) : "Unknown";
                         details.setCreator(new User(name, name, "", null));
-                        // Si le créateur n'est pas connecté → on ignore le Kanban
-                        if (!isMyKanban(lk.getId(), me)) {
-                            User creator = findUserById(details.getCreatorId());
-                            if (creator == null) {
-                                continue; // IGNORER le kanban
-                            }
-                        }
+                        // Ancien comportement: ignorer si créateur non connecté.
+                        // Problème: cela faisait disparaître des kanbans côté client distant.
+                        // Nouveau: ne pas ignorer, on affiche avec créateur placeholder.
 
                     }
                 }
@@ -267,6 +263,12 @@ public class HomeViewController {
                 isParticipating = details.getAccessList().stream()
                         .anyMatch(acc -> acc.getUser().getId().equals(me.getId()));
             }
+            // Fallback: si la décision d'accès a été acceptée mais que l'accessList n'est pas encore synchronisée
+            try {
+                if (!isParticipating && core != null && core.isExplicitlyParticipating(lk.getId())) {
+                    isParticipating = true;
+                }
+            } catch (Exception ignore) { }
 
             // 4. Création et tri
             Node cardNode = createKanbanCardFromFXML(details, isMine, isParticipating);

@@ -62,6 +62,10 @@ public class commCallsMainImpl implements CommClientCallsMain {
                 HomeViewController.handleNotif();
 
                 if (decision) {
+                    // Marquer localement la participation pour l'UI, même si l'accessList n'est pas encore synchronisée
+                    if (core != null) {
+                        try { core.markParticipation(kanban.getId()); } catch (Exception ignore) {}
+                    }
                     if (core != null) {
                         core.addKanbans(java.util.Collections.singletonList(kanban));
                     }

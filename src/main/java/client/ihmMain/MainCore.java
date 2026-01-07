@@ -4,8 +4,10 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -52,6 +54,8 @@ public class MainCore {
     private LightUser me;
     private final List<LightUser>   users   = new ArrayList<>();
     private final List<LightKanban> kanbans = new ArrayList<>();
+    // Track kanbans the current user has been explicitly accepted to join
+    private final Set<UUID> joinedKanbans = new HashSet<>();
 
     // ---- Impl des callbacks (autres couches -> Main) ----
     private final dataCallsMainImpl  datCallbacks   = new dataCallsMainImpl(this);
@@ -156,6 +160,15 @@ public class MainCore {
                 }
             }
         }
+    }
+
+    // --- Participation tracking (client-side fallback when accessList is not yet synced) ---
+    public void markParticipation(UUID kanbanId) {
+        if (kanbanId != null) joinedKanbans.add(kanbanId);
+    }
+
+    public boolean isExplicitlyParticipating(UUID kanbanId) {
+        return kanbanId != null && joinedKanbans.contains(kanbanId);
     }
 
     public LightUser searchUserByUsername(String username) {
