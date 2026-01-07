@@ -60,12 +60,19 @@ public class commCallsMainImpl implements CommClientCallsMain {
                 String msg = "Votre demande pour '" + realTitle + "' a été " + status;
                 HomeViewController.getInstance().addNotification(msg);
                 HomeViewController.handleNotif();
+
                 if (decision) {
-                    // Télécharger le kanban mis à jour depuis le serveur pour obtenir l'accessList correcte
+                    if (core != null) {
+                        core.addKanbans(java.util.Collections.singletonList(kanban));
+                    }
+
+                    // 2. Télécharger le kanban mis à jour depuis le serveur pour obtenir l'accessList correcte
                     LightUser me = core.getMe();
                     if (me != null) {
                         core.getCommPort().getKanban(kanban, me);
                     }
+
+                    // 3. Rafraîchir l'interface (maintenant que le modèle contient le nouveau Kanban)
                     HomeViewController.getInstance().refreshKanbansFromModel();
                 }
             }
@@ -103,23 +110,23 @@ public class commCallsMainImpl implements CommClientCallsMain {
             LOGGER.severe("[Comm->Main] displayDistantProfile: requestedUser est NULL");
             return;
         }
-    
+
         LOGGER.info(() -> "[Comm->Main] Profil distant reçu : "
                 + requestedUser.getUsername() + " (ID=" + requestedUser.getId() + ")");
-    
+
         javafx.application.Platform.runLater(() -> {
             try {
 
                 ProfileDistantController controller = ProfileDistantController.getInstance();
-                
+
                 if (controller == null) {
                     LOGGER.severe("[Comm->Main] Impossible d'afficher le profil : controller == null");
                     return;
                 }
-    
+
                 controller.updateDistantProfile(requestedUser);
                 LOGGER.info("[Comm->Main] Profil distant envoyé au controller.");
-    
+
             } catch (Exception e) {
                 LOGGER.log(Level.SEVERE, "[Comm->Main] Erreur lors de l’affichage du profil distant", e);
             }
@@ -148,5 +155,5 @@ public class commCallsMainImpl implements CommClientCallsMain {
             }
         });
     }
-    
+
 }
